@@ -89,7 +89,7 @@
     destino(ph, k) { const v = this.D.FASE[ph][k]; if (!v) return null; if (v.length === 1) { const s = this.D.SEATS[v[0]]; return { tipo: 'sentar', seat: v[0], x: s[0], y: s[1], ap: s[3] }; }
       if (v[2] === 'chao') { const c = this.D.TOALHA; return { tipo: 'chao', x: v[0], y: v[1], dir: dir8(c.cx - v[0], c.cy - v[1]) }; } return { tipo: 'pe', x: v[0], y: v[1] }; }
     // o caruru só acontece no intervalo D.EVENTO do relógio; antes e depois o quintal é comum e vazio ('N')
-    faseDoRelogio() { const m = this.clock.min % 1440; let f = 'N'; for (const [t0, ph] of this.D.EVENTO) if (m >= t0) f = ph; return f; }
+    faseDoRelogio() { if (typeof window !== 'undefined' && window.MUNDO_ATIVO && window.MUNDO_ANO !== 1994) return 'N'; const m = this.clock.min % 1440; let f = 'N'; for (const [t0, ph] of this.D.EVENTO) if (m >= t0) f = ph; return f; }
     fase(nome, instante) {
       const D = this.D; this.fasen = nome; this.toalha = nome === 'C1'; this.normal = nome === 'N'; this.ocup = {}; this.log.push(['fase', nome]);
       if (this.toalha && this.lia.state === 'livre') { const T = D.TOALHA, b = T.buffer + 0.1, L0 = this.lia; if (L0.x > T.x0 - b && L0.x < T.x1 + b && L0.y > T.y0 - b && L0.y < T.y1 + b) { L0.y = T.y1 + b + 0.1; L0.path = []; } }
