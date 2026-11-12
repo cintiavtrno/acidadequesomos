@@ -124,6 +124,12 @@ const scene = JSON.parse(fs.readFileSync(__dirname + '/../assets/street6/scene_r
   w.update(.1); ok('rua: a Lia senta numa cadeira livre da mesa antes das quatro pessoas', w.mesa.liaSenta('T')); w.lia.sentada = true; let erro = null;
   try { for (let i = 0; i < 40000 && !w.mesa.lataFeita && w.clock.min < 700; i++) { w.update(.1); } } catch (e) { erro = e; }
   ok('rua: a lata do bairro fecha sem erro e rende anotação a quem está sentado (antes dava TypeError)', !erro && !!w.kp.kp_lata, erro && erro.message);
+  {
+    const w2 = new S.Rua.World({ scene, seed: 5, rate: 1.5 }); w2.initNav && w2.initNav(); let e2 = null;
+    try { for (let i = 0; i < 40000 && w2.clock.min < 530; i++) w2.update(.1); const livre = ['E', 'T', 'F', 'D'].find(q => !w2.assentos[q].ocup); if (livre) { w2.mesa.liaSenta(livre); w2.lia.sentada = true; }
+      for (let i = 0; i < 4000 && !w2.kp.kp_lata && w2.clock.min < 600; i++) w2.update(.1); } catch (e) { e2 = e; }
+    ok('rua: a lata repete quando a Lia senta pela primeira vez, mesmo com a mesa já em jogo (8h50, cadeira do Seu Raimundo)', !e2 && !!w2.kp.kp_lata, e2 && e2.message);
+  }
   const sh = fs.readFileSync(__dirname + '/../game/template.html', 'utf8');
   ok('sacola: falar com Seu Raimundo (tecla E ou clique) com a sacola na mão entrega o pão', /function openDialog\(id\) \{[^}]*Sim\.Sacola\.entrega\(SIM\)/.test(sh.replace(/\n/g, ' ')) && /entregar a sacola de pão a Seu Raimundo/.test(sh));
   const T = load(); const calls = []; const ctx = { save() { }, restore() { }, fillRect() { calls.push(1); }, set fillStyle(v) { } };

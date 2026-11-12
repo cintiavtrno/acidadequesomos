@@ -2923,7 +2923,7 @@ Sim.Rua.D.virar94 = () => {
         fase: this.fase, nomes: Object.fromEntries(RD.ordem.map(s => { const o = this.ocupante(s); return [s, o ? (o === 'lia' ? 'Lia' : RD.pessoas[o].curto) : '—']; })), ultima: this.ultimaBatida };
     }
     // Lia ocupa uma cadeira vaga (com a mão do ocupante anterior)
-    liaSenta(s) { const A = this.w.assentos[s]; if (A.ocup) return false; const outros = RD.ordem.map(q => this.w.assentos[q].ocup).filter(x => x && x !== 'lia'); const faltava = this.fase === 'pausado' || outros.length < 3; A.ocup = 'lia'; this.w.lia.seat = s; if (faltava && outros.length) this.w.social.liaAjudouMesa(outros); return true; }
+    liaSenta(s) { const A = this.w.assentos[s]; if (A.ocup) return false; if (this.lataFeita && !this.w.kp.kp_lata) { this.lataFeita = false; this.lata = null; } const outros = RD.ordem.map(q => this.w.assentos[q].ocup).filter(x => x && x !== 'lia'); const faltava = this.fase === 'pausado' || outros.length < 3; A.ocup = 'lia'; this.w.lia.seat = s; if (faltava && outros.length) this.w.social.liaAjudouMesa(outros); return true; }
     liaLevanta() { const s = this.w.lia.seat; if (!s) return; const A = this.w.assentos[s]; A.ocup = null; this.w.lia.seat = null; this.w.lia.sentada = false; if (this.pensando && this.pensando.liaEsperando) this.pensando = null; }
     minhaMao() { const s = this.w.lia.seat; return s ? this.game.maos[s] : null; }
     legaisLia() { const s = this.w.lia.seat; return s ? this.game.legais(s) : []; }
