@@ -34,7 +34,7 @@ for (const id of ['rua', 'padaria', 'casa', 'quintal']) {
   let html = dec(SRC[id]); f.srcdoc = html;
 }
 window.MUNDO_BRIDGE = {
-  entrar(cena, porta) { if (mundo) mundo.ir('rua:' + porta); },
+  entrar(cena, porta) { if (mundo) return mundo.ir('rua:' + porta); },
   sair(cena) { if (mundo) mundo.ir(cena + ':porta'); },
 };
 function mostrar(id) { for (const k in FR) FR[k].classList.toggle('on', k === id); const w = FR[id].contentWindow; try { w.dispatchEvent(new Event('resize')); w.focus(); } catch (e) { } }

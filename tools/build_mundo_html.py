@@ -8,7 +8,7 @@ def sub(t, old, new, n=1):
     return t.replace(old, new, n)
 
 RATE = '3'   # minutos de jogo por segundo real: 07:00→19:00 em ~4 min (uma partida de ~15 min com 4 épocas). PROPOSTA
-HEAD = """<script>window.MUNDO_ATIVO = true; window.MUNDO_RATE = 3; window.MUNDO_SAIR = function (c) { parent.MUNDO_BRIDGE.sair(c); }; window.MUNDO_ENTRAR = function (c, p) { parent.MUNDO_BRIDGE.entrar(c, p); };
+HEAD = """<script>window.MUNDO_ATIVO = true; window.MUNDO_RATE = 3; window.MUNDO_SAIR = function (c) { parent.MUNDO_BRIDGE.sair(c); }; window.MUNDO_ENTRAR = function (c, p) { return parent.MUNDO_BRIDGE.entrar(c, p); };
 (function () { var q = location.search; if (/mundo=1/.test(q)) return; })();</script>
 """
 def args(t, extra):  # parâmetros de URL padrão: o srcdoc não tem query; injeta o location.search esperado

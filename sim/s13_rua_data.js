@@ -6,7 +6,7 @@ Sim.Rua = { v: '6.0', D: {} };
 const RD = Sim.Rua.D;
 RD.W = 1130; RD.VH = 270;
 RD.yw = x => 212 + Math.floor(Math.max(0, x) / 70);
-RD.dia = { inicio: 420, fim: 720 };                    // 07:00–12:00
+RD.dia = { inicio: 420, fim: 1140 };                   // 07:00–19:00 (proposta: o dia vai até o anoitecer)
 const T = s => { const [h, m] = s.split(':').map(Number); return h * 60 + m; };
 RD.T = T;
 

@@ -105,7 +105,7 @@
 const ASSETS = /*ASSETS*/{};
 const CHARATLAS = /*CHARATLAS*/{};
 const SCENE = /*SCENE*/{}, PROPS = /*PROPS*/{};
-const VW = 480, VH = 270, WORLD_W = SCENE.W;
+let VW = 480; const VH = 270, WORLD_W = SCENE.W;   // VW cresce em janelas largas (mostra mais rua em vez de faixas pretas)
 const RD = Sim.Rua.D, yw = RD.yw;
 const cvs = document.getElementById('c'), vctx = cvs.getContext('2d');
 const off = document.createElement('canvas'); off.width = VW; off.height = VH;
@@ -159,7 +159,7 @@ function computeView() {
   const cl = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
   const cx = cl(S.vx, bx0 + w / 2, bx1 - w / 2), cy = (by1 - by0) <= h ? VH / 2 : cl(S.vy, by0 + h / 2, by1 - h / 2);
   const left = Math.round(cx - w / 2), top = Math.round(cy - h / 2);
-  const cam = cl(Math.round(cx) - 240, 0, WORLD_W - VW);
+  const cam = cl(Math.round(cx) - VW / 2, 0, WORLD_W - VW);
   if (S.free) { S.vx = cx; S.vy = cy; }
   S.cam = cam; V = { z, w, h, left, top, sx: left - cam, sy: top, cam }; return V;
 }
@@ -236,6 +236,8 @@ function updateBubbles() {
   }
 }
 function fit() {
+  const nv = Math.max(480, Math.min(640, Math.round(VH * innerWidth / Math.max(1, innerHeight))));   // largura lógica acompanha a proporção da janela
+  if (nv !== VW) { VW = nv; cvs.width = VW; off.width = VW; ctx.imageSmoothingEnabled = false; vctx.imageSmoothingEnabled = false; }
   const s = fitDisplay(cvs, VW, VH); const ui = document.getElementById('ui'); ui.style.fontSize = Math.max(9, Math.min(17, 3.2 * s + 4.5)) + 'px';
 }
 addEventListener('resize', fit);
@@ -284,7 +286,7 @@ function assentoLivreDom() { return RD.ordem.find(s => { const A = SIM.assentos[
 // portas funcionais (Etapa 7): só existem quando a rua roda dentro do mundo integrado
 const PORTAS = { porta_padaria: { cena: 'padaria', label: 'Entrar na padaria' }, porta_sobrado: { cena: 'casa', label: 'Entrar na casa de Seu Raimundo' } };
 function portaPerto() { if (!window.MUNDO_ATIVO) return null; const L = SIM.lia; let best = null; for (const k in PORTAS) { const sp = SIM.spot(k), d = Math.hypot(sp.x - L.x, (sp.y - L.y) * 1.2); if (d < 30 && (!best || d < best.d)) best = { k, d, sp }; } return best; }
-function entrarPorta(k) { if (!window.MUNDO_ATIVO || D.open || S.mesaOpen || LS.mode !== 'free') return; const sp = SIM.spot(k); SIM.lia.x = sp.x; SIM.lia.y = sp.y; SIM.lia.face = 'up'; LS.path = []; LS.goal = null; LS.anim = 'idle'; window.MUNDO_ENTRAR(PORTAS[k].cena, k); }
+function entrarPorta(k) { if (!window.MUNDO_ATIVO || D.open || S.mesaOpen || LS.mode !== 'free') return; const sp = SIM.spot(k); SIM.lia.x = sp.x; SIM.lia.y = sp.y; SIM.lia.face = 'up'; LS.path = []; LS.goal = null; LS.anim = 'idle'; const r = window.MUNDO_ENTRAR(PORTAS[k].cena, k); if (r && r.ok === false) toast(r.motivo, '', 3500); }
 function candidatos() {
   const L = SIM.lia, out = []; if (LS.mode !== 'free') return out;
   const pp = portaPerto(); if (pp) out.push({ k: 'porta', id: pp.k, d: pp.d - 6, label: PORTAS[pp.k].label, run: () => entrarPorta(pp.k) });

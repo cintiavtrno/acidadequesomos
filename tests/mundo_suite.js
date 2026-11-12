@@ -51,7 +51,7 @@ const fmt = m => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(Math
   ok('chegou na casa (três-quartos)', w.cenas.atual === 'casa' && persp[0] === 'rua>casa:três-quartos', persp.join(' '));
   ok('não abre duas portas ao mesmo tempo', (() => { const a = w.ir('casa:porta'); const b = w.ir('casa:porta'); return a.ok && !b.ok; })());
   w.passos(1.2); ok('casa → rua volta ao side-view', w.cenas.atual === 'rua' && persp[1] === 'casa>rua:side-view', persp.join(' '));
-  w.cenas.get('padaria').sim.clock.min = 725; w.cenas.get('rua').sim.clock.min = 725;
+  w.cenas.get('padaria').sim.clock.min = 1025; w.cenas.get('rua').sim.clock.min = 1025;
   const r = w.ir('rua:porta_padaria'); ok('padaria fechada recusa a entrada, com motivo', r.ok === false && /fechou/.test(r.motivo), r.motivo);
   ok('transição: fade completo (0→1→0)', (() => { const q = mk(4).w; q.ir('rua:porta_sobrado'); let max = 0; for (let i = 0; i < 30; i++) { q.update(.05); max = Math.max(max, q.trans.alpha); } return max === 1 && q.trans.alpha === 0; })());
 }

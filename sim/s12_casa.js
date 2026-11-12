@@ -154,7 +154,7 @@ Sim.CasaWorld = class {
     for (const t of this.timers.slice()) { t.t -= dt; if (t.t <= 0) { this.timers.splice(this.timers.indexOf(t), 1); t.fn(); } }
     if (this.dialogosPausa > 0) this.dialogosPausa -= dt;
     this.tickRaimundo(dt); this.tickVisita(dt); this.interaction.tickCafe(dt);
-    if (this.clock.min >= 720 && !this.fim) this.endDay();
+    if (this.clock.min >= 1140 && !this.fim) this.endDay();
   }
   tickRaimundo(dt) {
     const n = this.npcs.raimundo; n.stateT += dt; n.at += dt;

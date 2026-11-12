@@ -352,7 +352,7 @@ Sim.Nav = {
 // Toda fala nova é PROPOSTA (precisa de aprovação). Falas de reza/saudação religiosa têm revisar:true → revisão de quem é da cultura do axé.
 // Linguagem: português baiano sem caricatura de sotaque. Nada aqui cita pessoa real; figuras de poder são fictícias.
 Sim.Data = {};
-Sim.Data.dia = { inicio: '07:00', abre: '07:00', fecha: '12:00' };
+Sim.Data.dia = { inicio: '07:00', abre: '07:00', fecha: '17:00' };
 
 // ---- lugares (plano para NPCs acessarem outros ambientes; só 'padaria' e 'rua' existem nesta etapa) ----
 Sim.Data.locais = {
@@ -1077,7 +1077,7 @@ Sim.Events = class {
         w.rel.change('dandara', 'lucia', { aff: -.03, tens: .08 }, 'radio');
       } },
       { id: 'procura', cond: w => this.procura(w) },
-      { id: 'dia_fim', hora: 720, run: w => w.endDay() },
+      { id: 'dia_fim', hora: 1020, run: w => w.endDay() },
     ];
   }
   procura(w) {                                                                        // "alguém procura outro": quem ficou sente falta de quem já saiu
@@ -1200,7 +1200,7 @@ Sim.World = class {
   constructor(o) {
     o = o || {}; this.scene = o.scene; this.hooks = o.hooks || { objs: {} }; this.seed = o.seed || 1991; this.rng = Sim.RNG(this.seed);
     this.persist = Object.assign({ evita: {}, fiado: {}, dia: 1, rel: null, mem: null, kp: null }, o.persist || {});
-    this.bus = new Sim.EventSystem(); this.clock = new Sim.WorldClock({ start: o.start != null ? o.start : 420, rate: o.rate || 1, openAt: 420, closeAt: 720, day: this.persist.dia });
+    this.bus = new Sim.EventSystem(); this.clock = new Sim.WorldClock({ start: o.start != null ? o.start : 420, rate: o.rate || 1, openAt: 420, closeAt: 1020, day: this.persist.dia });
     this.pontos = this.scene.pontos; this.flags = {}; this.timers = []; this.cena = 'interior'; this.carry = null; this.fim = false;
     this.lia = { x: 240, y: 222, face: 'up', seat: null, state: 'idle' };
     this.rel = new Sim.Relations(this.bus, Sim.Data.relacoes); if (this.persist.rel) this.rel.import(this.persist.rel);
@@ -1577,7 +1577,7 @@ Sim.CasaWorld = class {
     for (const t of this.timers.slice()) { t.t -= dt; if (t.t <= 0) { this.timers.splice(this.timers.indexOf(t), 1); t.fn(); } }
     if (this.dialogosPausa > 0) this.dialogosPausa -= dt;
     this.tickRaimundo(dt); this.tickVisita(dt); this.interaction.tickCafe(dt);
-    if (this.clock.min >= 720 && !this.fim) this.endDay();
+    if (this.clock.min >= 1140 && !this.fim) this.endDay();
   }
   tickRaimundo(dt) {
     const n = this.npcs.raimundo; n.stateT += dt; n.at += dt;
@@ -1750,7 +1750,7 @@ Sim.Rua = { v: '6.0', D: {} };
 const RD = Sim.Rua.D;
 RD.W = 1130; RD.VH = 270;
 RD.yw = x => 212 + Math.floor(Math.max(0, x) / 70);
-RD.dia = { inicio: 420, fim: 720 };                    // 07:00–12:00
+RD.dia = { inicio: 420, fim: 1140 };                   // 07:00–19:00 (proposta: o dia vai até o anoitecer)
 const T = s => { const [h, m] = s.split(':').map(Number); return h * 60 + m; };
 RD.T = T;
 

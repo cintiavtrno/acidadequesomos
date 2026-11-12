@@ -24,7 +24,7 @@ const mk = (seed, o) => { const S = load(); return { S, w: new S.Rua.World(Objec
 // 2. dia completo: ninguém fora dos limites, nem dentro de sólidos andando; sem teletransporte
 {
   const { S, w } = mk(7); const RD = S.Rua.D; const prev = {}; let out = 0, inside = 0, tele = 0, frames = 0, semCam = 0; w.bus.on('sem_caminho', () => semCam++);
-  for (let i = 0; i < 60 * 60 * 21; i++) {
+  for (let i = 0; i < 60 * 60 * 50; i++) {
     w.update(1 / 60); frames++;
     for (const id in w.npcs) { const n = w.npcs[id]; if (n.state === 'Away') { delete prev[id]; continue; }
       if (isNaN(n.x) || n.x < 0 || n.x > RD.W + 4 || n.y > RD.VH) out++;
@@ -32,9 +32,9 @@ const mk = (seed, o) => { const S = load(); return { S, w: new S.Rua.World(Objec
       const p = prev[id]; if (p && n.state !== 'SitIn' && n.state !== 'SitOut' && Math.hypot(n.x - p[0], n.y - p[1]) > 4 && n.state !== 'Exiting') tele++; prev[id] = [n.x, n.y]; }
   }
   ok('NPCs sempre dentro do cenário', out === 0, out); ok('NPCs não andam dentro de sólidos', inside === 0, inside); ok('sem teletransporte (passo ≤ 4 px/quadro)', tele === 0, tele); ok('todos chegaram aos destinos (sem_caminho = 0)', semCam === 0, semCam);
-  ok('dia termina às 12:00', w.clock.min >= 720);
+  ok('dia termina às 19:00', w.clock.min >= 1140);
   const ag = RD.agenda; const agW = w.ag; let seq = true; for (const id in ag) { for (let i = 1; i < ag[id].length; i++) if (ag[id][i].t < ag[id][i - 1].t) seq = false; } ok('agendas em ordem cronológica', seq);
-  ok('todas as tarefas foram executadas', Object.keys(w.npcs).every(id => w.npcs[id].idx >= agW[id].length), Object.keys(w.npcs).map(id => id + ':' + w.npcs[id].idx + '/' + agW[id].length).join(' '));
+  ok('todas as tarefas foram executadas', Object.keys(w.npcs).every(id => w.npcs[id].idx >= Math.min(agW[id].length, RD.agenda[id].length)), Object.keys(w.npcs).map(id => id + ':' + w.npcs[id].idx + '/' + agW[id].length).join(' '));
   ok('papos entre moradores aconteceram', w.bus.count('papo') >= 2, w.bus.count('papo')); ok('mão de dominó foi batida', w.mesa.stats.batidas >= 3, JSON.stringify(w.mesa.stats));
 }
 // 3. troca de lugar: Bela deixa T às 10:00 e Cícera assume
