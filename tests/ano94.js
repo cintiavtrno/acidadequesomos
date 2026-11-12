@@ -104,9 +104,9 @@ const scene = JSON.parse(fs.readFileSync(__dirname + '/../assets/street6/scene_r
   const solids = sc.colisao_arquitetura.concat(sc.instancias.filter(i => i.collide).map(i => i.collide)), { X0, X1, YB, YF, EXIT_X } = Lt;
   const blocked = (x, y) => { const g = Math.abs(x - EXIT_X) <= 24; if (x < X0 + 8 || x > X1 - 8 || y < YB + 6) return true; if (y > YF - 6 && !g) return true; if (y > YF + 10) return true; for (const [a, b, c, d] of solids) if (x > a && x < c && y > b && y < d) return true; return false; };
   const mk = (a94, start) => { const Sim = load(); Sim.Nav.init({ X0, X1, YB, YF, EXIT_X, blocked }); const w = new Sim.CasaWorld({ scene: sc, seed: 1994, rate: 1, start, hooks: { objs: {} } }); w.ano94 = a94; return w; };
-  const a = mk(true, 760); let g = 0; while (!a.presente('raimundo') && g++ < 3000) a.update(.5);
+  const a = mk(true, 760); const a91 = mk(false, 760); let g1 = 0; while (!a91.presente('raimundo') && g1++ < 3000) a91.update(.5); ok('casa: em 1991 o café também vale depois das 12h (antes só até 11h40, e ele só chega às 10h)', a91.interaction.cafeJuntos().ok); let g = 0; while (!a.presente('raimundo') && g++ < 3000) a.update(.5);
   const c = a.interaction.cafeJuntos(); ok('casa: em 1994 o café com Seu Raimundo está liberado depois do meio-dia (12h40)', c.ok || /movimento|rezando/.test(c.motivo || ''), c.motivo || '');
-  const b = mk(false, 760); g = 0; while (!b.presente('raimundo') && g++ < 3000) b.update(.5); const cb = b.interaction.cafeJuntos(); ok('casa: em 1991 a regra antiga continua (depois das 11h40 é hora do almoço)', !cb.ok && /almoço/.test(cb.motivo));
+  const b = mk(false, 900); g = 0; while (!b.presente('raimundo') && g++ < 3000) b.update(.5); const cb = b.interaction.cafeJuntos(); ok('casa: em 1991 o café vale até 14h30 (ele sai de novo às 15h)', !cb.ok && /tarde/.test(cb.motivo));
 }
 {
   const sh = fs.readFileSync(__dirname + '/../mundo/shell_template.html', 'utf8');
@@ -115,5 +115,22 @@ const scene = JSON.parse(fs.readFileSync(__dirname + '/../assets/street6/scene_r
   ok('quintal: a etiqueta pixelada com o nome de quem está perto não é mais desenhada (o aviso "E Falar com ..." já traz o nome)', !/this\.nome\(g, o, h\)/.test(rd));
   const Q = require('../quintal/quintal.js'); const T = Q.Dialogo.T;
   ok('quintal: Dia & Noite na boca de Zefa, Dandara e Tonho', /Dia & Noite/.test(T.zefa.dn.resp) && /Pedro Archanjo/.test(T.zefa.dn.resp) && /cachê/.test(T.dandara.dn.resp) && /[Ss]how de graça/.test(T.tonho.show.resp));
+}
+
+// ---------------------------------------------------------------- sacola, gaiola, lata, Nena (correções da 4ª rodada)
+{
+  const S = load(), RD = S.Rua.D, w = new S.Rua.World({ scene, seed: 3, rate: 1.5 }); w.initNav && w.initNav();
+  ok('rua: a gaiola do sobrado pode ser examinada e rende anotação (antes não existia objeto)', w.examinar({ id: 'gaiola_1', nome: 'g', desc: 'x' }).novo && !!w.kp.kp_obj_gaiola);
+  w.update(.1); ok('rua: a Lia senta numa cadeira livre da mesa antes das quatro pessoas', w.mesa.liaSenta('T')); w.lia.sentada = true; let erro = null;
+  try { for (let i = 0; i < 40000 && !w.mesa.lataFeita && w.clock.min < 700; i++) { w.update(.1); } } catch (e) { erro = e; }
+  ok('rua: a lata do bairro fecha sem erro e rende anotação a quem está sentado (antes dava TypeError)', !erro && !!w.kp.kp_lata, erro && erro.message);
+  const sh = fs.readFileSync(__dirname + '/../game/template.html', 'utf8');
+  ok('sacola: falar com Seu Raimundo (tecla E ou clique) com a sacola na mão entrega o pão', /function openDialog\(id\) \{[^}]*Sim\.Sacola\.entrega\(SIM\)/.test(sh.replace(/\n/g, ' ')) && /entregar a sacola de pão a Seu Raimundo/.test(sh));
+  const T = load(); const calls = []; const ctx = { save() { }, restore() { }, fillRect() { calls.push(1); }, set fillStyle(v) { } };
+  T.Sacola.S.estado = 'nada'; T.Sacola.desenharMao(ctx, 100, 100, 'right'); const sem = calls.length; T.Sacola.S.estado = 'lia'; T.Sacola.desenharMao(ctx, 100, 100, 'right');
+  ok('sacola: com ela na mão a Lia a leva desenhada; sem ela, nada', sem === 0 && calls.length > 5);
+  const Q = require('../quintal/quintal.js'), D = require('../quintal/qdata.json'); D.SPEED = { ze: 0.57, nonato: 1.1, junior: 1.7 }; require('../quintal/dialogo.js');
+  const q = new Q.Sim(D); q.forcada = true; q.fase('B', true); for (let t = 0; t < 30; t += .1) q.update(.1);
+  ok('quintal: Dona Nena está em cena desde o preparo (fase A) e tem assunto logo de cara, sem precisar olhar nada', q.npcs.nena && q.npcs.nena.vis && q.topicosDe('nena').length >= 2, q.topicosDe('nena').map(t => t.id).join(','));
 }
 console.log('\n' + pass + ' passaram, ' + fail + ' falharam'); process.exit(fail ? 1 : 0);

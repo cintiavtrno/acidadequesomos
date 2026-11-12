@@ -56,6 +56,15 @@ Sim.Sacola = {
     const S = this.S; if (S.estado !== 'nada') return; S.estado = 'balcao'; S.avisoRua = false; this.salvar(); if (w.bus) w.bus.emit('sacola_aviso', {});
     const v = w.npcs && w.npcs.aurea; if (v && w.dialogue) w.dialogue.speak(v, 'Ih, o Raimundo deixou a sacola de pão em cima do balcão, entre a vitrine e a caixa. Lia, leva lá no sobrado amarelo, aqui do lado.');
   },
+  desenharMao(ctx, x, y, face) {                  // a sacola na mão da Lia enquanto ela a leva (padaria, casa e rua)
+    if (this.ano() === 1994 || this.S.estado !== 'lia') return;
+    const f = String(face || ''), e = f === 'l' || f.indexOf('left') >= 0, d = f === 'r' || f.indexOf('right') >= 0, bx = Math.round(x + (e ? -8 : d ? 8 : 7)), by = Math.round(y - 11);
+    ctx.save(); ctx.fillStyle = 'rgba(0,0,0,.22)'; ctx.fillRect(bx - 4, by + 7, 8, 1);
+    ctx.fillStyle = '#f0c36a'; ctx.fillRect(bx - 2, by - 3, 2, 4); ctx.fillRect(bx, by - 2, 2, 3);                   // pães pontudos
+    ctx.fillStyle = '#b8895a'; ctx.fillRect(bx - 3, by, 7, 7); ctx.fillStyle = '#d4a574'; ctx.fillRect(bx - 3, by, 7, 1); ctx.fillStyle = '#8f6540'; ctx.fillRect(bx - 3, by + 6, 7, 1);
+    ctx.fillStyle = '#6b8f71'; ctx.fillRect(bx - 1, by + 2, 3, 2); ctx.fillStyle = '#7a5530'; ctx.fillRect(bx - 3, by - 2, 1, 2); ctx.fillRect(bx + 3, by - 2, 1, 2); ctx.fillRect(bx - 3, by - 3, 7, 1);   // alças
+    ctx.restore();
+  },
   perto(p) { return Math.hypot(p.x - this.LOCAL.x, (p.y - this.LOCAL.y) * 1.5) < 34; },
   visivel() { return this.ano() !== 1994 && this.S.estado === 'balcao'; },
   painel() {                                     // HTML do painel de objetivos (padaria, casa e rua)

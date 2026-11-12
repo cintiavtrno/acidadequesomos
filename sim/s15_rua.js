@@ -313,7 +313,7 @@
     }
     ganhar(id) { if (this.kp[id]) return false; this.kp[id] = { t: this.clock.min }; this.bus.emit('conhecimento', { id, kp: { titulo: RD.kp[id][0], texto: RD.kp[id][1] } }); this.salvar(); return true; }
     examinar(inst) {   // inst = instância da cena
-      const kpMap = { mesa_domino: 'kp_obj_mesa', quadro_avisos: 'kp_obj_quadro', orelhao_1: 'kp_obj_orelhao', poste_1: 'kp_obj_poste', poste_2: 'kp_obj_poste', poste_3: 'kp_obj_poste', cavalete_pao: 'kp_obj_cavalete', bike_1: 'kp_obj_bike', lixeira_1: 'kp_obj_lixeira', lixeira_2: 'kp_obj_lixeira', obra_1: 'kp_obj_obra', caixote_1: 'kp_obj_caixote' };
+      const kpMap = { mesa_domino: 'kp_obj_mesa', quadro_avisos: 'kp_obj_quadro', orelhao_1: 'kp_obj_orelhao', poste_1: 'kp_obj_poste', poste_2: 'kp_obj_poste', poste_3: 'kp_obj_poste', cavalete_pao: 'kp_obj_cavalete', bike_1: 'kp_obj_bike', lixeira_1: 'kp_obj_lixeira', lixeira_2: 'kp_obj_lixeira', obra_1: 'kp_obj_obra', caixote_1: 'kp_obj_caixote', gaiola_1: 'kp_obj_gaiola' };
       if (RD.kpObj94) Object.assign(kpMap, RD.kpObj94);
       const k = kpMap[inst.id]; let novo = false; if (k && RD.kp[k]) novo = this.ganhar(k);
       return { texto: (RD.desc94 && RD.desc94[inst.id]) || inst.desc || inst.nome, nome: inst.nome, novo, kp: k && RD.kp[k] ? RD.kp[k][0] : null };
@@ -356,7 +356,7 @@
         const L = this.lata = this.lata || { i: 0, t: 2 }; L.t -= dt;
         if (L.t <= 0) {
           const e = RD.lata[L.i++];
-          if (!e) { this.lataFeita = true; if (RD.ordem.some(s => this.ocupante(s) === 'lia')) w.knowledge.award('kp_lata', { via: 'ouvida' }); }
+          if (!e) { this.lataFeita = true; if (RD.ordem.some(s => this.ocupante(s) === 'lia')) this.w.ganhar('kp_lata'); }
           else { const s = RD.ordem.find(q => this.ocupante(q) === e[0]); if (s) { this.falaSeat(s, e[1], 3.6); L.t = 3.9; } }
         }
         return;

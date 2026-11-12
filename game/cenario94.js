@@ -101,5 +101,15 @@ const C94 = (() => {
   }
   // mala fechada com cordão sobre o pé da cama (colcha: x 379–407, y 141–170). A cama é uma entidade da cena, então a mala entra na lista de desenho depois dela.
   function mala(c) { px(c, 383, 150, 22, 11, '#5a3a2a'); px(c, 383, 150, 22, 2, '#7a5640'); px(c, 383, 160, 22, 1, '#3a2418'); px(c, 393, 150, 2, 11, '#c9ad72'); px(c, 389, 154, 10, 1, '#c9ad72'); }
-  return { px, txt, largura, rua, padaria, casa, EXTRA: null, EXTRA_CASA: { y: 178, draw: mala } };
+  // gaiola do canário na sacada do sobrado (vale em todos os anos: é a anotação "kp_obj_gaiola")
+  function gaiola(W, H) {
+    const [cv, c] = mk(W, H);
+    px(c, 227, 94, 1, 6, '#5a4630'); px(c, 226, 100, 3, 1, '#8a6a43');            // gancho preso no beiral da janela
+    px(c, 223, 101, 9, 1, '#9a7a45'); px(c, 224, 100, 7, 1, '#b08a4f');            // aro e cúpula
+    for (let i = 0; i < 5; i++) px(c, 223 + i * 2, 102, 1, 9, '#7a5c36');          // varões
+    px(c, 223, 111, 9, 2, '#8a6a43'); px(c, 223, 113, 9, 1, 'rgba(40,24,10,.35)'); // fundo e sombra
+    px(c, 226, 106, 3, 3, '#f2c94c'); px(c, 228, 105, 2, 2, '#f2c94c'); px(c, 229, 105, 1, 1, '#4a3a22'); px(c, 230, 106, 1, 1, '#e08a2c');   // canário
+    return cv;
+  }
+  return { px, txt, largura, rua, padaria, casa, gaiola, EXTRA: null, EXTRA_CASA: { y: 178, draw: mala } };
 })();

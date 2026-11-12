@@ -48,6 +48,8 @@
     q_junior_casa: ['A casa fechada', 'Júnior entra pela janela de uma casa fechada da esquina. Ficaram uma cadeira, um prato na pia e um calendário na parede.'],
     q_tonho_cocada: ['A cocada de presente', 'A mãe do Tonho fez cinquenta cocadas para o caruru. Hoje ele não vende, só dá.'],
     q_tonho_turista: ['Turista só no fim de semana', 'Tonho vende o dobro no sábado e no domingo, quando chegam os ônibus de turistas. De terça a quinta, quase nada.', true],
+    q_nena_caruru: ['A ordem do caruru', 'Dona Nena explica que a promessa é das crianças: elas comem primeiro, na toalha, com a mão, e os adultos só depois. Ela cuida da vela e do azeite.', true],
+    q_nena_noite: ['O acarajé depois dos shows', 'Dona Nena vende mais agora que há show até tarde nos largos, mas o ponto depende do fiscal, que muda de ideia.', true],
     q_nena_tabuleiro: ['O tabuleiro de Dona Nena', 'Dona Nena cuida da oferenda com Dona Zefa. O acarajé dela só sai quando o sol baixa.', true],
     q_davi_cantiga: ['A música do fim de tarde', 'Davi toca baixinho. Dona Zefa pediu cantiga de roda para os meninos.'],
     q_caio_bia: ['Caio e Bia na padaria', 'Caio e Bia ajudam Vó Áurea no balcão, e sempre sobra um pão para eles.'],
@@ -120,7 +122,9 @@
       turista: { label: 'O turista', fases: FIM, quando: ['apos:tonho:cocada'], ask: 'Tonho, e o turista, compra cocada?', resp: 'Compra, e paga mais. Sábado e domingo eu vendo o dobro. De terça a quinta passa um ônibus de manhã e acabou. Se eu vivesse só do turista, comia dois dias.', kp: 'q_tonho_turista' },
     },
     nena: {
-      tabuleiro: { label: 'O tabuleiro', fases: MESA, quando: ['viu_oferenda', 'viu_tabuleiro'], ask: 'Dona Nena, o acarajé sai hoje?', resp: 'Sai quando o sol baixar. Agora eu estou com a Zefa na oferenda. Cada coisa tem sua hora, minha filha.', kp: 'q_nena_tabuleiro' },
+      tabuleiro: { label: 'O tabuleiro', fases: ALL, ask: 'Dona Nena, o acarajé sai hoje?', resp: 'Sai quando o sol baixar. Agora eu estou com a Zefa na oferenda. Cada coisa tem sua hora, minha filha.', kp: 'q_nena_tabuleiro' },
+      caruru: { label: 'A ordem do caruru', fases: ALL, ask: 'Dona Nena, por que as crianças comem primeiro?', resp: 'Porque a promessa é dos meninos. Eles comem na toalha, com a mão, e só depois sentam os grandes. Eu cuido da vela e do azeite. O resto é da Zefa.', kp: 'q_nena_caruru' },
+      noite: { label: 'O movimento de noite', fases: FIM, quando: ['apos:nena:tabuleiro'], ask: 'Dona Nena, com os shows nos largos a senhora vende mais de noite?', resp: 'Vendo. Antes eu desmontava o tabuleiro cedo, porque a rua morria. Agora tem show até tarde e tem gente com fome. Só que o ponto quem dá é o fiscal, e ele muda de ideia.', kp: 'q_nena_noite' },
     },
     davi: {
       cantiga: { label: 'A música', fases: ['D'], ask: 'Seu Davi, o senhor vai tocar?', resp: 'Baixinho, no fim. Dona Zefa pediu cantiga de roda pros meninos, e eu toco o que ela pede.', kp: 'q_davi_cantiga' },

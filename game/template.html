@@ -638,6 +638,7 @@ function sprite(kind, x, y, dir, moving, t, alpha) {
 function drawLia(x, y, persp, alpha) {
   const p = S.p;
   CharLib.draw(ctx, { who: 'lia', persp, x, y, anim: p.anim, dir: p.face, t: p.at }, { alpha });
+  Sim.Sacola.desenharMao(ctx, x, y, p.face);
 }
 function drawNpc(n) { CharLib.draw(ctx, { who: n.id, persp: 'tq', x: n.x, y: n.y, anim: n.anim, dir: n.face, t: n.at || 0 }, { shadow: n.state !== 'Sitting' }); }
 function sortY(n) { const s = n.seat; if (s && ['Sitting', 'SeatingIn', 'Standing'].includes(n.state)) return s.sort === 'before' ? s.base - .5 : s.base + .5; return n.y + .5; }
@@ -794,6 +795,7 @@ function uiTick(dt) {
   if (!SIM) return; uiT -= dt; const w = SIM;
   $('clock').innerHTML = '<b>' + hhmm() + '</b><span>Dia ' + ((window.MUNDO_ATIVO && window.MUNDO_DIA) || w.clock.day) + ' · ' + (w.clock.ended ? 'padaria fechada' : w.clock.isOpen() ? 'padaria aberta' : 'padaria fechada') + (S.scene === 'interior' && w.service && !w.clock.ended ? ' · fila ' + w.service.queue.length + ' · caixa R$ ' + w.service.caixa.toFixed(2).replace('.', ',') + ' · pão ' + w.service.stock.pao : '') + '</span>';
   const st = $('street'); if (S.scene === 'street') { const q = w.service.queue.length; st.style.display = 'block'; st.textContent = 'A padaria segue aberta' + (w.clock.ended ? '' : ' · ' + (q ? q + (q > 1 ? ' pessoas na fila' : ' pessoa na fila') : 'sem fila')) + ' · a Vó atende (a Lia pode ajudar)'; } else st.style.display = 'none';
+  if (SIM.casaPick && Sim.Sacola.S.estado === 'lia') { if (!SIM.presente('raimundo')) { if (!S.avisoSacolaCasa) { S.avisoSacolaCasa = true; toast('<b>Missão</b> · Seu Raimundo ainda não chegou. Ele volta do dominó por volta das 10h. Espere aqui com a sacola; quando ele entrar, fale com ele (E) para entregar.', 'ev', 8000); } } else S.avisoSacolaCasa = false; }
   if (uiT <= 0) { uiT = .3; $('objs').innerHTML = Sim.Sacola.painel() + w.objectives.list().map(o => '<div><span class="t">' + (o.feito ? '<span class="ok">✓</span> ' : '◦ ') + esc(o.titulo) + '</span> <span class="d">' + Math.min(o.n, o.meta) + '/' + o.meta + '</span>' + (o.feito ? '' : '<div class="d">' + esc(o.dica) + '</div>') + '</div>').join(''); }
   // dica contextual (E)
   const h = $('hint'), nt = $('note'); let txt = '';
@@ -801,7 +803,7 @@ function uiTick(dt) {
   else if (S.scene === 'interior') {
     if (S.p.y > YF - 30 && Math.abs(S.p.x - EXIT_X) <= 30) txt = 'Desça pela soleira para sair para a rua';
     else if (p_sitting()) txt = 'Sentada · qualquer tecla de movimento para levantar';
-    else if (!D.open && !S.p.act) { const t = nearestInteract(); if (t) txt = t.sacola ? 'E · pegar a sacola de pão do Seu Raimundo' : t.atender ? 'E · atender ' + t.atender.def.nome + ' · clique na pessoa para conversar' : t.n ? 'E · falar com ' + t.n.def.nome : 'E · ' + (t.o.tipo === 'examinar' ? 'examinar' : t.o.tipo === 'alternar' ? 'abrir / fechar' : t.o.id.startsWith('chair') ? 'sentar' : t.o.id === 'aparador' ? 'pegar água' : 'usar') + ' — ' + t.o.title; }
+    else if (!D.open && !S.p.act) { const t = nearestInteract(); if (t) txt = t.sacola ? 'E · pegar a sacola de pão do Seu Raimundo' : t.atender ? 'E · atender ' + t.atender.def.nome + ' · clique na pessoa para conversar' : t.n ? (t.n.id === 'raimundo' && SIM.casaPick && Sim.Sacola.S.estado === 'lia' ? 'E · entregar a sacola de pão a Seu Raimundo' : 'E · falar com ' + t.n.def.nome) : 'E · ' + (t.o.tipo === 'examinar' ? 'examinar' : t.o.tipo === 'alternar' ? 'abrir / fechar' : t.o.id.startsWith('chair') ? 'sentar' : t.o.id === 'aparador' ? 'pegar água' : 'usar') + ' — ' + t.o.title; }
   }
   if (S.note && !D.open) { nt.style.display = 'block'; nt.textContent = S.note.text; h.style.display = 'none'; } else { nt.style.display = 'none'; h.style.display = txt && !D.open ? 'block' : 'none'; h.textContent = txt; }
   if (D.open && D.mode !== 'cena' && D.mode !== 'fim') { const n = SIM.npcs[D.id]; if (!n || n.loc !== 'padaria' || n.state === 'Away' || S.scene !== 'interior') closeDialog(); else if (Math.hypot(n.x - S.p.x, n.y - S.p.y) > 70 && !D.near) { closeDialog(); } }
@@ -811,7 +813,8 @@ function uiTick(dt) {
 }
 // ---------- conversa (Ouvir · Perguntar · Ajudar · Pressionar) ----------
 function openDialog(id) {
-  const n = SIM.npcs[id]; if (!n) return; if (D.open) closeDialog();
+  const n = SIM.npcs[id]; if (!n) return;
+  if (id === 'raimundo' && Sim.Sacola.entrega(SIM)) { S.p.tx = null; S.p.path = []; S.p.goal = null; return; }   // com a sacola na mão, falar com ele (tecla E ou clique) entrega o pão if (D.open) closeDialog();
   const r = SIM.interaction.abrir(id); D.open = true; D.id = id; D.data = r; D.mode = 'verbs'; D.log = [{ quem: id, texto: r.saudacao }]; S.p.act = null; S.p.tx = null; S.p.path = []; S.p.goal = null;
   const f = Sim.Data.falas[id].saudar.find(x => x.texto === r.saudacao); if (f && f.revisar) D.log[0].revisar = true;
   renderDialog();

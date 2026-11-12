@@ -254,7 +254,7 @@ Sim.CasaInteraction = class {
     if (!a94 && w.rel.nivel('raimundo', 'lia') < 1) return { t, ok: false, motivo: 'Ele ainda não tem intimidade pra te convidar à mesa. Ouça, ajude em casa e volte a falar.' };
     if (['Entering', 'Leaving', 'SeatingIn', 'Standing', 'Walking'].includes(n.state) && n.state !== 'Walking') return { t, ok: false, motivo: 'Ele está no meio de um movimento. Espere um instante.' };
     if (n.act && n.act.def.id === 'reza') return { t, ok: false, motivo: 'Ele está rezando. Espere.' };
-    if (w.clock.min > (a94 ? 900 : 700)) return { t, ok: false, motivo: a94 ? 'Já é tarde; ele vai cuidar do que ficou de fora.' : 'Já é quase hora do almoço; ele vai pro fogão.' };
+    if (w.clock.min > (a94 ? 900 : 870)) return { t, ok: false, motivo: a94 ? 'Já é tarde; ele vai cuidar do que ficou de fora.' : 'Já é tarde para café; ele se prepara para voltar à rua.' };   // 1991: ele chega em casa às 10h e sai de novo às 15h
     return { t, ok: true };
   }
   soltar(n, fn) {

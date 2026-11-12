@@ -257,7 +257,7 @@ RD.kp = {
   kp_obj_quadro: ['O quadro de avisos', 'Reunião da associação à noite, rifa de uma geladeira, aviso de falta d\'água, aluguel de cômodo.'],
   kp_obj_orelhao: ['O orelhão', 'O orelhão de ficha é o telefone de quase toda a rua; o número rabiscado na cúpula é de um sobrinho do bairro.'],
   kp_obj_poste: ['O poste dos cartazes', 'O poste de concreto serve de jornal: festa, achado, perdido, show.'],
-  kp_obj_gaiola: ['A gaiola do sobrado', 'A gaiola ao lado da porta do sobrado tem um canário que canta antes de Seu Raimundo acordar.'],
+  kp_obj_gaiola: ['A gaiola do sobrado', 'A gaiola na sacada do sobrado tem um canário que canta antes de Seu Raimundo acordar.'],
   kp_obj_cavalete: ['O cavalete da padaria', 'O cavalete da padaria tem letra da Vó e o preço do dia.'],
   kp_obj_bike: ['A bicicleta de entrega', 'A bicicleta com cesto de vime é de um entregador da vizinhança.'],
   kp_obj_lixeira: ['A lixeira de tela', 'A lixeira de tela guarda copo de café e saco de pão: a rua come da padaria.'],

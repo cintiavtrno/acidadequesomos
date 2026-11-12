@@ -135,6 +135,7 @@ Promise.all(Object.entries(ASSETS).map(([k, v]) => load(v).then(i => IMG[k] = i)
   try { persist = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { persist = null; }
   if (Q.get('new') === '1') persist = null;
   if (window.MUNDO_ANO === 1994) IMG.c94 = C94.rua(SCENE.W, VH);
+  IMG.c91 = C94.gaiola(SCENE.W, VH);
   start();
 });
 
@@ -154,7 +155,9 @@ const OBJ94 = [
   { id: 'tapume_verde', nome: 'casa tapada', x: 846, sy: 10, rect: [832, 157, 32, 52], desc: 'A porta e a janela de baixo da casa verde estão fechadas com tábua. A família saiu e o andaime já sobe pela fachada.' },
   { id: 'placa_obra', nome: 'placa da obra', x: 936, sy: 10, rect: [923, 122, 25, 26], desc: 'Uma placa pequena presa ao andaime: OBRA, 1994. Programa de Recuperação.' },
 ];
+const OBJ91 = [{ id: 'gaiola_1', nome: 'gaiola do canário', x: 227, sy: 10, rect: [221, 94, 12, 20], desc: 'Uma gaiola pendurada na sacada do sobrado. O canário canta antes de Seu Raimundo acordar.' }];
 function start() {
+  OBJ91.forEach(o => { if (!SCENE.inst.some(i => i.id === o.id)) SCENE.inst.push(Object.assign({ sprite: '_c94', tipo: 'examinar', classe: 'DECORATIVO', zoom: 1, stand: [0, 14], layer: 'sorted' }, o)); });
   const t0 = Q.has('t') ? 420 + +Q.get('t') : RD.dia.inicio;
   if (window.MUNDO_ANO === 1994) OBJ94.forEach(o => { if (!SCENE.inst.some(i => i.id === o.id)) SCENE.inst.push(Object.assign({ sprite: '_c94', tipo: 'examinar', classe: 'DECORATIVO', zoom: 1, stand: [0, 14], layer: 'sorted' }, o)); });
   SIM = new Sim.Rua.World({ scene: SCENE, seed: +(Q.get('seed') || 1991) + (persist ? persist.dia || 1 : 0), start: RD.dia.inicio, rate: +(Q.get('rate') || 0.25), persist: persist || {}, integrado: Q.get('mundo') === '1',
@@ -539,6 +542,7 @@ function render() {
   ctx.drawImage(IMG.far, Math.floor(cam * 0.35), 0, VW, VH, 0, 0, VW, VH);
   ctx.drawImage(IMG.world, cam, 0, VW, VH, 0, 0, VW, VH);
   if (IMG.c94) ctx.drawImage(IMG.c94, cam, 0, VW, VH, 0, 0, VW, VH);
+  if (IMG.c91) ctx.drawImage(IMG.c91, cam, 0, VW, VH, 0, 0, VW, VH);
   const ents = [];
   for (const it of SCENE.inst) {
     if (it.id === 'gato_1' || it.sprite === 'cad_costas' && it.layer === 'over') continue;
@@ -550,7 +554,7 @@ function render() {
   const g = SIM.gato; ents.push({ y: g.y, draw: () => drawProp('gato', g.x - cam, g.y, g.estado === 'afago' ? 1 : 0) });
   for (const p of SIM.pombos) ents.push({ y: p.y, draw: () => { if (p.estado === 'foge') { ctx.fillStyle = 'rgba(18,10,28,.25)'; ctx.fillRect(Math.round(p.x - cam - 2), Math.round(p.y + 6), 5, 1); drawProp('pombo', p.x - cam, p.y - 6, 2); } else drawProp('pombo', p.x - cam, p.y, p.f); } });
   for (const id in SIM.npcs) { const n = SIM.npcs[id]; if (n.state === 'Away' || n.alpha <= 0.01) continue; const sit = n.state === 'Sitting' || n.state === 'SitIn' || n.state === 'SitOut'; ents.push({ y: n.y + (sit && n.seat ? seatBias(n.seat) : 0), draw: () => charDraw(id, n) }); }
-  const L = SIM.lia; const lsit = LS.mode !== 'free'; ents.push({ y: L.y + (lsit ? seatBias(L.seat || LS.seatId) : 0), draw: () => CharLib.draw(ctx, { who: 'lia', persp: 'side6', x: L.x - cam, y: L.y, anim: LS.anim, dir: L.face, t: LS.at }, { shadow: !lsit }) });
+  const L = SIM.lia; const lsit = LS.mode !== 'free'; ents.push({ y: L.y + (lsit ? seatBias(L.seat || LS.seatId) : 0), draw: () => { CharLib.draw(ctx, { who: 'lia', persp: 'side6', x: L.x - cam, y: L.y, anim: LS.anim, dir: L.face, t: LS.at }, { shadow: !lsit }); Sim.Sacola.desenharMao(ctx, L.x - cam, L.y, L.face); } });
   ents.sort((a, b) => a.y - b.y).forEach(e => e.draw());
   for (const it of over) drawProp(it.sprite, it.x - cam, yw(it.x) + it.sy + .5, 0);
   ctx.drawImage(IMG.front, cam, 0, VW, VH, 0, 0, VW, VH);
