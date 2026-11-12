@@ -283,7 +283,7 @@ def build_objs():
         if id == 'F13': add('mobiliario', id, nome, lambda c, w=w, d=d, h=h: d_table(c, 0, 0, w, d, h, TIMB, t=2, apron=1), w, d, h, x, y); continue
         if id == 'F14': add('decorativos', id, nome, lambda c, w=w, h=h: d_tronco(c, w, h + 22), w, d, h, x, y, org=(30, 100), size=(100, 160)); continue
         if id == 'F15': add('decorativos', id, nome, lambda c, w=w, d=d, h=h: d_stone_curb(c, w, d, h), w, d, h, x, y); continue
-        if id == 'M01': add('mobiliario', id, nome, lambda c, w=w, d=d, h=h: d_mesa_longa(c, w, d, h), w, d, h, x, y); continue
+        if id == 'M01': add('mobiliario', id, nome, lambda c, w=w, d=d, h=h: d_mesa_longa(c, w, d, h), w, d, h, x, y); add('mobiliario', 'M01n', 'Mesa longa (sem toalha, quintal comum)', lambda c, w=w, d=d, h=h: d_table(c, 0, 0, w, d, h, TIMB, t=3, apron=2), w, d, h, x, y); continue
         if id in ('M02', 'M03', 'M04', 'M05', 'M06', 'M07', 'M15', 'M16', 'M17', 'M18', 'M20'): add('mobiliario', id, nome, lambda c, f=SEAT[id], R=(TIMB if id != 'M20' else TIMB): d_chair(c, 0, 0, f), w, d, h, x, y, org=(16, 40)); continue
         if id in ('M08', 'M19', 'M21'): add('mobiliario', id, nome, lambda c, w=w, d=d, h=h: d_bench(c, w, d, h), w, d, h, x, y); continue
         if id in ('M10', 'M11', 'M12', 'M13', 'M23', 'M24'): add('mobiliario', id, nome, lambda c, w=w, d=d, h=h: d_stool(c, w, d, h), w, d, h, x, y); continue
@@ -296,8 +296,8 @@ def build_objs():
         if id.startswith('D'): add('decorativos', id, nome, lambda c, w=w, d=d, h=h: d_vaso(c, w, d, h), w, d, h, x, y); continue
     B = D['BANDEIRA']; bw, bh = round((B['x1'] - B['x0']) * 24), round((B['z1'] - B['z0']) * 24)
     add('decorativos', 'B01', B['nome'], lambda c: d_banner(c, bw, bh), bw, 0, bh, B['x0'], 0, wz=B['z1'], org=(10, 12), size=(80, 100), shadow_on=False, layer='parede', extra={'z_topo': B['z1']})
-    T_ = D['TOALHA']; tw, td = round(2.2 * 24), round(2.2 * 16)
-    add('decorativos', 'E01', 'Toalha de chita dos sete meninos', lambda c: d_toalha(c, tw, td), tw, td, 0, T_['x0'] + .55 - 0.0, T_['y0'] + .55, org=(4, 4), size=(80, 60), shadow_on=False, layer='chao')
+    T_ = D['TOALHA']; tw, td = round(T_['lado'] * 24), round(T_['lado'] * 16)
+    add('decorativos', 'E01', 'Toalha de chita dos sete meninos', lambda c: d_toalha(c, tw, td), tw, td, 0, T_['x0'], T_['y0'], org=(4, 4), size=(tw + 8, td + 8), shadow_on=False, layer='chao')
     for it in D['ITENS']:
         sid, nome, zona, sup, x, y, wm, dm, hm, z = it[:10]
         if sid in ('S22', 'E01') or 'toalha' in nome.lower(): continue

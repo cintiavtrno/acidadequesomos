@@ -23,7 +23,7 @@
       this.cv = cv; this.ctx = cv.getContext('2d'); this.sim = sim; this.CL = CharLib; this.D = sim.D; this.cam = 0; this.t = 0;
       this.ctx.imageSmoothingEnabled = false; this.fig = {};
       this.face = {}; for (const k in this.D.SEATS) { const s = this.D.SEATS[k]; this.face[s[2]] = this.face[s[2]] || sim.seatDir(k); }
-      this.cat = (window.QCAT && window.QCAT.sprites) || {}; this.est = this.compoe(); this.copa = CharLib.img.q_copa;
+      this.cat = (window.QCAT && window.QCAT.sprites) || {}; this.est = this.compoe(true); this.estN = this.compoe(false); this.copa = CharLib.img.q_copa;
     }
     kids() {
       const CLb = this.CL, a = CLb.atlas.junior_side, im = CLb.img.junior_side; if (!a || !im) return;
@@ -36,9 +36,9 @@
       }
     }
     P(X, Y, Z) { return [sx(X), sy(Y, Z)]; }
-    compoe() {
+    compoe(tema) {
       const c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d'); g.imageSmoothingEnabled = false; g.drawImage(this.CL.img.q_base, 0, 0);
-      for (const k in this.cat) if (this.cat[k].layer === 'parede') this.spr(g, k); return c;
+      for (const k in this.cat) if (tema && this.cat[k].layer === 'parede') this.spr(g, k); return c;
     }
     spr(g, id) { const s = this.cat[id]; if (!s) return false; const im = this.CL.img['q_' + s.folha.replace('.png', '')], r = s.rect; g.drawImage(im, r[0], r[1], r[2], r[3], s.pos_px[0], s.pos_px[1], r[2], r[3]); return true; }
     buildStatic() {
@@ -147,7 +147,7 @@
       if (z === 0) { g.fillStyle = 'rgba(45,26,31,.22)'; g.fillRect(x0 + 1, yf, x1 - x0, 1); g.fillStyle = 'rgba(45,26,31,.10)'; g.fillRect(x0 + 2, yf + 1, x1 - x0 - 1, 1); }
     }
     obj(g, o) {
-      const id = o.id; if (this.spr(g, id)) return;
+      const id = o.id; if (this.spr(g, this.sim.normal && id === 'M01' ? 'M01n' : id)) return;
       if (id === 'F14') { const a = this.P(o.x - 0.1, o.y, 0), r = Math.round; g.fillStyle = TI[0]; g.fillRect(r(a[0]) - 2, r(a[1]) - 2, 18, 4); g.fillStyle = TI[1]; g.fillRect(r(sx(22.25)), r(sy(2.6, 2.8)), 19, r(sy(2.8, 0) - sy(2.6, 2.8))); g.fillStyle = TI[2]; g.fillRect(r(sx(22.25)) + 3, r(sy(2.6, 2.8)), 3, r(sy(2.8, 0) - sy(2.6, 2.8))); g.fillStyle = TI[0]; g.fillRect(r(sx(22.25)) + 14, r(sy(2.6, 2.8)), 5, r(sy(2.8, 0) - sy(2.6, 2.8))); return; }
       if (/^M(0[2-7]|1[5-8]|20)$/.test(id) || /^M2[34]$/.test(id) || /^M1[0-3]$/.test(id) || id === 'M21' || id === 'M19' || id === 'M08') return this.assento(g, o);
       const rp = o.cat === 'D' ? LF : (RAMPA[id] || RAMPA[id.replace(/[ab]$/, '')] || TI);
@@ -201,10 +201,10 @@
     frame(dt, zoomW) {
       this.t += dt; const g = this.ctx, sim = this.sim, L = sim.lia, D = this.D;
       this.cam = Math.max(0, Math.min(W - 480, Math.round(sx(L.x) - 240)));
-      g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = '#120d10'; g.fillRect(0, 0, 480, 270); g.save(); g.translate(-this.cam, 0); g.drawImage(this.est, 0, 0);
+      g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = '#120d10'; g.fillRect(0, 0, 480, 270); g.save(); g.translate(-this.cam, 0); g.drawImage(this.sim.normal ? this.estN : this.est, 0, 0);
       const lista = [];
       for (const o of Object.values(sim.OB)) { if (/^F0[1-4]$/.test(o.id)) continue; lista.push([o.y + o.d, 0, o]); }
-      for (const s of sim.IT) { if (s.id === 'E01') continue; if (['E03', 'E04', 'E05', 'E06', 'E07', 'E08', 'E09', 'E02', 'E10', 'E11'].includes(s.id) && !sim.toalha) continue; if (s.id === 'M27') continue; if (s.sup === 'M27' && sim.fasen !== 'C' && sim.fasen !== 'D') continue; const so = sim.OB[s.sup]; lista.push([so ? so.y + so.d + 0.002 + s.y * 1e-4 : s.y + s.d + 0.002, 1, s]); }
+      for (const s of sim.IT) { if (s.id === 'E01') continue; if (sim.normal && (/^E/.test(s.id) || /^(F08|F09|F12|M01|M27)$/.test(s.sup))) continue; if (['E03', 'E04', 'E05', 'E06', 'E07', 'E08', 'E09', 'E02', 'E10', 'E11'].includes(s.id) && !sim.toalha) continue; if (s.id === 'M27') continue; if (s.sup === 'M27' && sim.fasen !== 'C' && sim.fasen !== 'D') continue; const so = sim.OB[s.sup]; lista.push([so ? so.y + so.d + 0.002 + s.y * 1e-4 : s.y + s.d + 0.002, 1, s]); }
       if (sim.toalha) this.toalha(g);
       for (const id in sim.npcs) { const n = sim.npcs[id]; if (n.vis) lista.push([n.state === 'sentado' ? this.keySeat(n) : n.y, 2, n]); }
       lista.push([L.state === 'sentada' ? this.keySeat({ seat: L.seat }) : L.y, 2, L]);

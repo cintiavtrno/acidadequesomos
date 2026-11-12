@@ -9,7 +9,7 @@ Sim.Service = class {
     n.setState('Waiting'); w.bus.emit('fila_entrou', { id: n.id, tam: this.queue.length });
     if (this.queue.length >= 3) w.reage('fila_cheia', n.id, 'fila_cheia');
   }
-  sair(n) { const i = this.queue.indexOf(n.id); if (i >= 0) this.queue.splice(i, 1); if (this.job && this.job.cust === n.id) this.job = null; }
+  sair(n) { if (this.jobLia && this.jobLia.cust === n.id) this.jobLia = null; const i = this.queue.indexOf(n.id); if (i >= 0) this.queue.splice(i, 1); if (this.job && this.job.cust === n.id) this.job = null; }
   cedeVez(a, b, social) {                                                         // b passa à frente de a
     const q = this.queue, ia = q.indexOf(a), ib = q.indexOf(b); if (ia < 0 || ib < 0 || ib < ia || (this.job && this.job.cust === a)) return false;
     q.splice(ib, 1); q.splice(ia, 0, b); this.w.bus.emit('vez_cedida', { de: a, para: b, social: !!social });
@@ -26,12 +26,34 @@ Sim.Service = class {
     const w = this.w, v = w.npcs.aurea;
     this.queue.forEach((id, i) => {                                              // posições e paciência
       const n = w.npcs[id]; if (!n) return;
-      if (n.ses.slotI !== i && !(this.job && this.job.cust === id)) { n.ses.slotI = i; const s = this.slot(i); n.goTo(s[0], s[1], false); }
-      if (this.job && this.job.cust === id) return;
+      const doLia = this.jobLia && this.jobLia.cust === id;
+      if (n.ses.slotI !== i && !(this.job && this.job.cust === id) && !doLia) { n.ses.slotI = i; const s = this.slot(i); n.goTo(s[0], s[1], false); }
+      if ((this.job && this.job.cust === id) || doLia) return;
       if (n.state === 'Waiting') { const mult = n.dialogLia || n.chat ? .4 : (w.vo.ocupadaCom(v) ? 1 : 1.15); n.ses.pat -= dt * mult; if (n.ses.pat <= 0) this.desistir(n); }
     });
-    if (!this.job && this.queue.length && v.state === 'Work' && !v.plan) {      // a Vó chama o primeiro da fila que já chegou ao lugar
-      const n = w.npcs[this.queue[0]]; if (n && n.state === 'Waiting' && !n.path.length && Math.abs(n.x - this.slot(0)[0]) < 3) this.comeca(n, v);
+    this.tickLia(dt);
+    const prox = this.queue.find(id => !(this.jobLia && this.jobLia.cust === id));
+    if (!this.job && prox && v.state === 'Work' && !v.plan) {      // a Vó chama o primeiro da fila que já chegou ao lugar (menos quem a Lia está atendendo)
+      const n = w.npcs[prox]; if (n && n.state === 'Waiting' && !n.path.length && Math.abs(n.x - this.slot(this.queue.indexOf(prox))[0]) < 3) this.comeca(n, v);
+    }
+  }
+  // ---- Lia atende no balcão (PROPOSTA): pega o próximo da fila que a Vó ainda não chamou; 4,6 s: pedido → separar → cobrar
+  podeLia() { for (const id of this.queue) { if (this.job && this.job.cust === id) continue; const n = this.w.npcs[id]; if (n && n.state === 'Waiting' && !n.path.length && n.loc === 'padaria') return n; } return null; }
+  liaAtende() {
+    const n = this.jobLia ? null : this.podeLia(); if (!n) return null; const w = this.w;
+    if (n.dialogLia) w.bus.emit('dialogo_interrompido', { id: n.id });
+    this.jobLia = { cust: n.id, t: 0, stage: 'pedir', dit: false }; n.setState('Ordering'); w.bus.emit('lia_atende', { id: n.id }); return n;
+  }
+  cancelaLia() { const j = this.jobLia; if (!j) return; const n = this.w.npcs[j.cust]; this.jobLia = null; if (n && n.state === 'Ordering' && this.queue.includes(n.id)) { n.setState('Waiting'); n.ses.slotI = -1; } this.w.bus.emit('lia_largou', { id: j.cust }); }
+  tickLia(dt) {
+    const j = this.jobLia; if (!j) return; const w = this.w, n = w.npcs[j.cust];
+    if (!n || n.loc !== 'padaria') { this.jobLia = null; return; }
+    j.t += dt; const p = n.def.pedido;
+    if (j.stage === 'pedir') { if (!j.dit) { j.dit = true; const L = w.dialogue.line(n.id, 'pedido', w.dialogue.ctx(n.id)); if (L) w.dialogue.speak(n, L.texto); } if (j.t > 1.2) { j.stage = 'preparar'; j.t = 0; } }
+    else if (j.stage === 'preparar') { if (j.t > 2.2) { for (const k in p.itens) { const q = Math.min(p.itens[k], this.stock[k]); this.stock[k] -= q; if (q < p.itens[k]) w.bus.emit('falta', { item: k }); } j.stage = 'cobrar'; j.t = 0; this.cobra(n, w.npcs.aurea, true); } }
+    else if (j.stage === 'cobrar' && j.t > 1.2) {
+      this.jobLia = null; this.sair(n); n.ses.served = true; w.stats.servidos++; w.stats.pela_lia = (w.stats.pela_lia || 0) + 1; w.stats.esperas.push(Math.round(w.clock.min - n.ses.filaDesde));
+      w.bus.emit('atendido', { id: n.id, espera: Math.round(w.clock.min - n.ses.filaDesde), por: 'lia' }); n.needs.fome = 0; n.setState('Idle');
     }
   }
   comeca(n, v) {
@@ -61,14 +83,14 @@ Sim.Service = class {
       case 'cobrar': if (j.t > (p.fiado ? 3 : 2)) { this.fim(n, v); } break;
     }
   }
-  cobra(n, v) {
+  cobra(n, v, mudo) {
     const w = this.w, p = n.def.pedido; let val = 0; for (const k in p.itens) val += p.itens[k] * Sim.Data.precos[k];
     if (p.fiado) {
       const f = this.fiado[n.id] = this.fiado[n.id] || { n: 0, valor: 0 }; f.n++; f.valor += val; w.persist.fiado[n.id] = f;
-      w.mem.remember('aurea', 'fiado_' + n.id); const B = w.dialogue.line('aurea', 'balcao', w.dialogue.ctx('aurea', { estado: 'fiado' })); if (B) w.dialogue.speak(v, B.texto);
+      w.mem.remember('aurea', 'fiado_' + n.id); const B = w.dialogue.line('aurea', 'balcao', w.dialogue.ctx('aurea', { estado: 'fiado' })); if (B && !mudo) w.dialogue.speak(v, B.texto);
       w.bus.emit('fiado', { id: n.id, valor: val });
       for (const o of w.mobiles()) if (o !== n && !o.isVo && o.loc === 'padaria' && o.state !== 'Away' && Sim.dist(o, n) < 130 && o.id === 'lucia') { w.mem.remember('lucia', 'viu_fiado', { publico: true }); w.setMood('raimundo', 'constrangido', 50); w.reage('fiado_visto', 'raimundo', 'fiado_visto', 'lucia'); w.bus.emit('fiado_visto', { quem: 'lucia' }); }
-    } else { this.caixa += val; const B = w.dialogue.line('aurea', 'balcao', w.dialogue.ctx('aurea', { estado: 'pago' })); if (B) w.dialogue.speak(v, B.texto); w.bus.emit('pago', { id: n.id, valor: val }); }
+    } else { this.caixa += val; const B = w.dialogue.line('aurea', 'balcao', w.dialogue.ctx('aurea', { estado: 'pago' })); if (B && !mudo) w.dialogue.speak(v, B.texto); w.bus.emit('pago', { id: n.id, valor: val }); }
   }
   fim(n, v) {
     const w = this.w, j = this.job; this.job = null; this.sair(n); n.ses.served = true; w.stats.servidos++; w.stats.esperas.push(j.wait);

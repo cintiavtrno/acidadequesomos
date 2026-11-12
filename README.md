@@ -4,7 +4,7 @@ Jogo de simulação social em pixel art (HTML/canvas, sem dependências), ambien
 Câmera lateral na rua e três-quartos nos interiores.
 
 **Jogar:** abra `index.html` (o mundo conectado: rua, padaria, casa de Seu Raimundo e quintal de Dona Zefa, no dia do caruru, 1994).
-Setas/WASD andam · E interage · B caderninho · clique anda até o ponto · no quintal, 1–5 trocam a fase do dia.
+Setas/WASD andam · E interage (no balcão da padaria, E atende o próximo da fila) · B caderninho · clique anda até o ponto · 07:00→19:00 em ~4 min; o quintal só vira caruru à tarde (12h–19h).
 
 O jogo ocupa 100% da janela mantendo 16:9: resolução lógica 480×270, ampliação inteira por vizinho mais próximo e redução suave final só quando a escala não é inteira (`game/fit.js`).
 

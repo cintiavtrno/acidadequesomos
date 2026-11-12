@@ -24,11 +24,11 @@ BANDEIRA = dict(id='B01', nome='Bandeira de Cosme e Damião (pano pendurado)', x
 BANDEIRA['area'] = (BANDEIRA['x1'] - BANDEIRA['x0']) * (BANDEIRA['z1'] - BANDEIRA['z0'])
 
 # ----------------------------------------------------------------------------- toalha dos sete meninos
-TOALHA = dict(id='E01', cx=9.2, cy=4.0, lado=2.2, buffer=0.4)      # quadrada 2,2 m; faixa de respeito de 0,4 m ao redor
+TOALHA = dict(id='E01', cx=4.9, cy=4.2, lado=3.0, buffer=0.4)      # quadrada 3,0 m, ocupando o chão livre à esquerda; faixa de respeito de 0,4 m ao redor
 TOALHA['x0'], TOALHA['x1'] = TOALHA['cx'] - TOALHA['lado'] / 2, TOALHA['cx'] + TOALHA['lado'] / 2
 TOALHA['y0'], TOALHA['y1'] = TOALHA['cy'] - TOALHA['lado'] / 2, TOALHA['cy'] + TOALHA['lado'] / 2
 import math
-RAIO_RODA, RAIO_PRATO = 0.85, 0.50
+RAIO_RODA, RAIO_PRATO = 1.15, 0.68
 ANG = [-138, -96, -54, 54, 96, 138, 180]       # graus a partir da frente (+Y); roda aberta (lacuna de 108°) voltada para a câmera, escolhida por busca de menor oclusão
 def polar(r, a): return (round(TOALHA['cx'] + r * math.sin(math.radians(a)), 3), round(TOALHA['cy'] + r * math.cos(math.radians(a)), 3))
 MENINOS = ['junior', 'm1', 'm2', 'm3', 'm4', 'm5', 'm6']
@@ -89,7 +89,7 @@ S = [
 # pontos de uso novos (x, y, direção)
 STAND2 = dict(Q.STAND)
 STAND2.update({'F12a': (11.2, 1.32, 'up'), 'F12b': (12.3, 1.32, 'up'), 'F09b': (6.2, 1.3, 'up'),                      # ajuste: lado a lado ao longo do aparador (antes F12a (10,8; 1,55) / F12b (12,2; 1,55))
-               'banner': (10.1, 1.95, 'up'), 'toalha_zefa': (9.2, 5.25, 'up'), 'M27': (17.45, 1.35, 'up'),
+               'banner': (10.1, 1.95, 'up'), 'toalha_zefa': (TOALHA['cx'], TOALHA['y1'] + 0.35, 'up'), 'M27': (17.45, 1.35, 'up'),
                'M09': (18.5, 5.0, 'down')})
 # bandeira: área de interação (Lia olha/examina): faixa em frente ao aparador, a ≤ 2,2 m da parede
 BANNER_VIEW = (9.0, 1.45, 11.3, 2.2)

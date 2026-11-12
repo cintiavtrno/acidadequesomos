@@ -41,7 +41,7 @@ OBJ = [
  ('M05', 'Cadeira fundo 4', 'M', 15.65, 2.7, 0.5, 0.5, 0.9, True, True),
  ('M06', 'Cabeceira oeste', 'M', 10.8, 3.85, 0.5, 0.5, 0.9, True, True),
  ('M07', 'Cabeceira leste', 'M', 16.7, 3.85, 0.5, 0.5, 0.9, True, True),
- ('M08', 'Banco comprido (frente)', 'M', 12.0, 4.7, 3.0, 0.45, 0.45, True, True),
+ ('M08', 'Banco comprido (frente)', 'M', 12.5, 4.7, 3.0, 0.45, 0.45, True, True),
  ('M09', 'Mesinha das crianças', 'M', 17.6, 5.7, 1.8, 0.8, 0.5, True, True),
  ('M10', 'Banquinho crianças 1', 'M', 17.05, 5.75, 0.4, 0.4, 0.3, True, True),
  ('M11', 'Banquinho crianças 2', 'M', 17.05, 6.35, 0.4, 0.4, 0.3, True, True),
@@ -57,7 +57,7 @@ OBJ = [
  ('M27', 'Tabuleiro de Nena (só fase C)', 'M', 17.0, 0.2, 0.9, 0.7, 0.9, True, True),
  # ---- decorativos
  ('D01', 'Vaso em lata (recepção O)', 'D', 0.2, 5.4, 0.4, 0.4, 0.5, True, False),
- ('D02', 'Vaso em lata (recepção L)', 'D', 6.4, 5.6, 0.4, 0.4, 0.5, True, False),
+ ('D02', 'Vaso em lata (parede da cozinha)', 'D', 2.0, 0.2, 0.4, 0.4, 0.5, True, False),
  ('D03', 'Vaso em lata (cozinha)', 'D', 0.2, 4.55, 0.4, 0.4, 0.5, True, False),
  ('D04', 'Vaso em lata (muro)', 'D', 26.8, 0.3, 0.4, 0.4, 0.5, True, False),
 ]
@@ -107,8 +107,8 @@ SEATS = {
  'mesa_cab_L': (16.95, 4.10, 'M07', (18.0, 4.10)),
  'mesa_f1': (12.0, 2.95, 'M02', (12.0, 2.2)), 'mesa_f2': (13.3, 2.95, 'M03', (13.3, 2.2)),
  'mesa_f3': (14.6, 2.95, 'M04', (14.6, 2.2)), 'mesa_f4': (15.9, 2.95, 'M05', (15.9, 2.2)),
- 'banco_1': (12.4, 4.92, 'M08', (12.4, 5.9)), 'banco_2': (13.2, 4.92, 'M08', (13.2, 5.9)),
- 'banco_3': (14.0, 4.92, 'M08', (14.0, 5.9)), 'banco_4': (14.8, 4.92, 'M08', (14.8, 5.9)),
+ 'banco_1': (12.9, 4.92, 'M08', (12.9, 5.9)), 'banco_2': (13.7, 4.92, 'M08', (13.7, 5.9)),
+ 'banco_3': (14.5, 4.92, 'M08', (14.5, 5.9)), 'banco_4': (15.3, 4.92, 'M08', (15.3, 5.9)),
  'cri_1': (17.25, 5.95, 'M10', (16.4, 5.95)), 'cri_2': (17.25, 6.55, 'M11', (16.4, 6.55)),
  'cri_3': (19.75, 5.95, 'M12', (20.6, 5.95)), 'cri_4': (19.75, 6.55, 'M13', (20.6, 6.55)),
  'dom_N': (20.6, 3.35, 'M15', (20.6, 2.5)), 'dom_S': (20.6, 5.35, 'M16', (20.6, 6.2)),
@@ -128,6 +128,7 @@ STAND = {
 }
 # ----------------------------------------------------------------------------- povoamento por fase (x,y m): corpo em pé ou sentado
 FASE = {
+ 'N': {},   # quintal comum: vazio e sem a decoração do caruru (fora do dia/momento do evento)
  'A': {  # preparo (Lia acabou de chegar)
   'lia': (4.5, 7.5, 'pe'), 'zefa': (3.55, 1.25, 'pe'), 'cicera': (5.5, 1.3, 'pe'), 'nonato': (10.0, 5.6, 'pe'), 'ze': (21.5, 3.3, 'pe'), 'junior': (14.0, 7.2, 'pe'),
  },
@@ -156,3 +157,6 @@ ANCORAS = {
  'porta_servico': (8.6, 0.6), 'mesa_oeste': (10.0, 4.1), 'mesa_frente': (13.5, 5.9), 'mesa_leste': (18.0, 4.1), 'criancas': (16.4, 5.95),
  'dominó': (22.5, 4.5), 'cadeira_rita': (24.1, 3.8), 'portao': (26.8, 3.8), 'tabuleiro': (17.5, 1.3),
 }
+
+# o caruru só acontece neste intervalo do relógio (minutos desde 00:00); fora dele o quintal é comum e vazio. PROPOSTA de horários.
+EVENTO = [(720, 'A'), (780, 'B'), (840, 'C1'), (900, 'C'), (990, 'D')]   # 12:00 preparo · 13:00 chegada · 14:00 sete meninos · 15:00 adultos · 16:30 fim de tarde

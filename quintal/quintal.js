@@ -20,7 +20,7 @@
       this.toalha = false; this.fasen = null; this.ocup = {};
       this.lia = { id: 'lia', x: 4.5, y: 7.5, face: 'up', anim: 'idle', state: 'livre', path: [], seat: null, t: 0, vis: true, v: [0, 0] };
       this.npcs = {}; for (const id in D.CH) if (id !== 'lia') this.npcs[id] = { id, x: 0, y: 0, face: 'down', anim: 'idle', state: 'fora', path: [], seat: null, t: 0, vis: false, goal: null, via: null, alvo: null, r: D.CH[id][2] };
-      this.log = []; this.fase('A', true);
+      this.log = []; this.liaPresente = !(typeof window !== 'undefined' && window.MUNDO_ATIVO); this.forcada = false; this.fase(this.faseDoRelogio(), true);
     }
     // grade de distância (m) ao obstáculo mais próximo; bordas do piso bloqueiam, exceto soleira e portão
     grid(c1) {
@@ -88,8 +88,11 @@
     }
     destino(ph, k) { const v = this.D.FASE[ph][k]; if (!v) return null; if (v.length === 1) { const s = this.D.SEATS[v[0]]; return { tipo: 'sentar', seat: v[0], x: s[0], y: s[1], ap: s[3] }; }
       if (v[2] === 'chao') { const c = this.D.TOALHA; return { tipo: 'chao', x: v[0], y: v[1], dir: dir8(c.cx - v[0], c.cy - v[1]) }; } return { tipo: 'pe', x: v[0], y: v[1] }; }
+    // o caruru só acontece no intervalo D.EVENTO do relógio; antes e depois o quintal é comum e vazio ('N')
+    faseDoRelogio() { const m = this.clock.min % 1440; let f = 'N'; for (const [t0, ph] of this.D.EVENTO) if (m >= t0) f = ph; return f; }
     fase(nome, instante) {
-      const D = this.D; this.fasen = nome; this.toalha = nome === 'C1'; this.ocup = {}; this.log.push(['fase', nome]);
+      const D = this.D; this.fasen = nome; this.toalha = nome === 'C1'; this.normal = nome === 'N'; this.ocup = {}; this.log.push(['fase', nome]);
+      if (this.toalha && this.lia.state === 'livre') { const T = D.TOALHA, b = T.buffer + 0.1, L0 = this.lia; if (L0.x > T.x0 - b && L0.x < T.x1 + b && L0.y > T.y0 - b && L0.y < T.y1 + b) { L0.y = T.y1 + b + 0.1; L0.path = []; } }
       const L = this.lia; if (instante) { const f = D.FASE[nome].lia; if (f && f.length === 3) { L.x = f[0]; L.y = f[1]; L.face = 'up'; } }
       for (const id in this.npcs) {
         const n = this.npcs[id], d = this.destino(nome, id); n.seat = null; n.path = []; n.via = null; n.anim = 'idle';
@@ -109,7 +112,7 @@
     rota(n, p) { return this.achar(n.id === 'zefa' ? this.base : this.gridDo(n), [n.x, n.y], p, n.r + 0.03, false); }
     seguir(n, d) {
       n.state = 'andando'; n.chao = false;
-      const ap = d.tipo === 'sentar' ? d.ap : d.tipo === 'chao' ? [9.2, 5.85] : [d.x, d.y];            // meninos entram pelo vão da frente da toalha
+      const ap = d.tipo === 'sentar' ? d.ap : d.tipo === 'chao' ? [this.D.TOALHA.cx, this.D.TOALHA.y1 + 0.45] : [d.x, d.y];            // meninos entram pelo vão da frente da toalha
       n.path = this.rota(n, ap) || []; n.final = d; if (d.tipo === 'chao') n.path.push([d.x, d.y]);
       if (!n.path.length && dist(n.x, n.y, ap[0], ap[1]) > 0.3) n.state = 'preso';
     }
@@ -129,8 +132,8 @@
     candidatos() {
       const L = this.lia, D = this.D, out = [];
       if (L.state === 'sentada') return [{ k: 'levantar', d: 0, label: 'Levantar', run: () => this.levantar() }];
-      for (const k in D.STAND) { if (k === 'portao' || k === 'toalha_zefa' || k === 'banner' || !TXT[k]) continue; const s = D.STAND[k], d = dist(L.x, L.y, s[0], s[1]); if (d < 0.9) out.push({ k: 'obj', id: k, d, label: TXT[k][0], run: () => this.examinar(k) }); }
-      { const v = D.BANNER_VIEW; if (L.x >= v[0] && L.x <= v[2] && L.y >= v[1] && L.y <= v[3] + 0.3) out.push({ k: 'obj', id: 'banner', d: 0.2, label: TXT.banner[0], run: () => this.examinar('banner') }); }
+      for (const k in D.STAND) { if (k === 'portao' || k === 'toalha_zefa' || k === 'banner' || !TXT[k]) continue; if (this.normal && /^(M27|F12[ab])$/.test(k)) continue; const s = D.STAND[k], d = dist(L.x, L.y, s[0], s[1]); if (d < 0.9) out.push({ k: 'obj', id: k, d, label: TXT[k][0], run: () => this.examinar(k) }); }
+      if (!this.normal) { const v = D.BANNER_VIEW; if (L.x >= v[0] && L.x <= v[2] && L.y >= v[1] && L.y <= v[3] + 0.3) out.push({ k: 'obj', id: 'banner', d: 0.2, label: TXT.banner[0], run: () => this.examinar('banner') }); }
       for (const sid in D.SEATS) { if (this.ocup[sid]) continue; const ap = D.SEATS[sid][3], d = dist(L.x, L.y, ap[0], ap[1]); if (d < 0.7) out.push({ k: 'seat', id: sid, d: d + 0.3, label: 'Sentar', run: () => this.sentar(sid) }); }
       for (const id in this.npcs) { const n = this.npcs[id]; if (!n.vis) continue; const d = dist(L.x, L.y, n.x, n.y); if (d < 1.4) out.push({ k: 'npc', id, d: d - 0.4, label: 'Falar com ' + D.CH[id][0].replace(/ \(.*/, ''), run: () => this.falar(id) }); }
       const s = D.STAND.portao, p = D.OPEN.servico; if (dist(L.x, L.y, s[0], s[1]) < 1.2) out.push({ k: 'obj', id: 'portao', d: 1, label: TXT.portao[0], run: () => this.examinar('portao') });
@@ -138,7 +141,7 @@
       return out.sort((a, b) => a.d - b.d);
     }
     acao() { const c = this.candidatos(); if (c.length) { c[0].run(); return c[0]; } return null; }
-    examinar(k) { const L = this.lia, s = this.D.STAND[k]; if (s && k !== 'banner') L.face = s[2] === 'up' ? 'up' : s[2] === 'down' ? 'down' : s[2] === 'left' ? 'left' : 'right'; if (k === 'banner') L.face = 'up'; L.anim = 'interact'; L.fala = 1.1; this.msg = { txt: TXT[k][1], t: 6 }; this.log.push(['examinar', k]); this.viu = this.viu || {}; this.viu[k] = 1; }
+    examinar(k) { const L = this.lia, s = this.D.STAND[k]; if (s && k !== 'banner') L.face = s[2] === 'up' ? 'up' : s[2] === 'down' ? 'down' : s[2] === 'left' ? 'left' : 'right'; if (k === 'banner') L.face = 'up'; L.anim = 'interact'; L.fala = 1.1; this.msg = { txt: (this.normal && TXTN[k]) || TXT[k][1], t: 6 }; this.log.push(['examinar', k]); this.viu = this.viu || {}; this.viu[k] = 1; }
     falar(id) { const n = this.npcs[id], L = this.lia; L.face = dir8(n.x - L.x, n.y - L.y); L.anim = 'talk'; L.fala = 1.2; this.msg = { txt: (this.D.CH[id][0].replace(/ \(.*/, '')) + ': ' + (FALA[id] || '…'), t: 6 }; this.log.push(['falar', id]); }
     sentar(sid) { const s = this.D.SEATS[sid], L = this.lia; L.x = s[0]; L.y = s[1]; L.state = 'sentada'; L.seat = sid; L.anim = 'sit'; L.face = this.seatDir(sid); L.path = []; this.ocup[sid] = 'lia'; this.log.push(['sentar', sid]); }
     levantar() { const L = this.lia, sid = L.seat, ap = this.D.SEATS[sid][3]; L.x = ap[0]; L.y = ap[1]; L.state = 'livre'; L.anim = 'idle'; delete this.ocup[sid]; L.seat = null; }
@@ -146,6 +149,7 @@
     chegar(p) { const L = this.lia, s = this.D.OPEN.soleira; L.x = (s.x0 + s.x1) / 2; L.y = 7.5; L.face = 'up'; L.state = 'livre'; L.path = []; L.anim = 'idle'; }
     update(dt) {
       this.t += dt; this.clock.min += dt * this.clock.rate; this.clock.hh = Math.floor(this.clock.min / 60) % 24; this.clock.mm = Math.floor(this.clock.min % 60);
+      if (!this.forcada) { const ph = this.faseDoRelogio(); if (ph !== this.fasen) this.fase(ph, !this.liaPresente); }
       const L = this.lia; L.t += dt; if (L.fala > 0) { L.fala -= dt; if (L.fala <= 0) { L.fala = 0; if (L.state !== 'sentada') L.anim = 'idle'; } }
       if (this.msg) { this.msg.t -= dt; if (this.msg.t <= 0) this.msg = null; }
       if (L.state === 'livre' && L.path.length && !L.fala) { const p = L.path[0], d = dist(L.x, L.y, p[0], p[1]), sp = 1.27 * dt; L.face = dir8(p[0] - L.x, p[1] - L.y) || L.face; L.anim = 'walk'; if (d <= sp) { L.x = p[0]; L.y = p[1]; L.path.shift(); } else { L.x += (p[0] - L.x) / d * sp; L.y += (p[1] - L.y) / d * sp; } }
@@ -154,6 +158,7 @@
     }
   }
   function dir8(dx, dy) { if (Math.abs(dx) < 1e-6 && Math.abs(dy) < 1e-6) return null; const v = dy < -1e-6 ? 'up' : dy > 1e-6 ? 'down' : '', h = dx < -1e-6 ? 'left' : dx > 1e-6 ? 'right' : ''; if (v && h && Math.abs(dy) > 2.2 * Math.abs(dx)) return v; if (v && h && Math.abs(dx) > 2.2 * Math.abs(dy)) return h; return v && h ? v + '_' + h : (v || h); }
+  const TXTN = { M01: 'Uma mesa comprida de madeira, sem toalha. O quintal está sossegado hoje.', F08: 'O fogão a gás está apagado, com a chaleira em cima.', F09: 'A bancada de preparo está limpa, só com a tábua e a faca guardadas.' };   // PROPOSTA de textos do quintal comum
   const TXT = {
     F07: ['Examinar o panelão de caruru', 'O panelão de caruru ferve em fogo de lenha. O quiabo já soltou o ponto, e o cheiro de dendê e camarão seco toma o quintal.'],
     F08: ['Examinar o fogão', 'No fogão a gás, o vatapá e a caçarola de camarão com dendê estão no fogo baixo, tampados.'],

@@ -7,7 +7,8 @@ def sub(t, old, new, n=1):
     assert t.count(old) >= 1, 'não achei: ' + old[:80]
     return t.replace(old, new, n)
 
-HEAD = """<script>window.MUNDO_ATIVO = true; window.MUNDO_SAIR = function (c) { parent.MUNDO_BRIDGE.sair(c); }; window.MUNDO_ENTRAR = function (c, p) { parent.MUNDO_BRIDGE.entrar(c, p); };
+RATE = '3'   # minutos de jogo por segundo real: 07:00→19:00 em ~4 min (uma partida de ~15 min com 4 épocas). PROPOSTA
+HEAD = """<script>window.MUNDO_ATIVO = true; window.MUNDO_RATE = 3; window.MUNDO_SAIR = function (c) { parent.MUNDO_BRIDGE.sair(c); }; window.MUNDO_ENTRAR = function (c, p) { parent.MUNDO_BRIDGE.entrar(c, p); };
 (function () { var q = location.search; if (/mundo=1/.test(q)) return; })();</script>
 """
 def args(t, extra):  # parâmetros de URL padrão: o srcdoc não tem query; injeta o location.search esperado
@@ -15,11 +16,11 @@ def args(t, extra):  # parâmetros de URL padrão: o srcdoc não tem query; inje
 
 # --- rua
 rua = lerr('balcao_etapa6_rua.html')
-rua = args(rua, '?mundo=1&rate=0.25')
+rua = args(rua, '?mundo=1&rate=' + RATE + '')
 rua = sub(rua, '<head>', '<head>\n' + HEAD)
 # --- padaria: sai pela porta da frente → rua
 pad = lerr('balcao_etapa4_simulacao.html')
-pad = args(pad, '?s=interior&rate=0.25&mundo=1')
+pad = args(pad, '?s=interior&rate=' + RATE + '&mundo=1')
 pad = sub(pad, "if (p.y > YF - 1 && Math.abs(p.x - EXIT_X) <= 24) startFade('street');",
           "if (p.y > YF - 1 && Math.abs(p.x - EXIT_X) <= 24) { if (window.MUNDO_ATIVO) { p.y = YF - 14; p.tx = null; p.ty = null; p.path = []; p.goal = null; window.MUNDO_SAIR('padaria'); } else startFade('street'); }")
 pad = sub(pad, 'window.BALCAO = {', "window.MUNDO_LIA = function () { S.scene = 'interior'; S.p.x = EXIT_X; S.p.y = YF - 12; S.p.dir = 'u'; S.p.face = 'up'; S.p.tx = null; S.p.ty = null; S.p.path = []; S.p.goal = null; try { if (D.open) closeDialog(); } catch (e) { } snapCamera(); };\nwindow.BALCAO = {")
@@ -30,7 +31,7 @@ qui = lerr('balcao_etapa8_quintal.html')
 qui = sub(qui, '<head>', '<head>\n' + HEAD)
 # --- casa: desce a escada → rua
 casa = lerr('balcao_etapa5_casa.html')
-casa = args(casa, '?rate=0.25&mundo=1')
+casa = args(casa, '?rate=' + RATE + '&mundo=1')
 casa = re.sub(r"if \(p\.y > YF - 1 && Math\.abs\(p\.x - EXIT_X\) <= 24\) \{ p\.y = YF - 14; p\.tx = null; p\.ty = null; p\.path = \[\]; p\.goal = null; say\('A escada desce para a rua[^\n]*?\); \}",
               "if (p.y > YF - 1 && Math.abs(p.x - EXIT_X) <= 24) { p.y = YF - 14; p.tx = null; p.ty = null; p.path = []; p.goal = null; if (window.MUNDO_ATIVO) window.MUNDO_SAIR('casa'); else say('A escada desce para a rua.', 5); }", casa, count=1)
 assert 'MUNDO_SAIR' in casa, 'gancho da casa não aplicado'

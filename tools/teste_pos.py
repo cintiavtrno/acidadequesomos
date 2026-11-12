@@ -63,7 +63,7 @@ check('2e. Lia alcança o ponto de examinar a bandeira (sem entrar em zona de re
 Tt = P.TOALHA
 over = [o[0] for o in Q.OBJ if o[0] not in ('F01','F02','F03','F04') and orect(o)[0] < Tt['x1'] + Tt['buffer'] and orect(o)[2] > Tt['x0'] - Tt['buffer'] and orect(o)[1] < Tt['y1'] + Tt['buffer'] and orect(o)[3] > Tt['y0'] - Tt['buffer']]
 check('3a. nenhum objeto aprovado (mesa, cadeira, banco, móvel) dentro da toalha nem da faixa de respeito de 0,4 m', not over, over)
-check('3b. toalha dentro do piso, à direita do puxadinho (X≥7,6) e sem tocar o esteio F06', Tt['x0'] >= 7.6 + 0.4 and Tt['y1'] <= Q.D)
+check('3b. toalha dentro do piso, no chão livre à esquerda (sem tocar tanque, fogão, bancada ou talha, y≥2,5 m)', Tt['x0'] >= 1.0 and Tt['y0'] >= 2.5 and Tt['y1'] <= Q.D)
 d = [math.hypot(P.ROD[a][0] - P.ROD[b][0], P.ROD[a][1] - P.ROD[b][1]) for i, a in enumerate(P.MENINOS) for b in P.MENINOS[i + 1:]]
 check(f'3c. sete meninos em roda: menor distância entre dois meninos {min(d):.2f} m (≥ 0,55 m)', len(P.MENINOS) == 7 and min(d) >= 0.55, round(min(d), 2))
 inside = all(Tt['x0'] + 0.25 <= p[0] <= Tt['x1'] - 0.25 and Tt['y0'] + 0.25 <= p[1] <= Tt['y1'] - 0.25 for p in P.ROD.values())
