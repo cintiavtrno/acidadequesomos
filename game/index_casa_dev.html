@@ -1846,13 +1846,39 @@ RD.agenda = {
 // ---- agenda do MUNDO INTEGRADO (Etapa 7): quem entra na padaria só sai quando a simulação da padaria liberar; Raimundo só sai de casa quando a casa liberar ----
 // `aguarda` = chave de liberação (casa | padaria). O resto é a agenda aprovada da Etapa 6. Lúcia ganha uma visita à padaria (08:24) depois de medir a fachada.
 RD.visitas = { raimundo: [14, 20], dandara: [30, 40], lucia: [9, 13] };
+// Tarde (12h–19h). Em 1991 a rua segue viva: quem foi para casa volta, a mesa de dominó reabre e Dandara e Lúcia passam na padaria.
+// Em 1994 o elenco está no caruru da Dona Zefa (quintal), então sai da rua a tempo de chegar lá e não volta: ninguém aparece em dois ambientes.
+// `aguarda` = só sai quando o outro ambiente liberar (padaria ou casa).
+const SPOTS_J = ['gato', 'v2', 'obs_2', 'rua_2', 'poste_1', 'v4', 'sombra_oiti', 'rua_3', 'obs_3'];
+const SPOTS_TONHO = ['v6', 'v5', 'v4', 'v3', 'obs_2', 'v2', 'v1', 'obs_1', 'sombra_oiti', 'v6'];
+RD.tarde = {
+  1991: {
+    raimundo: [A('15:00', 'sair', { porta: 'porta_sobrado', aguarda: 'casa' }), A('15:01', 'sentar', { assento: 'E' }), A('17:30', 'levantar'), A('17:30', 'ir', { spot: 'porta_sobrado' }), A('17:32', 'entrar', { porta: 'porta_sobrado' })],
+    ze:       [A('17:40', 'levantar'), A('17:41', 'ir', { spot: 'porta_b0' }), A('17:43', 'entrar', { porta: 'porta_b0' })],
+    nonato:   [A('14:30', 'sair', { porta: 'porta_verde' }), A('14:31', 'sentar', { assento: 'F' }), A('17:20', 'levantar'), A('17:20', 'ir', { spot: 'porta_verde' }), A('17:22', 'entrar', { porta: 'porta_verde' })],
+    cicera:   [A('14:40', 'sair', { porta: 'porta_b5' }), A('14:41', 'ir', { spot: 'obs_2' }), A('14:43', 'sentar', { assento: 'T' }), A('17:00', 'levantar'), A('17:01', 'ir', { spot: 'porta_b5' }), A('17:03', 'entrar', { porta: 'porta_b5' })],
+    junior:   [A('14:00', 'patrulha', { spots: SPOTS_J, ate: T('18:30') }), A('18:31', 'ir', { spot: 'porta_b5' }), A('18:33', 'entrar', { porta: 'porta_b5' })],
+    tonho:    [A('14:10', 'sair', { porta: 'borda_D' }), A('14:11', 'patrulha', { spots: SPOTS_TONHO, ate: T('18:00'), vende: true }), A('18:01', 'ir', { spot: 'borda_E' }), A('18:03', 'entrar', { porta: 'borda_E' })],
+    dandara:  [A('14:20', 'sair', { porta: 'borda_E' }), A('14:21', 'ir', { spot: 'obs_2' }), A('14:22', 'olhar_mesa', { dur: 8 }), A('14:35', 'ir', { spot: 'porta_padaria' }), A('14:36', 'entrar', { porta: 'porta_padaria', dur: 34 }),
+               A('15:15', 'sair', { porta: 'porta_padaria', aguarda: 'padaria' }), A('15:16', 'ir', { spot: 'quadro' }), A('15:17', 'esperar', { dur: 4, anim: 'interact' }), A('15:25', 'ir', { spot: 'borda_E' }), A('15:40', 'entrar', { porta: 'borda_E' })],
+    lucia:    [A('15:30', 'sair', { porta: 'borda_D' }), A('15:31', 'ir', { spot: 'fachada_azul' }), A('15:32', 'esperar', { dur: 9, anim: 'interact' }), A('15:45', 'ir', { spot: 'porta_padaria' }), A('15:46', 'entrar', { porta: 'porta_padaria' }),
+               A('16:05', 'sair', { porta: 'porta_padaria', aguarda: 'padaria' }), A('16:06', 'sentar', { assento: 'banco_a' }), A('17:10', 'levantar'), A('17:11', 'ir', { spot: 'orelhao' }), A('17:12', 'esperar', { dur: 4, anim: 'talk' }), A('17:20', 'ir', { spot: 'borda_D' }), A('17:40', 'entrar', { porta: 'borda_D' })],
+  },
+  1994: {
+    raimundo: [A('12:45', 'sair', { porta: 'porta_sobrado', aguarda: 'casa' }), A('12:46', 'ir', { spot: 'porta_lateral' }), A('12:50', 'entrar', { porta: 'porta_lateral' })],
+    ze:       [A('11:50', 'levantar'), A('11:51', 'ir', { spot: 'porta_b0' }), A('11:53', 'entrar', { porta: 'porta_b0' })],
+    junior:   [A('11:51', 'ir', { spot: 'porta_b5' }), A('11:53', 'entrar', { porta: 'porta_b5' })],
+  },
+};
 RD.agendaMundo = () => {
   const ag = JSON.parse(JSON.stringify(RD.agenda));
+  const ano = (typeof window !== 'undefined' && window.MUNDO_ANO === 1994) ? 1994 : 1991;
   const sairPad = i => Object.assign({}, i, { aguarda: 'padaria' });
   ag.raimundo = ag.raimundo.map(t => t.tipo === 'sair' && t.porta === 'porta_sobrado' ? Object.assign({}, t, { aguarda: 'casa' }) : t.tipo === 'sair' && t.porta === 'porta_padaria' ? sairPad(t) : t);
   ag.dandara = ag.dandara.map(t => t.tipo === 'sair' && t.porta === 'porta_padaria' ? sairPad(t) : t);
   const k = ag.lucia.findIndex(t => t.tipo === 'ir' && t.spot === 'fachada_sobrado');
   ag.lucia.splice(k, 0, A('08:24', 'ir', { spot: 'porta_padaria' }), A('08:24', 'entrar', { porta: 'porta_padaria' }), A('08:25', 'sair', { porta: 'porta_padaria', aguarda: 'padaria' }));
+  const tarde = RD.tarde[ano]; for (const id in tarde) ag[id] = ag[id].concat(tarde[id].map(t => Object.assign({}, t)));
   return ag;
 };
 

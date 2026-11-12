@@ -18,4 +18,6 @@ O jogo ocupa 100% da janela mantendo 16:9: resolução lógica 480×270, amplia�
 
 Reconstruir: `sh tools/build_all.sh`. Ele monta padaria, casa, rua, quintal e o mundo, e grava o resultado em `game/balcao_etapa7_mundo.html` **e em `index.html`**. O `index.html` é o jogável, então depois de mexer em qualquer arquivo de `sim/`, `mundo/`, `quintal/`, `game/*template*` ou `assets/`, rode o build antes de subir.
 
-Dia: 07:00 às 19:00 em todos os ambientes (a padaria não fecha antes). Às 19:00 o shell encerra o dia: se a meta da fase foi cumprida, segue a fase; se não, "Recomeçar o dia" volta de manhã mantendo as anotações.
+Dia: 07:00 às 19:00 em todos os ambientes (a padaria não fecha antes). Às 19:00 o shell encerra o dia. Com a meta da fase cumprida, o jogo segue para a próxima. Sem ela, "Recomeçar o dia" volta para a manhã e mantém as anotações.
+
+Tarde (12h–19h): em 1991 o elenco volta à rua, a mesa de dominó reabre e Dandara e Lúcia passam na padaria. Seu Raimundo sai de casa de novo às 15h. Em 1994 todos vão ao caruru no quintal e a rua fica vazia depois das 13h. A agenda está em `RD.tarde` (`sim/s13_rua_data.js`).

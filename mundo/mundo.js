@@ -193,10 +193,13 @@
     },
     casa(Sim, sim, ui) {
       const R = sim.npcs.raimundo; R.sai = 423; R.volta = 630; sim.mundoAguarda = true; sim.mundoLibera = false;   // sai às 07:03 e só volta quando a rua entregar (volta=630 só alimenta o texto)
+      sim.bus.on('saiu_casa', () => { sim.mundoLibera = false; });   // saiu de novo: a casa espera a rua entregar
       const orig = Sim.HomeStates.Away; Sim.HomeStates.Away = function (n, w, dt) { if (w.mundoAguarda && !w.mundoLibera) return; return orig.call(this, n, w, dt); };
       return {
         sim, ui, step(dt) { sim.update(dt); },
-        receberVolta() { sim.mundoLibera = true; R.volta = sim.clock.min; R.ses.saiu = true; },
+        receberVolta() {   // volta da manhã (~10:00). À tarde ele sai de novo: 15:00 para o dominó (1991) ou 12:45 para o caruru (1994)
+          sim.mundoLibera = true; R.volta = sim.clock.min; const so = (root && root.MUNDO_ANO === 1994) ? 765 : 900; R.ses.saiu = sim.clock.min >= so; R.sai = so;
+        },
         liaSai() { ui && ui.liaSaiu && ui.liaSaiu(); }, liaChega() { sim.lia.x = 240; sim.lia.y = 222; ui && ui.liaChega && ui.liaChega(); },
       };
     },
