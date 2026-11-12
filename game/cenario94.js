@@ -54,8 +54,8 @@ const C94 = (() => {
     const X = '#d9531e'; for (let i = 0; i < 16; i++) { px(c, 196 + i, 150 + i, 2, 2, X); px(c, 211 - i, 150 + i, 2, 2, X); }
     [[199, 167, 4], [206, 166, 6], [209, 168, 3]].forEach(([x, y, h]) => px(c, x, y, 1, h, X));
     // — padaria (x 290–650): plaquinha em português e inglês ao lado do arco
-    px(c, 413, 159, 23, 22, 'rgba(40,20,20,.25)'); px(c, 412, 157, 23, 22, '#e9e2cf'); px(c, 413, 158, 21, 20, '#2f5d8c');
-    txt(c, 'BREAD', 415, 161, '#f3eee0'); px(c, 415, 168, 17, 1, '#d8b24a'); txt(c, 'PÃO', 418, 174, '#f3eee0');
+    px(c, 413, 159, 27, 28, 'rgba(40,20,20,.25)'); px(c, 412, 157, 27, 28, '#e9e2cf'); px(c, 413, 158, 25, 26, '#2f5d8c');
+    txt(c, 'BREAD', 416, 162, '#f3eee0'); px(c, 417, 169, 19, 1, '#d8b24a'); txt(c, 'PÃO', 420, 177, '#f3eee0');
     // — associação (x 650–810): faixa de pano esticada entre as janelas
     px(c, 663, 115, 144, 17, 'rgba(30,20,30,.20)');
     px(c, 662, 114, 144, 16, '#eee8d6'); px(c, 662, 114, 144, 1, '#fffdf2'); px(c, 662, 129, 144, 1, '#cbc3ae');
@@ -81,8 +81,8 @@ const C94 = (() => {
   // ---------------------------------------------------------------- PADARIA (interior 480×270), por cima da parede
   function padaria(c) {
     // plaqueta em inglês e português sob o quadro do fiado (quadro: x 205–231, y 55–84)
-    px(c, 208, 88, 31, 19, '#e9e2cf'); px(c, 209, 89, 29, 17, '#2f5d8c');
-    txt(c, 'BREAD', 214, 92, '#f3eee0'); px(c, 214, 99, 19, 1, '#d8b24a'); txt(c, 'PÃO', 221, 103, '#f3eee0');
+    px(c, 208, 88, 31, 23, '#e9e2cf'); px(c, 209, 89, 29, 21, '#2f5d8c');
+    txt(c, 'BREAD', 214, 92, '#f3eee0'); px(c, 214, 98, 19, 1, '#d8b24a'); txt(c, 'PÃO', 218, 104, '#f3eee0');
     px(c, 206, 87, 2, 2, '#caa84a'); px(c, 239, 87, 2, 2, '#caa84a');
     // aviso do aluguel novo, colado por dentro da vidraça da janela (vidraça: x 238–273, y 61–101)
     px(c, 241, 86, 30, 15, '#f1ebdb'); px(c, 241, 86, 30, 1, '#fffdf4'); px(c, 241, 100, 30, 1, '#cfc7b3');
