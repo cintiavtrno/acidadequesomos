@@ -185,7 +185,7 @@
       B: 'Trouxe o cesto de pães. Deixei o balcão sem ninguém pra vir, então hoje quem passa lá espera até amanhã. Hoje o dia é da Zefa.',
       C1: 'Primeiro as crianças, na toalha. Sete pratos pra conferir, Lia. Vai com a Zefa, que eu cuido do pão.',
       C: 'Come primeiro, menina. Depois eu te peço uma coisa, baixinho.',
-      D: 'A mesa já foi e agora a conversa vai para o Programa. Eu escuto mais do que falo. Se quiser saber, chegue perto da Dandara e da Zefa e fique quieta.',
+      D: 'A mesa já foi e agora a conversa vai para o Programa. Eu escuto mais do que falo. Chega perto da Zefa e da Dandara e repara em quem discorda.',
       N: 'Esta é a casa da Zefa. Hoje o dia é dela.',
     },
     zefa: {
@@ -193,14 +193,14 @@
       B: 'Pode entrar. Hoje a casa é de quem chegar.',
       C1: 'Primeiro as crianças, na toalha. Depois os grandes.',
       C: 'A mesa está posta. Come, que a conversa vem depois.',
-      D: 'O prato foi, a conversa ficou. Senta onde quiser.',
+      D: 'O prato foi e a conversa ficou. Senta onde quiser. Hoje a gente fala do Programa, e eu tenho o que dizer a favor dele.',
       N: 'Hoje o quintal está quieto.',
     },
   };
   const falaDe = (id, fase) => { const p = POR_FASE[id]; return (p && (p[fase] || p.N)) || FALA[id] || '…'; };
-  const FALA = { zefa: 'Hoje a casa é de quem chegar. Primeiro as crianças, depois os grandes.', aurea: 'Hoje o dia é da Zefa.', raimundo: 'Caruru bom é o que junta gente.', dandara: 'Depois a gente conversa sobre o bairro, com calma.',
+  const FALA = { zefa: 'Hoje a casa é de quem chegar. Primeiro as crianças, depois os grandes.', aurea: 'Hoje o dia é da Zefa.', raimundo: 'Caruru bom é o que junta gente. Anda faltando gente na rua.', dandara: 'Depois do prato a gente conversa sobre a lista, com calma.',
     ze: 'Vem, Lia, aprender a contar até seis.', nonato: 'Carreguei a mesa sozinho. Depois do prato, é dominó.', bela: 'Eu fico vendo a porta e o quintal.', cicera: 'Cadê o Júnior? Esse menino some.', junior: 'Eu sei um segredo do quintal!',
-    tonho: 'Trouxe cocada. Onde eu ponho?', nena: 'Acarajé é de tarde, minha filha.', davi: 'Se me chamarem, eu toco baixinho.', lucia: 'Vim só acompanhar. Já já eu vou.', rita: 'Meu telhado precisa mesmo de conserto, viu?',
+    tonho: 'Trouxe cocada. Onde eu ponho?', nena: 'Acarajé é de tarde, minha filha.', davi: 'Se me chamarem, eu toco baixinho.', lucia: 'Vim acompanhar. Já já eu vou, que tenho ficha para fechar.', rita: 'Meu telhado precisa de conserto e dizem que não pode.',
     caio: 'Eu e Bia ajudamos na padaria. Sobra sempre um pão pra mim.', bia: 'Dona Áurea me ensinou a sovar.' };
   for (let i = 1; i <= 6; i++) FALA['m' + i] = ['Posso comer já?', 'Hmm, que cheiro!', 'Cadê meu prato?', 'Eu quero banana!', 'Tá quente?', 'Eu já lavei a mão.'][i - 1];
   Q.Sim = Sim; Q.TXT = TXT; Q.dir8 = dir8;

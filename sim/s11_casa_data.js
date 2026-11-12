@@ -158,3 +158,23 @@ Sim.Casa.install = function () {
   Object.assign(Sim.Data.objetos, C.objetos);
   Sim.Data.cfgCasa = true;
 };
+
+// ---- 1994 na casa: o aviso está na mesa, a mala já está feita e o sobrado está em risco. Proposta; revisar. ----
+Sim.Casa.virar94 = function () {
+  if (Sim.Casa._v94) return; Sim.Casa._v94 = true;
+  const C = Sim.Data.casa, P = C.falas.perguntar;
+  P.rua = [F('rc_pr0', 'Daqui de cima a rua parece parada. Por baixo tem porta fechando toda semana.'), F('rc_pr1', 'Todo mês alguém sai e não volta. Uns vão para longe com o dinheiro da indenização, outros vão para o papel.', { conf: [2, 3] })];
+  P.programa = [F('rc_pp0', 'Já passou da medida. Agora tem aviso, tem marca na parede e homem de prancheta me olhando como quem já sabe a resposta.', {}, { revisar: true }), F('rc_pp1', 'Dizem que o turista vai encher a rua e pagar a conta de todo mundo. Nunca vi turista pedir fiado.', { conf: [2, 3] }, { revisar: true })];
+  P.papel = [F('rc_pa0', 'Papel? É o aviso que está na mesa, dobrado. Diz que a casa corre risco. Corre desde que não me deixaram mexer no telhado.', {}, { revisar: true })];
+  P.assinar = [F('rc_pg0', 'Assinar a saída? Ainda não. Me deram prazo e eu estou usando o prazo inteiro.')];
+  C.asks.programa = 'Seu Raimundo, vi uma marca na parede da frente. O Programa passou por aqui?';
+  C.asks.papel = 'Que papel é esse dobrado na mesa?';
+  C.asks.assinar = 'O senhor vai assinar a indenização?';
+  C.rotulos.programa = 'A marca na parede'; C.rotulos.papel = 'O papel na mesa'; C.rotulos.assinar = 'A indenização';
+  C.cena.opcoes.programa.t = 'O papel na mesa é do Programa?';
+  C.cena.opcoes.programa.linhas = [{ quem: 'lia', texto: 'O papel na mesa é do Programa?' }, { quem: 'raimundo', texto: 'É o aviso. Diz que o sobrado está em risco. Está mesmo, porque faz anos que me negam licença para o telhado. Me oferecem dinheiro e uma casa longe daqui. Eu ainda não assinei.' }];
+  C.objetos.mesa_1.texto = () => 'Mesa de toalha branca posta para um. Ao lado do açucareiro, dobrado em quatro, o aviso do Programa com carimbo e data.';
+  C.objetos.sacola_1.texto = () => 'A sacola de pano remendada, no prego. No chão, embaixo dela, uma mala fechada com cordão. Ninguém tirou nada do lugar, mas tudo está pronto para sair.';
+};
+if (typeof window !== 'undefined' && window.MUNDO_ANO === 1994) Sim.Casa.virar94();
+

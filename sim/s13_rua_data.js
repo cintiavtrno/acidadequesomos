@@ -121,6 +121,7 @@ RD.agendaMundo = () => {
   ag.dandara = ag.dandara.map(t => t.tipo === 'sair' && t.porta === 'porta_padaria' ? sairPad(t) : t);
   const k = ag.lucia.findIndex(t => t.tipo === 'ir' && t.spot === 'fachada_sobrado');
   ag.lucia.splice(k, 0, A('08:24', 'ir', { spot: 'porta_padaria' }), A('08:24', 'entrar', { porta: 'porta_padaria' }), A('08:25', 'sair', { porta: 'porta_padaria', aguarda: 'padaria' }));
+  if (ano === 1994 && RD.virar94) RD.virar94();
   const tarde = RD.tarde[ano]; for (const id in tarde) ag[id] = ag[id].concat(tarde[id].map(t => Object.assign({}, t)));
   return ag;
 };
@@ -312,3 +313,111 @@ Sim.Rua.D.gates = {
   },
 };
 Sim.Rua.D.dicaSemAssunto = 'Você ainda não tem um motivo para puxar esse assunto. Observe a rua, examine o que há por perto, e volte.';
+
+// ================================================================ 1994
+// 1992–1995: o Programa acelera (obra pesada, casa interditada, moradores saindo). Em 1991 a rua só recebe a notícia; em 1994 ela já mostra o efeito.
+// A aposta desta etapa: turistas do Brasil e de fora sustentariam o comércio local sozinhos. As falas daqui são proposta de texto e passam por revisão cultural/histórica.
+Sim.Rua.D.virar94 = () => {
+  const RD = Sim.Rua.D; if (RD._v94) return; RD._v94 = true;
+  if (Sim.Social && Sim.Social.virar94) Sim.Social.virar94();
+  const F = RD.falas, G = RD.gates;
+  const abre = (id, topicos, label, ask, quando) => { G[id] = G[id] || {}; G[id][topicos] = { label, quando: quando || [], ask }; };
+  RD.kpRev = {};
+  const kp = (id, titulo, texto, rev) => { RD.kp[id] = [titulo, texto]; if (rev) RD.kpRev[id] = 1; };
+  // ---- anotações 1994 (substituem as de 1991 que não valem mais) ----
+  ['kp_ray_sobrado', 'kp_rua_olhar', 'kp_programa', 'kp_lucia_programa', 'kp_obra_tijolo'].forEach(k => delete RD.kp[k]);
+  kp('kp_94_ray_aviso', 'O aviso na porta', 'Colaram um aviso na porta do sobrado de Seu Raimundo: a casa está em risco. Ele recebeu oferta de indenização e de uma casa longe do centro, e ainda não assinou.', true);
+  kp('kp_94_ray_vazias', 'As casas da rua de cima', 'Quem aceitou a indenização foi para o subúrbio. A rua de cima está quase toda fechada e quase ninguém volta para jogar dominó.', true);
+  kp('kp_94_ray_marca', 'A marca de tinta', 'O sobrado de Seu Raimundo foi marcado com um X de tinta laranja pelos técnicos da obra.', true);
+  kp('kp_94_ze_foto', 'A cadeira que vira foto', 'Na barbearia entra turista para fotografar a cadeira. Corte mesmo, só os de sempre, e esses estão saindo da rua.', true);
+  kp('kp_94_nonato_obra', 'Obra por empreita', 'Nonato trabalha por empreita nas obras do Programa. Levanta a parede de uma casa cujos donos já saíram. Recebe por semana e o contrato acaba com a fachada.', true);
+  kp('kp_94_bela_freguesas', 'As freguesas que saíram', 'Dona Bela perdeu metade da freguesia de costura com as mudanças. Entrega de ônibus e a passagem come o ganho.', true);
+  kp('kp_94_rua_olhar', 'Câmera na janela', 'Turistas fotografam as janelas das casas onde as pessoas moram. Dona Bela ainda não decidiu se sorri ou fecha a janela.', true);
+  kp('kp_94_cicera_varal', 'O varal mais curto', 'Dona Cícera lava para a metade da rua que lavava antes. Duas casas vizinhas ficaram vazias.');
+  kp('kp_94_junior_casa', 'A casa fechada', 'Júnior entra pela janela de uma casa fechada da esquina. Ficaram uma cadeira, um prato na pia e um calendário na parede.');
+  kp('kp_94_junior_foto', 'A foto com o gato', 'Um turista deu uma moeda a Júnior para ele aparecer em uma foto ao lado do gato.');
+  kp('kp_94_tonho_turista', 'Turista só no fim de semana', 'Tonho vende o dobro no sábado e no domingo, quando chegam os ônibus de turistas. De terça a quinta, quase nada.', true);
+  kp('kp_94_programa', 'Da pintura à remoção', 'Dandara conta que o Programa começou com pintura e conserto e agora tem obra pesada, casa interditada e gente indo embora.', true);
+  kp('kp_94_lucia_ficha', 'A ficha vira valor', 'Lúcia agora faz a ficha de cada casa. A ficha alimenta o cadastro, e o cadastro define o valor da indenização.', true);
+  kp('kp_94_lucia_aposta', 'A aposta no turista', 'O Programa apostava que turistas do Brasil e de fora sustentariam o comércio da rua sozinhos. Lúcia escreveu no relatório que ainda é cedo para saber.', true);
+  kp('kp_94_lucia_evento', 'Conversa de corredor', 'No órgão do Programa já se fala em festas e shows para trazer moradores de Salvador para a região. Ainda não há plano escrito.', true);
+  kp('kp_associacao', 'A associação', 'A associação confere quem recebeu aviso, quem aceitou indenização e quem ainda mora na casa.');
+  kp('kp_obj_quadro', 'O quadro de avisos', 'O quadro tem a convocação da reunião de sábado e uma lista das casas que receberam aviso.');
+  kp('kp_obj_obra', 'Tijolos e sacos de cimento', 'A pilha de material é da empreiteira que trabalha no casarão da esquina.');
+  kp('kp_94_obj_aviso', 'O papel da vistoria', 'O aviso colado no sobrado fala em vistoria, risco e prazo para desocupar. Tem carimbo e data.', true);
+  kp('kp_94_obj_tapume', 'A casa tapada', 'A casa verde está com a porta e a janela baixa tapadas com tábua. O andaime sobe pela fachada inteira.');
+  kp('kp_94_obj_placa', 'A placa da obra', 'A placa no andaime anuncia obra do Programa de Recuperação, com a data de 1994.');
+  kp('kp_94_obj_faixa', 'Aqui mora gente', 'A associação pendurou na fachada uma faixa com a frase AQUI MORA GENTE.');
+  kp('kp_94_obj_turista', 'A placa em inglês', 'A padaria ganhou uma placa pequena em português e em inglês, para quem vem de fora.');
+  RD.kpObj94 = { aviso_sobrado: 'kp_94_obj_aviso', marca_sobrado: 'kp_94_ray_marca', tapume_verde: 'kp_94_obj_tapume', placa_obra: 'kp_94_obj_placa', faixa_assoc: 'kp_94_obj_faixa', placa_padaria: 'kp_94_obj_turista' };
+  // ---- falas e assuntos ----
+  const eu = (id, saudar, ouvir, perguntar, ordem) => { F[id].saudar = saudar; F[id].ouvir = ouvir; Object.keys(F[id].perguntar).forEach(t => { if (t !== 'jogo' && t !== 'lia_jogar' && t !== 'gato') delete F[id].perguntar[t]; if (G[id]) { if (t !== 'jogo' && t !== 'lia_jogar' && t !== 'gato') delete G[id][t]; } }); Object.assign(F[id].perguntar, perguntar); };
+  eu('raimundo', ['Lia. Senta aí. O jogo anda com pouca gente, o Zé até parou de reclamar.', 'Ô, Lia. Já viu o que colaram na minha porta?'],
+    ['(Seu Raimundo olha a porta do sobrado e depois as pedras, sem jogar nenhuma.)', '(Ele passa o polegar na pedra devagar. Faz tempo que não joga a próxima.)'], {
+      sobrado: [{ t: 'Colaram esse aviso na porta no mês passado. Diz que o sobrado corre risco de desabar, e corre mesmo, porque faz anos que não me deixam mexer no telhado. Me ofereceram indenização e uma casa longe daqui. Eu ainda não assinei.', kp: 'kp_94_ray_aviso', revisar: true }],
+      rua: [{ t: 'A rua de cima já está quase toda fechada. Quem aceitou o dinheiro foi para o subúrbio, e de lá ninguém vem jogar dominó.', kp: 'kp_94_ray_vazias', revisar: true },
+            { t: 'Os rapazes da obra me chamam de seu Raimundo e eu fico quieto. Eles marcaram a minha parede com um X de tinta. Fizeram isso sem bater na porta.', conf: [1, 3], revisar: true }],
+    });
+  abre('raimundo', 'sobrado', 'O aviso na porta', 'Seu Raimundo, que papel é esse na porta do sobrado?');
+  abre('raimundo', 'rua', 'A rua de cima', 'Seu Raimundo, a rua de cima está tão vazia. O que aconteceu?');
+  eu('ze', ['Bom dia, menina. Chegou cedo para o caruru da Zefa? Senta um minuto.', 'Lia! Vai na frente, que eu vou depois, quando a cadeira esfriar.'],
+    ['(Seu Zé olha a rua, vê gente de câmera e passa um tempo sem falar.)'], {
+      barbearia: [{ t: 'Entra turista para tirar foto da cadeira. Pergunta se pode sentar, senta, agradece e sai. Corte mesmo, só os de sempre, e esses estão saindo da rua.', kp: 'kp_94_ze_foto', revisar: true }],
+    });
+  abre('ze', 'barbearia', 'A barbearia', 'Seu Zé, o movimento da barbearia melhorou com os turistas?');
+  eu('nonato', ['E aí, Lia! A mão tá boa, mas o tempo tá curto. A empreita não espera.'], ['(Nonato bate a pedra e olha o relógio de novo.)'], {
+      obra: [{ t: 'Peguei empreita nas obras do Programa. Levanto parede de casa que o dono já deixou. Pagam por semana e o contrato vai até o fim da fachada. Depois não sei.', kp: 'kp_94_nonato_obra', revisar: true }],
+    });
+  abre('nonato', 'obra', 'A obra', 'Nonato, essa obra da esquina é a que você pegou?');
+  eu('bela', ['Bom dia, Lia. Senta direito. A rua anda quieta e eu não gosto de rua quieta.'], ['(Dona Bela confere cada pedra duas vezes e olha a janela do alto.)'], {
+      costura: [{ t: 'Costuro para muita gente que morava aqui. Metade da freguesia foi para longe, uma atrás da outra. Entrego de ônibus, e a passagem come o ganho da bainha.', kp: 'kp_94_bela_freguesas', revisar: true }],
+      rua: [{ t: 'Turista fotografa a janela da minha casa. Eu fico sem saber se sorrio ou fecho a janela.', kp: 'kp_94_rua_olhar', revisar: true }],
+    });
+  abre('bela', 'costura', 'A costura', 'Dona Bela, as suas freguesas ainda moram por aqui?');
+  abre('bela', 'rua', 'Gente de fora', 'Dona Bela, o que a senhora acha dessa gente de câmera na rua?', ['apos:bela:costura']);
+  eu('cicera', ['Bom dia, Lia. Vem esticar esse lençol. O varal tá mais vazio que ano passado.'], ['(Cícera prende uma toalha e conta as casas da frente com o olhar.)'], {
+      varal: [{ t: 'Eu lavava para meia rua e agora lavo para metade disso. O sobrado da esquina ficou vazio, e a casa da frente também. Pano sem dono eu não lavo.', kp: 'kp_94_cicera_varal' }],
+      junior: [{ t: 'Júnior é meu neto e não para quieto. Entra pela janela das casas fechadas. Já mandei parar duas vezes.', kp: null }],
+    });
+  abre('cicera', 'varal', 'O varal', 'Dona Cícera, o varal está menor do que antes?');
+  abre('cicera', 'junior', 'O Júnior', 'Dona Cícera, o Júnior anda por onde?');
+  eu('junior', ['Oi, Lia! Eu achei uma casa vazia com calendário na parede!', 'Lia! Eu entrei na casa da esquina pela janela e tem um gato lá dentro. Não conta pra minha avó.'],
+    ['(Júnior espia a janela da casa fechada e depois olha para a avó.)'], {
+      casa: [{ t: 'Eu entrei pela janela da casa fechada da esquina. Tem cadeira, tem prato na pia e um calendário na parede. Eu fico lá com o gato quando minha avó não está olhando.', kp: 'kp_94_junior_casa' }],
+      turista: [{ t: 'Um gringo me deu uma moeda para eu ficar do lado do gato na foto. Eu fiquei. Ele falou uma coisa que eu não entendi e riu.', kp: 'kp_94_junior_foto' }],
+      gato: [{ t: 'O gato não tem nome. Eu levo pão pra ele na casa fechada, e ele me espera na janela.', kp: 'kp_gato' }],
+    });
+  abre('junior', 'casa', 'A casa fechada', 'Júnior, que casa vazia é essa?');
+  abre('junior', 'turista', 'Os turistas', 'O pessoal de fora tira foto de você?');
+  abre('junior', 'gato', 'O gato', 'Júnior, aquele gato é de quem?');
+  eu('tonho', ['Cocada, queijadinha! Quer provar, Lia? Para turista eu cobro mais, mas para você não.'], ['(Tonho ajeita o isopor no ombro e olha para a rua, contando quem passa de câmera.)'], {
+      cocada: [{ t: 'Minha mãe faz de madrugada. Eu só carrego e sorrio. O sorriso vende mais que o açúcar.', kp: 'kp_cocada' }],
+      rua: [{ t: 'Sábado e domingo eu vendo o dobro, porque vem ônibus de turista. De terça a quinta passa um ou outro, e a cocada volta no isopor. Se eu dependesse só disso, comia dois dias por semana.', kp: 'kp_94_tonho_turista', revisar: true }],
+    });
+  abre('tonho', 'cocada', 'A cocada', 'Tonho, a cocada é sua mesmo ou você vende para alguém?');
+  abre('tonho', 'rua', 'O turista', 'Tonho, o turista compra bastante?');
+  eu('dandara', ['Lia, bom dia. A reunião é sábado e a lista de avisados tem mais nome do que eu esperava. Tem um minuto?'], ['(Dandara folheia o caderno de capa dura, riscando um nome e acrescentando outro.)'], {
+      associacao: [{ t: 'Aqui a gente confere quem recebeu aviso, quem aceitou indenização e quem ainda está na casa. Quem não tem advogado tem a associação. O quadro de avisos hoje é lista de casa.', kp: 'kp_associacao' }],
+      programa: [{ t: 'O Programa começou com pintura e conserto. Hoje é obra pesada, casa interditada e gente indo embora. A aposta é que o turista sustenta o comércio sozinho. Eu quero ver o caixa de quem vende aqui para saber.', kp: 'kp_94_programa', revisar: true }],
+    });
+  abre('dandara', 'associacao', 'A associação', 'Dandara, o que a associação está fazendo agora?');
+  abre('dandara', 'programa', 'O Programa', 'Dandara, o que mudou no Programa desde que ele foi anunciado?');
+  eu('lucia', ['Oi, Lia. Este ano eu assino mais ficha do que meço parede.', 'Bom dia, Lia. O dia está longo e as fichas estão cheias.'], ['(Lúcia confere uma ficha e a fecha devagar, sem dizer o que viu.)'], {
+      medir: [{ t: 'Em 91 eu media para o relatório. Agora meço para saber o que se interdita. A ficha da casa vai para o cadastro, e do cadastro sai o valor da indenização.', kp: 'kp_94_lucia_ficha', revisar: true }],
+      programa: [{ t: 'O Programa foi desenhado com uma aposta: o turista, de outros estados e de fora do país, sustenta o comércio da rua sozinho. Eu escrevi no relatório que ainda é cedo para saber. Ninguém pediu a minha opinião, mas ela está escrita.', kp: 'kp_94_lucia_aposta', revisar: true },
+                 { t: 'No corredor do órgão já se fala em programar festa, show, evento, para trazer gente de Salvador mesmo, que mora na cidade e tem carro. Ainda é conversa. Não está em papel nenhum.', conf: [2, 3], kp: 'kp_94_lucia_evento', revisar: true }],
+    });
+  abre('lucia', 'medir', 'A ficha da casa', 'Lúcia, a senhora ainda mede a rua?');
+  abre('lucia', 'programa', 'A aposta do Programa', 'Lúcia, o turista está enchendo a rua como o Programa previa?');
+  // ---- conversas espontâneas e examináveis da rua em 1994 ----
+  RD.papos = [
+    ['dandara>raimundo', ['Seu Raimundo, o senhor vai à reunião de sábado? Vou ler a lista.', 'Se meu nome estiver nela, eu vou. Se não, eu vou do mesmo jeito.']],
+    ['lucia>raimundo', ['Seu Raimundo, eu preciso conferir a ficha do sobrado de novo.', 'Pode conferir, minha filha. A porta já está marcada de qualquer jeito.']],
+    ['cicera>junior', ['Júnior! Sai da casa dos outros, menino!', 'Já vou, vó! Só tô dando pão pro gato!']],
+    ['tonho>nonato', ['Cocada, Nonato? Hoje sobrou, que o ônibus não veio.', 'Depois, Tonho. Hoje é dia de pagamento e eu vou receber.']],
+  ];
+  RD.desc94 = {
+    quadro_avisos: 'No quadro: reunião da associação no sábado, uma lista datilografada de casas que receberam aviso, um recado de procura-se inquilino e uma rifa de bujão de gás.',
+    obra_1: 'Tijolos e sacos de cimento da empreiteira, empilhados ao lado do casarão da esquina. Já não é obra de quem mora.',
+  };
+};

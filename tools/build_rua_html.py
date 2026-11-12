@@ -19,6 +19,6 @@ def put(k, v):
     global T
     assert k in T, k
     T = T.replace(k, v, 1)
-put('/*CHARS_JS*/', open(B + 'game/chars.js').read()); put('/*SIM_JS*/', sim)
+put('/*CHARS_JS*/', open(B + 'game/chars.js').read() + '\n' + open(B + 'game/cenario94.js').read()); put('/*SIM_JS*/', sim)
 put('/*ASSETS*/{}', json.dumps(assets)); put('/*CHARATLAS*/{}', json.dumps(atlas)); put('/*SCENE*/{}', json.dumps(scene, ensure_ascii=False)); put('/*PROPS*/{}', json.dumps(props, ensure_ascii=False))
 out = B + 'game/balcao_etapa6_rua.html'; open(out, 'w').write(T); print(out, round(len(T) / 1024), 'KB')

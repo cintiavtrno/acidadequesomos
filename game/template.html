@@ -704,7 +704,9 @@ function drawSacola() {                               // sacola de pano com um p
 function drawInterior() {
   ctx.drawImage(IMG.bakery_interior_base, 0, 0);
   ObjectSys.drawWall(ctx);
+  if (window.MUNDO_ANO === 1994) C94.padaria(ctx);
   const ents = ObjectSys.entities(ctx);
+  if (window.MUNDO_ANO === 1994 && C94.EXTRA) ents.push({ y: C94.EXTRA.y, draw: () => C94.EXTRA.draw(ctx) });
   if (Sim.Sacola.visivel() && SIM.service) ents.push({ y: 186, draw: drawSacola });
   if (S.gauge) { ents.push({ y: 162, draw: () => sprite('adult', 150, 162, 'd', false, 0) }); ents.push({ y: 224, draw: () => sprite('lia', 160, 224, 'd', false, 0) }); }
   for (const n of SIM.mobiles()) { if (n.loc !== 'padaria' || n.state === 'Away') continue; ents.push({ y: sortY(n), draw: () => drawNpc(n) }); }

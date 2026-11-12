@@ -314,8 +314,9 @@
     ganhar(id) { if (this.kp[id]) return false; this.kp[id] = { t: this.clock.min }; this.bus.emit('conhecimento', { id, kp: { titulo: RD.kp[id][0], texto: RD.kp[id][1] } }); this.salvar(); return true; }
     examinar(inst) {   // inst = instância da cena
       const kpMap = { mesa_domino: 'kp_obj_mesa', quadro_avisos: 'kp_obj_quadro', orelhao_1: 'kp_obj_orelhao', poste_1: 'kp_obj_poste', poste_2: 'kp_obj_poste', poste_3: 'kp_obj_poste', cavalete_pao: 'kp_obj_cavalete', bike_1: 'kp_obj_bike', lixeira_1: 'kp_obj_lixeira', lixeira_2: 'kp_obj_lixeira', obra_1: 'kp_obj_obra', caixote_1: 'kp_obj_caixote' };
-      const k = kpMap[inst.id]; let novo = false; if (k) novo = this.ganhar(k);
-      return { texto: inst.desc || inst.nome, nome: inst.nome, novo, kp: k ? RD.kp[k][0] : null };
+      if (RD.kpObj94) Object.assign(kpMap, RD.kpObj94);
+      const k = kpMap[inst.id]; let novo = false; if (k && RD.kp[k]) novo = this.ganhar(k);
+      return { texto: (RD.desc94 && RD.desc94[inst.id]) || inst.desc || inst.nome, nome: inst.nome, novo, kp: k && RD.kp[k] ? RD.kp[k][0] : null };
     }
     afagar() { this.afagarGato('lia'); this.ganhar('kp_gato') ; return '(O gato ronrona e fecha o olho de novo.)'; }
     salvar() { if (this.hooks.save) this.hooks.save({ trust: this.trust, kp: this.kp, dia: this.persist.dia || 1, soc: this.social.exportar(), viv: this.viv, feitos: this.feitos }); }

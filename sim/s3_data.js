@@ -272,3 +272,24 @@ Sim.Data.objetos = {
   banco_altar: { kp: 'kp_banco', texto: () => 'Um banco comprido encostado na parede, de frente pro nicho.' },
   porta_escada_1: { kp: 'kp_escada', texto: w => w.obj('porta_escada_1') ? 'A porta da escada está aberta. Ainda não é hora de subir.' : 'A porta da escada, fechada. Lá em cima fica a nossa casa.' },
 };
+
+// ---- 1994 na padaria: quem passa pelo balcão já conta o efeito do Programa (aviso, saída de moradores, turista). Proposta; revisar. ----
+Sim.Data.virar94 = () => {
+  if (Sim.Data._v94) return; Sim.Data._v94 = true;
+  const P = Sim.Data.falas;
+  P.raimundo.perguntar.rua = [F('r_pr0', 'A rua de cima está quase toda fechada. Quem aceitou o dinheiro foi para longe, e de lá não volta.'), F('r_pr1', 'Antes todo mundo sabia o nome de todo mundo. Agora vem gente de máquina fotográfica e sabe só o número da casa.', { conf: [1, 3] })];
+  P.raimundo.perguntar.programa = [F('r_pp0', 'Colaram um aviso na minha porta. Diz que a casa está em risco. Eu ainda não assinei nada.'), F('r_pp1', 'Eles apostam que turista sustenta o comércio sozinho. Eu nunca vi turista pedir fiado.', { conf: [2, 3] }, { revisar: true })];
+  P.raimundo.perguntar.papel = [F('r_pa0', 'Papel, tenho dois: o da caderneta e o do aviso. Só o primeiro eu entendo.')];
+  P.dandara.perguntar.programa = [F('d_pp0', 'O Programa saiu da pintura e entrou na obra pesada. Já tem casa interditada e família indo embora.'), F('d_pp1', 'Eu quero a lista de quem recebeu aviso, com nome. A associação lê tudo no sábado.', { conf: [1, 3] })];
+  P.dandara.perguntar.lucia = [F('d_pl0', 'A moça da prancheta agora assina ficha de saída. Educada como sempre, e é isso que me dá medo.'), F('d_pl1', 'Ela não é má. Mas a ficha vira valor de indenização, e a conta não conhece ninguém.', { conf: [2, 3] })];
+  P.lucia.perguntar.programa = [F('l_pp0', 'O levantamento acabou e agora vem a fase de obra. Eu confiro as fichas das casas que já têm aviso.'), F('l_pp1', 'O Programa apostou que o turista de fora sustenta o comércio da rua. Eu escrevi que ainda é cedo para saber.', { conf: [1, 3] }, { revisar: true }), F('l_pp2', 'No órgão já se fala em programar festa e show, para trazer gente de Salvador. Ainda é conversa de corredor.', { conf: [2, 3] }, { revisar: true })];
+  P.lucia.perguntar.prancheta = [F('l_pn0', 'Hoje é ficha de casa: nome de quem mora, quantos são, valor oferecido.'), F('l_pn1', 'Eu escrevo o menos que posso. Mesmo assim é o que decide.', { conf: [1, 3] })];
+  Sim.Data.bate_papo_balcao = {
+    raimundo: [[['raimundo', 'A senhora ainda tem o forno aceso, Áurea?'], ['aurea', 'Tenho. Mas vendo menos pão do que fazia.'], ['raimundo', 'Falta quem coma.'], ['aurea', 'Falta quem more.']]],
+    dandara: [[['dandara', 'A senhora vai à reunião de sábado, Dona Áurea?'], ['aurea', 'Vou. Levo o papel do aluguel pra ler junto com os outros.']]],
+    lucia: [[['lucia', 'Dona Áurea, preciso conferir a ficha da padaria.'], ['aurea', 'Confere. A ficha eu quero ver depois.']]],
+  };
+  Object.assign(Sim.Data.reacoes, { fila_cheia: { raimundo: 'Cheio assim eu não via desde antes do aviso.', dandara: 'Metade é gente de fora que só compra água.', lucia: 'Vou esperar. Não tem problema.' } });
+};
+if (typeof window !== 'undefined' && window.MUNDO_ANO === 1994) Sim.Data.virar94();
+

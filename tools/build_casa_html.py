@@ -12,6 +12,8 @@ def sub(old, new, count=1):
 sub('aria-label="Cenário da rua e da padaria"', 'aria-label="Casa de Seu Raimundo"')
 sub("scene: Q.get('s') === 'interior' ? 'interior' : 'street',", "scene: 'interior',")
 sub('IMG.bakery_interior_base', 'IMG.casa_interior_base')
+sub('C94.padaria(ctx)', 'C94.casa(ctx)')
+sub('C94.EXTRA', 'C94.EXTRA_CASA', 0)
 sub("for (const k of ['lia', 'aurea', 'raimundo', 'dandara', 'lucia'])", "for (const k of ['lia', 'raimundo'])")
 T = T.replace('<title>O balcão da vó — Etapa 4: simulação social</title>', '<title>O balcão da vó — Etapa 5 · casa de Seu Raimundo</title>')
 T, n = re.subn(r"loc (!==|===) 'padaria'", r"loc \1 'casa'", T); assert n >= 6, n
@@ -72,7 +74,7 @@ def uri(n): return 'data:image/png;base64,' + base64.b64encode(open(path(n), 'rb
 AT = {n: json.load(open(A + 'chars/' + n + '.json')) for n in ['lia_tq', 'raimundo_tq']}
 SIM = '\n'.join(open(f).read() for f in sorted(glob.glob('../sim/s[0-9]*_*.js'), key=lambda f: int(re.search(r's(\d+)_', f).group(1))))
 L = json.load(open(A + 'layout.json'))
-T = (T.replace('/*LAYOUT*/{}', json.dumps(L)).replace('/*CHARS_JS*/', open('../game/chars.js').read()).replace('/*CHARATLAS*/{}', json.dumps(AT)).replace('/*OBJECTS_JS*/', open('../game/objects.js').read())
+T = (T.replace('/*LAYOUT*/{}', json.dumps(L)).replace('/*CHARS_JS*/', open('../game/chars.js').read() + '\n' + open('../game/cenario94.js').read()).replace('/*CHARATLAS*/{}', json.dumps(AT)).replace('/*OBJECTS_JS*/', open('../game/objects.js').read())
      .replace('/*SIM_JS*/', SIM).replace('/*OBJCAT*/{}', open(A + 'objects/catalog_casa.json').read()).replace('/*OBJSCENE*/{}', open(A + 'objects/scene_casa.json').read()))
 open('../game/template_casa_gerado.html', 'w').write(T)
 open('../game/index_casa_dev.html', 'w').write(T.replace('/*ASSETS*/{}', json.dumps({n: path(n) for n in names})))

@@ -1,0 +1,81 @@
+// Camada de 1994 (rua, padaria, casa, quintal): node tests/ano94.js
+// Em 1994 a rua já sente o Programa: aviso, risco, moradores saindo e a aposta no turista. Aqui se confere que os dados de 1994
+// existem, estão ligados uns aos outros (assunto → comporta → anotação) e que dá para conversar e examinar no motor da rua.
+const load = require('../sim/load_node.js'), fs = require('fs'); let pass = 0, fail = 0;
+const ok = (n, c, x) => { c ? pass++ : fail++; console.log((c ? 'PASS ' : 'FAIL ') + n + (x !== undefined && x !== '' ? ' · ' + x : '')); };
+const scene = JSON.parse(fs.readFileSync(__dirname + '/../assets/street6/scene_rua.json'));
+
+// ---------------------------------------------------------------- rua
+{
+  const S = load(), RD = S.Rua.D; const antes = Object.keys(RD.kp).length; RD.virar94();
+  ok('1991 continua intacto até a virada (kp_ray_sobrado existia)', antes > 0);
+  ok('virada remove as anotações que só valiam em 1991', !RD.kp.kp_ray_sobrado && !RD.kp.kp_programa && !RD.kp.kp_rua_olhar && !RD.kp.kp_lucia_programa && !RD.kp.kp_obra_tijolo);
+  ok('virar94 é idempotente', (RD.virar94(), Object.keys(RD.kp).length === Object.keys(RD.kp).length) && RD._v94 === true);
+  // cada assunto de cada pessoa tem comporta com rótulo e pergunta; cada anotação citada existe
+  let semGate = [], semKp = [], vazio = [];
+  for (const id in RD.falas) {
+    const F = RD.falas[id]; if (!F.saudar.length || !F.ouvir.length) vazio.push(id);
+    for (const t in F.perguntar) {
+      const g = (RD.gates[id] || {})[t]; if (!g || !g.label || !g.ask) semGate.push(id + ':' + t);
+      for (const r of F.perguntar[t]) if (r.kp && !RD.kp[r.kp]) semKp.push(id + ':' + t + '→' + r.kp);
+    }
+  }
+  ok('toda pessoa tem cumprimento e "ficar ouvindo"', vazio.length === 0, vazio.join(','));
+  ok('todo assunto tem rótulo e pergunta da Lia', semGate.length === 0, semGate.join(','));
+  ok('toda anotação citada pelas falas existe', semKp.length === 0, semKp.join(','));
+  ok('os objetos novos apontam para anotações que existem', Object.values(RD.kpObj94).every(k => RD.kp[k]));
+  const tema = Object.keys(RD.kp).filter(k => /^kp_94_/.test(k)); ok('há ao menos 15 anotações de 1994', tema.length >= 15, tema.length);
+  const todo = JSON.stringify(RD.falas) + JSON.stringify(RD.kp);
+  ok('o texto de 1994 trata de aviso, indenização e turista', /aviso/.test(todo) && /indeniza/.test(todo) && /turista/.test(todo));
+  ok('o texto de 1994 insinua os eventos para moradores de Salvador (fase 2, de 1996)', /Salvador/.test(todo) && /evento|festa|show/.test(todo));
+  ok('o texto de 1994 não carrega mais a "medição" de 1991 como notícia', !/Eles medem tudo, mas não perguntam/.test(todo));
+  // vícios de escrita que a Cíntia pediu para evitar
+  const vicios = [/não é [^.,;]{1,40}, é /i, /E aqui está o ponto/i, /Mais do que isso/i, /No fim do dia/i, /A verdade é simples/i, /Spoiler/i];
+  const textos = []; for (const id in RD.falas) { for (const t in RD.falas[id].perguntar) RD.falas[id].perguntar[t].forEach(r => textos.push(r.t)); RD.falas[id].saudar.forEach(x => textos.push(x)); }
+  Object.values(RD.kp).forEach(k => textos.push(k[1]));
+  ok('nenhum texto de 1994 usa as muletas retóricas da lista', textos.every(t => vicios.every(v => !v.test(t))), textos.filter(t => vicios.some(v => v.test(t))).join(' | '));
+
+  // conversa e objetos no motor da rua
+  const w = new S.Rua.World({ scene, seed: 94 }); w.update(1);
+  ok('conversa: Raimundo oferece "O aviso na porta" sem pré-requisito', w.topicos('raimundo').some(t => t.id === 'sobrado' && t.label === 'O aviso na porta'));
+  const o = w.perguntar('raimundo', 'sobrado'); ok('perguntar rende a anotação do aviso', !!w.kp.kp_94_ray_aviso && o.some(l => l.quem === 'nota'));
+  w.perguntar('raimundo', 'rua'); w.perguntar('raimundo', 'rua');
+  ok('segunda resposta de "a rua" traz a marca de tinta', !!w.kp.kp_94_ray_vazias);
+  w.perguntar('tonho', 'rua'); ok('Tonho: turista só no fim de semana', !!w.kp.kp_94_tonho_turista);
+  w.perguntar('junior', 'casa'); ok('Júnior fala de si em primeira pessoa e rende anotação', !!w.kp.kp_94_junior_casa && /^Eu entrei/.test(RD.falas.junior.perguntar.casa[0].t));
+  for (let i = 0; i < 3; i++) w.perguntar('lucia', 'programa');
+  ok('Lúcia: aposta no turista e depois conversa de corredor (só com confiança)', !!w.kp.kp_94_lucia_aposta);
+  const ids = ['aviso_sobrado', 'marca_sobrado', 'placa_padaria', 'faixa_assoc', 'tapume_verde', 'placa_obra'];
+  const r = ids.map(id => w.examinar({ id, nome: id, desc: 'x' })); ok('examinar cada objeto novo rende anotação nova', r.every(x => x.novo && x.kp) && ids.every(id => w.kp[RD.kpObj94[id]]));
+  ok('o quadro de avisos tem texto próprio em 1994', /lista datilografada/.test(w.examinar({ id: 'quadro_avisos', nome: 'q', desc: 'velho' }).texto));
+  // gossip: o que circula entre as pessoas já é de 1994
+  ok('informações que circulam (obra, gato, reunião) são as de 1994', /empreita/.test(S.Social.INFOS.i_obra.versoes[0]) && /casa fechada/.test(S.Social.INFOS.i_gato.versoes[0]) && /lista/.test(S.Social.INFOS.i_reuniao.versoes[0]));
+}
+// ---------------------------------------------------------------- padaria e casa
+{
+  const S = load(); S.Data.virar94(); const P = S.Data.falas;
+  ok('padaria: Raimundo fala do aviso e Lúcia da aposta no turista', /aviso/.test(P.raimundo.perguntar.programa[0].texto) && P.lucia.perguntar.programa.some(f => /turista/.test(f.texto)));
+  ok('padaria: o papo do balcão já não é de 1991', /forno aceso/.test(JSON.stringify(S.Data.bate_papo_balcao)));
+  const C = load(); C.Casa.virar94(); const c = C.Data.casa;
+  ok('casa: o papel na mesa é o aviso, e a mala está pronta', /aviso/.test(c.objetos.mesa_1.texto()) && /mala/.test(c.objetos.sacola_1.texto()) && /aviso/.test(c.falas.perguntar.papel[0].texto));
+  ok('casa: a pergunta da Lia fala da marca na parede', /marca na parede/.test(c.asks.programa) && /aviso/.test(c.cena.opcoes.programa.linhas[1].texto));
+}
+// ---------------------------------------------------------------- quintal: Zefa defende o Programa; os outros sentem o custo
+{
+  const Q = require('../quintal/quintal.js'), QD = require('../quintal/qdata.json'); QD.SPEED = { ze: 0.57, nonato: 1.1, junior: 1.7 };
+  const K = Q.Dialogo.K, T = Q.Dialogo.T;
+  ok('quintal: Zefa tem as três falas da reforma (Programa, turista, casa)', ['reforma', 'turista', 'casa'].every(t => T.zefa[t]) && /Acho bom/.test(T.zefa.reforma.resp));
+  ok('quintal: a aposta no turista aparece na boca de Zefa e a dúvida na de Tonho, Aurea e Lúcia', T.zefa.turista.resp.includes('turista') && T.tonho.turista && T.aurea.freguesia && T.lucia.evento);
+  ok('quintal: os custos aparecem (Raimundo, Rita, Nonato, Bela, Cícera, Junior)', T.raimundo.sobrado && T.rita.telhado && T.nonato.empreita && T.bela.freguesas && T.cicera.varal && T.junior.casa);
+  ok('quintal: Lúcia deixa escapar a conversa de corredor sobre eventos para a classe média de Salvador', /Salvador/.test(T.lucia.evento.resp));
+  const t = new Q.Sim(QD); t.forcada = true; t.fase('D', true);
+  const junto = id => { const n = t.npcs[id]; n.vis = true; t.lia.x = n.x; t.lia.y = n.y + 0.8; t.falar(id); };
+  const ids = Object.keys(QD.FASE.D).filter(k => k !== 'lia' && t.npcs[k]);
+  for (let v = 0; v < 4; v++) for (const id of ids) { junto(id); for (const tp of t.topicosDe(id)) t.conversaAcao('perguntar', tp.id); t.conversaAcao('ouvir'); }
+  const n = t.notas().length; ok('quintal: só com conversa, a fase D rende bem mais que as 6 notas da meta', n >= 12, n);
+  for (const k of ['q_zefa_reforma', 'q_zefa_turista', 'q_lucia_evento', 'q_zefa_raimundo']) ok('quintal: anotação ' + k + ' é alcançável', !!t.kp[k]);
+  const todos = Object.values(K).map(k => k[1]).concat(Object.values(T).flatMap(p => Object.values(p).map(a => a.resp)));
+  const vicios = [/não é [^.,;]{1,40}, é /i, /E aqui está o ponto/i, /Mais do que isso/i, /No fim do dia/i, /A verdade é simples/i];
+  ok('quintal: nenhum texto usa as muletas retóricas da lista', todos.every(x => vicios.every(v => !v.test(x))));
+}
+console.log('\n' + pass + ' passaram, ' + fail + ' falharam'); process.exit(fail ? 1 : 0);

@@ -134,6 +134,7 @@ Promise.all(Object.entries(ASSETS).map(([k, v]) => load(v).then(i => IMG[k] = i)
   const ci = {}; for (const k in CHARATLAS) ci[k] = IMG[k]; CharLib.init(CHARATLAS, ci);
   try { persist = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { persist = null; }
   if (Q.get('new') === '1') persist = null;
+  if (window.MUNDO_ANO === 1994) IMG.c94 = C94.rua(SCENE.W, VH);
   start();
 });
 
@@ -145,8 +146,17 @@ const D = { open: false, id: null, mode: 'root', lines: [] };
 const bubs = {};
 let V = null, keys = {}, uiT = 0, last = 0, drag = null;
 
+const OBJ94 = [
+  { id: 'aviso_sobrado', nome: 'aviso na porta do sobrado', x: 130, sy: 10, rect: [118, 164, 26, 28], desc: 'Um aviso de vistoria colado na porta do sobrado, com carimbo e data. Diz que o imóvel corre risco e deve ser desocupado no prazo. A fita amarela e preta cruza a porta.' },
+  { id: 'marca_sobrado', nome: 'X de tinta na parede', x: 204, sy: 10, rect: [194, 148, 22, 24], desc: 'Um X laranja pintado a spray na fachada, com a tinta escorrida. Cada casa que sai da conta leva uma marca assim.' },
+  { id: 'placa_padaria', nome: 'plaquinha em inglês', x: 426, sy: 10, rect: [413, 155, 26, 26], desc: 'Uma plaquinha azul ao lado do arco: BREAD e PÃO. Ninguém da rua precisava dela.' },
+  { id: 'faixa_assoc', nome: 'faixa da associação', x: 790, sy: 10, rect: [662, 112, 146, 20], desc: 'Uma faixa de pano esticada entre as janelas da associação: AQUI MORA GENTE, em tinta vermelha. Feita à mão.' },
+  { id: 'tapume_verde', nome: 'casa tapada', x: 846, sy: 10, rect: [832, 157, 32, 52], desc: 'A porta e a janela de baixo da casa verde estão fechadas com tábua. A família saiu e o andaime já sobe pela fachada.' },
+  { id: 'placa_obra', nome: 'placa da obra', x: 936, sy: 10, rect: [923, 122, 25, 26], desc: 'Uma placa pequena presa ao andaime: OBRA, 1994. Programa de Recuperação.' },
+];
 function start() {
   const t0 = Q.has('t') ? 420 + +Q.get('t') : RD.dia.inicio;
+  if (window.MUNDO_ANO === 1994) OBJ94.forEach(o => { if (!SCENE.inst.some(i => i.id === o.id)) SCENE.inst.push(Object.assign({ sprite: '_c94', tipo: 'examinar', classe: 'DECORATIVO', zoom: 1, stand: [0, 14], layer: 'sorted' }, o)); });
   SIM = new Sim.Rua.World({ scene: SCENE, seed: +(Q.get('seed') || 1991) + (persist ? persist.dia || 1 : 0), start: RD.dia.inicio, rate: +(Q.get('rate') || 0.25), persist: persist || {}, integrado: Q.get('mundo') === '1',
     hooks: { save: p => { try { localStorage.setItem(KEY, JSON.stringify(Object.assign({ dia: 1 }, p))); } catch (e) { } } } });
   if (Q.has('t')) ffwd(t0);
@@ -155,7 +165,7 @@ function start() {
   S.vx = SIM.lia.x; S.vy = SIM.lia.y - 18;
   if (Q.has('vx')) { S.vx = +Q.get('vx'); S.free = true; } if (Q.has('vy')) { S.vy = +Q.get('vy'); S.free = true; }
   bindBus(); syncUI(); fit(); started = true; last = performance.now(); requestAnimationFrame(loop);
-  setTimeout(() => toast('<b>Rua</b> · manhã de sábado. Chegue perto de alguém e aperte <b>E</b>.', 'ev', 6000), 400);
+  setTimeout(() => toast(window.MUNDO_ANO === 1994 ? '<b>Rua</b> · sábado, quase meio-dia. A rua mudou. Olhe as fachadas, converse e aperte <b>E</b>.' : '<b>Rua</b> · manhã de sábado. Chegue perto de alguém e aperte <b>E</b>.', 'ev', 6000), 400);
 }
 function ffwd(t) { let g = 0; while (SIM.clock.min < t && g++ < 400000) SIM.update(1 / 20); }
 
@@ -411,11 +421,12 @@ function liaPassa() { if (SIM.mesa.liaPassa()) { LS.playT = .6; renderMesa(); } 
 
 // ---------------------------------------------------------------- anotações e fim do dia
 const GRUPOS = [['Dominó e a mesa', /^kp_dom|kp_cicera_dom/], ['Moradores', /^kp_(ray|obra|varal|gato|cocada|pontos|c_)/], ['O Programa e a rua', /^kp_(rua|prog|assoc|lucia)/], ['Objetos da rua', /^kp_obj/]];
+GRUPOS.unshift(['1994 · o Programa na rua', /^kp_94/]);
 function renderNotes() {
   const el = $('notes'), got = SIM.kp, tot = Object.keys(RD.kp);
   let h = '<h2><span>Anotações da rua</span><span class="x" onclick="toggleNotes(false)">fechar (Esc)</span></h2><div class="sub">' + Object.keys(got).length + ' de ' + tot.length + ' · tudo aqui é proposta e precisa de revisão cultural antes de valer como texto final</div>';
   const usados = new Set();
-  for (const [t, re] of GRUPOS) { const ids = tot.filter(k => re.test(k) && got[k]); ids.forEach(k => usados.add(k)); if (!ids.length) continue; h += '<h4>' + t + '</h4>' + ids.map(k => '<div class="kp"><b>' + esc(RD.kp[k][0]) + '</b> — ' + esc(RD.kp[k][1]) + (/programa|olhar/.test(k) ? ' <span class="rev">revisar</span>' : '') + '</div>').join(''); }
+  for (const [t, re] of GRUPOS) { const ids = tot.filter(k => re.test(k) && got[k]); ids.forEach(k => usados.add(k)); if (!ids.length) continue; h += '<h4>' + t + '</h4>' + ids.map(k => '<div class="kp"><b>' + esc(RD.kp[k][0]) + '</b> — ' + esc(RD.kp[k][1]) + (/programa|olhar/.test(k) || (RD.kpRev && RD.kpRev[k]) ? ' <span class="rev">revisar</span>' : '') + '</div>').join(''); }
   const resto = tot.filter(k => got[k] && !usados.has(k)); if (resto.length) h += '<h4>Outras</h4>' + resto.map(k => '<div class="kp"><b>' + esc(RD.kp[k][0]) + '</b> — ' + esc(RD.kp[k][1]) + '</div>').join('');
   if (!Object.keys(got).length) h += '<div class="vazio sub" style="margin-top:1em">Ainda não há anotações. Converse com as pessoas e examine os objetos da rua.</div>';
   el.innerHTML = h;
@@ -446,6 +457,7 @@ function sceneXY(cx, cy) { computeView(); return [V.left + cx / V.z, V.top + cy 
 function hitAt(sx, sy) {
   for (const id in SIM.npcs) { const n = SIM.npcs[id]; if (n.state === 'Away' || n.alpha < .6) continue; if (Math.abs(sx - n.x) < 11 && sy > n.y - 46 && sy < n.y + 3) return { k: 'npc', id, x: n.x, y: n.y }; }
   const g = SIM.gato; if (Math.abs(sx - g.x) < 12 && sy > g.y - 14 && sy < g.y + 3) return { k: 'gato' };
+  for (const it of SCENE.inst) { if (it.rect && sx >= it.rect[0] && sx < it.rect[0] + it.rect[2] && sy >= it.rect[1] && sy < it.rect[1] + it.rect[3]) return { k: 'obj', it }; }
   for (const it of SCENE.inst) { if (it.id === 'gato_1') continue; const sp = PROPS[it.sprite]; if (!sp) continue; const bx = it.x - sp.ax, by = yw(it.x) + it.sy - sp.ay; if (sx >= bx && sx < bx + sp.w && sy >= by && sy < by + sp.h && it.tipo) return { k: it.id === 'mesa_domino' ? 'mesa' : 'obj', it }; }
   return null;
 }
@@ -526,6 +538,7 @@ function render() {
   computeView(); const cam = S.cam;
   ctx.drawImage(IMG.far, Math.floor(cam * 0.35), 0, VW, VH, 0, 0, VW, VH);
   ctx.drawImage(IMG.world, cam, 0, VW, VH, 0, 0, VW, VH);
+  if (IMG.c94) ctx.drawImage(IMG.c94, cam, 0, VW, VH, 0, 0, VW, VH);
   const ents = [];
   for (const it of SCENE.inst) {
     if (it.id === 'gato_1' || it.sprite === 'cad_costas' && it.layer === 'over') continue;
