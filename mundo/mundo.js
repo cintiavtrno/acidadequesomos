@@ -49,7 +49,7 @@
     // estado de acesso: { ok, motivo }
     acesso(p) {
       const dest = this.w.cenas.get(p.para); if (!dest) return { ok: false, motivo: 'sem destino' };
-      if (p.para === 'padaria') { const c = dest.sim.clock; if (!c.isOpen()) return { ok: false, motivo: 'A padaria já fechou por hoje.' }; }
+      // a padaria é da família da Lia: ela entra a qualquer hora (o horário só vale para a freguesia)
       return { ok: true };
     }
     // pedido de passagem: só vale se a Lia está no ambiente de origem e a porta está aberta
