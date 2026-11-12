@@ -185,6 +185,7 @@
     },
     padaria(Sim, sim, ui) {
       for (const id in M.VIAJANTES) if (sim.npcs[id]) sim.npcs[id].visitas = [];               // as visitas agora vêm da rua
+      if (root && root.MUNDO_ANO === 1994) sim.caruruSaida = 735;                                // 12:15: a vó vai ao caruru e deixa o balcão com a Lia
       return {
         sim, ui, step(dt) { sim.update(dt); },
         receber(id, est) { const n = sim.npcs[id]; if (!n || n.isVo) return false; n.visitas = [{ at: sim.clock.min, estadia: est }]; n.vi = 0; if (sim.persist.evita) sim.persist.evita[id] = 0; return true; },

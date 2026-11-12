@@ -27,7 +27,7 @@ Sim.World = class {
     for (const k in n.needs) n.needs[k] = Sim.clamp(n.needs[k] + this.rng.range(-.1, .1), 0, 1);
   }
   mobiles() { return Object.values(this.npcs); }
-  presente(id) { const n = this.npcs[id]; return !!n && n.loc === 'padaria' && n.state !== 'Away' && !n.isVo || id === 'aurea'; }
+  presente(id) { const n = this.npcs[id]; return !!n && n.loc === 'padaria' && n.state !== 'Away' && !n.isVo || (id === 'aurea' && !!n && n.state !== 'Away'); }
   liaPerto(o, r) { return this.cena === 'interior' && Sim.dist(this.lia, o) <= r; }
   obj(id) { return this.hooks.getObj ? this.hooks.getObj(id) : (this.hooks.objs[id] || 0); }
   setObj(id, v) { if (this.hooks.setObj) this.hooks.setObj(id, v); else this.hooks.objs[id] = v; this.bus.emit('estado_objeto', { id, v }); }

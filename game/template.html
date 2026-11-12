@@ -697,7 +697,7 @@ function drawInterior() {
   ents.push({ y: liaSortY(), draw: () => drawLia(S.p.x, S.p.y, 'tq') });
   ents.sort((a, b) => a.y - b.y).forEach(e => e.draw());
   // mãos e tronco da Vó acima do tampo do balcão: reaparecem por cima dele (o resto fica escondido atrás)
-  const v = SIM.npcs.aurea; if (v.anim.startsWith('serve') && v.y < 172) CharLib.draw(ctx, { who: 'aurea', persp: 'tq', x: v.x, y: v.y, anim: v.anim, dir: v.face, t: v.at || 0 }, { shadow: false, clipBelowY: v.y - VOCUT });
+  const v = SIM.npcs.aurea; if (v.state !== 'Away' && v.anim.startsWith('serve') && v.y < 172) CharLib.draw(ctx, { who: 'aurea', persp: 'tq', x: v.x, y: v.y, anim: v.anim, dir: v.face, t: v.at || 0 }, { shadow: false, clipBelowY: v.y - VOCUT });
   if (S.ruler) {
     ctx.save(); ctx.font = '8px monospace'; ctx.textBaseline = 'middle';
     ctx.strokeStyle = 'rgba(255,255,255,.22)'; ctx.lineWidth = 1;

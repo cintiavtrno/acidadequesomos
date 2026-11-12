@@ -1,16 +1,38 @@
-const fs=require('fs');const L=(...a)=>fs.appendFileSync('/tmp/o.txt',a.join(' ')+'\n');
-const Q=require('/home/claude/balcao/quintal/quintal.js'); const D=require('/home/claude/balcao/quintal/qdata.json'); D.SPEED={ze:0.57,nonato:1.1,junior:1.7};
-L('start');const s=new Q.Sim(D);L('sim ok'); let ok=0,bad=[];
-L('livre m2', (s.base.reduce((a,v)=>a+(v>0.25?1:0),0)*0.01).toFixed(1));
-// 1. todos os assentos e pontos de uso alcançáveis da soleira (Lia e NPC)
-(x=>0)("reach");const src=[4.5,7.5];
-for(const [id,v] of Object.entries(D.SEATS)){ for(const [nm,r,l] of [['Lia',0.25,true],['NPC',0.30,false]]){ if(!s.achar(s.base,src,v[3],r,l)) bad.push(id+'/'+nm);} }
-for(const [k,v] of Object.entries(D.STAND)){ if(k==='toalha_zefa'||k==='telhado') continue; if(!s.achar(s.base,src,[v[0],v[1]],0.25,true)) bad.push('stand '+k); }
-(x=>0)("reach");L("inalcançáveis:",bad);
-// 2. fase C1: toalha bloqueia; Lia chega ao banner
-s.fase('C1',true); const p=s.achar(s.c1,src,[10.1,1.95],0.25,true); L('C1 banner', !!p, p&&p.length);
-const T=D.TOALHA; L('centro andável na C1?', s.walk(s.c1,T.cx,T.cy,0.25,true));
-// 3. transição A -> B -> C1 -> C -> D com NPCs andando; checar presos
-for (const f of ['B','C1','C','D','A']) { s.fase(f,false); let t=0; while(t<240){ s.update(0.1); t+=0.1; } 
-  const pres=Object.values(s.npcs).filter(n=>n.vis&&(n.state==='preso')).map(n=>n.id); const and=Object.values(s.npcs).filter(n=>n.vis&&n.state==='andando').map(n=>n.id);
-  const vis=Object.values(s.npcs).filter(n=>n.vis).length; L(f,'visíveis',vis,'presos',pres,'andando',and); }
+// Testes do quintal (Etapa 8) — Node: node tests/quintal_suite.js
+// Alcance de assentos e pontos, bloqueio da toalha na fase C1, ninguém preso em nenhuma fase e falas por fase do caruru.
+const Q = require(__dirname + '/../quintal/quintal.js'), D = require(__dirname + '/../quintal/qdata.json');
+D.SPEED = { ze: 0.57, nonato: 1.1, junior: 1.7 };
+let pass = 0, fail = 0; const ok = (n, c, x) => { c ? pass++ : fail++; console.log((c ? 'PASS ' : 'FAIL ') + n + (x !== undefined && x !== '' ? ' · ' + x : '')); };
+const s = new Q.Sim(D); s.forcada = true;   // fase escolhida pelo teste, não pelo relógio
+
+// 1. todos os assentos e pontos de uso são alcançáveis a partir da soleira (Lia e NPC)
+const src = [4.5, 7.5], bad = [];
+for (const [id, v] of Object.entries(D.SEATS)) for (const [nm, r, l] of [['Lia', 0.25, true], ['NPC', 0.30, false]]) if (!s.achar(s.base, src, v[3], r, l)) bad.push(id + '/' + nm);
+for (const [k, v] of Object.entries(D.STAND)) { if (k === 'toalha_zefa' || k === 'telhado') continue; if (!s.achar(s.base, src, [v[0], v[1]], 0.25, true)) bad.push('stand ' + k); }
+ok('assentos e pontos alcançáveis da soleira', bad.length === 0, bad.join(','));
+
+// 2. fase C1: a toalha bloqueia o centro e a Lia ainda chega ao banner
+s.fase('C1', true);
+ok('C1: Lia chega ao banner', !!s.achar(s.c1, src, [10.1, 1.95], 0.25, true));
+ok('C1: o centro da toalha não é andável', !s.walk(s.c1, D.TOALHA.cx, D.TOALHA.cy, 0.25, true));
+
+// 3. transição entre fases com NPCs andando: ninguém preso, e quem deve estar em cena está
+for (const f of ['A', 'B', 'C1', 'C', 'D', 'A']) {
+  s.fase(f, false); for (let t = 0; t < 240; t += 0.1) s.update(0.1);
+  const esperados = Object.keys(D.FASE[f]).filter(k => k !== 'lia' && s.npcs[k]).sort();
+  const visiveis = Object.values(s.npcs).filter(n => n.vis).map(n => n.id).sort();
+  const presos = Object.values(s.npcs).filter(n => n.vis && n.state === 'preso').map(n => n.id);
+  ok('fase ' + f + ': ninguém preso', presos.length === 0, presos.join(','));
+  ok('fase ' + f + ': quem deve estar em cena está (' + esperados.length + ')', JSON.stringify(visiveis) === JSON.stringify(esperados), 'faltam/sobram: ' + esperados.filter(x => !visiveis.includes(x)).concat(visiveis.filter(x => !esperados.includes(x))).join(','));
+}
+
+// 4. falas por fase: a Áurea (e a Zefa) falam do que acontece naquela fase do caruru
+const fala = (id, fase) => { s.fase(fase, true); const n = s.npcs[id]; n.vis = true; s.lia.x = n.x; s.lia.y = n.y + 0.8; s.falar(id); return s.msg && s.msg.txt; };
+const fa = {}; for (const f of ['B', 'C1', 'C', 'D']) fa[f] = fala('aurea', f);
+ok('Áurea: uma fala diferente em cada fase', new Set(Object.values(fa)).size === 4, JSON.stringify(Object.values(fa).map(x => (x || '').slice(7, 30))));
+ok('Áurea (B) conta que deixou o balcão sem ninguém', /balcão sem ninguém/.test(fa.B || ''));
+ok('Áurea (C1) fala das crianças na toalha', /crianças|toalha/.test(fa.C1 || ''));
+ok('Áurea (D) fala da conversa sobre o Programa', /Programa/.test(fa.D || ''));
+ok('Zefa muda de fala entre preparo e mesa', fala('zefa', 'A') !== fala('zefa', 'C'));
+
+console.log('\n' + pass + ' ok · ' + fail + ' falhas'); process.exit(fail ? 1 : 0);

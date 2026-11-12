@@ -21,3 +21,7 @@ Reconstruir: `sh tools/build_all.sh`. Ele monta padaria, casa, rua, quintal e o 
 Dia: 07:00 às 19:00 em todos os ambientes (a padaria não fecha antes). Às 19:00 o shell encerra o dia. Com a meta da fase cumprida, o jogo segue para a próxima. Sem ela, "Recomeçar o dia" volta para a manhã e mantém as anotações.
 
 Tarde (12h–19h): em 1991 o elenco volta à rua, a mesa de dominó reabre e Dandara e Lúcia passam na padaria. Seu Raimundo sai de casa de novo às 15h. Em 1994 todos vão ao caruru no quintal e a rua fica vazia depois das 13h. A agenda está em `RD.tarde` (`sim/s13_rua_data.js`).
+
+1994 na padaria: às 12h15 a vó deixa o balcão e vai ao caruru. A padaria segue aberta e quem atende é a Lia. No quintal, as falas da Áurea e da Zefa mudam conforme a fase do caruru (`POR_FASE` em `quintal/quintal.js`).
+
+Testes: `node tests/<suite>.js` com `suite`, `casa_suite`, `rua_suite`, `social_suite`, `mundo_suite` e `quintal_suite`. Todas rodam sem falhas e de forma reprodutível.

@@ -110,11 +110,17 @@ Sim.VoCtrl = class {
     const s = v.plan && v.plan.shift(); if (!s) { v.plan = null; v.setState('Work'); v.setAnim('serve_idle'); v.face = 'down'; return; }
     if (s.go) { v.goTo(s.go[0], s.go[1]); v.setState('Walking'); v.setAnim('walk'); } else { v.act = Object.assign({ t: 0, fx: false }, s); v.setState('Interacting'); v.face = s.face || 'up'; v.setAnim(s.act); }
   }
+  // 1994: a vó fecha a conversa com a Lia, deixa o balcão sem ninguém e vai ao caruru da Dona Zefa (w.caruruSaida = minuto do dia). A padaria continua aberta; quem atende é a Lia.
+  saiParaCaruru(v) {
+    const w = this.w; this.saindo = true; if (w.cena === 'interior') w.dialogue.speak(v, 'Lia, o balcão fica com você. Vou ajudar a Zefa no caruru.');
+    const p = w.pontos.porta; this.startPlan(v, [{ go: [p[0], p[1] - 6] }]);
+  }
   tick(v, dt) {
     const w = this.w;
+    if (v.state === 'Away') return;
     if (v.dialogLia && v.state !== 'Serving') { v.setAnim('serve_give'); v.face = 'down'; return; }
     switch (v.state) {
-      case 'Walking': if (!v.stepMove(dt) && v.arrived) this.nextStep(v); break;
+      case 'Walking': if (!v.stepMove(dt) && v.arrived) { if (this.saindo) { this.saindo = false; this.foi = true; v.plan = null; v.path = []; v.setAnim('idle'); v.setState('Away'); v.loc = 'caruru'; w.bus.emit('vo_saiu', {}); } else this.nextStep(v); } break;
       case 'Interacting': { const a = v.act; a.t += dt; if (!a.fx && a.t > a.dur * .5) { a.fx = true; a.efeito && a.efeito(); } if (a.t > a.dur) this.nextStep(v); break; }
       case 'Serving': if (v.path.length) { v.stepMove(dt); if (!v.path.length) v.setAnim('serve_idle'); } else w.service.tickJob(v, dt); if (w.service.job && w.service.job.stage === 'ir' && v.path.length) { v.stepMove(dt); } break;
       default: this.work(v, dt);
@@ -123,6 +129,7 @@ Sim.VoCtrl = class {
   }
   work(v, dt) {
     const w = this.w, S = Sim.Data.dia, c = w.clock;
+    if (w.caruruSaida != null && !this.foi && !this.saindo && c.min >= w.caruruSaida && !w.service.job && !w.service.queue.length) { this.saiParaCaruru(v); return; }
     if (!this.opened && c.min >= c.at(S.abre)) { this.opened = true; this.abrir(v); return; }
     if (c.min >= 540 && !this.restocked) { this.restocked = true; this.startPlan(v, [{ go: w.pontos.forno }, { act: 'interact_high', dur: 3, face: 'up', efeito: () => { w.service.stock.pao += 12; w.service.stock.cafe += 6; w.bus.emit('reposicao', {}); w.reage('forno', 'aurea', 'forno'); } }, { go: w.pontos.vo_posto }]); return; }
     if (w.service.queue.length) { v.setAnim('serve_idle'); v.face = 'down'; return; }                          // com gente na fila ela não sai do balcão

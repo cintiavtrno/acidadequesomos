@@ -78,4 +78,20 @@ const fmt = m => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(Math
   ok('padaria atendeu clientes durante o dia', pad.stats.servidos >= 1, 'servidos ' + pad.stats.servidos + ' visitas ' + pad.stats.visitas);
   ok('sem duplicados ao fim', w.viagens.duplicados().length === 0);
 }
+// 6. 1994: a vó deixa o balcão às 12:30 e vai ao caruru; a padaria segue aberta, sem ela. Em 1991 ela fica no balcão o dia todo.
+for (const ano of [1991, 1994]) {
+  globalThis.MUNDO_ANO = ano;
+  const { w, pad } = mk(11); let err = null, antes, depois, tarde;
+  try { w.avancarAte(700); antes = { s: pad.npcs.aurea.state, loc: pad.npcs.aurea.loc }; w.avancarAte(800); depois = { s: pad.npcs.aurea.state, loc: pad.npcs.aurea.loc }; w.avancarAte(1100); tarde = { s: pad.npcs.aurea.state, aberta: pad.clock.isOpen(), fim: pad.clock.ended }; } catch (e) { err = e; }
+  delete globalThis.MUNDO_ANO;
+  ok(ano + ': sem exceção', !err, err && err.stack.split('\n').slice(0, 3).join(' | '));
+  ok(ano + ': às 11:40 a vó está na padaria', antes && antes.loc === 'padaria' && antes.s !== 'Away', JSON.stringify(antes));
+  if (ano === 1994) {
+    ok('1994: às 13:20 a vó já foi ao caruru', depois && depois.s === 'Away' && depois.loc === 'caruru', JSON.stringify(depois));
+    ok('1994: às 18:20 a padaria continua aberta, sem a vó', tarde && tarde.s === 'Away' && tarde.aberta && !tarde.fim, JSON.stringify(tarde));
+  } else {
+    ok('1991: às 13:20 a vó segue no balcão', depois && depois.loc === 'padaria' && depois.s !== 'Away', JSON.stringify(depois));
+    ok('1991: às 18:20 a vó segue no balcão', tarde && tarde.s !== 'Away' && tarde.aberta, JSON.stringify(tarde));
+  }
+}
 console.log('\n' + pass + ' passaram, ' + fail + ' falharam'); process.exit(fail ? 1 : 0);

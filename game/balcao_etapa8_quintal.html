@@ -1780,7 +1780,7 @@ const CharLib = {
     }
     acao() { const c = this.candidatos(); if (c.length) { c[0].run(); return c[0]; } return null; }
     examinar(k) { const L = this.lia, s = this.D.STAND[k]; if (s && k !== 'banner') L.face = s[2] === 'up' ? 'up' : s[2] === 'down' ? 'down' : s[2] === 'left' ? 'left' : 'right'; if (k === 'banner') L.face = 'up'; L.anim = 'interact'; L.fala = 1.1; this.msg = { txt: (this.normal && TXTN[k]) || TXT[k][1], t: 6 }; this.log.push(['examinar', k]); this.viu = this.viu || {}; this.viu[k] = 1; }
-    falar(id) { const n = this.npcs[id], L = this.lia; L.face = dir8(n.x - L.x, n.y - L.y); L.anim = 'talk'; L.fala = 1.2; this.msg = { txt: (this.D.CH[id][0].replace(/ \(.*/, '')) + ': ' + (FALA[id] || '…'), t: 6 }; this.log.push(['falar', id]); }
+    falar(id) { const n = this.npcs[id], L = this.lia; L.face = dir8(n.x - L.x, n.y - L.y); L.anim = 'talk'; L.fala = 1.2; this.msg = { txt: (this.D.CH[id][0].replace(/ \(.*/, '')) + ': ' + falaDe(id, this.fasen), t: 6 }; this.log.push(['falar', id]); }
     sentar(sid) { const s = this.D.SEATS[sid], L = this.lia; L.x = s[0]; L.y = s[1]; L.state = 'sentada'; L.seat = sid; L.anim = 'sit'; L.face = this.seatDir(sid); L.path = []; this.ocup[sid] = 'lia'; this.log.push(['sentar', sid]); }
     levantar() { const L = this.lia, sid = L.seat, ap = this.D.SEATS[sid][3]; L.x = ap[0]; L.y = ap[1]; L.state = 'livre'; L.anim = 'idle'; delete this.ocup[sid]; L.seat = null; }
     saindo() { const L = this.lia, s = this.D.OPEN.soleira; return L.y > this.D.D - 0.25 && L.x >= s.x0 && L.x <= s.x1; }
@@ -1817,7 +1817,26 @@ const CharLib = {
     portao: ['Olhar o portão de Rita', 'O portão dá para a casa de Dona Rita. Daqui se vê o telhado dela, com a lona e o balde no canto.'],
     servico: ['Tentar a porta de serviço', 'Ainda não. A porta de serviço dá para dentro da casa de Dona Zefa, e hoje é dia de quintal.'],
   };
-  const FALA = { zefa: 'Hoje a casa é de quem chegar. Primeiro as crianças, depois os grandes.', aurea: 'Deixei a padaria fechada pra vir. O pão fica pra amanhã.', raimundo: 'Caruru bom é o que junta gente.', dandara: 'Depois a gente conversa sobre o bairro, com calma.',
+  // Fala por fase: A preparo (12h) · B chegada (13h) · C1 crianças na toalha (14h) · C mesa dos grandes (15h) · D depois da mesa (16h30). Sem a fase, vale N e depois a fala única.
+  const POR_FASE = {
+    aurea: {
+      B: 'Trouxe o cesto de pães. Deixei o balcão sem ninguém pra vir, então hoje quem passa lá espera até amanhã. Hoje o dia é da Zefa.',
+      C1: 'Primeiro as crianças, na toalha. Sete pratos pra conferir, Lia. Vai com a Zefa, que eu cuido do pão.',
+      C: 'Come primeiro, menina. Depois eu te peço uma coisa, baixinho.',
+      D: 'A mesa já foi e agora a conversa vai para o Programa. Eu escuto mais do que falo. Se quiser saber, chegue perto da Dandara e da Zefa e fique quieta.',
+      N: 'Esta é a casa da Zefa. Hoje o dia é dela.',
+    },
+    zefa: {
+      A: 'Tem muito caruru pra fazer e pouca gente ainda. Pega uma tarefa comigo, Lia.',
+      B: 'Pode entrar. Hoje a casa é de quem chegar.',
+      C1: 'Primeiro as crianças, na toalha. Depois os grandes.',
+      C: 'A mesa está posta. Come, que a conversa vem depois.',
+      D: 'O prato foi, a conversa ficou. Senta onde quiser.',
+      N: 'Hoje o quintal está quieto.',
+    },
+  };
+  const falaDe = (id, fase) => { const p = POR_FASE[id]; return (p && (p[fase] || p.N)) || FALA[id] || '…'; };
+  const FALA = { zefa: 'Hoje a casa é de quem chegar. Primeiro as crianças, depois os grandes.', aurea: 'Hoje o dia é da Zefa.', raimundo: 'Caruru bom é o que junta gente.', dandara: 'Depois a gente conversa sobre o bairro, com calma.',
     ze: 'Vem, Lia, aprender a contar até seis.', nonato: 'Carreguei a mesa sozinho. Depois do prato, é dominó.', bela: 'Eu fico vendo a porta e o quintal.', cicera: 'Cadê o Júnior? Esse menino some.', junior: 'Eu sei um segredo do quintal!',
     tonho: 'Trouxe cocada. Onde eu ponho?', nena: 'Acarajé é de tarde, minha filha.', davi: 'Se me chamarem, eu toco baixinho.', lucia: 'Vim só acompanhar. Já já eu vou.', rita: 'Meu telhado precisa mesmo de conserto, viu?',
     caio: 'Eu e Bia ajudamos na padaria. Sobra sempre um pão pra mim.', bia: 'Dona Áurea me ensinou a sovar.' };

@@ -6,7 +6,7 @@
 
   class Walker {
     constructor(w, id) {
-      this.w = w; this.id = id; this.def = RD.pessoas[id]; this.x = -50; this.y = 230; this.face = 'down'; this.anim = 'idle'; this.at = Math.random() * 3; this.state = 'Away';
+      this.w = w; this.id = id; this.def = RD.pessoas[id]; this.x = -50; this.y = 230; this.face = 'down'; this.anim = 'idle'; this.at = w.rngVis() * 3; this.state = 'Away';
       this.path = []; this.i = 0; this.tw = 0; this.say = null; this.seat = null; this.alpha = 1; this.sitT = 0; this.from = null; this.to = null; this.fadeT = 0;
       this.task = null; this.espera = 0; this.cool = 0; this.greetAt = -999; this.estado = {}; this.loc = 'rua';
       this.vel = RD.vel[id] || 20;
@@ -18,7 +18,8 @@
 
   Sim.Rua.World = class {
     constructor(o) {
-      o = o || {}; this.scene = o.scene; this.seed = o.seed || 1991; this.rng = Sim.RNG(this.seed); this.bus = new Sim.EventSystem();
+      // rngVis: sorteio só visual (animação, pombos), separado do que decide o jogo e semeado: o dia fica reprodutível
+      o = o || {}; this.scene = o.scene; this.seed = o.seed || 1991; this.rng = Sim.RNG(this.seed); this.rngVis = Sim.RNG((this.seed || 1991) + 77); this.bus = new Sim.EventSystem();
       this.clock = new Sim.WorldClock({ start: o.start != null ? o.start : RD.dia.inicio, rate: o.rate || 0.25, openAt: RD.dia.inicio, closeAt: RD.dia.fim });
       this.integrado = !!o.integrado; this.lib = {}; this.liaFora = false; this.ag = this.integrado ? RD.agendaMundo() : JSON.parse(JSON.stringify(RD.agenda));
       this.W = RD.W; this.VH = RD.VH; this.persist = o.persist || {}; this.hooks = o.hooks || {};
@@ -33,7 +34,7 @@
       for (const k in RD.assentosRua) this.assentos[k] = { def: Object.assign({ id: k }, RD.assentosRua[k]), ocup: null };
       this.mesa = new MesaDomino(this);
       this.gato = { x: 186, y: yw(186) + 10, estado: 'dorme', at: 0, t: 0, alvo: null, vel: 0 };
-      this.pombos = [0, 1, 2].map(i => ({ x: 450 + i * 24, y: yw(470) + 40 + (i % 2) * 4, f: 0, at: Math.random() * 2, estado: 'bicando', alvo: null, home: [450 + i * 24, 40 + (i % 2) * 4], t: 0 }));
+      this.pombos = [0, 1, 2].map(i => ({ x: 450 + i * 24, y: yw(470) + 40 + (i % 2) * 4, f: 0, at: this.rngVis() * 2, estado: 'bicando', alvo: null, home: [450 + i * 24, 40 + (i % 2) * 4], t: 0 }));
       // posição inicial: quem não tem tarefa de 'sair' nasce Away
       this.liaTrust = {};
       this.social = new Sim.SocialMind(this, this.persist.soc);
@@ -177,7 +178,7 @@
     sentadoTick(n, dt) {
       const A = this.assentos[n.seat]; if (!A) return;
       if (!A.dominio) {                          // assento da rua: variação de animação
-        n.cool -= dt; if (n.cool <= 0) { n.cool = 4 + Math.random() * 6; n.setAnim(['sit', 'sit', 'think'][Math.floor(Math.random() * 3)]); }
+        n.cool -= dt; if (n.cool <= 0) { n.cool = 4 + this.rngVis() * 6; n.setAnim(['sit', 'sit', 'think'][Math.floor(this.rngVis() * 3)]); }
         if (n.id === 'lucia' && n.seat.startsWith('banco')) { n.setAnim(n.at % 6 < 3 ? 'think' : 'sit'); }
       }
     }
@@ -241,7 +242,7 @@
         p.at += dt; p.t -= dt;
         const homeX = p.home[0], homeY = yw(homeX) + p.home[1];
         const perto = gente.find(q => Math.hypot(q.x - p.x, (q.y - p.y) * 1.2) < 26);
-        if (perto && p.estado !== 'foge') { p.estado = 'foge'; p.t = 3 + Math.random() * 2; const dir = p.x < perto.x ? -1 : 1; p.alvo = [clamp(p.x + dir * (40 + Math.random() * 30), 20, this.W - 20), clamp(p.y + (Math.random() - .5) * 8, yw(p.x) + 30, this.VH - 4)]; }
+        if (perto && p.estado !== 'foge') { p.estado = 'foge'; p.t = 3 + this.rngVis() * 2; const dir = p.x < perto.x ? -1 : 1; p.alvo = [clamp(p.x + dir * (40 + this.rngVis() * 30), 20, this.W - 20), clamp(p.y + (this.rngVis() - .5) * 8, yw(p.x) + 30, this.VH - 4)]; }
         if (p.estado === 'foge') { const dx = p.alvo[0] - p.x, dy = p.alvo[1] - p.y, d = Math.hypot(dx, dy); if (d > 1) { p.x += dx / d * 70 * dt; p.y += dy / d * 70 * dt; p.f = 0; p.face = dx < 0 ? 'left' : 'right'; } if (p.t <= 0) { p.estado = 'volta'; } }
         else if (p.estado === 'volta') { const dx = homeX - p.x, dy = homeY - p.y, d = Math.hypot(dx, dy); if (d > 1.5) { p.x += dx / d * 12 * dt; p.y += dy / d * 12 * dt; p.f = 0; p.face = dx < 0 ? 'left' : 'right'; } else p.estado = 'bicando'; }
         else { p.f = (Math.floor(p.at * 2.6 + p.home[0]) % 3 === 0) ? 1 : 0; }
