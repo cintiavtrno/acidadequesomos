@@ -1,0 +1,947 @@
+{
+ "cena": "padaria",
+ "seats": [
+  {
+   "id": "chair_a_back",
+   "x": 312,
+   "y": 183,
+   "face": "down",
+   "sort": "after",
+   "base": 186,
+   "mesa": "A",
+   "stand": [
+    312,
+    192
+   ]
+  },
+  {
+   "id": "chair_b_back",
+   "x": 376,
+   "y": 201,
+   "face": "down",
+   "sort": "after",
+   "base": 204,
+   "mesa": "B",
+   "stand": [
+    376,
+    210
+   ]
+  },
+  {
+   "id": "chair_a_l",
+   "x": 293,
+   "y": 195,
+   "face": "right",
+   "sort": "after",
+   "base": 198,
+   "mesa": "A",
+   "stand": [
+    293,
+    204
+   ]
+  },
+  {
+   "id": "chair_a_r",
+   "x": 331,
+   "y": 195,
+   "face": "left",
+   "sort": "after",
+   "base": 198,
+   "mesa": "A",
+   "stand": [
+    331,
+    204
+   ]
+  },
+  {
+   "id": "chair_b_l",
+   "x": 357,
+   "y": 213,
+   "face": "right",
+   "sort": "after",
+   "base": 216,
+   "mesa": "B",
+   "stand": [
+    357,
+    222
+   ]
+  },
+  {
+   "id": "chair_b_f",
+   "x": 376,
+   "y": 226,
+   "face": "up",
+   "sort": "before",
+   "base": 229,
+   "mesa": "B",
+   "stand": [
+    376,
+    235
+   ]
+  },
+  {
+   "id": "banco_1",
+   "x": 355,
+   "y": 147,
+   "face": "down",
+   "sort": "after",
+   "base": 150,
+   "mesa": "banco",
+   "stand": [
+    355,
+    158
+   ]
+  },
+  {
+   "id": "banco_2",
+   "x": 373,
+   "y": 147,
+   "face": "down",
+   "sort": "after",
+   "base": 150,
+   "mesa": "banco",
+   "stand": [
+    373,
+    158
+   ]
+  }
+ ],
+ "pontos": {
+  "porta": [
+   240,
+   231
+  ],
+  "fila": [
+   [
+    150,
+    197
+   ],
+   [
+    178,
+    197
+   ],
+   [
+    206,
+    197
+   ],
+   [
+    234,
+    197
+   ]
+  ],
+  "vitrine": [
+   [
+    104,
+    196
+   ],
+   [
+    128,
+    196
+   ]
+  ],
+  "vo_posto": [
+   196,
+   168
+  ],
+  "vo_x": [
+   124,
+   236
+  ],
+  "forno": [
+   190,
+   160
+  ],
+  "bancada": [
+   262,
+   154
+  ],
+  "altar": [
+   364,
+   142
+  ],
+  "filtro": [
+   114,
+   222
+  ],
+  "escada": [
+   393,
+   140
+  ],
+  "radio": [
+   326,
+   152
+  ],
+  "caderneta": [
+   236,
+   194
+  ],
+  "janela": [
+   262,
+   154
+  ]
+ },
+ "instancias": [
+  {
+   "inst": "counter",
+   "asset": "balcao",
+   "sprite": "balcao",
+   "sx": 72,
+   "sy": 128,
+   "base": 185,
+   "layer": "floor",
+   "collide": [
+    72,
+    170,
+    256,
+    187
+   ]
+  },
+  {
+   "inst": "chair_a_back",
+   "asset": "cadeira_frente",
+   "sprite": "cadeira_frente",
+   "sx": 306,
+   "sy": 158,
+   "base": 186,
+   "layer": "floor",
+   "collide": [
+    306,
+    183,
+    318,
+    188
+   ]
+  },
+  {
+   "inst": "chair_b_back",
+   "asset": "cadeira_frente_b",
+   "sprite": "cadeira_frente_b",
+   "sx": 370,
+   "sy": 176,
+   "base": 204,
+   "layer": "floor",
+   "collide": [
+    370,
+    201,
+    382,
+    206
+   ]
+  },
+  {
+   "inst": "table_a",
+   "asset": "mesa_redonda",
+   "sprite": "mesa_redonda",
+   "sx": 300,
+   "sy": 170,
+   "base": 195,
+   "layer": "floor",
+   "collide": [
+    300,
+    188,
+    324,
+    199
+   ]
+  },
+  {
+   "inst": "table_b",
+   "asset": "mesa_toalha",
+   "sprite": "mesa_toalha",
+   "sx": 364,
+   "sy": 188,
+   "base": 213,
+   "layer": "floor",
+   "collide": [
+    364,
+    206,
+    388,
+    217
+   ]
+  },
+  {
+   "inst": "chair_a_l",
+   "asset": "cadeira_perfil_e",
+   "sprite": "cadeira_perfil_e",
+   "sx": 287,
+   "sy": 170,
+   "base": 198,
+   "layer": "floor",
+   "collide": [
+    287,
+    195,
+    299,
+    200
+   ]
+  },
+  {
+   "inst": "chair_a_r",
+   "asset": "cadeira_perfil_d",
+   "sprite": "cadeira_perfil_d",
+   "sx": 325,
+   "sy": 170,
+   "base": 198,
+   "layer": "floor",
+   "collide": [
+    325,
+    195,
+    337,
+    200
+   ]
+  },
+  {
+   "inst": "chair_b_l",
+   "asset": "cadeira_perfil_e_b",
+   "sprite": "cadeira_perfil_e_b",
+   "sx": 351,
+   "sy": 188,
+   "base": 216,
+   "layer": "floor",
+   "collide": [
+    351,
+    213,
+    363,
+    218
+   ]
+  },
+  {
+   "inst": "chair_b_f",
+   "asset": "cadeira_costas",
+   "sprite": "cadeira_costas",
+   "sx": 370,
+   "sy": 206,
+   "base": 229,
+   "layer": "floor",
+   "collide": [
+    370,
+    226,
+    382,
+    231
+   ]
+  },
+  {
+   "inst": "aparador",
+   "asset": "aparador",
+   "sprite": "aparador",
+   "sx": 74,
+   "sy": 174,
+   "base": 235,
+   "layer": "floor",
+   "collide": [
+    73,
+    206,
+    103,
+    237
+   ]
+  },
+  {
+   "inst": "banco_altar",
+   "asset": "banco_madeira",
+   "sprite": "banco_madeira",
+   "sx": 345,
+   "sy": 121,
+   "base": 150,
+   "layer": "floor",
+   "collide": [
+    346,
+    144,
+    382,
+    150
+   ],
+   "frames": 1
+  },
+  {
+   "inst": "planta_canto",
+   "asset": "planta_vaso",
+   "sprite": "planta_vaso",
+   "sx": 374,
+   "sy": 140,
+   "base": 172,
+   "layer": "floor",
+   "collide": [
+    392,
+    168,
+    404,
+    172
+   ],
+   "frames": 1
+  },
+  {
+   "inst": "quadro_1",
+   "asset": "quadro_bonfim",
+   "sprite": "quadro_bonfim",
+   "sx": 316,
+   "sy": 47,
+   "base": 62,
+   "layer": "wall",
+   "collide": null,
+   "frames": 1
+  },
+  {
+   "inst": "fotos_1",
+   "asset": "fotografias",
+   "sprite": "fotografias",
+   "sx": 383,
+   "sy": 52,
+   "base": 66,
+   "layer": "wall",
+   "collide": null,
+   "frames": 1
+  },
+  {
+   "inst": "prateleira_1",
+   "asset": "prateleira_louca",
+   "sprite": "prateleira_louca",
+   "sx": 231,
+   "sy": 42,
+   "base": 54,
+   "layer": "wall",
+   "collide": null,
+   "frames": 1
+  },
+  {
+   "inst": "vela_1",
+   "asset": "vela_altar",
+   "sprite": "vela_altar#0",
+   "sx": 355,
+   "sy": 84,
+   "base": 85,
+   "layer": "wall",
+   "collide": null,
+   "frames": 2,
+   "visivel_se": [
+    "altar_vela",
+    1
+   ],
+   "fps": 6
+  },
+  {
+   "inst": "brasa_1",
+   "asset": "brasa_forno",
+   "sprite": "brasa_forno#0",
+   "sx": 149,
+   "sy": 133,
+   "base": 139,
+   "layer": "wall",
+   "collide": null,
+   "frames": 2,
+   "visivel_se": [
+    "forno_aceso",
+    1
+   ],
+   "fps": 6
+  },
+  {
+   "inst": "gaveta_1",
+   "asset": "gaveta_balcao_aberta",
+   "sprite": "gaveta_balcao_aberta",
+   "sx": 186,
+   "sy": 163,
+   "base": 185.5,
+   "layer": "front",
+   "collide": null,
+   "frames": 1,
+   "states": [
+    "fechada",
+    "aberta"
+   ],
+   "visivel_se": [
+    "gaveta_1",
+    1
+   ]
+  },
+  {
+   "inst": "porta_escada_1",
+   "asset": "porta_escada_aberta",
+   "sprite": "porta_escada_aberta",
+   "sx": 382,
+   "sy": 73,
+   "base": 127,
+   "layer": "wall",
+   "collide": null,
+   "frames": 1,
+   "states": [
+    "fechada",
+    "aberta"
+   ],
+   "visivel_se": [
+    "porta_escada_1",
+    1
+   ]
+  }
+ ],
+ "interativos": [
+  {
+   "id": "table_a",
+   "asset": "mesa_redonda",
+   "nome": "Mesa redonda",
+   "classe": "UTILIZAVEL",
+   "tipo": "usar",
+   "rect": [
+    300,
+    170,
+    24,
+    26
+   ],
+   "stand": [
+    312,
+    207
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Mesa redonda de madeira para dois a quatro lugares."
+  },
+  {
+   "id": "table_b",
+   "asset": "mesa_toalha",
+   "nome": "Mesa com toalha xadrez",
+   "classe": "UTILIZAVEL",
+   "tipo": "usar",
+   "rect": [
+    364,
+    188,
+    24,
+    26
+   ],
+   "stand": [
+    396,
+    214
+   ],
+   "face": "left",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Mesa redonda com toalha xadrez vermelha."
+  },
+  {
+   "id": "chair_a_l",
+   "asset": "cadeira_perfil_e",
+   "nome": "Cadeira (perfil esquerdo)",
+   "classe": "UTILIZAVEL",
+   "tipo": "usar",
+   "rect": [
+    287,
+    170,
+    12,
+    30
+   ],
+   "stand": [
+    278,
+    201
+   ],
+   "face": "right",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": ""
+  },
+  {
+   "id": "chair_a_r",
+   "asset": "cadeira_perfil_d",
+   "nome": "Cadeira (perfil direito)",
+   "classe": "UTILIZAVEL",
+   "tipo": "usar",
+   "rect": [
+    325,
+    170,
+    13,
+    30
+   ],
+   "stand": [
+    346,
+    201
+   ],
+   "face": "left",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": ""
+  },
+  {
+   "id": "aparador",
+   "asset": "filtro_barro",
+   "nome": "Filtro de barro",
+   "classe": "UTILIZAVEL",
+   "tipo": "usar",
+   "rect": [
+    75,
+    176,
+    24,
+    40
+   ],
+   "stand": [
+    114,
+    222
+   ],
+   "face": "left",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Filtro de barro sobre suporte de madeira."
+  },
+  {
+   "id": "banco_altar",
+   "asset": "banco_madeira",
+   "nome": "Banco de madeira com encosto",
+   "classe": "UTILIZAVEL",
+   "tipo": "usar",
+   "rect": [
+    345,
+    121,
+    38,
+    30
+   ],
+   "stand": [
+    364,
+    159
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Banco comprido de madeira, encostado na parede."
+  },
+  {
+   "id": "quadro_1",
+   "asset": "quadro_bonfim",
+   "nome": "Quadro do Bonfim",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    316,
+    47,
+    20,
+    15
+   ],
+   "stand": [
+    326,
+    152
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 3,
+   "desc": "Quadro com a colina da igreja e fitinhas coloridas."
+  },
+  {
+   "id": "fotos_1",
+   "asset": "fotografias",
+   "nome": "Fotografias emolduradas",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    383,
+    52,
+    23,
+    12
+   ],
+   "stand": [
+    395,
+    143
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 3,
+   "desc": "Três retratos antigos em molduras pequenas."
+  },
+  {
+   "id": "gaveta_1",
+   "asset": "gaveta_balcao_aberta",
+   "nome": "Gaveta do balcão",
+   "classe": "EXAMINAVEL",
+   "tipo": "alternar",
+   "rect": [
+    186,
+    165,
+    32,
+    18
+   ],
+   "stand": [
+    202,
+    195
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Gaveta com papéis, lápis e um caderno.",
+   "states": [
+    "fechada",
+    "aberta"
+   ]
+  },
+  {
+   "id": "porta_escada_1",
+   "asset": "porta_escada_aberta",
+   "nome": "Porta da escada",
+   "classe": "UTILIZAVEL",
+   "tipo": "alternar",
+   "rect": [
+    382,
+    73,
+    22,
+    56
+   ],
+   "stand": [
+    393,
+    140
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Porta que sobe para a casa da Vó.",
+   "states": [
+    "fechada",
+    "aberta"
+   ]
+  },
+  {
+   "id": "forno_lenha",
+   "asset": "forno_lenha",
+   "nome": "Forno de lenha",
+   "classe": "FUNCIONAL",
+   "tipo": "funcao",
+   "rect": [
+    118,
+    90,
+    90,
+    62
+   ],
+   "stand": [
+    190,
+    160
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 2,
+   "desc": "Forno de alvenaria com chaminé; fica atrás do balcão."
+  },
+  {
+   "id": "bancada",
+   "asset": "bancada",
+   "nome": "Bancada de trabalho",
+   "classe": "UTILIZAVEL",
+   "tipo": "usar",
+   "rect": [
+    222,
+    100,
+    82,
+    50
+   ],
+   "stand": [
+    262,
+    154
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Bancada onde a massa é aberta; janela do quintal acima."
+  },
+  {
+   "id": "estante",
+   "asset": "estante",
+   "nome": "Estante",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    307,
+    67,
+    40,
+    66
+   ],
+   "stand": [
+    326,
+    152
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 2,
+   "desc": "Estante com rádio, potes, latas e cestos."
+  },
+  {
+   "id": "altar_sao_jorge",
+   "asset": "altar_sao_jorge",
+   "nome": "Altar de São Jorge",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    348,
+    46,
+    31,
+    54
+   ],
+   "stand": [
+    364,
+    142
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 2,
+   "desc": "Nicho com a imagem do santo, vela, copo d'água e flores."
+  },
+  {
+   "id": "lousa_fiado",
+   "asset": "lousa_fiado",
+   "nome": "Lousa do fiado",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    206,
+    56,
+    27,
+    29
+   ],
+   "stand": [
+    216,
+    158
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 2,
+   "desc": "Lousa do cardápio com o aviso do fiado."
+  },
+  {
+   "id": "calendario",
+   "asset": "calendario",
+   "nome": "Calendário",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    282,
+    70,
+    16,
+    21
+   ],
+   "stand": [
+    298,
+    154
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 3,
+   "desc": "Calendário de parede."
+  },
+  {
+   "id": "radio",
+   "asset": "radio",
+   "nome": "Rádio de pilha",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    312,
+    76,
+    14,
+    11
+   ],
+   "stand": [
+    326,
+    152
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 3,
+   "desc": "Rádio de pilha na estante."
+  },
+  {
+   "id": "caderneta",
+   "asset": "caderneta",
+   "nome": "Caderneta do fiado",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    231,
+    153,
+    11,
+    6
+   ],
+   "stand": [
+    236,
+    194
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 3,
+   "desc": "Caderneta de capa vermelha, sobre o balcão."
+  },
+  {
+   "id": "caixa",
+   "asset": "caixa",
+   "nome": "Caixa registradora",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    206,
+    143,
+    22,
+    10
+   ],
+   "stand": [
+    217,
+    194
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 3,
+   "desc": "Caixa registradora de teclas."
+  },
+  {
+   "id": "vitrine",
+   "asset": "vitrine",
+   "nome": "Vitrine de pães e bolos",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    88,
+    131,
+    64,
+    26
+   ],
+   "stand": [
+    120,
+    194
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Vitrine de vidro com pães e bolos do dia."
+  },
+  {
+   "id": "janela_quintal",
+   "asset": "janela_quintal",
+   "nome": "Janela do quintal",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    232,
+    58,
+    62,
+    46
+   ],
+   "stand": [
+    262,
+    154
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 2,
+   "desc": "Janela com vista para as folhagens do quintal."
+  }
+ ],
+ "colisao_arquitetura": [
+  [
+   118,
+   132,
+   208,
+   152
+  ],
+  [
+   204,
+   132,
+   226,
+   147
+  ],
+  [
+   222,
+   132,
+   304,
+   149
+  ],
+  [
+   306,
+   132,
+   348,
+   143
+  ]
+ ]
+}

@@ -1,0 +1,2596 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O balcão da vó — Etapa 3: objetos</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #140f12; color: #e9ddcb; font: 13px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  #app { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100%; padding: 10px 10px 8px; gap: 8px; }
+  #frame { position: relative; line-height: 0; background: #000; box-shadow: 0 0 0 1px #3a2e30; }
+  canvas { display: block; image-rendering: pixelated; image-rendering: crisp-edges; touch-action: none; cursor: pointer; }
+  #hud { width: 100%; max-width: 960px; display: flex; flex-wrap: wrap; gap: 6px 18px; justify-content: space-between; color: #cdbfae; }
+  #hud b { color: #f3e7d4; font-weight: 600; }
+  #hud .k { display: inline-block; padding: 0 5px; border: 1px solid #5a4a48; border-radius: 3px; font-size: 11px; color: #e9ddcb; background: #1e1618; }
+  #hud button { font: inherit; color: #e9ddcb; background: #1e1618; border: 1px solid #5a4a48; border-radius: 4px; padding: 2px 8px; cursor: pointer; }
+  #hud button[aria-pressed="true"] { background: #4a3a2c; border-color: #b78a52; }
+  #msg { min-height: 1.4em; color: #f0c98c; }
+  #scene { color: #9fc3b4; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="frame"><canvas id="c" width="480" height="270" aria-label="Cenário da rua e da padaria"></canvas></div>
+  <div id="hud">
+    <div><b id="scene">Rua</b> · <span id="cam">câmera lateral ortográfica</span></div>
+    <div id="msg" aria-live="polite"></div>
+    <div>
+      <span class="k">←→</span> / <span class="k">A D</span> andar &nbsp;
+      <span class="k">↑↓</span> / <span class="k">W S</span> profundidade (interior) &nbsp;
+      <span class="k">E</span> porta / interagir / falar com a Vó &nbsp; toque/clique: ir até lá
+    </div>
+    <div>
+      <button id="bT" aria-pressed="false" title="T">Bonecos de escala</button>
+      <button id="bR" aria-pressed="false" title="R">Régua (m)</button>
+      <button id="bC" aria-pressed="false" title="C">Colisões</button>
+      <button id="bI" aria-pressed="false" title="I">Inspeção (debug)</button>
+    </div>
+    <div id="zoombar" style="width:100%;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <b>Zoom</b>
+      <button id="bZm" title="Afastar ( − )" aria-label="Afastar">−</button>
+      <button id="bZp" title="Aproximar ( + )" aria-label="Aproximar">+</button>
+      <button id="bZr" title="Voltar ao enquadramento original ( 0 )">Enquadramento original</button>
+      <span id="zlabel" style="color:#f0c98c"></span>
+      <span style="color:#8f8173">roda do mouse: aproxima/afasta · duplo clique: alterna · arrastar: move a câmera</span>
+    </div>
+    <div style="width:100%;color:#8f8173">1 m = 24 px · Lia 1,38 m · Vó Áurea ~1,62 m · botão «Bonecos de escala» mostra as réguas cinzas (33 px / 42 px) · clique num objeto da padaria: Lia vai até ele e interage</div>
+  </div>
+</div>
+<script>window.addEventListener("error",e=>document.title+=" ERR:"+e.message+"@"+e.lineno);window.addEventListener("unhandledrejection",e=>document.title+=" REJ:"+e.reason+" "+(e.reason&&e.reason.stack||"").split("\n").slice(0,3).join("|"));
+// ===== chars.js — sistema de personagens reutilizável (O balcão da vó · Etapa 2) =====
+// Cada personagem × câmera tem uma folha (PNG) + atlas (JSON). Células 40×52, âncora = pés (20,46).
+// Folhas: <quem>_side (rua, 4 direções) e <quem>_tq (interior 3/4, 8 direções). Nunca se misturam perspectivas.
+const CharLib = {
+  atlas: {}, img: {},
+  init(atlases, images) { this.atlas = atlases; this.img = images; },
+  key(who, persp) { return who + '_' + persp; },
+  row(who, persp, anim, dir) {
+    const a = this.atlas[this.key(who, persp)]; if (!a) return null;
+    return a.rows[anim + '/' + dir] || a.rows[anim + '/down'] || null;
+  },
+  // direção de tela (8 dir.) a partir de um vetor de movimento; 'down' = de frente para a câmera
+  dir8(dx, dy) {
+    if (!dx && !dy) return null;
+    const v = dy < 0 ? 'up' : dy > 0 ? 'down' : '', h = dx < 0 ? 'left' : dx > 0 ? 'right' : '';
+    return v && h ? v + '_' + h : (v || h);
+  },
+  dir4(dx, dy) { if (dx) return dx < 0 ? 'left' : 'right'; if (dy) return dy < 0 ? 'up' : 'down'; return null; },
+  speedPx(who) { return this.atlas[this.key(who, 'tq')].speed_mps * 24; },     // px/s horizontal; 1 m = 24 px
+  frameOf(info, t) { const k = Math.floor(t * info.fps); return info.loop ? k % info.n : Math.min(info.n - 1, k); },
+  duration(who, persp, anim, dir) { const i = this.row(who, persp, anim, dir); return i ? i.n / i.fps : 0; },
+  // c = { who, persp, x, y, anim, dir, t }  (x,y = ponto entre os pés, em coordenadas de tela já deslocadas)
+  draw(ctx, c, opt) {
+    opt = opt || {};
+    const a = this.atlas[this.key(c.who, c.persp)], img = this.img[this.key(c.who, c.persp)]; if (!a || !img) return;
+    const info = this.row(c.who, c.persp, c.anim, c.dir) || this.row(c.who, c.persp, 'idle', 'down'); if (!info) return;
+    const k = this.frameOf(info, c.t), P = a.pad, [W, H] = a.cell, px = Math.round(c.x), py = Math.round(c.y);
+    if (opt.shadow !== false) {
+      ctx.fillStyle = 'rgba(18,10,28,0.34)';
+      const w = c.who === 'lia' ? 4 : 5;
+      ctx.fillRect(px - w, py - 1, w * 2, 1); ctx.fillRect(px - w - 1, py, w * 2 + 2, 1); ctx.fillRect(px - w + 1, py + 1, w * 2 - 2, 1);
+    }
+    ctx.save();
+    if (opt.alpha != null) ctx.globalAlpha = opt.alpha;
+    if (opt.clipBelowY != null) { ctx.beginPath(); ctx.rect(0, 0, 4096, opt.clipBelowY); ctx.clip(); }
+    ctx.drawImage(img, P + k * (W + P), P + info.row * (H + P), W, H, px - a.anchor[0], py - a.anchor[1], W, H);
+    ctx.restore();
+  }
+};
+
+// ===== objects.js — sistema de objetos reutilizável (O balcão da vó · Etapa 3) =====
+// Catálogo (assets/objects/catalog.json) + cena (scene_padaria.json). Cada objeto: categoria, classe, dimensão, apoio (âncora), colisão, interação, camada.
+// Camadas: wall (parede, antes de tudo) · floor (ordenado pelos pés) · on (apoiado em outro objeto) · front (sobreposto à frente de um móvel).
+const ObjectSys = {
+  cat: null, scene: null, imgs: {}, bySprite: {}, state: {}, handlers: {}, t: 0,
+  init(cat, scene, imgs) {
+    this.cat = cat; this.scene = scene; this.imgs = imgs;
+    for (const a of cat.assets) this.bySprite[a.sprite] = a;
+    for (const i of scene.interativos) if (i.states || i.tipo === 'alternar') this.state[i.id] = 0;
+    this.solids = scene.colisao_arquitetura.concat(scene.instancias.filter(i => i.collide).map(i => i.collide));
+  },
+  on(ev, fn) { (this.handlers[ev] = this.handlers[ev] || []).push(fn); },
+  emit(ev, d) { (this.handlers[ev] || []).forEach(f => f(d)); },
+  visible(i) { return !i.visivel_se || (this.state[i.visivel_se[0]] || 0) === i.visivel_se[1]; },
+  drawInst(ctx, i) {
+    let key = i.sprite; if (i.frames > 1) key = i.asset + '#' + (Math.floor(this.t * (i.fps || 6)) % i.frames);
+    const a = this.bySprite[key]; if (!a) return;
+    const [x, y, w, h] = a.rect; ctx.drawImage(this.imgs['obj_' + a.categoria], x, y, w, h, i.sx, i.sy, w, h);
+  },
+  layer(name) { return this.scene.instancias.filter(i => i.layer === name && this.visible(i)); },
+  // entidades ordenáveis por profundidade (pés): floor, on e front
+  entities(ctx) {
+    return this.scene.instancias.filter(i => i.layer !== 'wall' && this.visible(i)).map(i => ({ y: i.base, draw: () => this.drawInst(ctx, i) }));
+  },
+  drawWall(ctx) { for (const i of this.layer('wall')) this.drawInst(ctx, i); },
+  hit(x, y) { for (const o of this.scene.interativos) { const [a, b, w, h] = o.rect; if (x >= a && x < a + w && y >= b && y < b + h) return o; } return null; },
+  toggle(id) { const o = this.scene.interativos.find(i => i.id === id); const n = (o && o.states ? o.states.length : 2); this.state[id] = ((this.state[id] || 0) + 1) % n; this.emit('estado', { id, estado: this.state[id], nome: o && o.states ? o.states[this.state[id]] : this.state[id] }); return this.state[id]; },
+  tick(dt) { this.t += dt; }
+};
+
+const ASSETS = {"street_far": "../assets/street_far.png", "street_world": "../assets/street_world.png", "bakery_interior_base": "../assets/bakery_interior_base.png", "mannequin_adult": "../assets/mannequin_adult.png", "mannequin_lia": "../assets/mannequin_lia.png", "prop_counter": "../assets/prop_counter.png", "prop_chair_a_back": "../assets/prop_chair_a_back.png", "prop_chair_b_back": "../assets/prop_chair_b_back.png", "prop_table_a": "../assets/prop_table_a.png", "prop_table_b": "../assets/prop_table_b.png", "prop_chair_a_l": "../assets/prop_chair_a_l.png", "prop_chair_a_r": "../assets/prop_chair_a_r.png", "prop_chair_b_l": "../assets/prop_chair_b_l.png", "prop_chair_b_f": "../assets/prop_chair_b_f.png", "prop_aparador": "../assets/prop_aparador.png", "lia_side": "../assets/chars/lia_side.png", "lia_tq": "../assets/chars/lia_tq.png", "aurea_side": "../assets/chars/aurea_side.png", "aurea_tq": "../assets/chars/aurea_tq.png", "obj_mobiliario": "../assets/objects/mobiliario.png", "obj_equipamentos": "../assets/objects/equipamentos.png", "obj_decorativos": "../assets/objects/decorativos.png", "obj_interativos": "../assets/objects/interativos.png"};
+const CHARATLAS = {"lia_side": {"cell": [40, 52], "anchor": [20, 46], "pad": 2, "cols": 8, "persp": "side", "rows": {"idle/down": {"row": 0, "n": 4, "fps": 2.0, "loop": true}, "idle/right": {"row": 1, "n": 4, "fps": 2.0, "loop": true}, "idle/up": {"row": 2, "n": 4, "fps": 2.0, "loop": true}, "idle/left": {"row": 3, "n": 4, "fps": 2.0, "loop": true}, "walk/down": {"row": 4, "n": 8, "fps": 11.428571428571429, "loop": true}, "walk/right": {"row": 5, "n": 8, "fps": 11.428571428571429, "loop": true}, "walk/up": {"row": 6, "n": 8, "fps": 11.428571428571429, "loop": true}, "walk/left": {"row": 7, "n": 8, "fps": 11.428571428571429, "loop": true}, "turn/down": {"row": 8, "n": 2, "fps": 6.0, "loop": false}, "turn/right": {"row": 9, "n": 2, "fps": 6.0, "loop": false}, "turn/up": {"row": 10, "n": 2, "fps": 6.0, "loop": false}, "turn/left": {"row": 11, "n": 2, "fps": 6.0, "loop": false}, "talk/down": {"row": 12, "n": 4, "fps": 6.0, "loop": true}, "talk/right": {"row": 13, "n": 4, "fps": 6.0, "loop": true}, "talk/up": {"row": 14, "n": 4, "fps": 6.0, "loop": true}, "talk/left": {"row": 15, "n": 4, "fps": 6.0, "loop": true}, "interact/down": {"row": 16, "n": 4, "fps": 7.0, "loop": false}, "interact/right": {"row": 17, "n": 4, "fps": 7.0, "loop": false}, "interact/up": {"row": 18, "n": 4, "fps": 7.0, "loop": false}, "interact/left": {"row": 19, "n": 4, "fps": 7.0, "loop": false}, "interact_high/down": {"row": 20, "n": 4, "fps": 7.0, "loop": false}, "interact_high/right": {"row": 21, "n": 4, "fps": 7.0, "loop": false}, "interact_high/up": {"row": 22, "n": 4, "fps": 7.0, "loop": false}, "interact_high/left": {"row": 23, "n": 4, "fps": 7.0, "loop": false}}, "speed_mps": 1.2714285714285716, "scale": 0.89, "gait": {"T": 0.7, "step": 0.5, "lift": 0.085, "bob": 0.02, "arm": 0.62, "lean": 0.085, "sway": 0.014, "head": 0.03, "hand_out": 0.12}}, "lia_tq": {"cell": [40, 52], "anchor": [20, 46], "pad": 2, "cols": 8, "persp": "tq", "rows": {"idle/down": {"row": 0, "n": 4, "fps": 2.0, "loop": true}, "idle/down_right": {"row": 1, "n": 4, "fps": 2.0, "loop": true}, "idle/right": {"row": 2, "n": 4, "fps": 2.0, "loop": true}, "idle/up_right": {"row": 3, "n": 4, "fps": 2.0, "loop": true}, "idle/up": {"row": 4, "n": 4, "fps": 2.0, "loop": true}, "idle/up_left": {"row": 5, "n": 4, "fps": 2.0, "loop": true}, "idle/left": {"row": 6, "n": 4, "fps": 2.0, "loop": true}, "idle/down_left": {"row": 7, "n": 4, "fps": 2.0, "loop": true}, "walk/down": {"row": 8, "n": 8, "fps": 11.428571428571429, "loop": true}, "walk/down_right": {"row": 9, "n": 8, "fps": 11.428571428571429, "loop": true}, "walk/right": {"row": 10, "n": 8, "fps": 11.428571428571429, "loop": true}, "walk/up_right": {"row": 11, "n": 8, "fps": 11.428571428571429, "loop": true}, "walk/up": {"row": 12, "n": 8, "fps": 11.428571428571429, "loop": true}, "walk/up_left": {"row": 13, "n": 8, "fps": 11.428571428571429, "loop": true}, "walk/left": {"row": 14, "n": 8, "fps": 11.428571428571429, "loop": true}, "walk/down_left": {"row": 15, "n": 8, "fps": 11.428571428571429, "loop": true}, "turn/down": {"row": 16, "n": 2, "fps": 6.0, "loop": false}, "turn/down_right": {"row": 17, "n": 2, "fps": 6.0, "loop": false}, "turn/right": {"row": 18, "n": 2, "fps": 6.0, "loop": false}, "turn/up_right": {"row": 19, "n": 2, "fps": 6.0, "loop": false}, "turn/up": {"row": 20, "n": 2, "fps": 6.0, "loop": false}, "turn/up_left": {"row": 21, "n": 2, "fps": 6.0, "loop": false}, "turn/left": {"row": 22, "n": 2, "fps": 6.0, "loop": false}, "turn/down_left": {"row": 23, "n": 2, "fps": 6.0, "loop": false}, "talk/down": {"row": 24, "n": 4, "fps": 6.0, "loop": true}, "talk/down_right": {"row": 25, "n": 4, "fps": 6.0, "loop": true}, "talk/right": {"row": 26, "n": 4, "fps": 6.0, "loop": true}, "talk/up_right": {"row": 27, "n": 4, "fps": 6.0, "loop": true}, "talk/up": {"row": 28, "n": 4, "fps": 6.0, "loop": true}, "talk/up_left": {"row": 29, "n": 4, "fps": 6.0, "loop": true}, "talk/left": {"row": 30, "n": 4, "fps": 6.0, "loop": true}, "talk/down_left": {"row": 31, "n": 4, "fps": 6.0, "loop": true}, "interact/down": {"row": 32, "n": 4, "fps": 7.0, "loop": false}, "interact/down_right": {"row": 33, "n": 4, "fps": 7.0, "loop": false}, "interact/right": {"row": 34, "n": 4, "fps": 7.0, "loop": false}, "interact/up_right": {"row": 35, "n": 4, "fps": 7.0, "loop": false}, "interact/up": {"row": 36, "n": 4, "fps": 7.0, "loop": false}, "interact/up_left": {"row": 37, "n": 4, "fps": 7.0, "loop": false}, "interact/left": {"row": 38, "n": 4, "fps": 7.0, "loop": false}, "interact/down_left": {"row": 39, "n": 4, "fps": 7.0, "loop": false}, "interact_high/down": {"row": 40, "n": 4, "fps": 7.0, "loop": false}, "interact_high/down_right": {"row": 41, "n": 4, "fps": 7.0, "loop": false}, "interact_high/right": {"row": 42, "n": 4, "fps": 7.0, "loop": false}, "interact_high/up_right": {"row": 43, "n": 4, "fps": 7.0, "loop": false}, "interact_high/up": {"row": 44, "n": 4, "fps": 7.0, "loop": false}, "interact_high/up_left": {"row": 45, "n": 4, "fps": 7.0, "loop": false}, "interact_high/left": {"row": 46, "n": 4, "fps": 7.0, "loop": false}, "interact_high/down_left": {"row": 47, "n": 4, "fps": 7.0, "loop": false}}, "speed_mps": 1.2714285714285716, "scale": 0.89, "gait": {"T": 0.7, "step": 0.5, "lift": 0.085, "bob": 0.02, "arm": 0.62, "lean": 0.085, "sway": 0.014, "head": 0.03, "hand_out": 0.12}}, "aurea_side": {"cell": [40, 52], "anchor": [20, 46], "pad": 2, "cols": 8, "persp": "side", "rows": {"idle/down": {"row": 0, "n": 4, "fps": 2.0, "loop": true}, "idle/right": {"row": 1, "n": 4, "fps": 2.0, "loop": true}, "idle/up": {"row": 2, "n": 4, "fps": 2.0, "loop": true}, "idle/left": {"row": 3, "n": 4, "fps": 2.0, "loop": true}, "walk/down": {"row": 4, "n": 8, "fps": 8.333333333333334, "loop": true}, "walk/right": {"row": 5, "n": 8, "fps": 8.333333333333334, "loop": true}, "walk/up": {"row": 6, "n": 8, "fps": 8.333333333333334, "loop": true}, "walk/left": {"row": 7, "n": 8, "fps": 8.333333333333334, "loop": true}, "turn/down": {"row": 8, "n": 2, "fps": 6.0, "loop": false}, "turn/right": {"row": 9, "n": 2, "fps": 6.0, "loop": false}, "turn/up": {"row": 10, "n": 2, "fps": 6.0, "loop": false}, "turn/left": {"row": 11, "n": 2, "fps": 6.0, "loop": false}, "talk/down": {"row": 12, "n": 4, "fps": 6.0, "loop": true}, "talk/right": {"row": 13, "n": 4, "fps": 6.0, "loop": true}, "talk/up": {"row": 14, "n": 4, "fps": 6.0, "loop": true}, "talk/left": {"row": 15, "n": 4, "fps": 6.0, "loop": true}, "interact/down": {"row": 16, "n": 4, "fps": 7.0, "loop": false}, "interact/right": {"row": 17, "n": 4, "fps": 7.0, "loop": false}, "interact/up": {"row": 18, "n": 4, "fps": 7.0, "loop": false}, "interact/left": {"row": 19, "n": 4, "fps": 7.0, "loop": false}, "interact_high/down": {"row": 20, "n": 4, "fps": 7.0, "loop": false}, "interact_high/right": {"row": 21, "n": 4, "fps": 7.0, "loop": false}, "interact_high/up": {"row": 22, "n": 4, "fps": 7.0, "loop": false}, "interact_high/left": {"row": 23, "n": 4, "fps": 7.0, "loop": false}}, "speed_mps": 0.8333333333333334, "scale": 1.0, "gait": {"T": 0.96, "step": 0.4, "lift": 0.05, "bob": 0.011, "arm": 0.2, "lean": 0.13, "sway": 0.01, "head": 0.02, "hand_out": 0.1}}, "aurea_tq": {"cell": [40, 52], "anchor": [20, 46], "pad": 2, "cols": 8, "persp": "tq", "rows": {"idle/down": {"row": 0, "n": 4, "fps": 2.0, "loop": true}, "idle/down_right": {"row": 1, "n": 4, "fps": 2.0, "loop": true}, "idle/right": {"row": 2, "n": 4, "fps": 2.0, "loop": true}, "idle/up_right": {"row": 3, "n": 4, "fps": 2.0, "loop": true}, "idle/up": {"row": 4, "n": 4, "fps": 2.0, "loop": true}, "idle/up_left": {"row": 5, "n": 4, "fps": 2.0, "loop": true}, "idle/left": {"row": 6, "n": 4, "fps": 2.0, "loop": true}, "idle/down_left": {"row": 7, "n": 4, "fps": 2.0, "loop": true}, "walk/down": {"row": 8, "n": 8, "fps": 8.333333333333334, "loop": true}, "walk/down_right": {"row": 9, "n": 8, "fps": 8.333333333333334, "loop": true}, "walk/right": {"row": 10, "n": 8, "fps": 8.333333333333334, "loop": true}, "walk/up_right": {"row": 11, "n": 8, "fps": 8.333333333333334, "loop": true}, "walk/up": {"row": 12, "n": 8, "fps": 8.333333333333334, "loop": true}, "walk/up_left": {"row": 13, "n": 8, "fps": 8.333333333333334, "loop": true}, "walk/left": {"row": 14, "n": 8, "fps": 8.333333333333334, "loop": true}, "walk/down_left": {"row": 15, "n": 8, "fps": 8.333333333333334, "loop": true}, "turn/down": {"row": 16, "n": 2, "fps": 6.0, "loop": false}, "turn/down_right": {"row": 17, "n": 2, "fps": 6.0, "loop": false}, "turn/right": {"row": 18, "n": 2, "fps": 6.0, "loop": false}, "turn/up_right": {"row": 19, "n": 2, "fps": 6.0, "loop": false}, "turn/up": {"row": 20, "n": 2, "fps": 6.0, "loop": false}, "turn/up_left": {"row": 21, "n": 2, "fps": 6.0, "loop": false}, "turn/left": {"row": 22, "n": 2, "fps": 6.0, "loop": false}, "turn/down_left": {"row": 23, "n": 2, "fps": 6.0, "loop": false}, "talk/down": {"row": 24, "n": 4, "fps": 6.0, "loop": true}, "talk/down_right": {"row": 25, "n": 4, "fps": 6.0, "loop": true}, "talk/right": {"row": 26, "n": 4, "fps": 6.0, "loop": true}, "talk/up_right": {"row": 27, "n": 4, "fps": 6.0, "loop": true}, "talk/up": {"row": 28, "n": 4, "fps": 6.0, "loop": true}, "talk/up_left": {"row": 29, "n": 4, "fps": 6.0, "loop": true}, "talk/left": {"row": 30, "n": 4, "fps": 6.0, "loop": true}, "talk/down_left": {"row": 31, "n": 4, "fps": 6.0, "loop": true}, "interact/down": {"row": 32, "n": 4, "fps": 7.0, "loop": false}, "interact/down_right": {"row": 33, "n": 4, "fps": 7.0, "loop": false}, "interact/right": {"row": 34, "n": 4, "fps": 7.0, "loop": false}, "interact/up_right": {"row": 35, "n": 4, "fps": 7.0, "loop": false}, "interact/up": {"row": 36, "n": 4, "fps": 7.0, "loop": false}, "interact/up_left": {"row": 37, "n": 4, "fps": 7.0, "loop": false}, "interact/left": {"row": 38, "n": 4, "fps": 7.0, "loop": false}, "interact/down_left": {"row": 39, "n": 4, "fps": 7.0, "loop": false}, "interact_high/down": {"row": 40, "n": 4, "fps": 7.0, "loop": false}, "interact_high/down_right": {"row": 41, "n": 4, "fps": 7.0, "loop": false}, "interact_high/right": {"row": 42, "n": 4, "fps": 7.0, "loop": false}, "interact_high/up_right": {"row": 43, "n": 4, "fps": 7.0, "loop": false}, "interact_high/up": {"row": 44, "n": 4, "fps": 7.0, "loop": false}, "interact_high/up_left": {"row": 45, "n": 4, "fps": 7.0, "loop": false}, "interact_high/left": {"row": 46, "n": 4, "fps": 7.0, "loop": false}, "interact_high/down_left": {"row": 47, "n": 4, "fps": 7.0, "loop": false}, "serve_idle/down": {"row": 48, "n": 4, "fps": 2.0, "loop": true}, "serve_wrap/down": {"row": 49, "n": 4, "fps": 5.0, "loop": true}, "serve_give/down": {"row": 50, "n": 4, "fps": 6.0, "loop": false}, "serve_write/down": {"row": 51, "n": 4, "fps": 5.0, "loop": true}, "serve_greet/down": {"row": 52, "n": 4, "fps": 6.0, "loop": false}}, "speed_mps": 0.8333333333333334, "scale": 1.0, "gait": {"T": 0.96, "step": 0.4, "lift": 0.05, "bob": 0.011, "arm": 0.2, "lean": 0.13, "sway": 0.01, "head": 0.02, "hand_out": 0.1}}};
+const OBJCAT = {
+ "unidade": "1 m = 24 px (altura); piso 16 px/m (profundidade); âncora = ponto de apoio no chão",
+ "camera": "3/4 oblíqua",
+ "classes": [
+  "DECORATIVO",
+  "EXAMINAVEL",
+  "UTILIZAVEL",
+  "FUNCIONAL"
+ ],
+ "interacoes": [
+  "nenhum",
+  "examinar",
+  "usar",
+  "alternar",
+  "funcao"
+ ],
+ "camadas": [
+  "wall",
+  "floor",
+  "on",
+  "front"
+ ],
+ "assets": [
+  {
+   "id": "balcao",
+   "nome": "Balcão e vitrine",
+   "categoria": "mobiliario",
+   "classe": "FUNCIONAL",
+   "interacao": "funcao",
+   "size_m": [
+    7.7,
+    0.8,
+    1.0
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 1,
+   "desc": "Balcão de atendimento com vitrine, caixa e caderneta.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "balcao",
+   "folha": "objects/mobiliario.png",
+   "rect": [
+    2,
+    2,
+    183,
+    62
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    183,
+    62
+   ],
+   "ancora": null,
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "mesa_redonda",
+   "nome": "Mesa redonda",
+   "categoria": "mobiliario",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    1.0,
+    1.0,
+    0.75
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "Mesa redonda de madeira para dois a quatro lugares.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "mesa_redonda",
+   "folha": "objects/mobiliario.png",
+   "rect": [
+    187,
+    2,
+    24,
+    26
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    24,
+    26
+   ],
+   "ancora": null,
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "mesa_toalha",
+   "nome": "Mesa com toalha xadrez",
+   "categoria": "mobiliario",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    1.0,
+    1.0,
+    0.75
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "Mesa redonda com toalha xadrez vermelha.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "mesa_toalha",
+   "folha": "objects/mobiliario.png",
+   "rect": [
+    213,
+    2,
+    24,
+    26
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    24,
+    26
+   ],
+   "ancora": null,
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "cadeira_frente",
+   "nome": "Cadeira (de frente)",
+   "categoria": "mobiliario",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    0.42,
+    0.42,
+    0.95
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "cadeira_frente",
+   "folha": "objects/mobiliario.png",
+   "rect": [
+    239,
+    2,
+    12,
+    30
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    12,
+    30
+   ],
+   "ancora": null,
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "cadeira_frente_b",
+   "nome": "Cadeira (de frente, mesa 2)",
+   "categoria": "mobiliario",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    0.42,
+    0.42,
+    0.95
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "cadeira_frente_b",
+   "folha": "objects/mobiliario.png",
+   "rect": [
+    253,
+    2,
+    12,
+    30
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    12,
+    30
+   ],
+   "ancora": null,
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "cadeira_perfil_e_b",
+   "nome": "Cadeira (perfil esquerdo, mesa 2)",
+   "categoria": "mobiliario",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    0.42,
+    0.42,
+    0.95
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "cadeira_perfil_e_b",
+   "folha": "objects/mobiliario.png",
+   "rect": [
+    267,
+    2,
+    12,
+    30
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    12,
+    30
+   ],
+   "ancora": null,
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "cadeira_costas",
+   "nome": "Cadeira (de costas)",
+   "categoria": "mobiliario",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    0.42,
+    0.42,
+    0.95
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "cadeira_costas",
+   "folha": "objects/mobiliario.png",
+   "rect": [
+    281,
+    2,
+    12,
+    25
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    12,
+    25
+   ],
+   "ancora": null,
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "cadeira_perfil_e",
+   "nome": "Cadeira (perfil esquerdo)",
+   "categoria": "mobiliario",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    0.42,
+    0.42,
+    0.95
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "cadeira_perfil_e",
+   "folha": "objects/mobiliario.png",
+   "rect": [
+    295,
+    2,
+    12,
+    30
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    12,
+    30
+   ],
+   "ancora": null,
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "cadeira_perfil_d",
+   "nome": "Cadeira (perfil direito)",
+   "categoria": "mobiliario",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    0.42,
+    0.42,
+    0.95
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "cadeira_perfil_d",
+   "folha": "objects/mobiliario.png",
+   "rect": [
+    309,
+    2,
+    13,
+    30
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    13,
+    30
+   ],
+   "ancora": null,
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "aparador",
+   "nome": "Aparador do filtro",
+   "categoria": "mobiliario",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "size_m": [
+    1.1,
+    0.9,
+    1.2
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "Aparador de madeira que apoia o filtro de barro.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "aparador",
+   "folha": "objects/mobiliario.png",
+   "rect": [
+    324,
+    2,
+    29,
+    63
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    29,
+    63
+   ],
+   "ancora": null,
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "banco_madeira",
+   "nome": "Banco de madeira com encosto",
+   "categoria": "mobiliario",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    1.5,
+    0.4,
+    1.2
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "Banco comprido de madeira, encostado na parede.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "banco_madeira",
+   "folha": "objects/mobiliario.png",
+   "rect": [
+    355,
+    2,
+    38,
+    30
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    38,
+    30
+   ],
+   "ancora": [
+    19,
+    29
+   ],
+   "collide": [
+    -18,
+    -6,
+    18,
+    0
+   ],
+   "stand": [
+    0,
+    9
+   ]
+  },
+  {
+   "id": "prateleira_louca",
+   "nome": "Prateleira de louças",
+   "categoria": "mobiliario",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    1.4,
+    0.2,
+    0.35
+   ],
+   "layer": "wall",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "Prateleira de parede com pratos, canecas e utensílios.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "prateleira_louca",
+   "folha": "objects/mobiliario.png",
+   "rect": [
+    395,
+    2,
+    34,
+    18
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    34,
+    18
+   ],
+   "ancora": [
+    17,
+    12
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "filtro_barro",
+   "nome": "Filtro de barro",
+   "categoria": "equipamentos",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    0.45,
+    0.45,
+    1.0
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "Filtro de barro sobre suporte de madeira.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "filtro_barro",
+   "folha": "objects/equipamentos.png",
+   "rect": [
+    2,
+    2,
+    17,
+    62
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    17,
+    62
+   ],
+   "ancora": null,
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "fogao",
+   "nome": "Fogão de 4 bocas",
+   "categoria": "equipamentos",
+   "classe": "FUNCIONAL",
+   "interacao": "alternar",
+   "size_m": [
+    0.8,
+    0.6,
+    1.2
+   ],
+   "layer": "floor",
+   "states": [
+    "desligado",
+    "ligado"
+   ],
+   "supports": [
+    {
+     "nome": "boca_esq",
+     "dx": -5,
+     "dy": -23
+    },
+    {
+     "nome": "boca_dir",
+     "dx": 5,
+     "dy": -23
+    }
+   ],
+   "zoom": 2,
+   "desc": "Fogão a gás de quatro bocas, com forno.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "fogao",
+   "folha": "objects/equipamentos.png",
+   "rect": [
+    21,
+    2,
+    24,
+    31
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    24,
+    31
+   ],
+   "ancora": [
+    12,
+    30
+   ],
+   "collide": [
+    -10,
+    -9,
+    10,
+    0
+   ],
+   "stand": [
+    0,
+    7
+   ]
+  },
+  {
+   "id": "panela",
+   "nome": "Panela de alumínio",
+   "categoria": "equipamentos",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0.28,
+    0.28,
+    0.2
+   ],
+   "layer": "on",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "Panela média de alumínio.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "panela",
+   "folha": "objects/equipamentos.png",
+   "rect": [
+    47,
+    2,
+    17,
+    9
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    17,
+    9
+   ],
+   "ancora": [
+    8,
+    9
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "cafeteira",
+   "nome": "Cafeteira esmaltada",
+   "categoria": "equipamentos",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0.2,
+    0.2,
+    0.3
+   ],
+   "layer": "on",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "cafeteira",
+   "folha": "objects/equipamentos.png",
+   "rect": [
+    66,
+    2,
+    10,
+    11
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    10,
+    11
+   ],
+   "ancora": [
+    5,
+    10
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "bandeja_paes",
+   "nome": "Bandeja de pães",
+   "categoria": "equipamentos",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    0.5,
+    0.35,
+    0.12
+   ],
+   "layer": "on",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "Bandeja metálica com pães do dia.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "bandeja_paes",
+   "folha": "objects/equipamentos.png",
+   "rect": [
+    78,
+    2,
+    18,
+    8
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    18,
+    8
+   ],
+   "ancora": [
+    9,
+    7
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "chama_fogao",
+   "nome": "Chama do fogão",
+   "categoria": "equipamentos",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0,
+    0,
+    0
+   ],
+   "layer": "on",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 2,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "chama_fogao#0",
+   "folha": "objects/equipamentos.png",
+   "rect": [
+    98,
+    2,
+    7,
+    3
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    7,
+    3
+   ],
+   "ancora": [
+    3,
+    1
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "chama_fogao",
+   "nome": "Chama do fogão",
+   "categoria": "equipamentos",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0,
+    0,
+    0
+   ],
+   "layer": "on",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 2,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "chama_fogao#1",
+   "folha": "objects/equipamentos.png",
+   "rect": [
+    107,
+    2,
+    7,
+    3
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    7,
+    3
+   ],
+   "ancora": [
+    3,
+    1
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "vapor_panela",
+   "nome": "Vapor da panela",
+   "categoria": "equipamentos",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0,
+    0,
+    0
+   ],
+   "layer": "on",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 2,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "vapor_panela#0",
+   "folha": "objects/equipamentos.png",
+   "rect": [
+    116,
+    2,
+    3,
+    8
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    3,
+    8
+   ],
+   "ancora": [
+    0,
+    7
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "vapor_panela",
+   "nome": "Vapor da panela",
+   "categoria": "equipamentos",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0,
+    0,
+    0
+   ],
+   "layer": "on",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 2,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "vapor_panela#1",
+   "folha": "objects/equipamentos.png",
+   "rect": [
+    121,
+    2,
+    3,
+    8
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    3,
+    8
+   ],
+   "ancora": [
+    1,
+    8
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "quadro_bonfim",
+   "nome": "Quadro do Bonfim",
+   "categoria": "decorativos",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "size_m": [
+    0.8,
+    0.05,
+    0.6
+   ],
+   "layer": "wall",
+   "states": null,
+   "supports": null,
+   "zoom": 3,
+   "desc": "Quadro com a colina da igreja e fitinhas coloridas.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "quadro_bonfim",
+   "folha": "objects/decorativos.png",
+   "rect": [
+    2,
+    2,
+    20,
+    15
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    20,
+    15
+   ],
+   "ancora": [
+    10,
+    15
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "fotografias",
+   "nome": "Fotografias emolduradas",
+   "categoria": "decorativos",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "size_m": [
+    1.0,
+    0.05,
+    0.5
+   ],
+   "layer": "wall",
+   "states": null,
+   "supports": null,
+   "zoom": 3,
+   "desc": "Três retratos antigos em molduras pequenas.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "fotografias",
+   "folha": "objects/decorativos.png",
+   "rect": [
+    24,
+    2,
+    23,
+    12
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    23,
+    12
+   ],
+   "ancora": [
+    12,
+    14
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "planta_vaso",
+   "nome": "Vaso de folhagem",
+   "categoria": "decorativos",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0.8,
+    0.4,
+    1.2
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "Folhagem em vaso de barro.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "planta_vaso",
+   "folha": "objects/decorativos.png",
+   "rect": [
+    49,
+    2,
+    47,
+    33
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    47,
+    33
+   ],
+   "ancora": [
+    24,
+    32
+   ],
+   "collide": [
+    -6,
+    -4,
+    6,
+    0
+   ],
+   "stand": null
+  },
+  {
+   "id": "gaveta_balcao_aberta",
+   "nome": "Gaveta do balcão (aberta)",
+   "categoria": "interativos",
+   "classe": "EXAMINAVEL",
+   "interacao": "alternar",
+   "size_m": [
+    1.0,
+    0.5,
+    0.5
+   ],
+   "layer": "front",
+   "states": [
+    "fechada",
+    "aberta"
+   ],
+   "supports": null,
+   "zoom": 2,
+   "desc": "Gaveta com papéis, lápis e um caderno.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "gaveta_balcao_aberta",
+   "folha": "objects/interativos.png",
+   "rect": [
+    2,
+    2,
+    32,
+    20
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    32,
+    20
+   ],
+   "ancora": [
+    16,
+    18
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "porta_escada_aberta",
+   "nome": "Porta da escada (aberta)",
+   "categoria": "interativos",
+   "classe": "UTILIZAVEL",
+   "interacao": "alternar",
+   "size_m": [
+    0.9,
+    0.1,
+    2.2
+   ],
+   "layer": "wall",
+   "states": [
+    "fechada",
+    "aberta"
+   ],
+   "supports": null,
+   "zoom": 2,
+   "desc": "Porta que sobe para a casa da Vó.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "porta_escada_aberta",
+   "folha": "objects/interativos.png",
+   "rect": [
+    36,
+    2,
+    22,
+    54
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    22,
+    54
+   ],
+   "ancora": [
+    11,
+    54
+   ],
+   "collide": null,
+   "stand": null
+  }
+ ],
+ "fixtures": [
+  {
+   "id": "forno_lenha",
+   "nome": "Forno de lenha",
+   "categoria": "equipamentos",
+   "classe": "FUNCIONAL",
+   "interacao": "funcao",
+   "rect": [
+    118,
+    90,
+    90,
+    62
+   ],
+   "collide": [
+    118,
+    132,
+    208,
+    152
+   ],
+   "stand": [
+    160,
+    0
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 2,
+   "desc": "Forno de alvenaria com chaminé; fica atrás do balcão.",
+   "stand_abs": [
+    190,
+    160
+   ]
+  },
+  {
+   "id": "lenha",
+   "nome": "Pilha de lenha",
+   "categoria": "equipamentos",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "rect": [
+    204,
+    130,
+    22,
+    18
+   ],
+   "collide": [
+    204,
+    132,
+    226,
+    147
+   ]
+  },
+  {
+   "id": "bancada",
+   "nome": "Bancada de trabalho",
+   "categoria": "mobiliario",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "rect": [
+    222,
+    100,
+    82,
+    50
+   ],
+   "collide": [
+    222,
+    132,
+    304,
+    149
+   ],
+   "stand_abs": [
+    262,
+    160
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Bancada onde a massa é aberta; janela do quintal acima."
+  },
+  {
+   "id": "estante",
+   "nome": "Estante",
+   "categoria": "mobiliario",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "rect": [
+    307,
+    67,
+    40,
+    66
+   ],
+   "collide": [
+    306,
+    132,
+    348,
+    143
+   ],
+   "stand_abs": [
+    326,
+    152
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 2,
+   "desc": "Estante com rádio, potes, latas e cestos."
+  },
+  {
+   "id": "altar_sao_jorge",
+   "nome": "Altar de São Jorge",
+   "categoria": "decorativos",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "rect": [
+    348,
+    46,
+    31,
+    54
+   ],
+   "stand_abs": [
+    364,
+    142
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 2,
+   "desc": "Nicho com a imagem do santo, vela, copo d'água e flores."
+  },
+  {
+   "id": "lousa_fiado",
+   "nome": "Lousa do fiado",
+   "categoria": "decorativos",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "rect": [
+    206,
+    56,
+    27,
+    29
+   ],
+   "stand_abs": [
+    216,
+    158
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 2,
+   "desc": "Lousa do cardápio com o aviso do fiado."
+  },
+  {
+   "id": "calendario",
+   "nome": "Calendário",
+   "categoria": "decorativos",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "rect": [
+    282,
+    70,
+    16,
+    21
+   ],
+   "stand_abs": [
+    290,
+    158
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 3,
+   "desc": "Calendário de parede."
+  },
+  {
+   "id": "janela_quintal",
+   "nome": "Janela do quintal",
+   "categoria": "decorativos",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "rect": [
+    232,
+    58,
+    62,
+    46
+   ],
+   "stand_abs": [
+    262,
+    158
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 2,
+   "desc": "Janela com vista para as folhagens do quintal."
+  }
+ ]
+}, OBJSCENE = {
+ "cena": "padaria",
+ "instancias": [
+  {
+   "inst": "counter",
+   "asset": "balcao",
+   "sprite": "balcao",
+   "sx": 72,
+   "sy": 128,
+   "base": 185,
+   "layer": "floor",
+   "collide": [
+    72,
+    170,
+    256,
+    187
+   ]
+  },
+  {
+   "inst": "chair_a_back",
+   "asset": "cadeira_frente",
+   "sprite": "cadeira_frente",
+   "sx": 306,
+   "sy": 158,
+   "base": 186,
+   "layer": "floor",
+   "collide": [
+    306,
+    183,
+    318,
+    188
+   ]
+  },
+  {
+   "inst": "chair_b_back",
+   "asset": "cadeira_frente_b",
+   "sprite": "cadeira_frente_b",
+   "sx": 370,
+   "sy": 176,
+   "base": 204,
+   "layer": "floor",
+   "collide": [
+    370,
+    201,
+    382,
+    206
+   ]
+  },
+  {
+   "inst": "table_a",
+   "asset": "mesa_redonda",
+   "sprite": "mesa_redonda",
+   "sx": 300,
+   "sy": 170,
+   "base": 195,
+   "layer": "floor",
+   "collide": [
+    300,
+    188,
+    324,
+    199
+   ]
+  },
+  {
+   "inst": "table_b",
+   "asset": "mesa_toalha",
+   "sprite": "mesa_toalha",
+   "sx": 364,
+   "sy": 188,
+   "base": 213,
+   "layer": "floor",
+   "collide": [
+    364,
+    206,
+    388,
+    217
+   ]
+  },
+  {
+   "inst": "chair_a_l",
+   "asset": "cadeira_perfil_e",
+   "sprite": "cadeira_perfil_e",
+   "sx": 287,
+   "sy": 170,
+   "base": 198,
+   "layer": "floor",
+   "collide": [
+    287,
+    195,
+    299,
+    200
+   ]
+  },
+  {
+   "inst": "chair_a_r",
+   "asset": "cadeira_perfil_d",
+   "sprite": "cadeira_perfil_d",
+   "sx": 325,
+   "sy": 170,
+   "base": 198,
+   "layer": "floor",
+   "collide": [
+    325,
+    195,
+    337,
+    200
+   ]
+  },
+  {
+   "inst": "chair_b_l",
+   "asset": "cadeira_perfil_e_b",
+   "sprite": "cadeira_perfil_e_b",
+   "sx": 351,
+   "sy": 188,
+   "base": 216,
+   "layer": "floor",
+   "collide": [
+    351,
+    213,
+    363,
+    218
+   ]
+  },
+  {
+   "inst": "chair_b_f",
+   "asset": "cadeira_costas",
+   "sprite": "cadeira_costas",
+   "sx": 370,
+   "sy": 206,
+   "base": 229,
+   "layer": "floor",
+   "collide": [
+    370,
+    226,
+    382,
+    231
+   ]
+  },
+  {
+   "inst": "aparador",
+   "asset": "aparador",
+   "sprite": "aparador",
+   "sx": 74,
+   "sy": 174,
+   "base": 235,
+   "layer": "floor",
+   "collide": [
+    73,
+    206,
+    103,
+    237
+   ]
+  },
+  {
+   "inst": "banco_altar",
+   "asset": "banco_madeira",
+   "sprite": "banco_madeira",
+   "sx": 345,
+   "sy": 121,
+   "base": 150,
+   "layer": "floor",
+   "collide": [
+    346,
+    144,
+    382,
+    150
+   ],
+   "frames": 1
+  },
+  {
+   "inst": "planta_canto",
+   "asset": "planta_vaso",
+   "sprite": "planta_vaso",
+   "sx": 374,
+   "sy": 140,
+   "base": 172,
+   "layer": "floor",
+   "collide": [
+    392,
+    168,
+    404,
+    172
+   ],
+   "frames": 1
+  },
+  {
+   "inst": "fogao_1",
+   "asset": "fogao",
+   "sprite": "fogao",
+   "sx": 238,
+   "sy": 134,
+   "base": 164,
+   "layer": "floor",
+   "collide": [
+    240,
+    155,
+    260,
+    164
+   ],
+   "frames": 1,
+   "states": [
+    "desligado",
+    "ligado"
+   ]
+  },
+  {
+   "inst": "panela_1",
+   "asset": "panela",
+   "sprite": "panela",
+   "sx": 237,
+   "sy": 132,
+   "base": 164.2,
+   "layer": "on",
+   "collide": null,
+   "frames": 1
+  },
+  {
+   "inst": "chama_1",
+   "asset": "chama_fogao",
+   "sprite": "chama_fogao#0",
+   "sx": 242,
+   "sy": 140,
+   "base": 164.2,
+   "layer": "on",
+   "collide": null,
+   "frames": 2,
+   "visivel_se": [
+    "fogao_1",
+    1
+   ],
+   "fps": 6
+  },
+  {
+   "inst": "vapor_1",
+   "asset": "vapor_panela",
+   "sprite": "vapor_panela#0",
+   "sx": 245,
+   "sy": 123,
+   "base": 164.2,
+   "layer": "on",
+   "collide": null,
+   "frames": 2,
+   "visivel_se": [
+    "fogao_1",
+    1
+   ],
+   "fps": 6
+  },
+  {
+   "inst": "cafeteira_1",
+   "asset": "cafeteira",
+   "sprite": "cafeteira",
+   "sx": 250,
+   "sy": 131,
+   "base": 164.2,
+   "layer": "on",
+   "collide": null,
+   "frames": 1
+  },
+  {
+   "inst": "quadro_1",
+   "asset": "quadro_bonfim",
+   "sprite": "quadro_bonfim",
+   "sx": 316,
+   "sy": 47,
+   "base": 62,
+   "layer": "wall",
+   "collide": null,
+   "frames": 1
+  },
+  {
+   "inst": "fotos_1",
+   "asset": "fotografias",
+   "sprite": "fotografias",
+   "sx": 383,
+   "sy": 52,
+   "base": 66,
+   "layer": "wall",
+   "collide": null,
+   "frames": 1
+  },
+  {
+   "inst": "prateleira_1",
+   "asset": "prateleira_louca",
+   "sprite": "prateleira_louca",
+   "sx": 231,
+   "sy": 42,
+   "base": 54,
+   "layer": "wall",
+   "collide": null,
+   "frames": 1
+  },
+  {
+   "inst": "gaveta_1",
+   "asset": "gaveta_balcao_aberta",
+   "sprite": "gaveta_balcao_aberta",
+   "sx": 186,
+   "sy": 163,
+   "base": 185.5,
+   "layer": "front",
+   "collide": null,
+   "frames": 1,
+   "states": [
+    "fechada",
+    "aberta"
+   ],
+   "visivel_se": [
+    "gaveta_1",
+    1
+   ]
+  },
+  {
+   "inst": "porta_escada_1",
+   "asset": "porta_escada_aberta",
+   "sprite": "porta_escada_aberta",
+   "sx": 382,
+   "sy": 73,
+   "base": 127,
+   "layer": "wall",
+   "collide": null,
+   "frames": 1,
+   "states": [
+    "fechada",
+    "aberta"
+   ],
+   "visivel_se": [
+    "porta_escada_1",
+    1
+   ]
+  }
+ ],
+ "interativos": [
+  {
+   "id": "table_a",
+   "asset": "mesa_redonda",
+   "nome": "Mesa redonda",
+   "classe": "UTILIZAVEL",
+   "tipo": "usar",
+   "rect": [
+    300,
+    170,
+    24,
+    26
+   ],
+   "stand": [
+    312,
+    207
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Mesa redonda de madeira para dois a quatro lugares."
+  },
+  {
+   "id": "table_b",
+   "asset": "mesa_toalha",
+   "nome": "Mesa com toalha xadrez",
+   "classe": "UTILIZAVEL",
+   "tipo": "usar",
+   "rect": [
+    364,
+    188,
+    24,
+    26
+   ],
+   "stand": [
+    396,
+    214
+   ],
+   "face": "left",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Mesa redonda com toalha xadrez vermelha."
+  },
+  {
+   "id": "chair_a_l",
+   "asset": "cadeira_perfil_e",
+   "nome": "Cadeira (perfil esquerdo)",
+   "classe": "UTILIZAVEL",
+   "tipo": "usar",
+   "rect": [
+    287,
+    170,
+    12,
+    30
+   ],
+   "stand": [
+    278,
+    201
+   ],
+   "face": "right",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": ""
+  },
+  {
+   "id": "chair_a_r",
+   "asset": "cadeira_perfil_d",
+   "nome": "Cadeira (perfil direito)",
+   "classe": "UTILIZAVEL",
+   "tipo": "usar",
+   "rect": [
+    325,
+    170,
+    13,
+    30
+   ],
+   "stand": [
+    346,
+    201
+   ],
+   "face": "left",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": ""
+  },
+  {
+   "id": "aparador",
+   "asset": "filtro_barro",
+   "nome": "Filtro de barro",
+   "classe": "UTILIZAVEL",
+   "tipo": "usar",
+   "rect": [
+    75,
+    176,
+    24,
+    40
+   ],
+   "stand": [
+    114,
+    222
+   ],
+   "face": "left",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Filtro de barro sobre suporte de madeira."
+  },
+  {
+   "id": "banco_altar",
+   "asset": "banco_madeira",
+   "nome": "Banco de madeira com encosto",
+   "classe": "UTILIZAVEL",
+   "tipo": "usar",
+   "rect": [
+    345,
+    121,
+    38,
+    30
+   ],
+   "stand": [
+    364,
+    159
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Banco comprido de madeira, encostado na parede."
+  },
+  {
+   "id": "fogao_1",
+   "asset": "fogao",
+   "nome": "Fogão de 4 bocas",
+   "classe": "FUNCIONAL",
+   "tipo": "alternar",
+   "rect": [
+    238,
+    134,
+    24,
+    31
+   ],
+   "stand": [
+    250,
+    171
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Fogão a gás de quatro bocas, com forno."
+  },
+  {
+   "id": "quadro_1",
+   "asset": "quadro_bonfim",
+   "nome": "Quadro do Bonfim",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    316,
+    47,
+    20,
+    15
+   ],
+   "stand": [
+    326,
+    72
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 3,
+   "desc": "Quadro com a colina da igreja e fitinhas coloridas."
+  },
+  {
+   "id": "fotos_1",
+   "asset": "fotografias",
+   "nome": "Fotografias emolduradas",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    383,
+    52,
+    23,
+    12
+   ],
+   "stand": [
+    395,
+    76
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 3,
+   "desc": "Três retratos antigos em molduras pequenas."
+  },
+  {
+   "id": "gaveta_1",
+   "asset": "gaveta_balcao_aberta",
+   "nome": "Gaveta do balcão",
+   "classe": "EXAMINAVEL",
+   "tipo": "alternar",
+   "rect": [
+    186,
+    165,
+    32,
+    18
+   ],
+   "stand": [
+    202,
+    195
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Gaveta com papéis, lápis e um caderno.",
+   "states": [
+    "fechada",
+    "aberta"
+   ]
+  },
+  {
+   "id": "porta_escada_1",
+   "asset": "porta_escada_aberta",
+   "nome": "Porta da escada",
+   "classe": "UTILIZAVEL",
+   "tipo": "alternar",
+   "rect": [
+    382,
+    73,
+    22,
+    56
+   ],
+   "stand": [
+    393,
+    140
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Porta que sobe para a casa da Vó.",
+   "states": [
+    "fechada",
+    "aberta"
+   ]
+  },
+  {
+   "id": "forno_lenha",
+   "asset": "forno_lenha",
+   "nome": "Forno de lenha",
+   "classe": "FUNCIONAL",
+   "tipo": "funcao",
+   "rect": [
+    118,
+    90,
+    90,
+    62
+   ],
+   "stand": [
+    190,
+    160
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 2,
+   "desc": "Forno de alvenaria com chaminé; fica atrás do balcão."
+  },
+  {
+   "id": "bancada",
+   "asset": "bancada",
+   "nome": "Bancada de trabalho",
+   "classe": "UTILIZAVEL",
+   "tipo": "usar",
+   "rect": [
+    222,
+    100,
+    82,
+    50
+   ],
+   "stand": [
+    262,
+    160
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Bancada onde a massa é aberta; janela do quintal acima."
+  },
+  {
+   "id": "estante",
+   "asset": "estante",
+   "nome": "Estante",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    307,
+    67,
+    40,
+    66
+   ],
+   "stand": [
+    326,
+    152
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 2,
+   "desc": "Estante com rádio, potes, latas e cestos."
+  },
+  {
+   "id": "altar_sao_jorge",
+   "asset": "altar_sao_jorge",
+   "nome": "Altar de São Jorge",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    348,
+    46,
+    31,
+    54
+   ],
+   "stand": [
+    364,
+    142
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 2,
+   "desc": "Nicho com a imagem do santo, vela, copo d'água e flores."
+  },
+  {
+   "id": "lousa_fiado",
+   "asset": "lousa_fiado",
+   "nome": "Lousa do fiado",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    206,
+    56,
+    27,
+    29
+   ],
+   "stand": [
+    216,
+    158
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 2,
+   "desc": "Lousa do cardápio com o aviso do fiado."
+  },
+  {
+   "id": "calendario",
+   "asset": "calendario",
+   "nome": "Calendário",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    282,
+    70,
+    16,
+    21
+   ],
+   "stand": [
+    290,
+    158
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 3,
+   "desc": "Calendário de parede."
+  },
+  {
+   "id": "janela_quintal",
+   "asset": "janela_quintal",
+   "nome": "Janela do quintal",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    232,
+    58,
+    62,
+    46
+   ],
+   "stand": [
+    262,
+    158
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 2,
+   "desc": "Janela com vista para as folhagens do quintal."
+  }
+ ],
+ "colisao_arquitetura": [
+  [
+   118,
+   132,
+   208,
+   152
+  ],
+  [
+   204,
+   132,
+   226,
+   147
+  ],
+  [
+   222,
+   132,
+   304,
+   149
+  ],
+  [
+   306,
+   132,
+   348,
+   143
+  ]
+ ]
+};
+const VW = 480, VH = 270;
+const WORLD_W = 1130, DOOR_X = 470, DOOR_HALF = 26;
+const LAYOUT = {"X0": 72, "X1": 408, "YB": 132, "YF": 236, "EXIT_X": 240, "props": [{"name": "counter", "x": 72, "y": 128, "base": 185}, {"name": "chair_a_back", "x": 306, "y": 158, "base": 186}, {"name": "chair_b_back", "x": 370, "y": 176, "base": 204}, {"name": "table_a", "x": 300, "y": 170, "base": 195}, {"name": "table_b", "x": 364, "y": 188, "base": 213}, {"name": "chair_a_l", "x": 287, "y": 170, "base": 198}, {"name": "chair_a_r", "x": 325, "y": 170, "base": 198}, {"name": "chair_b_l", "x": 351, "y": 188, "base": 216}, {"name": "chair_b_f", "x": 370, "y": 206, "base": 229}, {"name": "aparador", "x": 74, "y": 174, "base": 235}], "solids": [[118, 132, 208, 152], [204, 132, 226, 147], [222, 132, 304, 149], [306, 132, 348, 143], [72, 170, 256, 187], [306, 183, 318, 188], [370, 201, 382, 206], [300, 188, 324, 199], [364, 206, 388, 217], [287, 195, 299, 200], [325, 195, 337, 200], [351, 213, 363, 218], [370, 226, 382, 231], [73, 206, 103, 237]], "gap": [252, 284], "counter_back": 172};
+const X0 = LAYOUT.X0, X1 = LAYOUT.X1, YB = LAYOUT.YB, YF = LAYOUT.YF, EXIT_X = LAYOUT.EXIT_X;
+const FW = 16, FH = 44;
+const cvs = document.getElementById('c'), vctx = cvs.getContext('2d');
+const off = document.createElement('canvas'); off.width = VW; off.height = VH;     // cena sempre em resolução nativa 480x270
+const ctx = off.getContext('2d');
+ctx.imageSmoothingEnabled = false; vctx.imageSmoothingEnabled = false;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const Q = new URLSearchParams(location.search);
+
+const fGround = x => 222 + Math.floor(Math.max(0, x) / 36);
+
+function load(src) { return new Promise(r => { const i = new Image(); i.onload = () => r(i); i.src = src; }); }
+let IMG = {};
+Promise.all(Object.entries(ASSETS).map(([k, v]) => load(v).then(i => IMG[k] = i))).then(() => { const ci = {}; for (const k in CHARATLAS) ci[k] = IMG[k]; CharLib.init(CHARATLAS, ci); const oi = {}; for (const k in IMG) if (k.startsWith('obj_')) oi[k] = IMG[k]; ObjectSys.init(OBJCAT, OBJSCENE, oi); initObjects(); start(); });
+
+const S = {
+  scene: Q.get('s') === 'interior' ? 'interior' : 'street',
+  gauge: Q.get('g') === '1',
+  ruler: Q.get('r') === '1', coll: Q.get('c') === '1',
+  p: { x: 430, y: fGround(430), dir: 'r', face: 'right', moving: false, t: 0, at: 0, anim: 'idle', tx: null, ty: null, enter: false, stuck: 0, goal: null, act: null, path: [] },
+  vo: { x: 196, y: 168, face: 'down', anim: 'serve_idle', t: 0, state: 'work', timer: 2, tx: null, greeted: false, bubble: null },
+  bubble: null,
+  cam: 0, fade: 0, fadeDir: 0, fadeNext: null, msg: ''
+};
+if (Q.has('x')) S.p.x = +Q.get('x');
+if (S.scene === 'interior') { S.p.x = Q.has('x') ? +Q.get('x') : EXIT_X; S.p.y = Q.has('y') ? +Q.get('y') : YF - 14; S.p.dir = 'u'; S.p.face = 'up'; }
+else S.p.y = fGround(S.p.x);
+S.cam = Math.max(0, Math.min(WORLD_W - VW, Math.round(S.p.x) - 240));
+if (Q.has('cam')) S.cam = +Q.get('cam');
+// ---------- câmera com zoom ----------
+// Três níveis inteiros (1×, 2×, 3×): cada pixel da arte vira N×N pixels exatos, sem interpolação.
+const ZL = [1, 2, 3], ZN = ['Visão geral', 'Visão intermediária', 'Visão aproximada'];
+S.zl = Math.max(0, Math.min(2, +(Q.get('z') || 0)));
+S.insp = Q.get('i') === '1'; S.hover = null;
+S.free = false;                                   // true = câmera solta (arrastada); false = segue a personagem
+S.vx = S.scene === 'street' ? S.cam + 240 : S.p.x; S.vy = S.p.y - 18;
+if (Q.has('vx')) { S.vx = +Q.get('vx'); S.free = true; } if (Q.has('vy')) { S.vy = +Q.get('vy'); S.free = true; }
+let V = null;                                      // vista atual (em coordenadas de cena)
+function camBounds() { return S.scene === 'street' ? [0, WORLD_W, 0, VH] : [60, 420, 28, 246]; }
+function computeView() {
+  const z = ZL[S.zl], w = VW / z, h = VH / z, [bx0, bx1, by0, by1] = camBounds();
+  const cl = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  const cx = (bx1 - bx0) <= w ? VW / 2 : cl(S.vx, bx0 + w / 2, bx1 - w / 2);
+  const cy = (by1 - by0) <= h ? VH / 2 : cl(S.vy, by0 + h / 2, by1 - h / 2);
+  const left = Math.round(cx - w / 2), top = Math.round(cy - h / 2);   // inteiros: grade de pixels alinhada
+  let cam = 0, sx = left;
+  if (S.scene === 'street') { cam = cl(Math.round(cx) - 240, 0, WORLD_W - VW); sx = left - cam; S.cam = cam; }
+  if (S.free) { S.vx = cx; S.vy = cy; }                                  // câmera solta nunca sai do cenário
+  V = { z, w, h, left, top, sx, sy: top, cam };
+  return V;
+}
+function updateCamera(dt) {
+  if (S.free) return;
+  const k = Math.min(1, dt * 7), p = S.p;
+  S.vx += (p.x - S.vx) * k; S.vy += (p.y - 18 - S.vy) * k;
+}
+function snapCamera() { S.free = false; S.vx = S.p.x; S.vy = S.p.y - 18; }
+function setZoom(n, ax, ay) {                     // ax, ay: ponto de ancoragem em px do canvas (padrão: centro)
+  n = Math.max(0, Math.min(2, n)); if (n === S.zl) return;
+  computeView();
+  const cursor = ax != null, a_x = cursor ? ax : VW / 2, a_y = cursor ? ay : VH / 2;
+  const px = V.left + a_x / V.z, py = V.top + a_y / V.z;                // ponto de cena sob a âncora
+  S.zl = n; const z = ZL[n];
+  S.vx = px - a_x / z + VW / z / 2; S.vy = py - a_y / z + VH / z / 2;
+  if (n === 0) snapCamera(); else if (cursor) S.free = true;
+  syncUI();
+}
+function resetCamera() { S.zl = 0; snapCamera(); syncUI(); }
+// ---------- pontos de inspeção (estrutura para interações futuras; sem UI ainda) ----------
+// rect = [x, y, w, h] em coordenadas de cena (rua: mundo; interior: tela nativa). text/detail ficam nulos até a narrativa existir.
+const INSPECT = [
+  { id: 'porta',    scene: 'street',   rect: [444, 169, 52, 66], zoom: 1, title: 'Porta da padaria',     text: null },
+];
+function inspectableAt(sc, x, y) {
+  for (const o of INSPECT) { const [a, b, w, h] = o.rect; if (o.scene === sc && x >= a && x < a + w && y >= b && y < b + h) return o; }
+  return null;
+}
+function focusOn(id) {                              // leva a câmera a um objeto (nível de zoom sugerido por ele)
+  const o = INSPECT.find(i => i.id === id); if (!o || o.scene !== S.scene) return false;
+  S.zl = o.zoom != null ? o.zoom : 2; S.free = true;
+  S.vx = o.rect[0] + o.rect[2] / 2; S.vy = o.rect[1] + o.rect[3] / 2; syncUI(); return true;
+}
+window.BALCAO = { S, INSPECT, INTERACT, focusOn, setZoom, resetCamera, onInspect: null, onState: null, onUse: null, objects: ObjectSys };
+
+const keys = {};
+addEventListener('keydown', e => {
+  const k = e.key.toLowerCase();
+  if (['arrowleft','arrowright','arrowup','arrowdown',' ','a','d','w','s','e','enter','t','r','c','i','+','=','-','_','0'].includes(k)) e.preventDefault();
+  keys[k] = true;
+  if (k === 't') toggleKind(); if (k === 'r') toggle('ruler'); if (k === 'c') toggle('coll'); if (k === 'i') toggle('insp');
+  if (k === '+' || k === '=') setZoom(S.zl + 1); if (k === '-' || k === '_') setZoom(S.zl - 1); if (k === '0') resetCamera();
+  if ((k === 'e' || k === 'enter' || k === ' ') && S.scene === 'street' && nearDoor()) { S.p.face = 'up'; beginEnter(); }
+  else if ((k === 'e' || k === 'enter' || k === ' ') && S.scene === 'interior' && !S.p.act) { const o = nearestInteract(); if (o) startInteract(o); }
+});
+addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
+
+const bT = document.getElementById('bT'), bR = document.getElementById('bR'), bC = document.getElementById('bC'), bI = document.getElementById('bI');
+function toggleKind() { S.gauge = !S.gauge; syncUI(); }
+function toggle(n) { S[n] = !S[n]; syncUI(); }
+function syncUI() {
+  bT.setAttribute('aria-pressed', !!S.gauge);
+  bR.setAttribute('aria-pressed', S.ruler); bC.setAttribute('aria-pressed', S.coll); bI.setAttribute('aria-pressed', !!S.insp);
+  document.getElementById('zlabel').textContent = ZN[S.zl] + ' (' + ZL[S.zl] + '×)' + (S.free ? ' · câmera solta' : '');
+  document.getElementById('scene').textContent = S.scene === 'street' ? 'Rua' : 'Padaria — interior';
+  document.getElementById('cam').textContent = S.scene === 'street'
+    ? 'câmera lateral ortográfica (side-view): fachadas frontais, andar só na horizontal'
+    : 'câmera 3/4 oblíqua: frente + topo visíveis, andar em profundidade';
+}
+bT.onclick = toggleKind; bR.onclick = () => toggle('ruler'); bC.onclick = () => toggle('coll'); bI.onclick = () => toggle('insp');
+document.getElementById('bZm').onclick = () => setZoom(S.zl - 1);
+document.getElementById('bZp').onclick = () => setZoom(S.zl + 1);
+document.getElementById('bZr').onclick = resetCamera;
+
+function fit() {
+  const hud = document.getElementById('hud').offsetHeight + 26;
+  let s = Math.min(innerWidth / VW, (innerHeight - hud) / VH);
+  s = s >= 1 ? Math.floor(s) : Math.max(0.5, s);
+  cvs.style.width = VW * s + 'px'; cvs.style.height = VH * s + 'px';
+}
+addEventListener('resize', fit);
+
+function canvasXY(e) { const r = cvs.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * VW, (e.clientY - r.top) / r.height * VH]; }
+function sceneXY(cx, cy) { computeView(); return [V.left + cx / V.z, V.top + cy / V.z]; }
+function commandMove(cx, cy) {                       // clique simples: personagem vai até o ponto (coordenadas de cena)
+  if (S.fadeDir) return;
+  const p = S.p; p.stuck = 0; S.free = false; p.act = null; S.say = null; p.goal = null; p.path = [];
+  const [sx, sy] = sceneXY(cx, cy);
+  if (S.scene === 'street') {
+    if (Math.abs(sx - DOOR_X) <= 30 && sy > 140 && sy < 235) { p.tx = DOOR_X; p.enter = true; }
+    else { p.tx = Math.max(14, Math.min(WORLD_W - 14, sx)); p.enter = false; }
+  } else {
+    const o = interactAt(sx, sy);
+    if (o) { startInteract(o); return; }
+    if (sy >= YF - 4 && Math.abs(sx - EXIT_X) <= 26) goTo(EXIT_X, YF + 6);
+    else goTo(sx, Math.max(YB + 6, Math.min(YF - 6, sy)));
+  }
+}
+let drag = null;
+cvs.addEventListener('pointerdown', e => {
+  window.focus(); cvs.setPointerCapture(e.pointerId);
+  const [cx, cy] = canvasXY(e); computeView();
+  drag = { cx, cy, vx: V.left + V.w / 2, vy: V.top + V.h / 2, moved: false };
+});
+cvs.addEventListener('pointermove', e => {
+  const [cx, cy] = canvasXY(e);
+  if (drag) {
+    const dx = cx - drag.cx, dy = cy - drag.cy;
+    if (!drag.moved && Math.hypot(dx, dy) > 5) { drag.moved = true; cvs.style.cursor = 'grabbing'; }
+    if (drag.moved) { S.free = true; S.vx = drag.vx - dx / V.z; S.vy = drag.vy - dy / V.z; syncUI(); }
+  } else if (S.insp) { const [sx, sy] = sceneXY(cx, cy); const o = inspectableAt(S.scene, sx, sy); S.hover = o ? o.id : null; }
+});
+function endDrag(e) {
+  if (!drag) return; const d = drag; drag = null; cvs.style.cursor = '';
+  if (d.moved) return;
+  const [sx, sy] = sceneXY(d.cx, d.cy), o = S.insp ? inspectableAt(S.scene, sx, sy) : null;
+  if (o) { focusOn(o.id); if (window.BALCAO.onInspect) window.BALCAO.onInspect(o); return; }
+  commandMove(d.cx, d.cy);
+}
+cvs.addEventListener('pointerup', endDrag);
+cvs.addEventListener('pointercancel', () => { drag = null; cvs.style.cursor = ''; });
+cvs.addEventListener('dblclick', e => {              // alterna visão geral <-> aproximação (nível intermediário) no ponto clicado
+  const [cx, cy] = canvasXY(e); S.p.tx = null; S.p.ty = null; S.p.enter = false;
+  if (S.zl === 0) setZoom(1, cx, cy); else setZoom(0);
+});
+let wheelAt = 0;
+cvs.addEventListener('wheel', e => {
+  e.preventDefault(); const now = performance.now(); if (now - wheelAt < 130 || !e.deltaY) return; wheelAt = now;
+  const [cx, cy] = canvasXY(e); setZoom(S.zl + (e.deltaY < 0 ? 1 : -1), cx, cy);
+}, { passive: false });
+
+// ---------- colisão do interior (pés = ponto) ----------
+function blockedIn(x, y) {
+  const inGap = Math.abs(x - EXIT_X) <= 24;
+  if (x < X0 + 8 || x > X1 - 8) return true;
+  if (y < YB + 6) return true;
+  if (y > YF - 6 && !inGap) return true;
+  if (y > YF + 10) return true;
+  for (const [a, b, c, d] of ObjectSys.solids) if (x >= a && x <= c && y >= b && y <= d) return true;
+  return false;
+}
+function nearDoor() { return Math.abs(S.p.x - DOOR_X) <= 22; }
+
+function beginEnter() { startFade('interior'); }
+function startFade(next) {
+  if (S.fadeDir) return;
+  S.fadeNext = next; S.fadeDir = 1; S.p.tx = null; S.p.ty = null; S.p.enter = false;
+  if (reduce) S.fade = 1;
+}
+function swapScene() {
+  const p = S.p;
+  if (S.fadeNext === 'interior') { S.scene = 'interior'; p.x = EXIT_X; p.y = YF - 12; p.dir = 'u'; p.face = 'up'; }
+  else { S.scene = 'street'; p.x = DOOR_X; p.y = fGround(DOOR_X); p.dir = 'r'; p.face = 'right'; }
+  p.act = null; p.goal = null; p.path = []; S.say = null;
+  p.moving = false; snapCamera(); syncUI();
+}
+
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  update(dt); draw(); requestAnimationFrame(frame);
+}
+function start() {
+  fit(); syncUI(); if (Q.get('go') === '1') beginEnter();
+  if (Q.has('do')) { const o = INTERACT.find(i => i.id === Q.get('do')); if (o) startInteract(o); }
+  const n = +(Q.get('step') || 0); for (let i = 0; i < n; i++) update(0.05);   // passos simulados (testes)
+  requestAnimationFrame(frame);
+}
+
+// ---------- interações da padaria (Lia vai até o ponto, vira, interage) ----------
+// sx,sy = onde Lia para (pés); face = para onde olha; anim = interact | interact_high | talk
+const INTERACT = [{ id: 'vo', title: 'Vó Áurea', sy: 194, face: 'up', anim: 'talk', tipo: 'conversa', say: [['lia', 'Bença, vó.'], ['vo', 'Deus te abençoe, minha filha.']] }];
+function initObjects() {                           // interativos vindos do catálogo (ObjectSys) viram pontos de inspeção e de interação
+  for (const o of OBJSCENE.interativos) {
+    INTERACT.push({ id: o.id, title: o.nome, rect: o.rect, sx: o.stand[0], sy: o.stand[1], face: o.face, anim: o.anim, tipo: o.tipo, classe: o.classe, desc: o.desc, zoom: o.zoom, states: o.states });
+    INSPECT.push({ id: o.id, scene: 'interior', rect: o.rect, zoom: o.zoom, title: o.nome, text: null, classe: o.classe, tipo: o.tipo, desc: o.desc });
+  }
+  ObjectSys.on('estado', e => { if (window.BALCAO.onState) window.BALCAO.onState(e); });
+}
+function interactAt(x, y) {
+  const v = S.vo; if (Math.abs(x - v.x) < 14 && y > v.y - 50 && y < v.y + 2) return INTERACT[0];
+  for (const o of INTERACT) if (o.rect && x >= o.rect[0] && x < o.rect[0] + o.rect[2] && y >= o.rect[1] && y < o.rect[1] + o.rect[3]) return o;
+  return null;
+}
+const COUNTER_BAND = 170, DETOUR = [268, 178];           // atrás do balcão só se entra pela ponta direita
+function planPath(x0, y0, x1, y1) {
+  const behind0 = y0 < COUNTER_BAND && x0 < 262, behind1 = y1 < COUNTER_BAND && x1 < 262;
+  const p = [];
+  if (behind0 !== behind1) { if (behind1) p.push([DETOUR[0], DETOUR[1]], [DETOUR[0], 160]); else p.push([DETOUR[0], 160], [DETOUR[0], DETOUR[1]]); }
+  p.push([x1, y1]); return p;
+}
+function goTo(x, y, goal) {
+  const p = S.p; p.act = null; S.say = null; p.goal = goal || null;
+  const path = S.scene === 'interior' ? planPath(p.x, p.y, x, y) : [[x, y]];
+  p.path = path; const f = p.path.shift(); p.tx = f[0]; p.ty = f[1];
+}
+function startInteract(o) {
+  const p = S.p, vx = S.vo.x;
+  const sx = o.id === 'vo' ? Math.max(112, Math.min(236, vx)) : o.sx;
+  goTo(sx, o.sy, o);
+}
+function beginAct(o) {
+  const p = S.p; const changed = p.face !== o.face; p.face = o.face;
+  const dur = o.id === 'vo' ? 3.6 : 1.5;
+  p.act = { anim: o.anim, t: 0, dur, turn: changed ? 0.17 : 0, o, fx: false };
+  S.say = null;
+  if (o.id === 'vo') { S.say = o.say.map((s, i) => ({ who: s[0], text: s[1], a: 0.2 + i * 1.7, b: 1.8 + i * 1.7 })); S.vo.state = 'talk'; S.vo.timer = 3.4; }
+}
+// efeito da interação, no meio do gesto (examinar / alternar / usar / função)
+function applyFx(o) {
+  const tipo = o.tipo || 'usar'; let m = o.title;
+  if (tipo === 'alternar') { const n = ObjectSys.toggle(o.id); m = o.title + ': ' + (o.states ? o.states[n] : n); }
+  else if (tipo === 'examinar') { S.prevZl = S.zl; if (focusOn(o.id)) S.restoreZoom = true; m = o.title + ' — ' + o.desc; }
+  else if (tipo === 'funcao') { m = o.title + ' (funcional) — ' + o.desc; if (window.BALCAO.onUse) window.BALCAO.onUse(o); }
+  else if (tipo === 'usar') { m = o.title + ' — ' + o.desc; if (window.BALCAO.onUse) window.BALCAO.onUse(o); }
+  S.note = { text: m, ttl: 4 };
+}
+function setAnim(o, anim) { if (o.anim !== anim) { o.anim = anim; o.at = 0; } }
+
+function updateVo(dt) {
+  const v = S.vo, L = S.p; v.at = (v.at || 0) + dt;
+  const spd = CharLib.speedPx('aurea');
+  const near = L.y > 172 && L.y < 220 && L.x > 96 && L.x < 250;
+  if (S.scene !== 'interior') { v.greeted = false; return; }
+  if (v.state === 'talk') {
+    setAnim(v, 'serve_give'); v.face = 'down'; v.timer -= dt; if (v.timer <= 0) { v.state = 'work'; v.timer = 1.5; }
+    if (S.p.act && S.p.act.o.id === 'vo') v.timer = Math.max(v.timer, 0.3);
+    return;
+  }
+  if (!v.greeted && Math.hypot(L.x - 196, L.y - 190) < 75) { v.greeted = true; v.state = 'greet'; v.timer = 0.9; v.face = 'down'; setAnim(v, 'serve_greet'); }
+  if (v.state === 'greet') { v.timer -= dt; if (v.timer <= 0) { v.state = 'work'; v.timer = 1.2; setAnim(v, 'serve_idle'); } return; }
+  if (v.state === 'walk') {
+    const dx = v.tx - v.x;
+    if (Math.abs(dx) < 1) { v.x = v.tx; v.state = 'work'; v.timer = 1.0; v.face = 'down'; setAnim(v, 'serve_idle'); return; }
+    v.x += Math.sign(dx) * Math.min(Math.abs(dx), spd * dt); v.face = dx < 0 ? 'left' : 'right'; setAnim(v, 'walk'); return;
+  }
+  // trabalho: ela acompanha a cliente ao longo do balcão e segue com suas tarefas
+  if (near) { const want = Math.max(124, Math.min(236, L.x)); if (Math.abs(want - v.x) > 18 && v.state !== 'walk') { v.state = 'walk'; v.tx = want; return; } }
+  if (v.state === 'cook') {
+    const dx = v.tx - v.x;
+    if (Math.abs(dx) > 1) { v.x += Math.sign(dx) * Math.min(Math.abs(dx), spd * dt); v.face = dx < 0 ? 'left' : 'right'; setAnim(v, 'walk'); return; }
+    v.x = v.tx; v.face = 'up'; setAnim(v, 'idle'); v.timer -= dt;
+    if (!v.fx && v.timer < 1.2) { v.fx = true; ObjectSys.toggle('fogao_1'); }
+    if (v.timer <= 0) { v.state = 'work'; v.timer = 1; v.face = 'down'; setAnim(v, 'serve_idle'); }
+    return;
+  }
+  v.cookT = (v.cookT === undefined ? 12 : v.cookT) - dt;
+  if (v.cookT <= 0 && !near) { v.cookT = ObjectSys.state['fogao_1'] ? 22 : 16; v.state = 'cook'; v.tx = 231; v.timer = 2.2; v.fx = false; return; }
+  v.timer -= dt;
+  if (v.timer <= 0) {
+    const r = Math.random(), next = r < 0.38 ? 'serve_wrap' : r < 0.72 ? 'serve_write' : 'serve_idle';
+    setAnim(v, next); v.timer = next === 'serve_idle' ? 2.2 + Math.random() * 2 : 2.4 + Math.random() * 1.6;
+    if (next === 'serve_idle' && !near && Math.random() < 0.35) { v.state = 'walk'; v.tx = 126 + Math.random() * 110; }
+  }
+  v.face = 'down'; if (!v.anim.startsWith('serve')) setAnim(v, 'serve_idle');
+}
+
+function update(dt) {
+  const p = S.p;
+  if (S.fadeDir === 1) { S.fade = Math.min(1, S.fade + dt / (reduce ? 0.01 : 0.22)); if (S.fade >= 1) { swapScene(); S.fadeDir = -1; } }
+  else if (S.fadeDir === -1) { S.fade = Math.max(0, S.fade - dt / (reduce ? 0.01 : 0.22)); if (S.fade <= 0) S.fadeDir = 0; }
+  if (S.fadeDir) { p.moving = false; p.at += dt; updateVo(dt); return; }
+
+  let ix = 0, iy = 0;
+  if (keys['arrowleft'] || keys['a']) ix -= 1;
+  if (keys['arrowright'] || keys['d']) ix += 1;
+  if (keys['arrowup'] || keys['w']) iy -= 1;
+  if (keys['arrowdown'] || keys['s']) iy += 1;
+  if (ix || iy) { p.tx = null; p.ty = null; p.path = []; p.goal = null; p.enter = false; p.act = null; S.say = null; S.free = false; }
+  else if (p.act) { ix = iy = 0; }
+  else if (p.tx != null) {
+    const dx = p.tx - p.x, dy = p.ty != null ? p.ty - p.y : 0;
+    if (Math.abs(dx) < 1.2 && Math.abs(dy) < 1.2) {
+      p.tx = null; p.ty = null;
+      if (p.path && p.path.length) { const f = p.path.shift(); p.tx = f[0]; p.ty = f[1]; }
+      else if (S.scene === 'street' && p.enter) { p.face = 'up'; beginEnter(); }
+      else if (p.goal) { const g = p.goal; p.goal = null; beginAct(g); }
+    } else { ix = Math.abs(dx) < 1.2 ? 0 : Math.sign(dx); iy = Math.abs(dy) < 1.2 ? 0 : Math.sign(dy); }
+  }
+  const SPD = CharLib.speedPx('lia');             // px/s horizontal (1,43 m/s): casa com a passada para o pé não patinar
+  p.moving = false;
+  if (S.scene === 'street') {
+    if (ix) { p.x = Math.max(14, Math.min(WORLD_W - 14, p.x + ix * SPD * dt)); p.dir = ix < 0 ? 'l' : 'r'; p.face = ix < 0 ? 'left' : 'right'; p.moving = true; }
+    if (iy < 0 && nearDoor() && p.tx == null) { p.face = 'up'; beginEnter(); }
+    p.y = fGround(p.x);
+  } else {
+    const vy = SPD * 16 / 24;                       // mesma velocidade real: profundidade vale 16 px/m
+    const L = ix && iy ? 0.7071 : 1;
+    const nx = p.x + ix * SPD * L * dt, ny = p.y + iy * vy * L * dt;
+    const ox = p.x, oy = p.y;
+    if (!blockedIn(nx, p.y)) p.x = nx;
+    if (!blockedIn(p.x, ny)) p.y = ny;
+    if (ix || iy) {
+      p.moving = Math.abs(p.x - ox) + Math.abs(p.y - oy) > 0.01;
+      p.face = CharLib.dir8(ix, iy); p.dir = ix ? (ix < 0 ? 'l' : 'r') : (iy < 0 ? 'u' : 'd');
+      if (!p.moving && p.tx != null) { p.stuck++; if (p.stuck > 8) { p.tx = null; p.ty = null; p.path = []; p.goal = null; p.stuck = 0; } }
+    }
+    if (p.y > YF - 1 && Math.abs(p.x - EXIT_X) <= 24) startFade('street');
+  }
+  // animação de Lia
+  let anim = p.moving ? 'walk' : 'idle';
+  if (p.act) {
+    p.act.t += dt; const a = p.act;
+    anim = a.t < a.turn ? 'turn' : a.anim;
+    if (!a.fx && a.t >= a.turn + 0.45 && a.o.id !== 'vo') { a.fx = true; applyFx(a.o); }
+    if (a.t >= a.dur + a.turn) { p.act = null; S.say = null; anim = 'idle'; if (S.restoreZoom) { S.restoreZoom = false; S.zl = S.prevZl || 0; S.free = false; syncUI(); } }
+  }
+  setAnim(p, anim); p.at += dt;
+  if (p.act) p.at = Math.max(0, p.act.t - p.act.turn) + (p.act.t < p.act.turn ? p.act.t : 0);
+  updateVo(dt); ObjectSys.tick(dt);
+  if (S.note) { S.note.ttl -= dt; if (S.note.ttl <= 0) S.note = null; }
+  updateCamera(dt);
+  S.msg = '';
+  if (S.scene === 'street' && nearDoor()) S.msg = 'E / ↑ / toque na porta: entrar na padaria';
+  if (S.scene === 'interior' && p.y > YF - 30 && Math.abs(p.x - EXIT_X) <= 30) S.msg = 'Desça pela soleira para sair para a rua';
+  if (S.scene === 'interior' && !S.msg) { const o = nearestInteract(); if (o) S.msg = 'E: ' + (o.id === 'vo' ? 'falar com a Vó Áurea' : (o.tipo === 'examinar' ? 'examinar' : o.tipo === 'alternar' ? 'abrir/fechar/ligar' : 'usar') + ' — ' + o.title); }
+  if (S.note) S.msg = S.note.text;
+  document.getElementById('msg').textContent = S.msg;
+}
+function nearestInteract() {
+  if (S.scene !== 'interior' || S.fadeDir) return null;
+  let best = null, bd = 30;
+  for (const o of INTERACT) { const sx = o.id === 'vo' ? Math.max(112, Math.min(236, S.vo.x)) : o.sx; const d = Math.hypot(S.p.x - sx, (S.p.y - o.sy) * 1.5); if (d < bd) { bd = d; best = o; } }
+  return best;
+}
+
+// ---------- desenho ----------
+function sprite(kind, x, y, dir, moving, t, alpha) {
+  const img = IMG['mannequin_' + kind];
+  const view = dir === 'u' ? 2 : dir === 'd' ? 1 : 0;
+  const ph = moving ? Math.floor(t * 8) % 4 : 0;
+  const px = Math.round(x), py = Math.round(y);
+  ctx.fillStyle = 'rgba(18,10,28,0.34)';
+  ctx.fillRect(px - 5, py - 1, 10, 1); ctx.fillRect(px - 6, py, 12, 1); ctx.fillRect(px - 4, py + 1, 8, 1);
+  ctx.save();
+  if (alpha != null) ctx.globalAlpha = alpha;
+  if (dir === 'l') { ctx.translate(px + 8, 0); ctx.scale(-1, 1); ctx.drawImage(img, ph * FW, view * FH, FW, FH, 0, py - (FH - 1), FW, FH); }
+  else ctx.drawImage(img, ph * FW, view * FH, FW, FH, px - 8, py - (FH - 1), FW, FH);
+  ctx.restore();
+}
+function drawLia(x, y, persp, alpha) {
+  const p = S.p;
+  CharLib.draw(ctx, { who: 'lia', persp, x, y, anim: p.anim, dir: p.face, t: p.at }, { alpha });
+}
+function drawVo() {
+  const v = S.vo; CharLib.draw(ctx, { who: 'aurea', persp: 'tq', x: v.x, y: v.y, anim: v.anim, dir: v.face, t: v.at || 0 });
+}
+// balão de fala sobre a cabeça (coordenadas de tela nativa)
+function drawBubble(text, x, y) {
+  ctx.save(); ctx.font = '8px monospace'; ctx.textBaseline = 'middle';
+  const w = Math.ceil(ctx.measureText(text).width) + 8, h = 12; let bx = Math.round(x - w / 2); bx = Math.max(2, Math.min(VW - w - 2, bx)); const by = Math.round(y - h);
+  ctx.fillStyle = '#2a1b14'; ctx.fillRect(bx - 1, by - 1, w + 2, h + 2);
+  ctx.fillStyle = '#f6ead2'; ctx.fillRect(bx, by, w, h);
+  ctx.fillStyle = '#2a1b14'; ctx.fillRect(Math.round(x) - 1, by + h + 1, 3, 1); ctx.fillRect(Math.round(x), by + h + 2, 1, 1);
+  ctx.fillText(text, bx + 4, by + h / 2 + 0.5); ctx.restore();
+}
+
+function drawStreet() {
+  const cam = Math.round(S.cam);
+  ctx.drawImage(IMG.street_far, Math.floor(cam * 0.35), 0, VW, VH, 0, 0, VW, VH);
+  ctx.drawImage(IMG.street_world, cam, 0, VW, VH, 0, 0, VW, VH);
+  // referência de escala parada: o outro porte, ao lado da porta
+  if (S.gauge) { sprite('adult', 528, fGround(528), 'l', false, 0); sprite('lia', 556, fGround(556), 'l', false, 0); }
+  drawLia(S.p.x - cam, S.p.y, 'side');
+  if (S.ruler) {
+    ctx.save(); ctx.font = '8px monospace'; ctx.textBaseline = 'middle';
+    const px = Math.round(S.p.x - cam), py = Math.round(S.p.y);
+    for (let wx = Math.ceil(cam / 24) * 24; wx < cam + VW; wx += 24) {
+      const gy = fGround(wx), x = wx - cam;
+      ctx.fillStyle = wx % 120 === 0 ? 'rgba(255,255,255,.9)' : 'rgba(255,255,255,.45)';
+      ctx.fillRect(x, gy - 1, 1, wx % 120 === 0 ? 7 : 4);
+    }
+    for (let m = 0; m <= 4; m++) {
+      const y = py - m * 24;
+      ctx.fillStyle = 'rgba(255,230,120,.95)'; ctx.fillRect(px + 14, y, 10, 1);
+      if (m) { ctx.fillStyle = 'rgba(0,0,0,.65)'; ctx.fillRect(px + 25, y - 5, 17, 9); ctx.fillStyle = '#ffe678'; ctx.fillText(m + ' m', px + 27, y); }
+    }
+    ctx.fillStyle = 'rgba(255,230,120,.5)'; ctx.fillRect(px + 14, py - 96, 1, 96);
+    ctx.restore();
+  }
+  if (S.coll) {
+    ctx.fillStyle = 'rgba(255,60,60,.35)';
+    ctx.fillRect(DOOR_X - 22 - cam, 150, 44, 85);
+  }
+}
+
+const VOCUT = 16;
+function drawInterior() {
+  ctx.drawImage(IMG.bakery_interior_base, 0, 0);
+  ObjectSys.drawWall(ctx);
+  const ents = ObjectSys.entities(ctx);
+  if (S.gauge) { ents.push({ y: 162, draw: () => sprite('adult', 150, 162, 'd', false, 0) }); ents.push({ y: 224, draw: () => sprite('lia', 160, 224, 'd', false, 0) }); }
+  ents.push({ y: S.vo.y + 0.5, draw: drawVo });
+  ents.push({ y: S.p.y + 0.5, draw: () => drawLia(S.p.x, S.p.y, 'tq') });
+  ents.sort((a, b) => a.y - b.y).forEach(e => e.draw());
+  // mãos e tronco da Vó acima do tampo do balcão: reaparecem por cima dele (o resto fica escondido atrás)
+  if (S.vo.anim.startsWith('serve')) { const v = S.vo; CharLib.draw(ctx, { who: 'aurea', persp: 'tq', x: v.x, y: v.y, anim: v.anim, dir: v.face, t: v.at || 0 }, { shadow: false, clipBelowY: v.y - VOCUT }); }
+  if (S.say) { const tl = S.p.act ? S.p.act.t - S.p.act.turn : 0; for (const s of S.say) if (tl >= s.a && tl < s.b) { if (s.who === 'lia') drawBubble(s.text, S.p.x, S.p.y - 44); else drawBubble(s.text, S.vo.x, S.vo.y - 54); } }
+  if (S.ruler) {
+    ctx.save(); ctx.font = '8px monospace'; ctx.textBaseline = 'middle';
+    ctx.strokeStyle = 'rgba(255,255,255,.22)'; ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let m = 0; m <= 14; m++) { const x = X0 + m * 24 + .5; ctx.moveTo(x, YB); ctx.lineTo(x, YF); }
+    for (let m = 0; m <= 7; m++) { const y = YB + m * 16 + .5; ctx.moveTo(X0, y); ctx.lineTo(X1, y); }
+    ctx.stroke();
+    for (let m = 0; m <= 4; m++) {
+      const y = YB - m * 24;
+      ctx.fillStyle = 'rgba(255,230,120,.95)'; ctx.fillRect(X0 + 2, y, 12, 1);
+      if (m) { ctx.fillStyle = 'rgba(0,0,0,.65)'; ctx.fillRect(X0 + 15, y - 5, 17, 9); ctx.fillStyle = '#ffe678'; ctx.fillText(m + ' m', X0 + 17, y); }
+    }
+    for (let m = 1; m <= 6; m++) { ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(X1 + 3, YB + m * 16 - 4, 14, 8); ctx.fillStyle = '#9fe0c8'; ctx.fillText(m + 'm', X1 + 5, YB + m * 16); }
+    ctx.restore();
+  }
+  if (S.coll) {
+    ctx.fillStyle = 'rgba(255,60,60,.32)';
+    for (const [a, b, c, d] of ObjectSys.solids) ctx.fillRect(a, b, c - a, d - b);
+    ctx.strokeStyle = 'rgba(255,230,90,.9)'; ctx.fillStyle = 'rgba(80,220,255,.95)';
+    for (const o of OBJSCENE.interativos) { ctx.strokeRect(o.rect[0] + .5, o.rect[1] + .5, o.rect[2] - 1, o.rect[3] - 1); ctx.fillRect(o.stand[0] - 1, o.stand[1] - 1, 3, 3); }
+    ctx.fillStyle = 'rgba(120,255,120,.95)'; for (const i of OBJSCENE.instancias) ctx.fillRect(Math.round(i.sx) , Math.round(i.base) - 1, 1, 1);
+    ctx.fillStyle = 'rgba(80,255,120,.28)'; ctx.fillRect(EXIT_X - 24, YF - 6, 48, 16);
+  }
+}
+
+function drawInspectDebug() {
+  if (!S.insp) return;
+  ctx.save(); ctx.font = '8px monospace'; ctx.textBaseline = 'top';
+  const camX = S.scene === 'street' ? V.cam : 0;
+  for (const o of INSPECT) {
+    if (o.scene !== S.scene) continue;
+    const [a, b, w, h] = o.rect, hot = S.hover === o.id;
+    ctx.strokeStyle = hot ? '#ffe678' : 'rgba(120,220,255,.8)'; ctx.lineWidth = 1;
+    ctx.strokeRect(a - camX + .5, b + .5, w - 1, h - 1);
+    if (hot) { ctx.fillStyle = 'rgba(0,0,0,.75)'; ctx.fillRect(a - camX, b - 10, o.title.length * 5 + 4, 9); ctx.fillStyle = '#ffe678'; ctx.fillText(o.title, a - camX + 2, b - 9); }
+  }
+  ctx.restore();
+}
+function draw() {
+  computeView();
+  ctx.fillStyle = '#140f12'; ctx.fillRect(0, 0, VW, VH);
+  if (S.scene === 'street') drawStreet(); else drawInterior();
+  drawInspectDebug();
+  vctx.fillStyle = '#140f12'; vctx.fillRect(0, 0, VW, VH);
+  vctx.drawImage(off, V.sx, V.sy, V.w, V.h, 0, 0, VW, VH);                 // ampliação inteira, vizinho mais próximo
+  if (S.fade > 0) { vctx.fillStyle = 'rgba(12,8,10,' + S.fade + ')'; vctx.fillRect(0, 0, VW, VH); }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+PASSOU 1. Lia parada: a padaria roda sozinha  — servidos=3
+PASSOU 2. A Vó atende sem comandos (abre o forno, acende a vela, serve)  — forno=1 vela=1
+PASSOU 9. O tempo avança continuamente  — 10:20
+PASSOU 12. O mundo não congela quando Lia sai da área de serviço  — atendeu_com_lia_fora=3
+PASSOU 3. Os três clientes se comportam de forma diferente  — R:Entering/Idle/Waiting/Ordering/Praying/Approaching/Seating/SeatingIn/Sitting/Standing/Leaving/Away | D:Entering/Idle/Observing/Waiting/Ordering/Seating/SeatingIn/Sitting/Standing/Leaving/Away | L:Entering/Idle/Observing/Waiting/Ordering/Measuring/Seating/SeatingIn/Sitting/Standing/Leaving/Away
+PASSOU 4. Dois NPCs conversam espontaneamente (sem Lia)  — 8 conversas completas em 4 dias
+PASSOU 8. Relações sociais mudam depois das conversas  — 4/4 dias; boatos=4
+PASSOU 5. Um cliente desiste da fila quando a espera passa da paciência  — lucia esperou 54 min
+PASSOU 7. Uma interação da Lia (falar com a Vó) altera a situação do balcão  — desistências=2
+PASSOU 7. Pedir a vez altera a fila e a confiança  — raimundo,lucia,dandara -> raimundo,dandara,lucia
+PASSOU 8. Ajuda lembrada: confiança sobe e a notícia circula entre moradores  — trust 0.34 -> 0.48 ; soube=false
+PASSOU 6. NPCs usam objetos (cadeira/banco, nicho, vitrine)  — banco_1,chair_a_back,chair_a_l reza=2 vitrine=2
+PASSOU 10. Personagens não atravessam móveis nem paredes  — 17125 amostras, violações=0 
+PASSOU 11. Animações correspondem aos estados  — incompatíveis=0 
+
+14 passaram, 0 falharam

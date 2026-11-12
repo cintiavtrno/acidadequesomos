@@ -1,0 +1,292 @@
+{
+ "cell": [
+  40,
+  52
+ ],
+ "anchor": [
+  20,
+  46
+ ],
+ "pad": 2,
+ "cols": 8,
+ "persp": "side",
+ "rows": {
+  "idle/down": {
+   "row": 0,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "idle/right": {
+   "row": 1,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "idle/up": {
+   "row": 2,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "idle/left": {
+   "row": 3,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "walk/down": {
+   "row": 4,
+   "n": 8,
+   "fps": 7.2727272727272725,
+   "loop": true
+  },
+  "walk/right": {
+   "row": 5,
+   "n": 8,
+   "fps": 7.2727272727272725,
+   "loop": true
+  },
+  "walk/up": {
+   "row": 6,
+   "n": 8,
+   "fps": 7.2727272727272725,
+   "loop": true
+  },
+  "walk/left": {
+   "row": 7,
+   "n": 8,
+   "fps": 7.2727272727272725,
+   "loop": true
+  },
+  "turn/down": {
+   "row": 8,
+   "n": 2,
+   "fps": 6.0,
+   "loop": false
+  },
+  "turn/right": {
+   "row": 9,
+   "n": 2,
+   "fps": 6.0,
+   "loop": false
+  },
+  "turn/up": {
+   "row": 10,
+   "n": 2,
+   "fps": 6.0,
+   "loop": false
+  },
+  "turn/left": {
+   "row": 11,
+   "n": 2,
+   "fps": 6.0,
+   "loop": false
+  },
+  "talk/down": {
+   "row": 12,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "talk/right": {
+   "row": 13,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "talk/up": {
+   "row": 14,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "talk/left": {
+   "row": 15,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "interact/down": {
+   "row": 16,
+   "n": 4,
+   "fps": 7.0,
+   "loop": false
+  },
+  "interact/right": {
+   "row": 17,
+   "n": 4,
+   "fps": 7.0,
+   "loop": false
+  },
+  "interact/up": {
+   "row": 18,
+   "n": 4,
+   "fps": 7.0,
+   "loop": false
+  },
+  "interact/left": {
+   "row": 19,
+   "n": 4,
+   "fps": 7.0,
+   "loop": false
+  },
+  "sit/down": {
+   "row": 20,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "sit/right": {
+   "row": 21,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "sit/up": {
+   "row": 22,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "sit/left": {
+   "row": 23,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "play/down": {
+   "row": 24,
+   "n": 4,
+   "fps": 5.0,
+   "loop": false
+  },
+  "play/right": {
+   "row": 25,
+   "n": 4,
+   "fps": 5.0,
+   "loop": false
+  },
+  "play/up": {
+   "row": 26,
+   "n": 4,
+   "fps": 5.0,
+   "loop": false
+  },
+  "play/left": {
+   "row": 27,
+   "n": 4,
+   "fps": 5.0,
+   "loop": false
+  },
+  "think/down": {
+   "row": 28,
+   "n": 4,
+   "fps": 2.5,
+   "loop": true
+  },
+  "think/right": {
+   "row": 29,
+   "n": 4,
+   "fps": 2.5,
+   "loop": true
+  },
+  "think/up": {
+   "row": 30,
+   "n": 4,
+   "fps": 2.5,
+   "loop": true
+  },
+  "think/left": {
+   "row": 31,
+   "n": 4,
+   "fps": 2.5,
+   "loop": true
+  },
+  "react/down": {
+   "row": 32,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "react/right": {
+   "row": 33,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "react/up": {
+   "row": 34,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "react/left": {
+   "row": 35,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "hang/down": {
+   "row": 36,
+   "n": 4,
+   "fps": 4.0,
+   "loop": true
+  },
+  "hang/up": {
+   "row": 37,
+   "n": 4,
+   "fps": 4.0,
+   "loop": true
+  },
+  "hang/right": {
+   "row": 38,
+   "n": 4,
+   "fps": 4.0,
+   "loop": true
+  },
+  "hang/left": {
+   "row": 39,
+   "n": 4,
+   "fps": 4.0,
+   "loop": true
+  },
+  "wave/down": {
+   "row": 40,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "wave/up": {
+   "row": 41,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "wave/right": {
+   "row": 42,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "wave/left": {
+   "row": 43,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  }
+ },
+ "speed_mps": 0.6545454545454544,
+ "scale": 1.0,
+ "gait": {
+  "T": 1.1,
+  "step": 0.36,
+  "lift": 0.045,
+  "bob": 0.01,
+  "arm": 0.18,
+  "lean": 0.14,
+  "sway": 0.012,
+  "head": 0.02,
+  "hand_out": 0.1
+ }
+}

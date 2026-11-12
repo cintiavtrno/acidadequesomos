@@ -1,0 +1,953 @@
+{
+ "cena": "casa_raimundo",
+ "seats": [
+  {
+   "id": "cad_frente",
+   "x": 216,
+   "y": 178,
+   "face": "down",
+   "sort": "after",
+   "base": 185,
+   "mesa": "M",
+   "stand": [
+    200,
+    186
+   ]
+  },
+  {
+   "id": "cad_frente2",
+   "x": 246,
+   "y": 178,
+   "face": "down",
+   "sort": "after",
+   "base": 185,
+   "mesa": "M",
+   "stand": [
+    262,
+    186
+   ]
+  },
+  {
+   "id": "cad_esq",
+   "x": 192,
+   "y": 200,
+   "face": "right",
+   "sort": "after",
+   "base": 205,
+   "mesa": "M",
+   "stand": [
+    187,
+    214
+   ]
+  },
+  {
+   "id": "cad_dir",
+   "x": 270,
+   "y": 200,
+   "face": "left",
+   "sort": "after",
+   "base": 205,
+   "mesa": "M",
+   "stand": [
+    275,
+    214
+   ]
+  },
+  {
+   "id": "cad_sul",
+   "x": 216,
+   "y": 220,
+   "face": "up",
+   "sort": "before",
+   "base": 226,
+   "mesa": "M",
+   "stand": [
+    230,
+    227
+   ]
+  },
+  {
+   "id": "cad_sul2",
+   "x": 246,
+   "y": 220,
+   "face": "up",
+   "sort": "before",
+   "base": 226,
+   "mesa": "M",
+   "stand": [
+    260,
+    227
+   ]
+  },
+  {
+   "id": "balanco_1",
+   "x": 207,
+   "y": 150,
+   "face": "down_right",
+   "sort": "after",
+   "base": 148,
+   "mesa": "janela",
+   "stand": [
+    207,
+    160
+   ]
+  }
+ ],
+ "pontos": {
+  "porta": [
+   240,
+   231
+  ],
+  "fogao": [
+   112,
+   151
+  ],
+  "mesa_cafe": [
+   239,
+   232
+  ],
+  "talha": [
+   148,
+   151
+  ],
+  "planta": [
+   93,
+   153
+  ],
+  "janela": [
+   207,
+   158
+  ],
+  "oratorio": [
+   316,
+   152
+  ],
+  "armario": [
+   346,
+   152
+  ],
+  "cama": [
+   364,
+   174
+  ],
+  "radio": [
+   372,
+   152
+  ],
+  "retrato": [
+   346,
+   152
+  ],
+  "foto": [
+   100,
+   152
+  ],
+  "sacola": [
+   200,
+   162
+  ],
+  "sala": [
+   290,
+   205
+  ],
+  "tapete": [
+   301,
+   222
+  ],
+  "entrada": [
+   240,
+   222
+  ],
+  "mesa_dom": [
+   279,
+   222
+  ]
+ },
+ "instancias": [
+  {
+   "inst": "fogao_1",
+   "asset": "fogao_casa",
+   "sprite": "fogao_casa",
+   "sx": 100,
+   "sy": 106,
+   "base": 141,
+   "layer": "floor",
+   "collide": [
+    102,
+    132,
+    122,
+    141
+   ],
+   "frames": 1,
+   "states": [
+    "desligado",
+    "ligado"
+   ]
+  },
+  {
+   "inst": "panela_1",
+   "asset": "panela_casa",
+   "sprite": "panela_casa",
+   "sx": 99,
+   "sy": 104,
+   "base": 141.2,
+   "layer": "on",
+   "collide": null,
+   "frames": 1,
+   "visivel_se": [
+    "fogao_1",
+    1
+   ]
+  },
+  {
+   "inst": "chama_1",
+   "asset": "chama_casa",
+   "sprite": "chama_casa#0",
+   "sx": 104,
+   "sy": 112,
+   "base": 141.2,
+   "layer": "on",
+   "collide": null,
+   "frames": 2,
+   "visivel_se": [
+    "fogao_1",
+    1
+   ],
+   "fps": 6
+  },
+  {
+   "inst": "vapor_1",
+   "asset": "vapor_casa",
+   "sprite": "vapor_casa#0",
+   "sx": 107,
+   "sy": 97,
+   "base": 141.2,
+   "layer": "on",
+   "collide": null,
+   "frames": 2,
+   "visivel_se": [
+    "fogao_1",
+    1
+   ],
+   "fps": 6
+  },
+  {
+   "inst": "cafeteira_1",
+   "asset": "cafeteira_casa",
+   "sprite": "cafeteira_casa",
+   "sx": 112,
+   "sy": 103,
+   "base": 141.2,
+   "layer": "on",
+   "collide": null,
+   "frames": 1
+  },
+  {
+   "inst": "prateleira_1",
+   "asset": "prateleira_casa",
+   "sprite": "prateleira_casa",
+   "sx": 129,
+   "sy": 50,
+   "base": 62,
+   "layer": "wall",
+   "collide": null,
+   "frames": 1
+  },
+  {
+   "inst": "foto_forno_1",
+   "asset": "foto_forno",
+   "sprite": "foto_forno",
+   "sx": 76,
+   "sy": 71,
+   "base": 84,
+   "layer": "wall",
+   "collide": null,
+   "frames": 1
+  },
+  {
+   "inst": "talha_1",
+   "asset": "talha_barro",
+   "sprite": "talha_barro",
+   "sx": 134,
+   "sy": 96,
+   "base": 141,
+   "layer": "floor",
+   "collide": [
+    137,
+    134,
+    159,
+    141
+   ],
+   "frames": 1
+  },
+  {
+   "inst": "sacola_1",
+   "asset": "sacola_prego",
+   "sprite": "sacola_prego",
+   "sx": 188,
+   "sy": 70,
+   "base": 70,
+   "layer": "wall",
+   "collide": null,
+   "frames": 1
+  },
+  {
+   "inst": "planta_1",
+   "asset": "planta_casa",
+   "sprite": "planta_casa",
+   "sx": 75,
+   "sy": 105,
+   "base": 143,
+   "layer": "floor",
+   "collide": [
+    81,
+    139,
+    93,
+    143
+   ],
+   "frames": 1
+  },
+  {
+   "inst": "balanco_1",
+   "asset": "balanco",
+   "sprite": "balanco",
+   "sx": 192,
+   "sy": 109,
+   "base": 147,
+   "layer": "floor",
+   "collide": [
+    196,
+    138,
+    218,
+    147
+   ],
+   "frames": 1
+  },
+  {
+   "inst": "oratorio_1",
+   "asset": "oratorio",
+   "sprite": "oratorio",
+   "sx": 297,
+   "sy": 66,
+   "base": 104,
+   "layer": "wall",
+   "collide": null,
+   "frames": 1
+  },
+  {
+   "inst": "vela_1",
+   "asset": "vela_oratorio",
+   "sprite": "vela_oratorio#0",
+   "sx": 315,
+   "sy": 78,
+   "base": 80,
+   "layer": "wall",
+   "collide": null,
+   "frames": 2,
+   "visivel_se": [
+    "oratorio_1",
+    1
+   ],
+   "fps": 6
+  },
+  {
+   "inst": "retrato_1",
+   "asset": "retrato_mae",
+   "sprite": "retrato_mae",
+   "sx": 337,
+   "sy": 48,
+   "base": 70,
+   "layer": "wall",
+   "collide": null,
+   "frames": 1
+  },
+  {
+   "inst": "armario_1",
+   "asset": "armario_casa",
+   "sprite": "armario_casa",
+   "sx": 325,
+   "sy": 76,
+   "base": 141,
+   "layer": "floor",
+   "collide": [
+    328,
+    132,
+    364,
+    141
+   ],
+   "frames": 1
+  },
+  {
+   "inst": "criado_1",
+   "asset": "criado_radio",
+   "sprite": "criado_radio",
+   "sx": 363,
+   "sy": 114,
+   "base": 141,
+   "layer": "floor",
+   "collide": [
+    365,
+    136,
+    379,
+    141
+   ],
+   "frames": 1
+  },
+  {
+   "inst": "cama_1",
+   "asset": "cama_casa",
+   "sprite": "cama_casa",
+   "sx": 376,
+   "sy": 109,
+   "base": 174,
+   "layer": "floor",
+   "collide": [
+    378,
+    141,
+    406,
+    174
+   ],
+   "frames": 1
+  },
+  {
+   "inst": "mesa_1",
+   "asset": "mesa_casa",
+   "sprite": "mesa_casa",
+   "sx": 196,
+   "sy": 166,
+   "base": 208,
+   "layer": "floor",
+   "collide": [
+    201,
+    191,
+    261,
+    208
+   ],
+   "frames": 1
+  },
+  {
+   "inst": "cesto_1",
+   "asset": "cesto_pao",
+   "sprite": "cesto_pao",
+   "sx": 240,
+   "sy": 168,
+   "base": 208.2,
+   "layer": "on",
+   "collide": null,
+   "frames": 1
+  },
+  {
+   "inst": "domino_1",
+   "asset": "caixa_domino",
+   "sprite": "caixa_domino",
+   "sx": 216,
+   "sy": 172,
+   "base": 208.2,
+   "layer": "on",
+   "collide": null,
+   "frames": 1
+  },
+  {
+   "inst": "cad_frente",
+   "asset": "cadeira_c_frente",
+   "sprite": "cadeira_c_frente",
+   "sx": 207,
+   "sy": 152,
+   "base": 181,
+   "layer": "floor",
+   "collide": [
+    211,
+    177,
+    221,
+    181
+   ],
+   "frames": 1
+  },
+  {
+   "inst": "cad_frente2",
+   "asset": "cadeira_c_frente",
+   "sprite": "cadeira_c_frente",
+   "sx": 237,
+   "sy": 152,
+   "base": 181,
+   "layer": "floor",
+   "collide": [
+    241,
+    177,
+    251,
+    181
+   ],
+   "frames": 1
+  },
+  {
+   "inst": "cad_esq",
+   "asset": "cadeira_c_dir",
+   "sprite": "cadeira_c_dir",
+   "sx": 183,
+   "sy": 174,
+   "base": 203,
+   "layer": "floor",
+   "collide": [
+    187,
+    199,
+    197,
+    203
+   ],
+   "frames": 1
+  },
+  {
+   "inst": "cad_dir",
+   "asset": "cadeira_c_esq",
+   "sprite": "cadeira_c_esq",
+   "sx": 261,
+   "sy": 174,
+   "base": 203,
+   "layer": "floor",
+   "collide": [
+    265,
+    199,
+    275,
+    203
+   ],
+   "frames": 1
+  },
+  {
+   "inst": "cad_sul",
+   "asset": "cadeira_c_costas",
+   "sprite": "cadeira_c_costas",
+   "sx": 207,
+   "sy": 197,
+   "base": 226,
+   "layer": "floor",
+   "collide": [
+    211,
+    222,
+    221,
+    226
+   ],
+   "frames": 1
+  },
+  {
+   "inst": "cad_sul2",
+   "asset": "cadeira_c_costas",
+   "sprite": "cadeira_c_costas",
+   "sx": 237,
+   "sy": 197,
+   "base": 226,
+   "layer": "floor",
+   "collide": [
+    241,
+    222,
+    251,
+    226
+   ],
+   "frames": 1
+  }
+ ],
+ "interativos": [
+  {
+   "id": "fogao_1",
+   "asset": "fogao_casa",
+   "nome": "Fogão de quatro bocas",
+   "classe": "FUNCIONAL",
+   "tipo": "examinar",
+   "rect": [
+    100,
+    106,
+    24,
+    36
+   ],
+   "stand": [
+    112,
+    151
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Fogão a gás de quatro bocas, com forno.",
+   "states": [
+    "desligado",
+    "ligado"
+   ]
+  },
+  {
+   "id": "foto_forno_1",
+   "asset": "foto_forno",
+   "nome": "Fotografia do forno",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    76,
+    71,
+    17,
+    14
+   ],
+   "stand": [
+    100,
+    152
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 3,
+   "desc": "Fotografia pequena de um forno de lenha e uma mulher de avental."
+  },
+  {
+   "id": "talha_1",
+   "asset": "talha_barro",
+   "nome": "Filtro de barro",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    134,
+    96,
+    28,
+    46
+   ],
+   "stand": [
+    148,
+    151
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Filtro de barro com tampa de madeira e torneira, sobre um suporte de madeira encostado na parede, com uma caneca esmaltada."
+  },
+  {
+   "id": "sacola_1",
+   "asset": "sacola_prego",
+   "nome": "Sacola de pano e chapéu",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    188,
+    70,
+    25,
+    12
+   ],
+   "stand": [
+    200,
+    162
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 3,
+   "desc": "Sacola de pano remendada e chapéu de palha no prego."
+  },
+  {
+   "id": "balanco_1",
+   "asset": "balanco",
+   "nome": "Cadeira de balanço",
+   "classe": "UTILIZAVEL",
+   "tipo": "usar",
+   "rect": [
+    192,
+    109,
+    30,
+    42
+   ],
+   "stand": [
+    207,
+    158
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Cadeira de balanço de madeira escura, braços, encosto de palhinha e patins curvos, ao lado da janela e virada para dentro de casa."
+  },
+  {
+   "id": "oratorio_1",
+   "asset": "oratorio",
+   "nome": "Oratório",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    297,
+    66,
+    32,
+    38
+   ],
+   "stand": [
+    316,
+    152
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 3,
+   "desc": "Oratório de madeira com porta aberta, estampa e fitas."
+  },
+  {
+   "id": "retrato_1",
+   "asset": "retrato_mae",
+   "nome": "Retrato da mãe",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    337,
+    48,
+    18,
+    23
+   ],
+   "stand": [
+    336,
+    152
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 3,
+   "desc": "Moldura oval sépia com uma senhora de lenço branco."
+  },
+  {
+   "id": "armario_1",
+   "asset": "armario_casa",
+   "nome": "Guarda-roupa com espelho",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    325,
+    76,
+    42,
+    66
+   ],
+   "stand": [
+    358,
+    152
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Guarda-roupa de duas portas, uma com espelho."
+  },
+  {
+   "id": "criado_1",
+   "asset": "criado_radio",
+   "nome": "Criado-mudo com rádio",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    363,
+    114,
+    18,
+    28
+   ],
+   "stand": [
+    372,
+    151
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 3,
+   "desc": "Criado-mudo com rádio de pilha e óculos."
+  },
+  {
+   "id": "cama_1",
+   "asset": "cama_casa",
+   "nome": "Cama de solteiro com colcha de retalhos",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    376,
+    109,
+    34,
+    66
+   ],
+   "stand": [
+    372,
+    168
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Cama de solteiro com cabeceira de madeira e colcha de retalhos."
+  },
+  {
+   "id": "mesa_1",
+   "asset": "mesa_casa",
+   "nome": "Mesa de jantar com toalha",
+   "classe": "UTILIZAVEL",
+   "tipo": "usar",
+   "rect": [
+    196,
+    166,
+    70,
+    44
+   ],
+   "stand": [
+    277,
+    218
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Mesa grande, com toalha de crochê branca de barrado azul e xícaras postas. Cabem seis."
+  },
+  {
+   "id": "domino_1",
+   "asset": "caixa_domino",
+   "nome": "Caixa de dominó",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    216,
+    172,
+    17,
+    6
+   ],
+   "stand": [
+    185,
+    218
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 3,
+   "desc": "Caixa de madeira de dominó com algumas pedras fora."
+  },
+  {
+   "id": "cad_frente",
+   "asset": "cadeira_c_frente",
+   "nome": "Cadeira (de frente)",
+   "classe": "UTILIZAVEL",
+   "tipo": "usar",
+   "rect": [
+    207,
+    152,
+    19,
+    30
+   ],
+   "stand": [
+    200,
+    186
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": ""
+  },
+  {
+   "id": "cad_frente2",
+   "asset": "cadeira_c_frente",
+   "nome": "Cadeira (de frente)",
+   "classe": "UTILIZAVEL",
+   "tipo": "usar",
+   "rect": [
+    237,
+    152,
+    19,
+    30
+   ],
+   "stand": [
+    262,
+    186
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": ""
+  },
+  {
+   "id": "cad_esq",
+   "asset": "cadeira_c_dir",
+   "nome": "Cadeira (perfil esquerdo)",
+   "classe": "UTILIZAVEL",
+   "tipo": "usar",
+   "rect": [
+    183,
+    174,
+    18,
+    30
+   ],
+   "stand": [
+    187,
+    214
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": ""
+  },
+  {
+   "id": "cad_dir",
+   "asset": "cadeira_c_esq",
+   "nome": "Cadeira (perfil direito)",
+   "classe": "UTILIZAVEL",
+   "tipo": "usar",
+   "rect": [
+    261,
+    174,
+    18,
+    30
+   ],
+   "stand": [
+    275,
+    214
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": ""
+  },
+  {
+   "id": "cad_sul",
+   "asset": "cadeira_c_costas",
+   "nome": "Cadeira (de costas)",
+   "classe": "UTILIZAVEL",
+   "tipo": "usar",
+   "rect": [
+    207,
+    197,
+    19,
+    30
+   ],
+   "stand": [
+    230,
+    227
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": ""
+  },
+  {
+   "id": "cad_sul2",
+   "asset": "cadeira_c_costas",
+   "nome": "Cadeira (de costas)",
+   "classe": "UTILIZAVEL",
+   "tipo": "usar",
+   "rect": [
+    237,
+    197,
+    19,
+    30
+   ],
+   "stand": [
+    260,
+    227
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": ""
+  },
+  {
+   "id": "janela_sacada",
+   "asset": "janela",
+   "nome": "Porta-janela da sacada",
+   "classe": "EXAMINAVEL",
+   "tipo": "examinar",
+   "rect": [
+    220,
+    42,
+    72,
+    84
+   ],
+   "stand": [
+    256,
+    152
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 2,
+   "desc": "Porta-janela de veneziana com sacada de ferro."
+  }
+ ],
+ "colisao_arquitetura": []
+}

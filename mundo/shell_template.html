@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O balcão da vó — Etapa 7 · o mundo conectado</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #120d10; overflow: hidden; }
+  iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: none; background: #120d10; }
+  iframe.on { display: block; }
+  #fade { position: absolute; inset: 0; background: #0d080b; opacity: 0; pointer-events: none; z-index: 5; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: .35em; color: #f0dcc0; font: 600 15px/1.3 Georgia, serif; letter-spacing: .02em; }
+  #fade small { font: 400 11px/1.2 system-ui, sans-serif; color: #b8a58c; letter-spacing: .08em; text-transform: uppercase; }
+  #dbg { position: absolute; left: 6px; bottom: 6px; z-index: 6; font: 11px/1.35 ui-monospace, monospace; color: #cfe; background: rgba(0,0,0,.65); padding: 4px 7px; border-radius: 4px; display: none; white-space: pre; max-width: 60vw; }
+  #boot { position: absolute; inset: 0; z-index: 7; background: #120d10; color: #d9c7ad; display: flex; align-items: center; justify-content: center; font: 16px Georgia, serif; }
+</style>
+</head>
+<body>
+<iframe id="f_rua" title="Rua"></iframe><iframe id="f_padaria" title="Padaria"></iframe><iframe id="f_casa" title="Casa de Seu Raimundo"></iframe><iframe id="f_quintal" title="Quintal de Dona Zefa"></iframe>
+<div id="fade"><span id="fadeT"></span><small id="fadeS"></small></div>
+<div id="dbg"></div>
+<div id="boot">Montando o bairro…</div>
+<script>/*MUNDO_JS*/</script>
+<script>
+const SRC = /*SRC*/{};
+const Q = new URLSearchParams(location.search);
+const dec = b => new TextDecoder().decode(Uint8Array.from(atob(b), c => c.charCodeAt(0)));
+const FR = {}; let mundo = null, ready = 0; const NOMES = { rua: 'Rua', padaria: 'Padaria de Vó Aurea', casa: 'Casa de Seu Raimundo', quintal: 'Quintal de Dona Zefa' };
+const extra = '&mundo=1&rate=' + (Q.get('rate') || '0.25') + (Q.get('new') === '1' ? '&new=1' : '');
+// o jogo de cada ambiente roda no próprio iframe (sem reconstruir nada); `srcdoc` mantém o acesso entre as janelas
+for (const id of ['rua', 'padaria', 'casa', 'quintal']) {
+  const f = document.getElementById('f_' + id); FR[id] = f;
+  let html = dec(SRC[id]); f.srcdoc = html;
+}
+window.MUNDO_BRIDGE = {
+  entrar(cena, porta) { if (mundo) mundo.ir('rua:' + porta); },
+  sair(cena) { if (mundo) mundo.ir(cena + ':porta'); },
+};
+function mostrar(id) { for (const k in FR) FR[k].classList.toggle('on', k === id); const w = FR[id].contentWindow; try { w.dispatchEvent(new Event('resize')); w.focus(); } catch (e) { } }
+function pronto() {
+  const W = id => FR[id].contentWindow;
+  for (const id in FR) { const w = W(id); if (!(w.BALCAO && w.BALCAO.SIM)) return false; }
+  return true;
+}
+function montar() {
+  const W = id => FR[id].contentWindow, B = id => W(id).BALCAO;
+  const ui = {
+    rua: { liaSaiu: () => B('rua').liaSaiu(), liaChega: p => B('rua').liaChega(p) },
+    padaria: { liaSaiu: () => { }, liaChega: () => W('padaria').MUNDO_LIA() },
+    casa: { liaSaiu: () => { }, liaChega: () => W('casa').MUNDO_LIA() },
+    quintal: { liaSaiu: () => W('quintal').BALCAO.liaSaiu(), liaChega: () => W('quintal').MUNDO_LIA() },
+  };
+  const ad = { rua: Mundo.Adapters.rua(W('rua').eval('Sim'), B('rua').SIM, ui.rua), padaria: Mundo.Adapters.padaria(W('padaria').eval('Sim'), B('padaria').SIM, ui.padaria), casa: Mundo.Adapters.casa(W('casa').eval('Sim'), B('casa').SIM, ui.casa), quintal: Mundo.Adapters.quintal(null, B('quintal').SIM, ui.quintal) };
+  // cada jogo calcula a colisão com o Sim.Nav do próprio iframe (global do iframe): antes de passar o tempo de um ambiente inativo, reativa a navegação dele
+  for (const id of ['rua', 'padaria', 'casa', 'quintal']) { const a = ad[id], w = W(id); const base = a.step; a.step = dt => { const s = a.sim; if (id === 'rua') s.initNav && s.initNav(); base.call(a, dt); }; }
+  mundo = Mundo.criar(ad, 'rua');
+  mundo.on((t, d) => {
+    if (t === 'transicao_inicio') { const dest = Mundo.PORTAS.find(p => p.id === d.porta).para; document.getElementById('fadeT').textContent = NOMES[dest]; document.getElementById('fadeS').textContent = dest === 'rua' ? 'rua · vista lateral' : 'interior · vista três-quartos'; }
+    if (t === 'cena') mostrar(d.para);
+  });
+  mostrar('rua'); document.getElementById('boot').style.display = 'none';
+  // inativos andam aqui (rAF do iframe escondido não roda); o ativo anda no laço do próprio jogo
+  let last = performance.now(); (function laco(now) { const dt = Math.min(.1, (now - last) / 1000); last = now; mundo.update(dt); document.getElementById('fade').style.opacity = mundo.trans.alpha; if (Q.get('debug') === '1') dbg(); requestAnimationFrame(laco); })(last);
+  window.MUNDO = { mundo, frames: FR, ir: id => mundo.ir(id), estado: () => mundo.persist.instantaneo(), onde: () => mundo.viagens.onde, viagens: () => mundo.viagens.viagens, duplicados: () => mundo.viagens.duplicados(), cena: () => mundo.cenas.atual, minuto: () => mundo.minuto(), W };
+}
+function dbg() { const d = document.getElementById('dbg'); d.style.display = 'block'; const m = mundo.minuto(); d.textContent = 'cena ' + mundo.cenas.atual + ' · ' + String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(Math.floor(m % 60)).padStart(2, '0') + '\nonde ' + JSON.stringify(mundo.viagens.onde); }
+const iv = setInterval(() => { if (pronto()) { clearInterval(iv); montar(); } }, 120);
+</script>
+</body>
+</html>

@@ -1,0 +1,689 @@
+{
+ "mesa_domino": {
+  "w": 40,
+  "h": 26,
+  "ax": 20,
+  "ay": 24,
+  "frames": [
+   [
+    590,
+    2
+   ]
+  ],
+  "nome": "mesa de dominó",
+  "tipo": "examinar",
+  "classe": "UTILIZÁVEL",
+  "size_m": [
+   1.0,
+   0.75,
+   1.0
+  ],
+  "stand": [
+   0,
+   14
+  ],
+  "collide": [
+   -14,
+   -4,
+   14,
+   4
+  ],
+  "zoom": 2,
+  "desc": "Mesa quadrada de madeira, pintada de verde há muito tempo; o tampo tem as marcas de cada partida. Garrafa térmica de café e copinhos num canto."
+ },
+ "cad_dir": {
+  "w": 26,
+  "h": 32,
+  "ax": 13,
+  "ay": 28,
+  "frames": [
+   [
+    340,
+    2
+   ]
+  ],
+  "nome": "cadeira (frente para a direita)",
+  "tipo": "nenhum",
+  "classe": "UTILIZÁVEL",
+  "size_m": [
+   0.45,
+   1.0,
+   0.45
+  ],
+  "collide": [
+   -8,
+   -3,
+   8,
+   3
+  ]
+ },
+ "cad_esq": {
+  "w": 26,
+  "h": 32,
+  "ax": 13,
+  "ay": 28,
+  "frames": [
+   [
+    368,
+    2
+   ]
+  ],
+  "nome": "cadeira (frente para a esquerda)",
+  "tipo": "nenhum",
+  "classe": "UTILIZÁVEL",
+  "size_m": [
+   0.45,
+   1.0,
+   0.45
+  ],
+  "collide": [
+   -8,
+   -3,
+   8,
+   3
+  ]
+ },
+ "cad_fundo": {
+  "w": 22,
+  "h": 32,
+  "ax": 11,
+  "ay": 28,
+  "frames": [
+   [
+    396,
+    2
+   ]
+  ],
+  "nome": "cadeira (de frente para a câmera)",
+  "tipo": "nenhum",
+  "classe": "UTILIZÁVEL",
+  "size_m": [
+   0.45,
+   1.0,
+   0.45
+  ],
+  "collide": [
+   -7,
+   -3,
+   7,
+   3
+  ]
+ },
+ "cad_costas": {
+  "w": 22,
+  "h": 22,
+  "ax": 11,
+  "ay": 20,
+  "frames": [
+   [
+    86,
+    200
+   ]
+  ],
+  "nome": "encosto (cadeira de costas para a câmera)",
+  "tipo": "nenhum",
+  "classe": "UTILIZÁVEL",
+  "size_m": [
+   0.45,
+   0.6,
+   0.1
+  ],
+  "layer": "over"
+ },
+ "cad_calcada": {
+  "w": 22,
+  "h": 30,
+  "ax": 11,
+  "ay": 27,
+  "frames": [
+   [
+    420,
+    2
+   ]
+  ],
+  "nome": "cadeira de fio",
+  "tipo": "nenhum",
+  "classe": "UTILIZÁVEL",
+  "size_m": [
+   0.45,
+   0.9,
+   0.4
+  ],
+  "collide": [
+   -7,
+   -3,
+   7,
+   3
+  ]
+ },
+ "banquinho": {
+  "w": 16,
+  "h": 18,
+  "ax": 8,
+  "ay": 16,
+  "frames": [
+   [
+    138,
+    200
+   ]
+  ],
+  "nome": "banquinho",
+  "tipo": "nenhum",
+  "classe": "UTILIZÁVEL",
+  "size_m": [
+   0.35,
+   0.4,
+   0.35
+  ],
+  "collide": [
+   -5,
+   -3,
+   5,
+   3
+  ]
+ },
+ "canteiro_oiti": {
+  "w": 96,
+  "h": 120,
+  "ax": 48,
+  "ay": 112,
+  "frames": [
+   [
+    32,
+    2
+   ]
+  ],
+  "nome": "canteiro com oiti",
+  "tipo": "examinar",
+  "classe": "DECORATIVO",
+  "size_m": [
+   2.2,
+   4.4,
+   0.9
+  ],
+  "collide": [
+   -27,
+   -5,
+   27,
+   3
+  ],
+  "stand": [
+   0,
+   14
+  ],
+  "zoom": 1,
+  "desc": "Oiti novo plantado num canteiro de alvenaria caiada. A sombra dele é a mais disputada da rua."
+ },
+ "canteiro_jardim": {
+  "w": 84,
+  "h": 50,
+  "ax": 42,
+  "ay": 46,
+  "frames": [
+   [
+    162,
+    2
+   ]
+  ],
+  "nome": "canteiro de jardim",
+  "tipo": "examinar",
+  "classe": "DECORATIVO",
+  "size_m": [
+   3.0,
+   1.4,
+   0.6
+  ],
+  "collide": [
+   -36,
+   -4,
+   36,
+   2
+  ],
+  "stand": [
+   0,
+   13
+  ],
+  "zoom": 2,
+  "desc": "Canteiro comprido de alvenaria com crótons, hibisco e uma trepadeira. Alguém rega todo fim de tarde."
+ },
+ "vaso_espada": {
+  "w": 22,
+  "h": 46,
+  "ax": 11,
+  "ay": 44,
+  "frames": [
+   [
+    248,
+    2
+   ]
+  ],
+  "nome": "vaso de espada-de-são-jorge",
+  "tipo": "examinar",
+  "classe": "DECORATIVO",
+  "size_m": [
+   0.4,
+   1.0,
+   0.4
+  ],
+  "collide": [
+   -5,
+   -3,
+   5,
+   2
+  ],
+  "stand": [
+   0,
+   13
+  ],
+  "zoom": 3,
+  "desc": "Espada-de-são-jorge num vaso de barro grande, ao lado da porta. Quase toda casa daqui tem uma."
+ },
+ "vaso_latas": {
+  "w": 36,
+  "h": 30,
+  "ax": 18,
+  "ay": 28,
+  "frames": [
+   [
+    444,
+    2
+   ]
+  ],
+  "nome": "plantas em latas",
+  "tipo": "examinar",
+  "classe": "DECORATIVO",
+  "size_m": [
+   1.0,
+   0.8,
+   0.3
+  ],
+  "collide": [
+   -14,
+   -3,
+   14,
+   2
+  ],
+  "stand": [
+   0,
+   13
+  ],
+  "zoom": 3,
+  "desc": "Latas de tinta e de óleo servindo de vaso: samambaia, pimenta, manjericão. Cada uma com o resto da cor que já foi parede."
+ },
+ "vaso_palmeira": {
+  "w": 30,
+  "h": 62,
+  "ax": 15,
+  "ay": 60,
+  "frames": [
+   [
+    130,
+    2
+   ]
+  ],
+  "nome": "palmeira-ráfia em vaso",
+  "tipo": "examinar",
+  "classe": "DECORATIVO",
+  "size_m": [
+   0.7,
+   2.1,
+   0.7
+  ],
+  "collide": [
+   -6,
+   -3,
+   6,
+   2
+  ],
+  "stand": [
+   0,
+   13
+  ],
+  "zoom": 2,
+  "desc": "Palmeira-ráfia num vaso de cimento. Vive à sombra da varanda e nunca morreu, o que é quase um milagre."
+ },
+ "poste": {
+  "w": 28,
+  "h": 196,
+  "ax": 14,
+  "ay": 192,
+  "frames": [
+   [
+    2,
+    2
+   ]
+  ],
+  "nome": "poste de concreto",
+  "tipo": "examinar",
+  "classe": "DECORATIVO",
+  "size_m": [
+   0.3,
+   8.0,
+   0.3
+  ],
+  "collide": [
+   -3,
+   -3,
+   3,
+   2
+  ],
+  "stand": [
+   0,
+   14
+  ],
+  "zoom": 1,
+  "desc": "Poste de concreto com transformador e fios que seguem para as casas. Já foi usado como quadro de avisos por toda a vizinhança."
+ },
+ "orelhao": {
+  "w": 24,
+  "h": 44,
+  "ax": 12,
+  "ay": 42,
+  "frames": [
+   [
+    272,
+    2
+   ]
+  ],
+  "nome": "orelhão",
+  "tipo": "examinar",
+  "classe": "UTILIZÁVEL",
+  "size_m": [
+   0.6,
+   1.6,
+   0.6
+  ],
+  "collide": [
+   -4,
+   -3,
+   4,
+   2
+  ],
+  "stand": [
+   0,
+   13
+  ],
+  "zoom": 3,
+  "desc": "Orelhão de fibra azul, daqueles de ficha. Alguém rabiscou um número de telefone na cúpula."
+ },
+ "lixeira": {
+  "w": 16,
+  "h": 28,
+  "ax": 8,
+  "ay": 26,
+  "frames": [
+   [
+    518,
+    2
+   ]
+  ],
+  "nome": "lixeira de tela",
+  "tipo": "examinar",
+  "classe": "DECORATIVO",
+  "size_m": [
+   0.4,
+   0.8,
+   0.4
+  ],
+  "collide": [
+   -4,
+   -3,
+   4,
+   2
+  ],
+  "stand": [
+   0,
+   13
+  ],
+  "zoom": 3,
+  "desc": "Cesto de tela de aço preso num pé de ferro. Sacos de pão vazios, copo de café, papel de bala."
+ },
+ "banco": {
+  "w": 52,
+  "h": 28,
+  "ax": 26,
+  "ay": 25,
+  "frames": [
+   [
+    536,
+    2
+   ]
+  ],
+  "nome": "banco de madeira",
+  "tipo": "nenhum",
+  "classe": "UTILIZÁVEL",
+  "size_m": [
+   1.8,
+   0.8,
+   0.5
+  ],
+  "collide": [
+   -23,
+   -3,
+   23,
+   2
+  ],
+  "stand": [
+   0,
+   13
+  ],
+  "desc": "Banco de ripas sobre pés de concreto, de frente para a rua."
+ },
+ "bicicleta": {
+  "w": 40,
+  "h": 26,
+  "ax": 20,
+  "ay": 24,
+  "frames": [
+   [
+    2,
+    200
+   ]
+  ],
+  "nome": "bicicleta encostada",
+  "tipo": "examinar",
+  "classe": "DECORATIVO",
+  "size_m": [
+   1.7,
+   1.1,
+   0.4
+  ],
+  "collide": [
+   -18,
+   -2,
+   18,
+   2
+  ],
+  "stand": [
+   0,
+   13
+  ],
+  "zoom": 2,
+  "desc": "Bicicleta de entregador com cesto de vime no guidão. A corrente tem mais graxa que tinta."
+ },
+ "cavalete_pao": {
+  "w": 40,
+  "h": 40,
+  "ax": 20,
+  "ay": 38,
+  "frames": [
+   [
+    298,
+    2
+   ]
+  ],
+  "nome": "cavalete da padaria",
+  "tipo": "examinar",
+  "classe": "UTILIZÁVEL",
+  "size_m": [
+   0.9,
+   1.0,
+   0.5
+  ],
+  "collide": [
+   -12,
+   -3,
+   12,
+   2
+  ],
+  "stand": [
+   0,
+   13
+  ],
+  "zoom": 3,
+  "desc": "Cavalete de lousa na porta da padaria. A letra é da Vó; o preço é do dia."
+ },
+ "caixote_laranja": {
+  "w": 26,
+  "h": 20,
+  "ax": 13,
+  "ay": 18,
+  "frames": [
+   [
+    110,
+    200
+   ]
+  ],
+  "nome": "caixote de laranjas",
+  "tipo": "examinar",
+  "classe": "DECORATIVO",
+  "size_m": [
+   0.6,
+   0.5,
+   0.4
+  ],
+  "collide": [
+   -9,
+   -2,
+   9,
+   2
+  ],
+  "stand": [
+   0,
+   13
+  ],
+  "zoom": 3,
+  "desc": "Caixote de feira com laranjas-bahia que o menino da banca deixou. Ninguém mexe."
+ },
+ "pilha_obra": {
+  "w": 40,
+  "h": 26,
+  "ax": 20,
+  "ay": 24,
+  "frames": [
+   [
+    44,
+    200
+   ]
+  ],
+  "nome": "tijolos e sacos de cimento",
+  "tipo": "examinar",
+  "classe": "DECORATIVO",
+  "size_m": [
+   1.5,
+   0.8,
+   0.6
+  ],
+  "collide": [
+   -17,
+   -3,
+   17,
+   2
+  ],
+  "stand": [
+   0,
+   13
+  ],
+  "zoom": 2,
+  "desc": "Pilha de tijolos e dois sacos de cimento. Alguém está consertando o reboco da casa, devagar, no tempo do dinheiro."
+ },
+ "quadro_avisos": {
+  "w": 34,
+  "h": 30,
+  "ax": 17,
+  "ay": 28,
+  "frames": [
+   [
+    482,
+    2
+   ]
+  ],
+  "nome": "quadro de avisos",
+  "tipo": "examinar",
+  "classe": "EXAMINÁVEL",
+  "size_m": [
+   0.9,
+   0.8,
+   0.05
+  ],
+  "collide": null,
+  "stand": [
+   0,
+   14
+  ],
+  "zoom": 3,
+  "layer": "wall",
+  "ywall": -34,
+  "desc": "Quadro de cortiça da associação: reunião de moradores, rifa de uma geladeira, aviso sobre a água, anúncio de aluguel de cômodo."
+ },
+ "gato": {
+  "w": 18,
+  "h": 14,
+  "ax": 9,
+  "ay": 12,
+  "frames": [
+   [
+    156,
+    200
+   ],
+   [
+    176,
+    200
+   ]
+  ],
+  "nome": "gato",
+  "tipo": "examinar",
+  "classe": "DECORATIVO",
+  "size_m": [
+   0.4,
+   0.3,
+   0.2
+  ],
+  "collide": null,
+  "stand": [
+   0,
+   13
+  ],
+  "zoom": 3,
+  "desc": "Gato malhado dormindo no calor da pedra. Abre um olho quando você passa."
+ },
+ "pombo": {
+  "w": 12,
+  "h": 12,
+  "ax": 6,
+  "ay": 10,
+  "frames": [
+   [
+    196,
+    200
+   ],
+   [
+    210,
+    200
+   ],
+   [
+    224,
+    200
+   ]
+  ],
+  "nome": "pombo",
+  "tipo": "nenhum",
+  "classe": "DECORATIVO",
+  "size_m": [
+   0.3,
+   0.25,
+   0.15
+  ],
+  "collide": null
+ }
+}

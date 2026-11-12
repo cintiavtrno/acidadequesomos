@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O balcão da vó — Etapa 8.6 · quintal do caruru (1994)</title>
+<style>
+html,body{margin:0;height:100%;background:#120d10;overflow:hidden;font:1rem system-ui,sans-serif;color:#f4e6cf}
+#w{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#frame{position:relative;line-height:0}
+canvas{display:block;background:#120d10}
+#clock{position:absolute;left:10px;top:8px;background:rgba(20,12,16,.72);padding:4px 9px;border-radius:5px}
+#prompt{position:absolute;left:50%;bottom:54px;transform:translateX(-50%);background:rgba(20,12,16,.82);padding:5px 12px;border-radius:5px;opacity:0;transition:opacity .15s}
+#fala{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);max-width:70%;background:rgba(244,230,207,.95);color:#2a1d17;padding:7px 13px;border-radius:6px;opacity:0;font:600 14px Georgia,serif;text-align:center}
+#toast{position:absolute;right:10px;top:8px;background:rgba(20,12,16,.72);padding:4px 9px;border-radius:5px;opacity:0;transition:opacity .4s;max-width:46%}
+.k{background:#f0c98c;color:#2a1d17;border-radius:3px;padding:0 5px;font-weight:700}
+</style>
+<script>// fit.js — ocupa 100% da janela preservando 16:9 e pixel art nítida.
+// O jogo continua desenhando em VW×VH lógicos (480×270) no canvas original, que fica transparente por cima e só recebe cliques;
+// a imagem visível é um canvas de exibição: ampliação inteira por vizinho mais próximo (n = ⌈escala⌉) e, se a escala não for inteira,
+// redução suave final até o tamanho exato da janela (sem pixels de larguras desiguais nem sprites borrados).
+(function () {
+  let disp, dctx, inter, ictx, src, W = 0, H = 0, n = 1, iw = 0, ih = 0, VWr = 480, VHr = 270;
+  function blit() {
+    requestAnimationFrame(blit); if (!disp || !src || document.hidden) return;
+    if (inter) { ictx.imageSmoothingEnabled = false; ictx.drawImage(src, 0, 0, iw, ih); dctx.imageSmoothingEnabled = true; dctx.imageSmoothingQuality = 'high'; dctx.drawImage(inter, 0, 0, W, H); }
+    else { dctx.imageSmoothingEnabled = false; dctx.drawImage(src, 0, 0, W, H); }
+  }
+  window.fitDisplay = function (cv, VW, VH) {
+    const w = innerWidth, h = innerHeight; if (w < 2 || h < 2) return 1;
+    const s = Math.min(w / VW, h / VH), cw = Math.round(VW * s), ch = Math.round(VH * s), dpr = window.devicePixelRatio || 1;
+    cv.style.width = cw + 'px'; cv.style.height = ch + 'px';
+    if (!disp) {
+      src = cv; disp = document.createElement('canvas'); disp.setAttribute('aria-hidden', 'true'); dctx = disp.getContext('2d');
+      disp.style.cssText = 'position:absolute;left:0;top:0;pointer-events:none;image-rendering:pixelated'; cv.style.position = 'relative'; cv.style.opacity = '0';
+      cv.parentNode.insertBefore(disp, cv); requestAnimationFrame(blit);
+    }
+    VWr = VW; VHr = VH; W = Math.max(1, Math.round(cw * dpr)); H = Math.max(1, Math.round(ch * dpr)); disp.width = W; disp.height = H; disp.style.width = cw + 'px'; disp.style.height = ch + 'px';
+    n = Math.min(8, Math.max(1, Math.ceil(W / VW)));
+    if (W === VW * n && H === VH * n || n === 1 && W <= VW) inter = null;
+    else { inter = inter || document.createElement('canvas'); iw = VW * n; ih = VH * n; inter.width = iw; inter.height = ih; ictx = inter.getContext('2d'); }
+    return s;
+  };
+})();
+</script></head><body>
+<div id="w"><div id="frame"><canvas id="cv" width="480" height="270" aria-label="Quintal de Dona Zefa, dia do caruru"></canvas></div></div>
+<div id="clock"></div><div id="toast"></div><div id="prompt"></div><div id="fala"></div>
+<script>window.PAL = /*PAL*/{}; window.QCAT = /*QCAT*/{};</script>
+<script>/*CHARS_JS*/</script>
+<script>/*QUINTAL_JS*/</script>
+<script>/*RENDER_JS*/</script>
+<script>/*GAME_JS*/</script>
+<script>
+(function () {
+  const D = /*QDATA*/{}, AT = /*ATLAS*/{}, IMG = /*IMGS*/{}, Q = window.Quintal, MUNDO = window.MUNDO_ATIVO;
+  D.SPEED = { ze: 0.57, nonato: 1.1, junior: 1.7, cicera: 0.9, bela: 0.8, tonho: 1.0, m1: 1.7, m2: 1.7, m3: 1.7, m4: 1.7, m5: 1.7, m6: 1.7 };
+  let G = null; const imgs = {}; let n = 0; const keys = Object.keys(IMG);
+  const S = { get fase() { return G && G.sim.fasen; } };
+  window.BALCAO = {
+    S, get SIM() { return G && G.sim; }, get G() { return G; },
+    liaSaiu() { if (G) G.parar(); }, liaChega() { if (G) { G.sim.chegar(); G.seguir(); } },
+  };
+  window.MUNDO_LIA = () => window.BALCAO.liaChega();
+  keys.forEach(k => { const im = new Image(); im.onload = () => { if (++n === keys.length) go(); }; im.src = IMG[k]; imgs[k] = im; });
+  function go() {
+    CharLib.init(AT, imgs);
+    G = new Q.Game(document.getElementById('cv'), D, CharLib, { sair() { if (window.MUNDO_ATIVO) window.MUNDO_SAIR('quintal'); } });
+    G.iniciar(); document.body.setAttribute('data-pronto', '1');
+    const p = new URLSearchParams(location.search); if (p.get('fase')) G.sim.fase(p.get('fase'));
+  }
+})();
+</script></body></html>

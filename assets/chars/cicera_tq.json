@@ -1,0 +1,364 @@
+{
+ "cell": [
+  40,
+  52
+ ],
+ "anchor": [
+  20,
+  46
+ ],
+ "pad": 2,
+ "cols": 8,
+ "persp": "tq",
+ "rows": {
+  "idle/down": {
+   "row": 0,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "idle/down_right": {
+   "row": 1,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "idle/right": {
+   "row": 2,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "idle/up_right": {
+   "row": 3,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "idle/up": {
+   "row": 4,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "idle/up_left": {
+   "row": 5,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "idle/left": {
+   "row": 6,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "idle/down_left": {
+   "row": 7,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "walk/down": {
+   "row": 8,
+   "n": 8,
+   "fps": 9.090909090909092,
+   "loop": true
+  },
+  "walk/down_right": {
+   "row": 9,
+   "n": 8,
+   "fps": 9.090909090909092,
+   "loop": true
+  },
+  "walk/right": {
+   "row": 10,
+   "n": 8,
+   "fps": 9.090909090909092,
+   "loop": true
+  },
+  "walk/up_right": {
+   "row": 11,
+   "n": 8,
+   "fps": 9.090909090909092,
+   "loop": true
+  },
+  "walk/up": {
+   "row": 12,
+   "n": 8,
+   "fps": 9.090909090909092,
+   "loop": true
+  },
+  "walk/up_left": {
+   "row": 13,
+   "n": 8,
+   "fps": 9.090909090909092,
+   "loop": true
+  },
+  "walk/left": {
+   "row": 14,
+   "n": 8,
+   "fps": 9.090909090909092,
+   "loop": true
+  },
+  "walk/down_left": {
+   "row": 15,
+   "n": 8,
+   "fps": 9.090909090909092,
+   "loop": true
+  },
+  "turn/down": {
+   "row": 16,
+   "n": 2,
+   "fps": 6.0,
+   "loop": false
+  },
+  "turn/down_right": {
+   "row": 17,
+   "n": 2,
+   "fps": 6.0,
+   "loop": false
+  },
+  "turn/right": {
+   "row": 18,
+   "n": 2,
+   "fps": 6.0,
+   "loop": false
+  },
+  "turn/up_right": {
+   "row": 19,
+   "n": 2,
+   "fps": 6.0,
+   "loop": false
+  },
+  "turn/up": {
+   "row": 20,
+   "n": 2,
+   "fps": 6.0,
+   "loop": false
+  },
+  "turn/up_left": {
+   "row": 21,
+   "n": 2,
+   "fps": 6.0,
+   "loop": false
+  },
+  "turn/left": {
+   "row": 22,
+   "n": 2,
+   "fps": 6.0,
+   "loop": false
+  },
+  "turn/down_left": {
+   "row": 23,
+   "n": 2,
+   "fps": 6.0,
+   "loop": false
+  },
+  "talk/down": {
+   "row": 24,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "talk/down_right": {
+   "row": 25,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "talk/right": {
+   "row": 26,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "talk/up_right": {
+   "row": 27,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "talk/up": {
+   "row": 28,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "talk/up_left": {
+   "row": 29,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "talk/left": {
+   "row": 30,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "talk/down_left": {
+   "row": 31,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "interact/down": {
+   "row": 32,
+   "n": 4,
+   "fps": 7.0,
+   "loop": false
+  },
+  "interact/down_right": {
+   "row": 33,
+   "n": 4,
+   "fps": 7.0,
+   "loop": false
+  },
+  "interact/right": {
+   "row": 34,
+   "n": 4,
+   "fps": 7.0,
+   "loop": false
+  },
+  "interact/up_right": {
+   "row": 35,
+   "n": 4,
+   "fps": 7.0,
+   "loop": false
+  },
+  "interact/up": {
+   "row": 36,
+   "n": 4,
+   "fps": 7.0,
+   "loop": false
+  },
+  "interact/up_left": {
+   "row": 37,
+   "n": 4,
+   "fps": 7.0,
+   "loop": false
+  },
+  "interact/left": {
+   "row": 38,
+   "n": 4,
+   "fps": 7.0,
+   "loop": false
+  },
+  "interact/down_left": {
+   "row": 39,
+   "n": 4,
+   "fps": 7.0,
+   "loop": false
+  },
+  "interact_high/down": {
+   "row": 40,
+   "n": 4,
+   "fps": 7.0,
+   "loop": false
+  },
+  "interact_high/down_right": {
+   "row": 41,
+   "n": 4,
+   "fps": 7.0,
+   "loop": false
+  },
+  "interact_high/right": {
+   "row": 42,
+   "n": 4,
+   "fps": 7.0,
+   "loop": false
+  },
+  "interact_high/up_right": {
+   "row": 43,
+   "n": 4,
+   "fps": 7.0,
+   "loop": false
+  },
+  "interact_high/up": {
+   "row": 44,
+   "n": 4,
+   "fps": 7.0,
+   "loop": false
+  },
+  "interact_high/up_left": {
+   "row": 45,
+   "n": 4,
+   "fps": 7.0,
+   "loop": false
+  },
+  "interact_high/left": {
+   "row": 46,
+   "n": 4,
+   "fps": 7.0,
+   "loop": false
+  },
+  "interact_high/down_left": {
+   "row": 47,
+   "n": 4,
+   "fps": 7.0,
+   "loop": false
+  },
+  "sit/down": {
+   "row": 48,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "sit/down_right": {
+   "row": 49,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "sit/right": {
+   "row": 50,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "sit/up_right": {
+   "row": 51,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "sit/up": {
+   "row": 52,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "sit/up_left": {
+   "row": 53,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "sit/left": {
+   "row": 54,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "sit/down_left": {
+   "row": 55,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  }
+ },
+ "speed_mps": 1.0,
+ "scale": 1.0,
+ "gait": {
+  "T": 0.88,
+  "step": 0.44,
+  "lift": 0.058,
+  "bob": 0.013,
+  "arm": 0.34,
+  "lean": 0.06,
+  "sway": 0.01,
+  "head": 0.03,
+  "hand_out": 0.11
+ }
+}

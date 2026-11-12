@@ -1,0 +1,1155 @@
+{
+ "unidade": "1 m = 24 px (altura); piso 16 px/m; âncora = pés",
+ "camera": "3/4 oblíqua",
+ "cena": "casa_raimundo",
+ "assets": [
+  {
+   "id": "mesa_casa",
+   "nome": "Mesa de jantar com toalha",
+   "categoria": "casa",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    2.4,
+    1.3,
+    0.75
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "Mesa grande, com toalha de crochê branca de barrado azul e xícaras postas. Cabem seis.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "mesa_casa",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    2,
+    2,
+    70,
+    44
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    70,
+    44
+   ],
+   "ancora": [
+    35,
+    42
+   ],
+   "collide": [
+    -30,
+    -17,
+    30,
+    0
+   ],
+   "stand": [
+    0,
+    14
+   ]
+  },
+  {
+   "id": "cadeira_c_frente",
+   "nome": "Cadeira (de frente)",
+   "categoria": "casa",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    0.45,
+    0.45,
+    0.95
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "cadeira_c_frente",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    74,
+    2,
+    19,
+    30
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    19,
+    30
+   ],
+   "ancora": [
+    9,
+    29
+   ],
+   "collide": [
+    -5,
+    -4,
+    5,
+    0
+   ],
+   "stand": null
+  },
+  {
+   "id": "cadeira_c_costas",
+   "nome": "Cadeira (de costas)",
+   "categoria": "casa",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    0.45,
+    0.45,
+    0.95
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "cadeira_c_costas",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    95,
+    2,
+    19,
+    30
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    19,
+    30
+   ],
+   "ancora": [
+    9,
+    29
+   ],
+   "collide": [
+    -5,
+    -4,
+    5,
+    0
+   ],
+   "stand": null
+  },
+  {
+   "id": "cadeira_c_dir",
+   "nome": "Cadeira (perfil direito)",
+   "categoria": "casa",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    0.45,
+    0.45,
+    0.95
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "cadeira_c_dir",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    116,
+    2,
+    18,
+    30
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    18,
+    30
+   ],
+   "ancora": [
+    9,
+    29
+   ],
+   "collide": [
+    -5,
+    -4,
+    5,
+    0
+   ],
+   "stand": null
+  },
+  {
+   "id": "cadeira_c_esq",
+   "nome": "Cadeira (perfil esquerdo)",
+   "categoria": "casa",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    0.45,
+    0.45,
+    0.95
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "cadeira_c_esq",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    136,
+    2,
+    18,
+    30
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    18,
+    30
+   ],
+   "ancora": [
+    9,
+    29
+   ],
+   "collide": [
+    -5,
+    -4,
+    5,
+    0
+   ],
+   "stand": null
+  },
+  {
+   "id": "balanco",
+   "nome": "Cadeira de balanço",
+   "categoria": "casa",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    0.75,
+    0.9,
+    1.25
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "Cadeira de balanço de madeira escura, braços, encosto de palhinha e patins curvos, ao lado da janela e virada para dentro de casa.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "balanco",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    156,
+    2,
+    30,
+    42
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    30,
+    42
+   ],
+   "ancora": [
+    15,
+    38
+   ],
+   "collide": [
+    -11,
+    -9,
+    11,
+    0
+   ],
+   "stand": [
+    0,
+    11
+   ]
+  },
+  {
+   "id": "armario_casa",
+   "nome": "Guarda-roupa com espelho",
+   "categoria": "casa",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "size_m": [
+    1.5,
+    0.55,
+    2.3
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "Guarda-roupa de duas portas, uma com espelho.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "armario_casa",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    188,
+    2,
+    42,
+    66
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    42,
+    66
+   ],
+   "ancora": [
+    21,
+    65
+   ],
+   "collide": [
+    -18,
+    -9,
+    18,
+    0
+   ],
+   "stand": [
+    0,
+    11
+   ]
+  },
+  {
+   "id": "cama_casa",
+   "nome": "Cama de solteiro com colcha de retalhos",
+   "categoria": "casa",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "size_m": [
+    1.1,
+    2.0,
+    0.5
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "Cama de solteiro com cabeceira de madeira e colcha de retalhos.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "cama_casa",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    232,
+    2,
+    34,
+    66
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    34,
+    66
+   ],
+   "ancora": [
+    16,
+    65
+   ],
+   "collide": [
+    -14,
+    -33,
+    14,
+    0
+   ],
+   "stand": [
+    -20,
+    -6
+   ]
+  },
+  {
+   "id": "criado_radio",
+   "nome": "Criado-mudo com rádio",
+   "categoria": "casa",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "size_m": [
+    0.5,
+    0.4,
+    0.7
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 3,
+   "desc": "Criado-mudo com rádio de pilha e óculos.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "criado_radio",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    268,
+    2,
+    18,
+    28
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    18,
+    28
+   ],
+   "ancora": [
+    9,
+    27
+   ],
+   "collide": [
+    -7,
+    -5,
+    7,
+    0
+   ],
+   "stand": [
+    0,
+    10
+   ]
+  },
+  {
+   "id": "talha_barro",
+   "nome": "Filtro de barro",
+   "categoria": "casa",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "size_m": [
+    0.9,
+    0.45,
+    1.5
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "Filtro de barro com tampa de madeira e torneira, sobre um suporte de madeira encostado na parede, com uma caneca esmaltada.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "talha_barro",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    288,
+    2,
+    28,
+    46
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    28,
+    46
+   ],
+   "ancora": [
+    14,
+    45
+   ],
+   "collide": [
+    -11,
+    -7,
+    11,
+    0
+   ],
+   "stand": [
+    0,
+    10
+   ]
+  },
+  {
+   "id": "oratorio",
+   "nome": "Oratório",
+   "categoria": "casa",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "size_m": [
+    0.9,
+    0.2,
+    1.5
+   ],
+   "layer": "wall",
+   "states": null,
+   "supports": null,
+   "zoom": 3,
+   "desc": "Oratório de madeira com porta aberta, estampa e fitas.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "oratorio",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    318,
+    2,
+    32,
+    38
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    32,
+    38
+   ],
+   "ancora": [
+    19,
+    38
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "retrato_mae",
+   "nome": "Retrato da mãe",
+   "categoria": "casa",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "size_m": [
+    0.6,
+    0.05,
+    0.85
+   ],
+   "layer": "wall",
+   "states": null,
+   "supports": null,
+   "zoom": 3,
+   "desc": "Moldura oval sépia com uma senhora de lenço branco.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "retrato_mae",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    352,
+    2,
+    18,
+    23
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    18,
+    23
+   ],
+   "ancora": [
+    9,
+    22
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "foto_forno",
+   "nome": "Fotografia do forno",
+   "categoria": "casa",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "size_m": [
+    0.55,
+    0.05,
+    0.4
+   ],
+   "layer": "wall",
+   "states": null,
+   "supports": null,
+   "zoom": 3,
+   "desc": "Fotografia pequena de um forno de lenha e uma mulher de avental.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "foto_forno",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    372,
+    2,
+    17,
+    14
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    17,
+    14
+   ],
+   "ancora": [
+    8,
+    13
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "sacola_prego",
+   "nome": "Sacola de pano e chapéu",
+   "categoria": "casa",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "size_m": [
+    0.5,
+    0.1,
+    0.9
+   ],
+   "layer": "wall",
+   "states": null,
+   "supports": null,
+   "zoom": 3,
+   "desc": "Sacola de pano remendada e chapéu de palha no prego.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "sacola_prego",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    391,
+    2,
+    25,
+    12
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    25,
+    12
+   ],
+   "ancora": [
+    19,
+    0
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "caixa_domino",
+   "nome": "Caixa de dominó",
+   "categoria": "casa",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "size_m": [
+    0.2,
+    0.15,
+    0.1
+   ],
+   "layer": "on",
+   "states": null,
+   "supports": null,
+   "zoom": 3,
+   "desc": "Caixa de madeira de dominó com algumas pedras fora.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "caixa_domino",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    418,
+    2,
+    17,
+    6
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    17,
+    6
+   ],
+   "ancora": [
+    5,
+    6
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "cesto_pao",
+   "nome": "Cesto de pão com pano",
+   "categoria": "casa",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0.3,
+    0.3,
+    0.2
+   ],
+   "layer": "on",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "cesto_pao",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    437,
+    2,
+    15,
+    10
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    15,
+    10
+   ],
+   "ancora": [
+    7,
+    10
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "planta_casa",
+   "nome": "Vaso de folhagem",
+   "categoria": "casa",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0.8,
+    0.4,
+    1.2
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "Folhagem em vaso de barro.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "planta_casa",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    454,
+    2,
+    25,
+    39
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    25,
+    39
+   ],
+   "ancora": [
+    12,
+    38
+   ],
+   "collide": [
+    -6,
+    -4,
+    6,
+    0
+   ],
+   "stand": null
+  },
+  {
+   "id": "prateleira_casa",
+   "nome": "Prateleira de louças",
+   "categoria": "casa",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    1.4,
+    0.2,
+    0.35
+   ],
+   "layer": "wall",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "prateleira_casa",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    2,
+    70,
+    34,
+    18
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    34,
+    18
+   ],
+   "ancora": [
+    17,
+    12
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "fogao_casa",
+   "nome": "Fogão de quatro bocas",
+   "categoria": "casa",
+   "classe": "FUNCIONAL",
+   "interacao": "examinar",
+   "size_m": [
+    0.8,
+    0.6,
+    1.2
+   ],
+   "layer": "floor",
+   "states": [
+    "desligado",
+    "ligado"
+   ],
+   "supports": [
+    {
+     "nome": "boca_esq",
+     "dx": -5,
+     "dy": -28
+    },
+    {
+     "nome": "boca_dir",
+     "dx": 5,
+     "dy": -28
+    }
+   ],
+   "zoom": 2,
+   "desc": "Fogão a gás de quatro bocas, com forno.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "fogao_casa",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    38,
+    70,
+    24,
+    36
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    24,
+    36
+   ],
+   "ancora": [
+    12,
+    35
+   ],
+   "collide": [
+    -10,
+    -9,
+    10,
+    0
+   ],
+   "stand": [
+    0,
+    9
+   ]
+  },
+  {
+   "id": "panela_casa",
+   "nome": "Panela de alumínio",
+   "categoria": "casa",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0.28,
+    0.28,
+    0.2
+   ],
+   "layer": "on",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "panela_casa",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    64,
+    70,
+    17,
+    9
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    17,
+    9
+   ],
+   "ancora": [
+    8,
+    9
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "cafeteira_casa",
+   "nome": "Cafeteira esmaltada",
+   "categoria": "casa",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0.2,
+    0.2,
+    0.3
+   ],
+   "layer": "on",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "cafeteira_casa",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    83,
+    70,
+    10,
+    11
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    10,
+    11
+   ],
+   "ancora": [
+    5,
+    10
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "chama_casa",
+   "nome": "Chama do fogão",
+   "categoria": "casa",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0.1,
+    0.1,
+    0.1
+   ],
+   "layer": "on",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 2,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "chama_casa#0",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    95,
+    70,
+    7,
+    3
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    7,
+    3
+   ],
+   "ancora": [
+    3,
+    1
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "chama_casa",
+   "nome": "Chama do fogão",
+   "categoria": "casa",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0.1,
+    0.1,
+    0.1
+   ],
+   "layer": "on",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 2,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "chama_casa#1",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    104,
+    70,
+    7,
+    3
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    7,
+    3
+   ],
+   "ancora": [
+    3,
+    1
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "vapor_casa",
+   "nome": "Vapor da panela",
+   "categoria": "casa",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0.1,
+    0.1,
+    0.1
+   ],
+   "layer": "on",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 2,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "vapor_casa#0",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    113,
+    70,
+    3,
+    8
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    3,
+    8
+   ],
+   "ancora": [
+    0,
+    7
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "vapor_casa",
+   "nome": "Vapor da panela",
+   "categoria": "casa",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0.1,
+    0.1,
+    0.1
+   ],
+   "layer": "on",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 2,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "vapor_casa#1",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    118,
+    70,
+    3,
+    8
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    3,
+    8
+   ],
+   "ancora": [
+    1,
+    8
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "vela_oratorio",
+   "nome": "Vela do oratório",
+   "categoria": "casa",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0.05,
+    0.05,
+    0.2
+   ],
+   "layer": "wall",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 2,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "vela_oratorio#0",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    123,
+    70,
+    3,
+    9
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    3,
+    9
+   ],
+   "ancora": [
+    1,
+    2
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "vela_oratorio",
+   "nome": "Vela do oratório",
+   "categoria": "casa",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0.05,
+    0.05,
+    0.2
+   ],
+   "layer": "wall",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 2,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "vela_oratorio#1",
+   "folha": "objects/casa_objetos.png",
+   "rect": [
+    128,
+    70,
+    3,
+    9
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    3,
+    9
+   ],
+   "ancora": [
+    1,
+    2
+   ],
+   "collide": null,
+   "stand": null
+  }
+ ]
+}

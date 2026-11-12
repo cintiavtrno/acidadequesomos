@@ -1,0 +1,276 @@
+// ===== s13_rua_data.js — dados da rua (Etapa 6): elenco, assentos, pontos, agenda, falas =====
+// Tudo aqui é PROPOSTA (nenhuma fala/rotina nova foi aprovada). Itens com revisar:true precisam de leitura de quem conhece o bairro e a cultura local.
+// Coordenadas: x do mundo; sy = linha dos pés abaixo do encosto da parede (0..21 calçada, 22+ meio-fio/rua). y real = yw(x) + sy.
+Sim.Rua = { v: '6.0', D: {} };
+(function () {
+const RD = Sim.Rua.D;
+RD.W = 1130; RD.VH = 270;
+RD.yw = x => 212 + Math.floor(Math.max(0, x) / 70);
+RD.dia = { inicio: 420, fim: 720 };                    // 07:00–12:00
+const T = s => { const [h, m] = s.split(':').map(Number); return h * 60 + m; };
+RD.T = T;
+
+// ---- elenco (folhas *_side; Lia usa lia_side6) ----
+RD.pessoas = {
+  raimundo: { nome: 'Seu Raimundo', curto: 'Raimundo', cor: '#e8c07a', papel: 'vizinho do sobrado amarelo', ritmo: 0.55 },
+  ze:       { nome: 'Seu Zé', curto: 'Zé', cor: '#9fc4d8', papel: 'jogador de dominó, aposentado', ritmo: 0.62 },
+  nonato:   { nome: 'Nonato', curto: 'Nonato', cor: '#e8c85a', papel: 'jogador de dominó, pedreiro de ocasião', ritmo: 0.8 },
+  bela:     { nome: 'Dona Bela', curto: 'Bela', cor: '#e89ab4', papel: 'jogadora de dominó, costureira', ritmo: 0.7 },
+  cicera:   { nome: 'Dona Cícera', curto: 'Cícera', cor: '#f0be4c', papel: 'moradora do casarão rosa, lava roupa para o bairro', ritmo: 0.85 },
+  junior:   { nome: 'Júnior', curto: 'Júnior', cor: '#e0705a', papel: 'menino da rua, neto de Cícera', ritmo: 1.55 },
+  tonho:    { nome: 'Tonho', curto: 'Tonho', cor: '#8ec8e8', papel: 'vendedor de cocada e queijadinha', ritmo: 0.85 },
+  dandara:  { nome: 'Dandara', curto: 'Dandara', cor: '#d594b0', papel: 'líder da associação de moradores', ritmo: 1.0 },
+  lucia:    { nome: 'Lúcia', curto: 'Lúcia', cor: '#f5a64a', papel: 'técnica do Programa de recuperação', ritmo: 1.0 },
+};
+// velocidade de caminhada em px/s (do atlas: speed_mps*24) — valores usados quando o atlas ainda não carregou (testes em Node)
+RD.vel = { lia: 30.5, raimundo: 15.7, ze: 13.6, nonato: 19.2, bela: 16.6, cicera: 24, junior: 22.5, tonho: 22, dandara: 26, lucia: 29 };
+
+// ---- mesa de dominó: assentos (cadeira, posição, direção do corpo), ordem do jogo e duplas ----
+RD.mesa = { x: 240, sy: 15, w: 34, lado: 17 };
+RD.assentos = {
+  E: { id: 'E', cadeira: 'cad_dom_E', x: 212, sy: 15, face: 'right', sort: 0.1, aprox: [198, 19] },
+  D: { id: 'D', cadeira: 'cad_dom_D', x: 268, sy: 15, face: 'left',  sort: 0.1, aprox: [282, 19] },
+  F: { id: 'F', cadeira: 'cad_dom_F', x: 240, sy: 8,  face: 'down',  sort: 0.1, aprox: [224, 9] },
+  T: { id: 'T', cadeira: 'cad_dom_T', x: 240, sy: 22, face: 'up',    sort: 0.1, aprox: [240, 27], sobre: 'cad_dom_T_enc' },
+};
+RD.ordem = ['E', 'T', 'D', 'F'];                       // sentido anti-horário; E e D são dupla (de frente), T e F a outra
+RD.dupla = { E: 0, D: 0, T: 1, F: 1 };
+RD.jogo = {
+  raimundo: { pensa: [3.2, 6.0], agro: .2, fala: .35 }, ze: { pensa: [1.4, 3.2], agro: .7, fala: .6 },
+  nonato: { pensa: [1.6, 3.6], agro: .9, fala: .9 }, bela: { pensa: [2.2, 4.4], agro: .3, fala: .4 }, cicera: { pensa: [2.0, 4.6], agro: .5, fala: .6 },
+  lia: { pensa: [0, 0], agro: .5, fala: 0 },
+};
+// outros assentos da rua
+RD.assentosRua = {
+  cad_calcada_1: { x: 1088, sy: 10, face: 'left',  anim: 'sit', aprox: [1086, 12] },
+  banco_a:       { x: 548,  sy: 14, face: 'down',  anim: 'sit', aprox: [548, 22] },
+  banco_b:       { x: 576,  sy: 14, face: 'down',  anim: 'sit', aprox: [576, 22] },
+  banquinho_1:   { x: 292,  sy: 12, face: 'left',  anim: 'sit', aprox: [304, 17] },
+  banquinho_2:   { x: 182,  sy: 21, face: 'right', anim: 'sit', aprox: [172, 24] },
+};
+
+// ---- pontos nomeados ----
+RD.spots = {
+  borda_E: { x: 8, sy: 14, face: 'right' }, borda_D: { x: 1118, sy: 24, face: 'left' },
+  porta_b0: { x: 72, sy: 10, face: 'up' }, porta_sobrado: { x: 164, sy: 10, face: 'up' }, porta_padaria: { x: 470, sy: 9, face: 'up' }, porta_lateral: { x: 614, sy: 10, face: 'up' },
+  porta_assoc: { x: 756, sy: 10, face: 'up' }, porta_verde: { x: 846, sy: 10, face: 'up' }, porta_b5: { x: 990, sy: 10, face: 'up' },
+  obs_1: { x: 192, sy: 18, face: 'right' }, obs_2: { x: 294, sy: 22, face: 'left' }, obs_3: { x: 200, sy: 21, face: 'right' }, obs_4: { x: 278, sy: 22, face: 'left' },
+  varal: { x: 1078, sy: 10, face: 'up' }, sombra_oiti: { x: 1063, sy: 24, face: 'down' },
+  gato: { x: 176, sy: 15, face: 'right' }, poste_1: { x: 114, sy: 27, face: 'right' }, orelhao: { x: 612, sy: 20, face: 'up' }, quadro: { x: 718, sy: 14, face: 'up' },
+  fachada_sobrado: { x: 206, sy: 22, face: 'up' }, fachada_padaria: { x: 400, sy: 20, face: 'up' }, fachada_azul: { x: 700, sy: 21, face: 'up' },
+  v1: { x: 340, sy: 20, face: 'right' }, v2: { x: 450, sy: 21, face: 'right' }, v3: { x: 560, sy: 22, face: 'right' }, v4: { x: 690, sy: 21, face: 'right' }, v5: { x: 830, sy: 21, face: 'right' }, v6: { x: 1010, sy: 22, face: 'right' },
+  rua_1: { x: 300, sy: 36, face: 'right' }, rua_2: { x: 520, sy: 38, face: 'left' }, rua_3: { x: 760, sy: 36, face: 'right' },
+  pombos: { x: 470, sy: 40, face: 'right' },
+};
+
+// ---- agenda: tarefas em sequência. t = hora mínima para começar (min) · jit = variação ±min ----
+// tipos: sair(porta) · ir(spot) · sentar(assento) · levantar · entrar(porta, dur) · esperar(dur, anim) · olhar_mesa(dur) · conversar(com, dur) · ate(t) · patrulha(spots, ate)
+const A = (t, tipo, o) => Object.assign({ t: T(t), tipo }, o || {});
+RD.agenda = {
+  raimundo: [A('07:03', 'sair', { porta: 'porta_sobrado' }), A('07:04', 'sentar', { assento: 'E' }), A('08:40', 'levantar'), A('08:40', 'ir', { spot: 'porta_padaria' }), A('08:41', 'entrar', { porta: 'porta_padaria', dur: 14 }),
+             A('08:56', 'sair', { porta: 'porta_padaria' }), A('08:57', 'sentar', { assento: 'E' }), A('10:32', 'levantar'), A('10:32', 'ir', { spot: 'porta_sobrado' }), A('10:33', 'entrar', { porta: 'porta_sobrado', dur: 300 })],
+  ze:       [A('07:00', 'sair', { porta: 'porta_b0' }), A('07:01', 'sentar', { assento: 'D' })],
+  nonato:   [A('07:00', 'sair', { porta: 'porta_verde' }), A('07:01', 'sentar', { assento: 'F' }), A('11:20', 'levantar'), A('11:20', 'ir', { spot: 'porta_verde' }), A('11:21', 'entrar', { porta: 'porta_verde', dur: 300 })],
+  bela:     [A('07:06', 'sair', { porta: 'porta_assoc' }), A('07:07', 'sentar', { assento: 'T' }), A('10:00', 'levantar'), A('10:00', 'ir', { spot: 'porta_lateral' }), A('10:01', 'entrar', { porta: 'porta_lateral', dur: 300 })],
+  cicera:   [A('07:00', 'sair', { porta: 'porta_b5' }), A('07:01', 'ir', { spot: 'varal' }), A('07:02', 'esperar', { dur: 22, anim: 'hang' }), A('07:30', 'sentar', { assento: 'cad_calcada_1' }), A('10:02', 'levantar'), A('10:02', 'ir', { spot: 'obs_2' }),
+             A('10:03', 'sentar', { assento: 'T', espera: true }), A('11:40', 'levantar'), A('11:40', 'ir', { spot: 'porta_b5' }), A('11:41', 'entrar', { porta: 'porta_b5', dur: 300 })],
+  junior:   [A('07:00', 'sair', { porta: 'porta_b5' }), A('07:01', 'patrulha', { spots: ['gato', 'poste_1', 'obs_2', 'rua_1', 'sombra_oiti', 'v3', 'rua_3', 'v5', 'obs_1'], ate: T('08:55') }), A('08:55', 'ir', { spot: 'porta_b5' }), A('08:56', 'entrar', { porta: 'porta_b5', dur: 6 }),
+             A('09:03', 'sair', { porta: 'porta_b5' }), A('09:04', 'patrulha', { spots: ['gato', 'v1', 'obs_2', 'rua_2', 'poste_1', 'sombra_oiti', 'v4', 'obs_3'], ate: T('11:50') })],
+  tonho:    [A('07:15', 'sair', { porta: 'borda_E' }), A('07:16', 'patrulha', { spots: ['v1', 'obs_2', 'v2', 'v3', 'v4', 'v5', 'sombra_oiti', 'v6', 'v5', 'v4', 'v3', 'v2', 'obs_1'], ate: T('11:25'), vende: true }), A('11:26', 'ir', { spot: 'borda_D' }), A('11:27', 'entrar', { porta: 'borda_D', dur: 300 })],
+  dandara:  [A('07:44', 'sair', { porta: 'borda_E' }), A('07:45', 'ir', { spot: 'obs_1' }), A('07:46', 'conversar', { com: 'raimundo', dur: 4 }), A('07:51', 'ir', { spot: 'porta_assoc' }), A('07:53', 'entrar', { porta: 'porta_assoc', dur: 85 }),
+             A('09:20', 'sair', { porta: 'porta_assoc' }), A('09:21', 'ir', { spot: 'quadro' }), A('09:22', 'esperar', { dur: 4, anim: 'interact' }), A('09:27', 'ir', { spot: 'porta_padaria' }), A('09:28', 'entrar', { porta: 'porta_padaria', dur: 34 }),
+             A('10:04', 'sair', { porta: 'porta_padaria' }), A('10:05', 'ir', { spot: 'obs_2' }), A('10:06', 'olhar_mesa', { dur: 8 }), A('10:15', 'ir', { spot: 'borda_E' }), A('10:30', 'entrar', { porta: 'borda_E', dur: 300 })],
+  lucia:    [A('08:00', 'sair', { porta: 'borda_D' }), A('08:01', 'ir', { spot: 'fachada_azul' }), A('08:02', 'esperar', { dur: 9, anim: 'interact' }), A('08:12', 'ir', { spot: 'fachada_padaria' }), A('08:13', 'esperar', { dur: 10, anim: 'interact' }),
+             A('08:25', 'ir', { spot: 'fachada_sobrado' }), A('08:26', 'esperar', { dur: 9, anim: 'interact' }), A('08:37', 'conversar', { com: 'raimundo', dur: 3 }), A('08:42', 'sentar', { assento: 'banco_a' }), A('09:25', 'levantar'),
+             A('09:26', 'ir', { spot: 'orelhao' }), A('09:27', 'esperar', { dur: 4, anim: 'talk' }), A('09:33', 'ir', { spot: 'borda_D' }), A('09:50', 'entrar', { porta: 'borda_D', dur: 300 })],
+};
+
+
+// ---- agenda do MUNDO INTEGRADO (Etapa 7): quem entra na padaria só sai quando a simulação da padaria liberar; Raimundo só sai de casa quando a casa liberar ----
+// `aguarda` = chave de liberação (casa | padaria). O resto é a agenda aprovada da Etapa 6. Lúcia ganha uma visita à padaria (08:24) depois de medir a fachada.
+RD.visitas = { raimundo: [14, 20], dandara: [30, 40], lucia: [9, 13] };
+RD.agendaMundo = () => {
+  const ag = JSON.parse(JSON.stringify(RD.agenda));
+  const sairPad = i => Object.assign({}, i, { aguarda: 'padaria' });
+  ag.raimundo = ag.raimundo.map(t => t.tipo === 'sair' && t.porta === 'porta_sobrado' ? Object.assign({}, t, { aguarda: 'casa' }) : t.tipo === 'sair' && t.porta === 'porta_padaria' ? sairPad(t) : t);
+  ag.dandara = ag.dandara.map(t => t.tipo === 'sair' && t.porta === 'porta_padaria' ? sairPad(t) : t);
+  const k = ag.lucia.findIndex(t => t.tipo === 'ir' && t.spot === 'fachada_sobrado');
+  ag.lucia.splice(k, 0, A('08:24', 'ir', { spot: 'porta_padaria' }), A('08:24', 'entrar', { porta: 'porta_padaria' }), A('08:25', 'sair', { porta: 'porta_padaria', aguarda: 'padaria' }));
+  return ag;
+};
+
+// ---- falas (PROPOSTA). quando: conf [min,max] = nível de confiança em Lia 0..3 ----
+RD.falas = {
+  raimundo: {
+    saudar: ['Bom dia, Lia. Senta aí, mas fala baixo que o Zé tá armando.', 'Ei, Lia. Tá vendo esse jogo? Tá mais devagar que fila de banco.'],
+    ouvir: ['(Seu Raimundo ajeita as pedras na mão e olha a mesa sem pressa.)', '(Ele bate de leve o dedo no tampo, pensando.)'],
+    perguntar: {
+      jogo: [{ t: 'Dominó é conta e é paciência. Quem tem pressa joga a pedra errada.', kp: 'kp_dom_paciencia' }, { t: 'Aprendi com meu pai, nessa mesma calçada, quando aqui ainda tinha lampião a gás.', conf: [2, 3], kp: 'kp_dom_pai' }],
+      rua: [{ t: 'A rua mudou de pintura, mas as pessoas são as mesmas. Quem sai, volta.', kp: null }],
+      sobrado: [{ t: 'O sobrado é o que a gente tem. Mexeram na casa do lado e eu fiquei olhando, quieto. Eles medem tudo, mas não perguntam nada.', kp: 'kp_ray_sobrado' }],
+    },
+    ajudar: [],
+  },
+  ze: {
+    saudar: ['Bom dia, menina! Vai ficar olhando ou vai aprender?', 'Olha a Lia! Fica aí, mas não sopra jogada, hein.'],
+    ouvir: ['(Seu Zé ri sozinho, olhando as próprias pedras.)'],
+    perguntar: {
+      jogo: [{ t: 'Dupla joga de frente: eu e Raimundo contra Nonato e Bela. Parceiro fala com a pedra, não com a boca.', kp: 'kp_dom_dupla' }, { t: 'Bate de carroça vale dois. De lá e lô, três. Cruzada, quatro, e aí a mesa treme.', conf: [1, 3], kp: 'kp_dom_batidas' }],
+      barbearia: [{ t: 'A barbearia é a minha casa de dia. De noite, é a de Dona Marta, minha sombra.', kp: null }],
+      lia_jogar: [{ t: 'Quer jogar? Quando um de nós levantar, a gente vê. Primeiro prova que sabe contar até seis.', kp: 'kp_dom_convite' }],
+    },
+  },
+  nonato: {
+    saudar: ['E aí, Lia! Chegou pra ver eu ganhar?', 'Fala, Lia! Hoje eu tô com a mão boa.'],
+    ouvir: ['(Nonato bate a pedra com força e olha em volta, esperando aplauso.)'],
+    perguntar: {
+      jogo: [{ t: 'Bato de carroça toda vez que posso. Dá mais ponto e dá mais vergonha nos outros.', kp: null }],
+      obra: [{ t: 'Aquele monte de tijolo é meu. Tô refazendo o reboco da casa de uma tia. Pago com café, não com dinheiro.', kp: 'kp_obra_tijolo' }],
+    },
+  },
+  bela: {
+    saudar: ['Bom dia, Lia. Senta direito, minha filha.', 'Oi, meu bem. Tá aprendendo ou só passeando?'],
+    ouvir: ['(Dona Bela confere cada pedra duas vezes antes de jogar.)'],
+    perguntar: {
+      jogo: [{ t: 'Não adianta gritar. Quem conta as pedras que já saíram sabe o que sobra.', kp: 'kp_dom_contar' }],
+      costura: [{ t: 'Eu costuro na máquina da janela do alto. Daqui eu vejo o jogo e o movimento. O que passa na rua passa pela minha agulha.', kp: null }],
+      rua: [{ t: 'A rua tá sendo olhada por gente de fora. Tem uns que olham pra ajudar e uns que olham pra comprar. Eu ainda não sei qual é qual.', kp: 'kp_rua_olhar', revisar: true }],
+    },
+  },
+  cicera: {
+    saudar: ['Menina, tu sumiu! Vem ajudar a esticar esse lençol.', 'Bom dia, Lia! Tá vendo o sol? Roupa seca em dez minutos.'],
+    ouvir: ['(Cícera cantarola e prende uma toalha com os pregadores.)'],
+    perguntar: {
+      varal: [{ t: 'Lavo pra meia rua. Cada pano tem dono; eu conheço pelo cheiro.', kp: 'kp_varal' }],
+      junior: [{ t: 'Júnior é meu neto e não para quieto. Se ele passar por aqui, manda ele voltar.', kp: null }],
+      jogo: [{ t: 'Às dez eu entro no lugar de Bela, que vai fazer o almoço. Dominó é a hora que eu sento sem culpa.', kp: 'kp_cicera_dom' }],
+    },
+  },
+  junior: {
+    saudar: ['Oi, Lia! Quer ver o gato?', 'Lia! Corre comigo até o poste!'],
+    ouvir: ['(Júnior pula num pé só ao redor do poste.)'],
+    perguntar: {
+      gato: [{ t: 'O gato não tem nome. Tem vários. Cada casa chama de um jeito.', kp: 'kp_gato' }],
+      jogo: [{ t: 'Os velhos brigam e depois riem. Eu acho que eles gostam é de brigar.', kp: null }],
+    },
+  },
+  tonho: {
+    saudar: ['Cocada, queijadinha! Quer provar, Lia?', 'Bom dia! Hoje a cocada saiu com mais coco.'],
+    ouvir: ['(Tonho ajeita a caixa de isopor no ombro e olha pro céu, vendo se vai esquentar.)'],
+    perguntar: {
+      cocada: [{ t: 'Minha mãe faz de madrugada. Eu só carrego e sorrio. O sorriso vende mais que o açúcar.', kp: 'kp_cocada' }],
+      rua: [{ t: 'Cada ponto da rua tem seu horário. Na sombra do beiral, antes das dez; perto do dominó, depois, quando perdem.', kp: 'kp_pontos_venda' }],
+    },
+  },
+  dandara: {
+    saudar: ['Lia, bom dia. Tem um minuto? A reunião é hoje à noite e preciso de mais assinaturas.', 'Lia. A associação tá aberta, entra quando quiser.'],
+    ouvir: ['(Dandara folheia o caderno de capa dura, procurando um nome.)'],
+    perguntar: {
+      associacao: [{ t: 'É uma casa comum. Quem não tem advogado, tem a gente. O quadro de avisos é nosso jornal.', kp: 'kp_associacao' }],
+      programa: [{ t: 'O Programa de recuperação vai pintar e consertar. Eu quero que quem mora aqui continue morando. Isso não está escrito em lugar nenhum.', kp: 'kp_programa', revisar: true }],
+    },
+  },
+  lucia: {
+    saudar: ['Bom dia. Se você não se importa, preciso medir esta parede.', 'Oi. Hoje o dia é longo; a prancheta, mais ainda.'],
+    ouvir: ['(Lúcia anota algo, mede de novo, anota de novo.)'],
+    perguntar: {
+      medir: [{ t: 'Eu meço para ninguém ser surpreendido: tamanho da porta, da janela, do telhado. Depois tudo vira número no relatório.', kp: 'kp_lucia_medir' }],
+      programa: [{ t: 'O Programa não decide a vida de ninguém. Mas o relatório pode decidir uma obra. Eu quero que ele seja honesto.', kp: 'kp_lucia_programa', revisar: true }],
+    },
+  },
+};
+// conversas espontâneas entre pessoas (pares, linhas alternadas)
+RD.papos = [
+  ['dandara>raimundo', ['Bom dia, Seu Raimundo. O senhor vai à reunião de hoje?', 'Se o Zé deixar eu sair da mesa, vou sim.']],
+  ['lucia>raimundo', ['Seu Raimundo, posso medir a calçada do sobrado?', 'Pode, minha filha. Só não leva a rua embora na prancheta.']],
+  ['cicera>junior', ['Júnior! Vem cá, menino!', 'Já vou, vó! Só vou ver o gato!']],
+  ['tonho>nonato', ['Cocada, Nonato?', 'Depois do jogo, que eu perco a concentração.']],
+];
+// bolhas de dominó (curtas e espaçadas)
+RD.dom = {
+  passa: ['Passo.', 'Passei.', '(bate na mesa)', 'Sem pedra.'],
+  joga: ['Essa.', 'Joguei.', 'Vai!', 'Toma.'],
+  bate: { simples: ['Bati!', 'Acabou!'], carroca: ['Bati de carroça!', 'Carroça!'], laelo: ['De lá e lô!', 'Lá e lô!'], cruzada: ['Cruzada! Quatro!', 'Cruzada!'] },
+  tranca: ['Trancou!', 'Ninguém joga mais.'],
+  reage_bom: ['Boa, parceiro!', 'Isso!', 'Assim se joga.'], reage_ruim: ['Era essa mesmo?', 'Ai, ai.', 'Vai começar...'],
+};
+// pontos de conhecimento (vão para as anotações da rua)
+RD.kp = {
+  kp_dom_paciencia: ['Dominó pede paciência', 'Seu Raimundo joga devagar de propósito: quem tem pressa joga a pedra errada.'],
+  kp_dom_pai: ['A mesa do pai', 'Seu Raimundo aprendeu dominó com o pai, na mesma calçada, no tempo do lampião a gás.'],
+  kp_ray_sobrado: ['O sobrado e as medições', 'Seu Raimundo viu a casa do lado ser medida e ninguém perguntou nada a quem mora.'],
+  kp_dom_dupla: ['Dupla de frente', 'No dominó da rua, os parceiros sentam de frente: Zé com Raimundo contra Nonato com Bela.'],
+  kp_dom_batidas: ['Tipos de batida', 'Batida simples vale 1; de carroça (com dobrada), 2; de lá e lô (a pedra serve nas duas pontas), 3; cruzada (dobrada nas duas pontas), 4.'],
+  kp_dom_convite: ['Um lugar na mesa', 'Seu Zé deixa Lia jogar quando alguém levantar: precisa mostrar que sabe contar.'],
+  kp_dom_contar: ['Contar as pedras', 'Dona Bela conta as pedras que já saíram para saber o que ainda pode vir.'],
+  kp_obra_tijolo: ['A pilha de tijolos', 'O monte de tijolos e cimento é de Nonato, que refaz o reboco da casa de uma tia e cobra em café.'],
+  kp_rua_olhar: ['Olhares de fora', 'Dona Bela nota gente de fora olhando as casas e ainda não sabe se vem ajudar ou comprar.'],
+  kp_varal: ['O varal de Cícera', 'Cícera lava roupa para meia rua e reconhece cada pano pelo cheiro.'],
+  kp_cicera_dom: ['O dominó de Cícera', 'Por volta das dez, Cícera entra no lugar de Bela, que vai fazer o almoço.'],
+  kp_gato: ['O gato sem nome', 'Cada casa chama o gato de um jeito: ele não tem nome, tem vários.'],
+  kp_cocada: ['A cocada de Tonho', 'A mãe de Tonho faz as cocadas de madrugada; ele só carrega e sorri.'],
+  kp_pontos_venda: ['Pontos de venda', 'Na sombra do beiral antes das dez; junto ao dominó depois, quando alguém perde.'],
+  kp_associacao: ['A associação', 'A associação é a casa de quem não tem advogado; o quadro de avisos é o jornal da rua.'],
+  kp_programa: ['O Programa e quem mora', 'Dandara quer que quem mora continue morando; isso não está escrito em nenhum papel.'],
+  kp_lucia_medir: ['Lúcia mede tudo', 'Lúcia mede portas, janelas e telhados para que ninguém seja surpreendido pelo relatório.'],
+  kp_lucia_programa: ['Um relatório honesto', 'Lúcia sabe que o relatório pode decidir uma obra e quer que ele seja honesto.'],
+  kp_obj_mesa: ['As marcas da mesa', 'O tampo verde da mesa de dominó tem marcas de anos de partidas: cada riscado é uma batida.'],
+  kp_obj_quadro: ['O quadro de avisos', 'Reunião da associação à noite, rifa de uma geladeira, aviso de falta d\'água, aluguel de cômodo.'],
+  kp_obj_orelhao: ['O orelhão', 'O orelhão de ficha é o telefone de quase toda a rua; o número rabiscado na cúpula é de um sobrinho do bairro.'],
+  kp_obj_poste: ['O poste dos cartazes', 'O poste de concreto serve de jornal: festa, achado, perdido, show.'],
+  kp_obj_gaiola: ['A gaiola do sobrado', 'A gaiola ao lado da porta do sobrado tem um canário que canta antes de Seu Raimundo acordar.'],
+  kp_obj_cavalete: ['O cavalete da padaria', 'O cavalete da padaria tem letra da Vó e o preço do dia.'],
+  kp_obj_bike: ['A bicicleta de entrega', 'A bicicleta com cesto de vime é de um entregador da vizinhança.'],
+  kp_obj_lixeira: ['A lixeira de tela', 'A lixeira de tela guarda copo de café e saco de pão: a rua come da padaria.'],
+  kp_obj_obra: ['Tijolos e sacos de cimento', 'O reboco de uma casa da rua está sendo refeito aos poucos.'],
+  kp_obj_caixote: ['Caixote de laranjas', 'O caixote de laranjas-bahia foi deixado ali pelo menino da banca.'],
+};
+RD.verbos = { jogo: 'O jogo de dominó', rua: 'A rua', sobrado: 'O sobrado', barbearia: 'A barbearia', lia_jogar: 'Jogar com eles', obra: 'A obra dos tijolos', costura: 'Costura', varal: 'O varal', junior: 'O menino', gato: 'O gato', cocada: 'A cocada', associacao: 'A associação', programa: 'O Programa', medir: 'Medir tudo' };
+})();
+
+// ---- assuntos CONTEXTUAIS (PROPOSTA): só aparecem se a Lia tem um motivo, e ela diz qual é ----
+// viv = vivências da Lia (viu_jogo, viu_medicao, viu_varal, viu_tonho, viu_junior, viu_gato, viu_obra, viu_aviso, ouviu_programa, ouviu_reuniao)
+// quando: lista de requisitos (qualquer um basta) · 'apos:id:topico' = depois de já ter conversado sobre aquilo com a pessoa · 'nivel:N' = confiança mínima
+Sim.Rua.D.gates = {
+  raimundo: {
+    rua: { label: 'A rua', quando: [], ask: 'Seu Raimundo, como o senhor vê a rua hoje?' },
+    jogo: { label: 'O jogo', quando: ['viu_jogo'], ask: 'Fiquei olhando a mesa. O senhor joga há muito tempo?' },
+    sobrado: { label: 'O sobrado', quando: ['viu_medicao'], ask: 'Vi uma moça medindo as casas aqui perto. O senhor mora no sobrado ao lado, né? Como é isso pra o senhor?' },
+  },
+  ze: {
+    jogo: { label: 'O jogo', quando: ['viu_jogo'], ask: 'Seu Zé, como é essa história de dupla? Fiquei olhando e não entendi.' },
+    barbearia: { label: 'A barbearia', quando: ['apos:ze:jogo', 'nivel:1'], ask: 'O senhor falou em barbearia... é sua?' },
+    lia_jogar: { label: 'Posso jogar?', quando: ['apos:ze:jogo'], ask: 'Seu Zé, se faltar um na mesa, eu posso jogar?' },
+  },
+  nonato: {
+    jogo: { label: 'O jogo', quando: ['viu_jogo'], ask: 'Nonato, você comemorou tão alto... dá pra explicar essa batida?' },
+    obra: { label: 'A obra', quando: ['viu_obra'], ask: 'Vi uma obra aqui na calçada. É sua?' },
+  },
+  bela: {
+    jogo: { label: 'O jogo', quando: ['viu_jogo'], ask: 'Dona Bela, a senhora conta as pedras de cabeça?' },
+    costura: { label: 'A costura', quando: ['apos:bela:jogo', 'nivel:1'], ask: 'A senhora costura, não é? Dá pra ver pela mão que não para.' },
+    rua: { label: 'A rua', quando: ['viu_medicao', 'apos:bela:costura'], ask: 'A senhora falou em quem olha a rua de fora. Quem é?' },
+  },
+  cicera: {
+    varal: { label: 'O varal', quando: ['viu_varal'], ask: 'Dona Cícera, vi a senhora no varal. Sempre foi aqui na calçada?' },
+    junior: { label: 'O Júnior', quando: ['viu_junior'], ask: 'Aquele menino que corre pela rua é seu neto?' },
+    jogo: { label: 'O jogo', quando: ['viu_jogo'], ask: 'A senhora também joga, Dona Cícera?' },
+  },
+  junior: {
+    gato: { label: 'O gato', quando: ['viu_gato'], ask: 'Júnior, aquele gato é de quem?' },
+    jogo: { label: 'O jogo', quando: ['viu_jogo'], ask: 'Você entende o jogo? Eu fiquei curiosa.' },
+  },
+  tonho: {
+    cocada: { label: 'A cocada', quando: ['viu_tonho'], ask: 'Tonho, a cocada é sua mesmo ou você vende pra alguém?' },
+    rua: { label: 'A rua', quando: ['apos:tonho:cocada'], ask: 'Você roda a rua todo dia. Onde vende melhor?' },
+  },
+  dandara: {
+    associacao: { label: 'A associação', quando: ['viu_aviso', 'ouviu_reuniao'], ask: 'Dandara, vi um aviso no quadro. É da associação?' },
+    programa: { label: 'O Programa', quando: ['ouviu_programa'], ask: 'Dandara, ouvi falarem de um Programa. O que é isso?' },
+  },
+  lucia: {
+    medir: { label: 'As medições', quando: ['viu_medicao'], ask: 'Eu vi a senhora medindo as fachadas. Pode me explicar o que está fazendo?' },
+    programa: { label: 'O Programa', quando: ['ouviu_programa', 'apos:lucia:medir'], ask: 'Ouvi falar do Programa. É por causa dele que a senhora mede tudo?' },
+  },
+};
+Sim.Rua.D.dicaSemAssunto = 'Você ainda não tem um motivo para puxar esse assunto. Observe a rua, examine o que há por perto, e volte.';

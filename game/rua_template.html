@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O balcão da vó — Etapa 6 · a rua</title>
+<style>
+/*CSS*/
+  #rua-extra { }
+  #mesa.modal { inset: auto 5% .7em 5%; max-height: 46%; padding: .55em .9em .7em; background: var(--glass); border: 1px solid var(--glass-line); border-radius: 16px; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+  #mesa h2 { margin: 0 0 .3em; font: 600 1.25em Georgia, serif; color: var(--gold); display: flex; justify-content: space-between; align-items: baseline; }
+  .seatrow { display: flex; gap: .6em; flex-wrap: wrap; margin: .3em 0; }
+  .seatbox { flex: 1 1 8em; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 8px; padding: .25em .6em; }
+  .seatbox.vez { border-color: var(--gold); background: rgba(240,201,140,.14); } .seatbox small { color: #b8aa98; display: block; }
+  .chain { display: flex; flex-wrap: wrap; gap: 3px; align-items: center; margin: .5em 0; padding: .5em; background: #1f4a37; border-radius: 8px; min-height: 3.4em; border: 2px solid #5b3a22; }
+  .tile { display: inline-flex; background: #f3ead4; border: 1px solid #2a1b14; border-radius: 3px; color: #2a1b14; font: 700 1em/1 monospace; overflow: hidden; }
+  .tile i { display: block; padding: .28em .34em; font-style: normal; min-width: 1.5em; text-align: center; } .tile i + i { border-left: 1px solid #2a1b14; }
+  .tile.v { flex-direction: column; } .tile.v i + i { border-left: 0; border-top: 1px solid #2a1b14; }
+  button.tile { cursor: pointer; font-size: 1.05em; } button.tile:disabled { opacity: .38; cursor: default; } button.tile:not(:disabled):hover { outline: 2px solid var(--gold); }
+  #mesa .btns { display: flex; gap: .5em; flex-wrap: wrap; margin-top: .6em; } #mesa .btns button { font: inherit; color: #f6ecdc; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.2); border-radius: 999px; padding: .25em 1em; cursor: pointer; } #mesa .btns button:hover:not(:disabled) { background: rgba(240,201,140,.22); border-color: var(--gold); } #mesa .btns button:disabled { opacity: .4; }
+  #mesa .regras { color: #b8aa98; font-size: .8em; margin-top: .4em; } #mesa .regras summary { cursor: pointer; }
+  #mesa .chain { margin: .3em 0; padding: .3em .45em; min-height: 2.4em; } #mesa .seatrow { margin: .2em 0; }
+  #notes.modal { inset: 5% 8%; background: var(--paper); color: var(--ink); border: 0; border-radius: 10px; font-family: var(--hand); font-size: 1.35em; line-height: 1.25em; }
+  #notes h2 { font: 700 1.4em var(--hand); color: var(--ink); } #notes h4 { font: 700 1em var(--hand); color: var(--pen); } #notes .kp { border-left: 2px solid var(--pencil); } #notes .kp b { color: var(--ink); } #notes .sub { color: var(--ink-soft); } #notes .x { background: none; border: 0; color: var(--pen); font: 700 .8em var(--hand); }
+  #notes .rev { color: var(--pencil); font-size: .8em; }
+
+  /* tela cheia: o cenário ocupa a janela inteira; a barra de ajuda vira uma pílula discreta no canto */
+  #app { padding: 0 !important; gap: 0 !important; height: 100% !important; min-height: 0 !important; }
+  #frame { box-shadow: none !important; }
+  #hud { position: fixed; left: 6px; bottom: 6px; z-index: 20; width: auto !important; max-width: min(46vw, 640px) !important; background: rgba(20,14,16,.66); border-radius: 6px; padding: 3px 8px; font-size: 11px; opacity: .5; transition: opacity .2s; gap: 2px 12px !important; }
+  #hud:hover, #hud:focus-within { opacity: 1; }
+  #hud #zoombar, #hud details { display: none !important; }
+  #hud:hover #zoombar, #hud:focus-within #zoombar { display: flex !important; } #hud:hover details, #hud:focus-within details { display: block !important; }
+</style>
+<script>// fit.js — ocupa 100% da janela preservando 16:9 e pixel art nítida.
+// O jogo continua desenhando em VW×VH lógicos (480×270) no canvas original, que fica transparente por cima e só recebe cliques;
+// a imagem visível é um canvas de exibição: ampliação inteira por vizinho mais próximo (n = ⌈escala⌉) e, se a escala não for inteira,
+// redução suave final até o tamanho exato da janela (sem pixels de larguras desiguais nem sprites borrados).
+(function () {
+  let disp, dctx, inter, ictx, src, W = 0, H = 0, n = 1, iw = 0, ih = 0, VWr = 480, VHr = 270;
+  function blit() {
+    requestAnimationFrame(blit); if (!disp || !src || document.hidden) return;
+    if (inter) { ictx.imageSmoothingEnabled = false; ictx.drawImage(src, 0, 0, iw, ih); dctx.imageSmoothingEnabled = true; dctx.imageSmoothingQuality = 'high'; dctx.drawImage(inter, 0, 0, W, H); }
+    else { dctx.imageSmoothingEnabled = false; dctx.drawImage(src, 0, 0, W, H); }
+  }
+  window.fitDisplay = function (cv, VW, VH) {
+    const w = innerWidth, h = innerHeight; if (w < 2 || h < 2) return 1;
+    const s = Math.min(w / VW, h / VH), cw = Math.round(VW * s), ch = Math.round(VH * s), dpr = window.devicePixelRatio || 1;
+    cv.style.width = cw + 'px'; cv.style.height = ch + 'px';
+    if (!disp) {
+      src = cv; disp = document.createElement('canvas'); disp.setAttribute('aria-hidden', 'true'); dctx = disp.getContext('2d');
+      disp.style.cssText = 'position:absolute;left:0;top:0;pointer-events:none;image-rendering:pixelated'; cv.style.position = 'relative'; cv.style.opacity = '0';
+      cv.parentNode.insertBefore(disp, cv); requestAnimationFrame(blit);
+    }
+    VWr = VW; VHr = VH; W = Math.max(1, Math.round(cw * dpr)); H = Math.max(1, Math.round(ch * dpr)); disp.width = W; disp.height = H; disp.style.width = cw + 'px'; disp.style.height = ch + 'px';
+    n = Math.min(8, Math.max(1, Math.ceil(W / VW)));
+    if (W === VW * n && H === VH * n || n === 1 && W <= VW) inter = null;
+    else { inter = inter || document.createElement('canvas'); iw = VW * n; ih = VH * n; inter.width = iw; inter.height = ih; ictx = inter.getContext('2d'); }
+    return s;
+  };
+})();
+</script>
+</head>
+<body>
+<div id="app">
+  <div id="frame">
+    <canvas id="c" width="480" height="270" aria-label="Rua do Pelourinho, vista lateral"></canvas>
+    <div id="ui">
+      <div id="clock" class="pill"></div>
+      <div id="objs" class="pill"></div>
+      <div id="bubbles"></div>
+      <div id="toasts"></div>
+      <div id="note" class="pill" style="display:none"></div>
+      <div id="hint" class="pill" style="display:none"></div>
+      <div id="dbtn" class="pill" title="Anotações (B)">Anotações <span class="k" style="border:1px solid #7a5c3c;border-radius:3px;padding:0 4px;font-size:.85em">B</span></div>
+      <div id="dlg"></div>
+      <div id="mesa" class="modal"></div>
+      <div id="notes" class="modal"></div>
+      <div id="daycard" class="modal" style="max-width:34em;margin:auto;inset:6% 0;left:0;right:0"></div>
+    </div>
+  </div>
+  <div id="hud">
+    <div><b>Rua</b> · câmera lateral ortográfica (side-view) · <span id="msg" aria-live="polite" style="color:#f0c98c"></span></div>
+    <div><span class="k">←→↑↓</span> / <span class="k">WASD</span> andar &nbsp; <span class="k">E</span> interagir &nbsp; <span class="k">B</span> anotações &nbsp; <span class="k">Esc</span> fechar &nbsp; clique: ir até / falar / examinar</div>
+    <div id="zoombar" style="width:100%;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <b>Zoom</b>
+      <button id="bZm" title="Afastar ( − )" aria-label="Afastar">−</button>
+      <button id="bZp" title="Aproximar ( + )" aria-label="Aproximar">+</button>
+      <button id="bZr" title="Voltar ao enquadramento original ( 0 )">Enquadramento original</button>
+      <span id="zlabel" style="color:#f0c98c"></span>
+      <span style="color:#8f8173">roda do mouse · duplo clique · arrastar move a câmera</span>
+    </div>
+    <details style="width:100%"><summary>Ferramentas de verificação</summary>
+      <button id="bR" aria-pressed="false" title="R">Régua (m)</button>
+      <button id="bC" aria-pressed="false" title="C">Colisões e pontos</button>
+      <button id="bF" aria-pressed="false" title="F">Relógio rápido (×8)</button>
+      <button id="bN" title="Recomeçar do zero">Apagar progresso</button>
+      <div style="color:#8f8173;margin-top:4px">1 m = 24 px · 1 minuto de jogo = 4 s · dia de 07:00 às 12:00 (cerca de 20 min) · toda fala, regra e placa nova é proposta e precisa de aprovação · a rua ainda não está ligada à padaria nem à casa (Etapa 7)</div>
+    </details>
+  </div>
+</div>
+<script>
+/*CHARS_JS*/
+/*SIM_JS*/
+const ASSETS = /*ASSETS*/{};
+const CHARATLAS = /*CHARATLAS*/{};
+const SCENE = /*SCENE*/{}, PROPS = /*PROPS*/{};
+const VW = 480, VH = 270, WORLD_W = SCENE.W;
+const RD = Sim.Rua.D, yw = RD.yw;
+const cvs = document.getElementById('c'), vctx = cvs.getContext('2d');
+const off = document.createElement('canvas'); off.width = VW; off.height = VH;
+const ctx = off.getContext('2d'); ctx.imageSmoothingEnabled = false; vctx.imageSmoothingEnabled = false;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const Q = new URLSearchParams(location.search);
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+const KEY = 'balcao_rua_v1';
+function load(src) { return new Promise(r => { const i = new Image(); i.onload = () => r(i); i.src = src; }); }
+let IMG = {}, SIM = null, persist = null, started = false;
+const NOMES = { raimundo: 'Seu Raimundo', ze: 'Seu Zé', nonato: 'Nonato', bela: 'Dona Bela', cicera: 'Dona Cícera', junior: 'Júnior', tonho: 'Tonho', dandara: 'Dandara', lucia: 'Lúcia' };
+for (const k in NOMES) if (RD.pessoas[k]) RD.pessoas[k].nome = RD.pessoas[k].nome || NOMES[k];
+const nome = id => NOMES[id] || (RD.pessoas[id] || {}).curto || id;
+const COR = { raimundo: '#f2c98a', ze: '#9fd0e8', nonato: '#f3df7a', bela: '#f0a8c8', cicera: '#f5cf6a', junior: '#a8e0a0', tonho: '#f2b27a', dandara: '#c9a8f0', lucia: '#a8d8c8', lia: '#ffffff' };
+const TOP = { jogo: 'O jogo', rua: 'A rua', sobrado: 'O sobrado', barbearia: 'A barbearia', lia_jogar: 'Posso jogar?', obra: 'A obra', costura: 'A costura', varal: 'O varal', junior: 'O Júnior', gato: 'O gato', cocada: 'A cocada', associacao: 'A associação', programa: 'O Programa', medir: 'As medições', comentarios: 'O que andam comentando' };
+
+Promise.all(Object.entries(ASSETS).map(([k, v]) => load(v).then(i => IMG[k] = i))).then(() => {
+  const ci = {}; for (const k in CHARATLAS) ci[k] = IMG[k]; CharLib.init(CHARATLAS, ci);
+  try { persist = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { persist = null; }
+  if (Q.get('new') === '1') persist = null;
+  start();
+});
+
+// ---------------------------------------------------------------- estado
+const S = { zl: Math.max(0, Math.min(2, +(Q.get('z') || 0))), free: false, vx: 240, vy: 130, cam: 0, ruler: Q.get('r') === '1', coll: Q.get('c') === '1', note: null, hint: null, mesaOpen: false, notesOpen: false };
+const ZL = [1, 2, 3], ZN = ['Visão geral', 'Visão intermediária', 'Visão aproximada'];
+const LS = { anim: 'idle', at: 0, face: 'right', path: [], goal: null, mode: 'free', sitT: 0, from: null, to: null, seatId: null, say: null, esperaCed: 0, vel: 40 };
+const D = { open: false, id: null, mode: 'root', lines: [] };
+const bubs = {};
+let V = null, keys = {}, uiT = 0, last = 0, drag = null;
+
+function start() {
+  const t0 = Q.has('t') ? 420 + +Q.get('t') : RD.dia.inicio;
+  SIM = new Sim.Rua.World({ scene: SCENE, seed: +(Q.get('seed') || 1991) + (persist ? persist.dia || 1 : 0), start: RD.dia.inicio, rate: +(Q.get('rate') || 0.25), persist: persist || {}, integrado: Q.get('mundo') === '1',
+    hooks: { save: p => { try { localStorage.setItem(KEY, JSON.stringify(Object.assign({ dia: 1 }, p))); } catch (e) { } } } });
+  if (Q.has('t')) ffwd(t0);
+  if (Q.get('f') === '1') SIM.clock.rate = 2;
+  SIM.lia.x = Q.has('x') ? +Q.get('x') : 430; SIM.lia.y = yw(SIM.lia.x) + 14;
+  S.vx = SIM.lia.x; S.vy = SIM.lia.y - 18;
+  if (Q.has('vx')) { S.vx = +Q.get('vx'); S.free = true; } if (Q.has('vy')) { S.vy = +Q.get('vy'); S.free = true; }
+  bindBus(); syncUI(); fit(); started = true; last = performance.now(); requestAnimationFrame(loop);
+  setTimeout(() => toast('<b>Rua</b> · manhã de sábado. Chegue perto de alguém e aperte <b>E</b>.', 'ev', 6000), 400);
+}
+function ffwd(t) { let g = 0; while (SIM.clock.min < t && g++ < 400000) SIM.update(1 / 20); }
+
+// ---------------------------------------------------------------- câmera com zoom (3 níveis inteiros)
+function camBounds() { return [0, WORLD_W, 0, VH]; }
+function computeView() {
+  const z = S.zAnim != null ? S.zAnim : ZL[S.zl], w = VW / z, h = VH / z, [bx0, bx1, by0, by1] = camBounds();
+  const cl = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  const cx = cl(S.vx, bx0 + w / 2, bx1 - w / 2), cy = (by1 - by0) <= h ? VH / 2 : cl(S.vy, by0 + h / 2, by1 - h / 2);
+  const left = Math.round(cx - w / 2), top = Math.round(cy - h / 2);
+  const cam = cl(Math.round(cx) - 240, 0, WORLD_W - VW);
+  if (S.free) { S.vx = cx; S.vy = cy; }
+  S.cam = cam; V = { z, w, h, left, top, sx: left - cam, sy: top, cam }; return V;
+}
+function updateCamera(dt) { stepCam(dt); if (S.free) return; const k = Math.min(1, dt * 6), L = SIM.lia; S.vx += (L.x - S.vx) * k; S.vy += (L.y - 18 - S.vy) * k; }
+function snapCamera() { S.free = false; S.vx = SIM.lia.x; S.vy = SIM.lia.y - 18; }
+function setZoom(n, ax, ay) {
+  if (CTX.active || CTX.anim) return; n = Math.max(0, Math.min(2, n)); if (n === S.zl) return; computeView();
+  const cursor = ax != null, a_x = cursor ? ax : VW / 2, a_y = cursor ? ay : VH / 2;
+  const px = V.left + a_x / V.z, py = V.top + a_y / V.z; S.zl = n; const z = ZL[n];
+  S.vx = px - a_x / z + VW / z / 2; S.vy = py - a_y / z + VH / z / 2;
+  if (n === 0) snapCamera(); else if (cursor) S.free = true; syncUI();
+}
+// ---- enquadramento contextual (atividade social que continua no mundo; só muda a câmera) ----
+// Para criar outra atividade com aproximação: CONTEXTS.nome = { focus: () => [x, y], zoom: 0..2, onOpen(opt), onClose() } e chamar enterContext('nome', opt).
+const CTX = { active: null, anim: null };
+const CONTEXTS = {
+  mesa: { focus: () => [RD.mesa.x, yw(RD.mesa.x) + 14], zoom: 2, onOpen: opt => { S.mesaOpen = true; $('mesa').style.display = 'block'; renderMesa(); }, onClose: () => { S.mesaOpen = false; $('mesa').style.display = 'none'; } }
+};
+function camAnim(to, done) {
+  computeView(); const dur = reduce ? .01 : .75;
+  CTX.anim = { t: 0, dur, a: { vx: S.vx, vy: S.vy, z: V.z }, b: to, done }; S.free = true; S.zAnim = V.z;
+}
+function stepCam(dt) {
+  const A = CTX.anim; if (!A) return; A.t += dt; const k = Math.min(1, A.t / A.dur), e = k * k * (3 - 2 * k);
+  const b = typeof A.b === 'function' ? A.b() : A.b;
+  S.vx = A.a.vx + (b.vx - A.a.vx) * e; S.vy = A.a.vy + (b.vy - A.a.vy) * e; S.zAnim = A.a.z + (b.z - A.a.z) * e;
+  if (k >= 1) { CTX.anim = null; S.zAnim = null; const d = A.done; d && d(); }
+}
+function enterContext(id, opt) {
+  const c = CONTEXTS[id]; if (!c) return; if (D.open) closeDialog();
+  if (CTX.active && CTX.active !== id) exitContext(true);
+  const first = CTX.active !== id; CTX.active = id; if (first) c.onOpen && c.onOpen(opt || {});
+  const f = c.focus(); const z = ZL[c.zoom];
+  camAnim({ vx: f[0], vy: f[1], z }, () => { S.zl = c.zoom; S.free = true; S.vx = f[0]; S.vy = f[1]; syncUI(); });
+}
+function exitContext(quick) {
+  const id = CTX.active; if (!id) return; const c = CONTEXTS[id]; c.onClose && c.onClose(); CTX.active = null;
+  if (quick) return;
+  camAnim(() => ({ vx: SIM.lia.x, vy: SIM.lia.y - 18, z: 1 }), () => { S.zl = 0; snapCamera(); syncUI(); });
+}
+function resetCamera() { S.zl = 0; snapCamera(); syncUI(); }
+function focusOn(x, y, z) { S.zl = z == null ? 1 : z; S.free = true; S.vx = x; S.vy = y; syncUI(); }
+
+// ---------------------------------------------------------------- interface
+function toast(html, cls, ms) { const el = document.createElement('div'); el.className = 'toast ' + (cls || ''); el.innerHTML = html; const box = $('toasts'); box.appendChild(el); while (box.children.length > 4) box.removeChild(box.firstChild); setTimeout(() => el.remove(), ms || 4200); }
+function say(txt, s) { S.note = { text: txt, ttl: s || 4 }; }
+function syncUI() {
+  $('zlabel').textContent = ZN[S.zl] + ' (' + ZL[S.zl] + '×)' + (S.free ? ' · câmera solta' : '');
+  $('bR').setAttribute('aria-pressed', S.ruler); $('bC').setAttribute('aria-pressed', S.coll); $('bF').setAttribute('aria-pressed', !!(SIM && SIM.clock.rate > 0.5));
+}
+function hhmm() { return SIM.clock.label(); }
+function updateHud() {
+  const n = Object.keys(SIM.kp).length, tot = Object.keys(RD.kp).length;
+  $('clock').innerHTML = '<b>' + hhmm() + '</b><span>Dia ' + (persist && persist.dia || 1) + ' · rua</span>';
+  $('objs').innerHTML = '<div class="t">Anotações da rua</div><div class="d">' + n + ' de ' + tot + ' descobertas</div>';
+  const nt = S.note; const nel = $('note'); if (nt) { nel.style.display = 'block'; nel.textContent = nt.text; } else nel.style.display = 'none';
+  const h = S.hint, hel = $('hint'); if (h && !D.open && !S.mesaOpen && !S.notesOpen) { hel.style.display = 'block'; hel.innerHTML = '<span class="k" style="border:1px solid #7a5c3c;border-radius:3px;padding:0 4px">E</span> ' + esc(h.label); } else hel.style.display = 'none';
+}
+function updateBubbles() {
+  const box = $('bubbles'); if (!SIM || !V) return; const k = cvs.offsetWidth / VW; const list = [];
+  for (const id in SIM.npcs) { const n = SIM.npcs[id]; if (n.say && n.state !== 'Away' && n.alpha > .4) list.push({ id, x: n.x, y: n.y - (n.state === 'Sitting' ? 40 : 46), text: n.say.text }); }
+  if (LS.say) list.push({ id: 'lia', x: SIM.lia.x, y: SIM.lia.y - (SIM.lia.sentada ? 38 : 40), text: LS.say.text });
+  for (const id in bubs) if (!list.some(b => b.id === id)) bubs[id].style.display = 'none';
+  const placed = [];
+  for (const b of list.sort((a, c) => c.y - a.y)) {
+    let el = bubs[b.id]; if (!el) { el = bubs[b.id] = document.createElement('div'); el.className = 'bub'; box.appendChild(el); }
+    if (el.dataset.t !== b.text) { el.textContent = b.text; el.dataset.t = b.text; }
+    el.style.color = COR[b.id] || '#fbf1dc'; el.style.display = 'block';
+    let cx = (b.x - V.left) * V.z * k, cy = (b.y - V.top) * V.z * k; const w = el.offsetWidth, h = el.offsetHeight;
+    if (cx < -20 || cx > cvs.offsetWidth + 20 || cy < -20 || cy > cvs.offsetHeight + 40) { el.style.display = 'none'; continue; }
+    cx = Math.max(w / 2 + 4, Math.min(cvs.offsetWidth - w / 2 - 4, cx));
+    for (let i = 0; i < 6; i++) { if (placed.some(r => Math.abs(cx - r[0]) < (w + r[2]) / 2 + 4 && cy - h < r[1] + 2 && cy > r[1] - r[3] - 2)) cy -= h + 6; else break; }
+    placed.push([cx, cy, w, h]); el.style.left = cx + 'px'; el.style.top = Math.max(h + 2, cy) + 'px';
+  }
+}
+function fit() {
+  const s = fitDisplay(cvs, VW, VH); const ui = document.getElementById('ui'); ui.style.fontSize = Math.max(9, Math.min(17, 3.2 * s + 4.5)) + 'px';
+}
+addEventListener('resize', fit);
+
+// ---------------------------------------------------------------- Lia: movimento, interações
+function liaFree(x, y) { return Sim.Nav.free(x, y); }
+function liaStep(dt) {
+  const L = SIM.lia;
+  if (LS.mode === 'sitIn' || LS.mode === 'sitOut') { LS.sitT += dt; const k = Math.min(1, LS.sitT / .55), e = k * k * (3 - 2 * k); L.x = LS.from[0] + (LS.to[0] - LS.from[0]) * e; L.y = LS.from[1] + (LS.to[1] - LS.from[1]) * e;
+    if (k >= 1) { if (LS.mode === 'sitIn') { LS.mode = 'seated'; L.sentada = true; if (LS.seatId in SIM.mesa.w.assentos && SIM.assentos[LS.seatId].dominio) { toast('<b>Você sentou na mesa</b> · jogue quando for a sua vez.', 'ev', 4200); enterContext('mesa', { mode: 'participar' }); } } else { LS.mode = 'free'; } } LS.anim = LS.mode === 'sitOut' ? 'idle' : 'sit'; return; }
+  const kx = (keys.arrowright || keys.d ? 1 : 0) - (keys.arrowleft || keys.a ? 1 : 0), ky = (keys.arrowdown || keys.s ? 1 : 0) - (keys.arrowup || keys.w ? 1 : 0);
+  if (LS.mode === 'seated') {
+    if (kx || ky) { levantar(); } else { const J = SIM.mesa.pensando; const dom = SIM.assentos[LS.seatId] && SIM.assentos[LS.seatId].dominio; LS.anim = dom && J && J.s === LS.seatId && !J.jogou ? 'think' : (LS.playT > 0 ? 'play' : 'sit'); if (LS.playT > 0) LS.playT -= dt; return; }
+  }
+  if (D.open || S.mesaOpen) { if (LS.mode === 'free') { LS.anim = 'idle'; LS.path = []; return; } }
+  let dx = kx, dy = ky;
+  if (dx || dy) { LS.goal = null; LS.path = []; if (D.open) closeDialog(); }
+  else if (LS.path.length) { const k = LS.path[0], ddx = k[0] - L.x, ddy = k[1] - L.y, d = Math.hypot(ddx, ddy); if (d < 1.5) LS.path.shift(); else { dx = ddx / d; dy = ddy / d; } }
+  if (dx || dy) {
+    const m = Math.hypot(dx, dy) || 1, st = LS.vel * dt, nx = L.x + dx / m * st, ny = L.y + dy / m * st; let moved = false;
+    if (liaFree(nx, L.y)) { L.x = nx; moved = true; } if (liaFree(L.x, ny)) { L.y = ny; moved = true; }
+    if (!moved && LS.path.length) LS.path.shift();
+    LS.anim = 'walk'; L.face = Math.abs(dx) >= Math.abs(dy) * .55 ? (dx < 0 ? 'left' : 'right') : (dy < 0 ? 'up' : 'down');
+  } else if (LS.anim === 'walk') LS.anim = 'idle';
+  else if (LS.anim !== 'talk' && LS.anim !== 'interact') LS.anim = 'idle';
+  if (LS.tAnim > 0) { LS.tAnim -= dt; if (LS.tAnim <= 0 && LS.anim !== 'walk') LS.anim = 'idle'; }
+}
+function goTo(x, y, goal) {
+  const L = SIM.lia; LS.goal = goal || null; if (D.open) closeDialog(); if (LS.mode === 'seated') levantar();
+  const p = Sim.Nav.path(L.x, L.y, x, y); LS.path = p ? p.slice() : []; LS.replan = 1.2;
+}
+function levantar() {
+  if (LS.mode !== 'seated') return; const L = SIM.lia, A = SIM.assentos[LS.seatId]; if (!A) { LS.mode = 'free'; return; }
+  if (A.dominio) SIM.mesa.liaLevanta(); else { A.ocup = null; L.seat = null; L.sentada = false; }
+  const ap = A.def.aprox; LS.from = [L.x, L.y]; LS.to = [ap[0], yw(ap[0]) + ap[1]]; LS.mode = 'sitOut'; LS.sitT = 0; LS.seatId = null; L.sentada = false; L.seat = null; closeMesa();
+}
+function sentarEm(id) {
+  const A = SIM.assentos[id]; if (!A || A.ocup) return false; const L = SIM.lia;
+  if (A.dominio) { if (!SIM.mesa.liaSenta(id)) return false; } else { A.ocup = 'lia'; L.seat = id; }
+  LS.seatId = id; LS.from = [L.x, L.y]; LS.to = [A.def.x, yw(A.def.x) + A.def.sy]; LS.mode = 'sitIn'; LS.sitT = 0; L.face = A.def.face; LS.path = []; LS.anim = 'sit'; return true;
+}
+function podeJogar() { return SIM.nivel('ze') >= 1 || !!SIM.liaConvidada; }
+function assentoLivreDom() { return RD.ordem.find(s => { const A = SIM.assentos[s]; return !A.ocup; }) || null; }
+
+// alvos de interação
+// portas funcionais (Etapa 7): só existem quando a rua roda dentro do mundo integrado
+const PORTAS = { porta_padaria: { cena: 'padaria', label: 'Entrar na padaria' }, porta_sobrado: { cena: 'casa', label: 'Entrar na casa de Seu Raimundo' } };
+function portaPerto() { if (!window.MUNDO_ATIVO) return null; const L = SIM.lia; let best = null; for (const k in PORTAS) { const sp = SIM.spot(k), d = Math.hypot(sp.x - L.x, (sp.y - L.y) * 1.2); if (d < 30 && (!best || d < best.d)) best = { k, d, sp }; } return best; }
+function entrarPorta(k) { if (!window.MUNDO_ATIVO || D.open || S.mesaOpen || LS.mode !== 'free') return; const sp = SIM.spot(k); SIM.lia.x = sp.x; SIM.lia.y = sp.y; SIM.lia.face = 'up'; LS.path = []; LS.goal = null; LS.anim = 'idle'; window.MUNDO_ENTRAR(PORTAS[k].cena, k); }
+function candidatos() {
+  const L = SIM.lia, out = []; if (LS.mode !== 'free') return out;
+  const pp = portaPerto(); if (pp) out.push({ k: 'porta', id: pp.k, d: pp.d - 6, label: PORTAS[pp.k].label, run: () => entrarPorta(pp.k) });
+  for (const id in SIM.npcs) { const n = SIM.npcs[id]; if (n.state === 'Away' || n.alpha < .6) continue; const d = Math.hypot(n.x - L.x, (n.y - L.y) * 1.4); if (d < 38) out.push({ k: 'npc', id, d, label: 'Falar com ' + nome(id), run: () => abrirConversa(id) }); }
+  const g = SIM.gato, dg = Math.hypot(g.x - L.x, (g.y - L.y) * 1.4); if (dg < 30) out.push({ k: 'gato', d: dg + 4, label: 'Afagar o gato', run: () => { toast(SIM.afagar(), 'ev', 3500); LS.anim = 'interact'; LS.tAnim = 1.2; } });
+  const mx = RD.mesa.x, my = yw(mx) + 16; const dm = Math.hypot(mx - L.x, (my - L.y) * 1.2);
+  if (dm < 62) out.push({ k: 'mesa', d: dm + 6, label: 'Mesa de dominó: observar ou participar', run: () => abrirMesa() });
+  for (const id in SIM.assentos) { const A = SIM.assentos[id]; if (A.ocup) continue; const ap = A.def.aprox, dd = Math.hypot(ap[0] - L.x, (yw(ap[0]) + ap[1] - L.y) * 1.2); if (dd < 30) { if (A.dominio) { if (podeJogar()) out.push({ k: 'seat', id, d: dd + 2, label: 'Sentar na mesa e jogar', run: () => sentarEm(id) }); else out.push({ k: 'seatno', id, d: dd + 3, label: 'Pedir um lugar na mesa', run: () => { const z = SIM.npcs.ze; if (z.state !== 'Away') { z.falar('Primeiro prova que sabe contar até seis, Lia.', 3.4); toast('<b>Seu Zé</b> só chama quem ele conhece. Converse com ele.', 'ev', 4200); } } }); } else out.push({ k: 'seat', id, d: dd + 5, label: 'Sentar', run: () => sentarEm(id) }); } }
+  for (const it of SCENE.inst) { if (it.id === 'gato_1' || !it.stand) continue; const sx = it.x + it.stand[0], sy = yw(it.x) + it.sy + it.stand[1] - 14; const dd = Math.hypot(sx - L.x, (sy - L.y) * 1.2); if (dd < 24) out.push({ k: 'obj', id: it.id, d: dd + 8, label: 'Examinar ' + it.nome, run: () => examinar(it) }); }
+  return out.sort((a, b) => a.d - b.d);
+}
+function examinar(it) {
+  const r = SIM.examinar(it); say(r.texto, 7); LS.anim = 'interact'; LS.tAnim = 1.1;
+  if (r.novo) toast('<b>Anotação nova</b> · ' + esc(r.kp), 'kp', 4200);
+  if (it.zoom != null && !S.free) { /* aproxima suavemente */ const x = it.x, y = yw(it.x) + it.sy - 14; if (S.zl < 1) { S.zl = 1; syncUI(); } }
+}
+function pressAction() { if (D.open || S.mesaOpen || S.notesOpen || CTX.anim) return; if (LS.mode === 'seated') { if (SIM.assentos[LS.seatId] && SIM.assentos[LS.seatId].dominio) { abrirMesa(); } else levantar(); return; } const c = candidatos(); if (c.length) c[0].run(); else say('Nada por perto. Chegue mais perto de alguém, da mesa ou de um objeto.', 3); }
+
+// ---------------------------------------------------------------- conversa
+function abrirConversa(id) {
+  const c = SIM.abrirConversa(id); if (!c) return; const n = SIM.npcs[id]; SIM.congelado = id; n.face = n.x < SIM.lia.x ? 'right' : 'left'; SIM.lia.face = n.x < SIM.lia.x ? 'left' : 'right';
+  D.open = true; D.id = id; D.mode = 'root'; D.lines = [{ quem: id, texto: c.saudacao }]; LS.anim = 'talk'; n.setAnim && n.state === 'Idle' && n.setAnim('talk'); renderDialog();
+}
+function closeDialog() { D.open = false; SIM.congelado = null; $('dlg').style.display = 'none'; if (LS.anim === 'talk') LS.anim = 'idle'; const n = D.id && SIM.npcs[D.id]; if (n && n.state === 'Idle' && n.anim === 'talk') n.setAnim('idle'); D.id = null; }
+function dlgAct(a, arg) {
+  if (!D.open) return; const id = D.id;
+  if (a === 'sair') { closeDialog(); return; }
+  if (a === 'topicos') { D.mode = 'topics'; }
+  else if (a === 'voltar') { D.mode = 'root'; }
+  else if (a === 'ouvir') { D.lines = [{ quem: 'nota', texto: SIM.ouvir(id)[0].texto, nota: true }]; SIM.trust[id] = Math.min(1, (SIM.trust[id] || 0) + .02); D.mode = 'root'; }
+  else if (a === 'saudar') { const c = SIM.abrirConversa(id); D.lines = [{ quem: 'lia', texto: 'Bom dia!' }, { quem: id, texto: c.saudacao }]; D.mode = 'root'; }
+  else if (a === 'perguntar') { const r = SIM.perguntar(id, arg); D.lines = r.map(l => ({ quem: l.quem, texto: l.texto, rev: l.revisar })); D.mode = 'root'; r.forEach(l => { if (l.quem === 'nota') toast('<b>Anotação nova</b> · ' + esc(l.texto.replace('Anotado: ', '')), 'kp', 4200); }); }
+  renderDialog();
+}
+function renderDialog() {
+  const el = $('dlg'); const id = D.id, nv = SIM.nivel(id), F = RD.falas[id];
+  const labels = ['desconfiada', 'conhecida', 'de casa', 'de confiança']; const lab = id === 'raimundo' || id === 'ze' || id === 'nonato' || id === 'bela' || id === 'cicera' || id === 'tonho' || id === 'junior' ? ['ainda cerimonioso', 'já conhece você', 'à vontade', 'de confiança'] : ['reservada', 'cordial', 'à vontade', 'de confiança'];
+  let h = '<h3><span style="color:' + (COR[id] || '#fff') + '">' + esc(nome(id)) + '</span><small>' + lab[nv] + '</small></h3>';
+  h += D.lines.map(l => l.nota ? '<div class="line nota">' + esc(l.texto) + '</div>' : '<div class="line"><span class="q" style="color:' + (COR[l.quem] || '#fff') + '">' + esc(l.quem === 'lia' ? 'Lia' : nome(l.quem)) + ':</span> ' + esc(l.texto) + (l.rev ? '<span class="rev"> · proposta, precisa de revisão cultural</span>' : '') + '</div>').join('');
+  h += '<div class="opts">';
+  if (D.mode === 'root') {
+    h += '<button onclick="dlgAct(\'saudar\')">1 · Cumprimentar</button><button onclick="dlgAct(\'topicos\')">2 · Perguntar</button><button onclick="dlgAct(\'ouvir\')">3 · Ficar ouvindo</button><button onclick="dlgAct(\'sair\')">0 · Sair</button>';
+  } else {
+    const TP = SIM.topicos(id), tops = TP.map(t => t.id); const rotulo = t => { const x = TP.find(q => q.id === t); return (x ? x.label : (TOP[t] || t)) + (x && x.feito ? ' ✓' : ''); };
+    if (!tops.length) h += '<div class="line nota">' + esc(RD.dicaSemAssunto) + '</div>';
+    h += tops.map((t, i) => '<button onclick="dlgAct(\'perguntar\',\'' + t + '\')">' + (i + 1) + ' · ' + esc(rotulo(t)) + '</button>').join('') + '<button onclick="dlgAct(\'voltar\')">0 · Voltar</button>';
+    D.tops = tops;
+  }
+  h += '</div>'; el.innerHTML = h; el.style.display = 'block';
+}
+function dlgKey(n) { if (!D.open) return; if (D.id === '__mesa') { if (n === 1) mesaEscolha('obs'); else if (n === 2) mesaEscolha('part'); else if (n === 0) closeDialog(); return; } if (D.mode === 'root') { if (n === 1) dlgAct('saudar'); else if (n === 2) dlgAct('topicos'); else if (n === 3) dlgAct('ouvir'); else if (n === 0) dlgAct('sair'); } else { if (n === 0) dlgAct('voltar'); else if (D.tops && D.tops[n - 1]) dlgAct('perguntar', D.tops[n - 1]); } }
+
+// ---------------------------------------------------------------- mesa de dominó (painel)
+function tileHTML(t, vert) { return '<span class="tile' + (vert ? ' v' : '') + '"><i>' + t[0] + '</i><i>' + t[1] + '</i></span>'; }
+function abrirMesa() {                       // E / clique na mesa
+  if (CTX.active === 'mesa') return;
+  if (LS.mode === 'seated' && SIM.assentos[LS.seatId] && SIM.assentos[LS.seatId].dominio) { enterContext('mesa', { mode: 'participar' }); return; }
+  D.open = true; D.id = '__mesa'; D.mode = 'mesa'; SIM.congelado = null; renderMesaChoice();
+}
+function renderMesaChoice() {
+  const livre = assentoLivreDom(), pode = podeJogar();
+  let h = '<h3><span style="color:var(--gold)">A mesa de dominó</span><small>a partida continua com ou sem você</small></h3>';
+  h += '<div class="line">Quatro moradores jogam em duplas. Você pode ficar de olho de perto ou, se houver cadeira vaga, jogar.</div><div class="opts">';
+  h += '<button onclick="mesaEscolha(\'obs\')">1 · Observar de perto</button>';
+  h += '<button ' + (livre && pode ? '' : 'disabled') + ' onclick="mesaEscolha(\'part\')">2 · Participar</button>';
+  h += '<button onclick="closeDialog()">0 · Sair</button>';
+  if (!livre) h += '<div class="why">Participar: todas as cadeiras estão ocupadas.</div>'; else if (!pode) h += '<div class="why">Participar: Seu Zé ainda não chamou você. Converse com ele ("Posso jogar?").</div>'; else h += '<div class="why">Há uma cadeira vaga.</div>';
+  h += '</div>'; const el = $('dlg'); el.innerHTML = h; el.style.display = 'block';
+}
+function mesaEscolha(m) {
+  const livre = assentoLivreDom(); closeDialog();
+  if (m === 'obs') enterContext('mesa', { mode: 'observar' });
+  else if (livre && podeJogar()) entrarMesa(livre);
+}
+function closeMesa() { if (CTX.active === 'mesa') exitContext(); else { S.mesaOpen = false; $('mesa').style.display = 'none'; } }
+function renderMesa() {
+  if (!S.mesaOpen) return; const P = SIM.mesa.painel(), g = SIM.mesa.game, el = $('mesa');
+  // orientação encadeada: começa pelo primeiro; cada pedra liga ao fim da anterior
+  let prev = null; const seq = P.cadeia.map((t, i) => { let a = t[0], b = t[1]; if (i > 0 && a !== prev) { [a, b] = [b, a]; } prev = i === 0 ? b : b; if (i === 0) prev = b; return [a, b]; });
+  const minha = SIM.lia.sentada && SIM.lia.seat; const lg = minha ? SIM.mesa.legaisLia() : []; const minhaVez = minha && g.vez === minha && g.estado === 'jogando' && SIM.mesa.pensando && SIM.mesa.pensando.liaEsperando && !SIM.mesa.pensando.jogou;
+  let h = '<h2><span>A mesa de dominó</span><span class="x" onclick="closeMesa()">voltar à rua (Esc)</span></h2>';
+  h += '<div>Dupla <b>' + dupNome(0) + '</b> <b style="color:var(--gold)">' + P.placar[0] + '</b> × <b style="color:var(--gold)">' + P.placar[1] + '</b> <b>' + dupNome(1) + '</b> · até ' + g.meta + ' · partidas ' + P.partidas[0] + ' a ' + P.partidas[1] + ' · mão ' + P.mao + '</div>';
+  h += '<div class="seatrow">' + RD.ordem.map(s => '<div class="seatbox' + (P.vez === s && g.estado === 'jogando' ? ' vez' : '') + '"><b>' + esc(P.nomes[s]) + '</b><small>' + (s === 'E' ? 'esquerda' : s === 'D' ? 'direita' : s === 'T' ? 'à frente da câmera' : 'ao fundo') + ' · ' + P.resta[s] + ' pedras</small></div>').join('') + '</div>';
+  h += '<div class="chain">' + (seq.length ? seq.map(t => tileHTML(t)).join('') : '<span style="color:#b8d8c4">a mesa está limpa — esperando a abertura</span>') + '</div>';
+  if (g.pontas) h += '<div class="sub">Pontas: <b>' + g.pontas[0] + '</b> e <b>' + g.pontas[1] + '</b></div>';
+  if (P.ultima && P.fase === 'reagindo') h += '<div class="sub">Batida: ' + esc(nomeSeat(P.ultima.s)) + ' · ' + ({ simples: 'simples (1)', carroca: 'de carroça (2)', laelo: 'de lá e lô (3)', cruzada: 'cruzada (4)' }[P.ultima.tipo]) + '</div>';
+  if (P.fase === 'pausado') h += '<div class="sub" style="color:#d9a45a">O jogo está parado: falta gente em alguma cadeira.</div>';
+  if (minha) {
+    h += '<h4 style="margin:.6em 0 .2em;color:var(--gold)">Sua mão (' + P.nomes[minha] + ' · ' + (minhaVez ? 'é a sua vez' : 'espere a vez') + ')</h4><div class="seatrow">';
+    const mao = SIM.mesa.minhaMao() || [];
+    h += mao.map(t => { const ops = lg.filter(o => o.t === t); const ok = minhaVez && ops.length; return '<button class="tile" ' + (ok ? '' : 'disabled') + ' data-t="' + t[0] + ',' + t[1] + '" onclick="liaJoga(' + t[0] + ',' + t[1] + ')"><i>' + t[0] + '</i><i>' + t[1] + '</i></button>'; }).join('') + '</div>';
+    h += '<div class="btns"><button ' + (minhaVez && !lg.length ? '' : 'disabled') + ' onclick="liaPassa()">Passar (bater na mesa)</button><button onclick="levantar()">Levantar da mesa</button></div>';
+    if (minhaVez && !lg.length) h += '<div class="sub">Você não tem pedra que sirva: pode passar.</div>';
+  } else {
+    const livre = assentoLivreDom(); h += '<div class="btns">';
+    h += '<button onclick="torcer(0)">Torcer por ' + dupNome(0) + '</button><button onclick="torcer(1)">Torcer por ' + dupNome(1) + '</button>';
+    if (livre) h += '<button ' + (podeJogar() ? '' : 'disabled') + ' onclick="closeMesa();entrarMesa(\'' + livre + '\')">Sentar na cadeira vaga' + (podeJogar() ? '' : ' (converse com Seu Zé primeiro)') + '</button>';
+    h += '</div>';
+  }
+  h += '<details class="regras"><summary>Regras da mesa (proposta, a revisar com quem joga)</summary> duplas de frente; 6 pedras para cada um e 4 dormem; abre quem tem a maior carroça; batida simples 1 ponto, de carroça 2, de lá e lô 3, cruzada 4; trancado: ganha 1 ponto quem tem menos pontos na mão; partida até 6.</details>';
+  el.innerHTML = h;
+}
+function dupNome(d) { const o = RD.ordem.filter(s => RD.dupla[s] === d).map(s => { const P = SIM.mesa.painel(); return P.nomes[s]; }); return o.join(' e '); }
+function nomeSeat(s) { return SIM.mesa.painel().nomes[s]; }
+function torcer(d) { const ids = RD.ordem.filter(s => RD.dupla[s] === d).map(s => SIM.mesa.ocupante(s)).filter(x => x && x !== 'lia'); ids.forEach(i => { SIM.trust[i] = Math.min(1, (SIM.trust[i] || 0) + .03); const n = SIM.npcs[i]; if (n && n.state === 'Sitting') n.falar(['Obrigado, menina!', 'Isso, torce mesmo.', 'Boa torcida!'][Math.floor(Math.random() * 3)], 2.4); }); LS.say = { text: 'Vai, ' + dupNome(d) + '!', ttl: 2.4 }; }
+function entrarMesa(id) { if (LS.mode !== 'free') return; const A = SIM.assentos[id]; if (!A || A.ocup) return; const ap = A.def.aprox; goTo(ap[0], yw(ap[0]) + ap[1], { k: 'sentar', id }); }
+function liaJoga(a, b) { const t = SIM.mesa.minhaMao().find(x => x[0] === a && x[1] === b); const ops = SIM.mesa.legaisLia().filter(o => o.t === t); if (!ops.length) return; const lado = ops.length > 1 ? (confirm('Jogar na ponta esquerda (' + SIM.mesa.game.pontas[0] + ')? OK = esquerda · Cancelar = direita (' + SIM.mesa.game.pontas[1] + ')') ? 'L' : 'R') : ops[0].lado; if (SIM.mesa.liaJoga(t, lado)) { LS.playT = .8; LS.anim = 'play'; renderMesa(); } }
+function liaPassa() { if (SIM.mesa.liaPassa()) { LS.playT = .6; renderMesa(); } }
+
+// ---------------------------------------------------------------- anotações e fim do dia
+const GRUPOS = [['Dominó e a mesa', /^kp_dom|kp_cicera_dom/], ['Moradores', /^kp_(ray|obra|varal|gato|cocada|pontos|c_)/], ['O Programa e a rua', /^kp_(rua|prog|assoc|lucia)/], ['Objetos da rua', /^kp_obj/]];
+function renderNotes() {
+  const el = $('notes'), got = SIM.kp, tot = Object.keys(RD.kp);
+  let h = '<h2><span>Anotações da rua</span><span class="x" onclick="toggleNotes(false)">fechar (Esc)</span></h2><div class="sub">' + Object.keys(got).length + ' de ' + tot.length + ' · tudo aqui é proposta e precisa de revisão cultural antes de valer como texto final</div>';
+  const usados = new Set();
+  for (const [t, re] of GRUPOS) { const ids = tot.filter(k => re.test(k) && got[k]); ids.forEach(k => usados.add(k)); if (!ids.length) continue; h += '<h4>' + t + '</h4>' + ids.map(k => '<div class="kp"><b>' + esc(RD.kp[k][0]) + '</b> — ' + esc(RD.kp[k][1]) + (/programa|olhar/.test(k) ? ' <span class="rev">revisar</span>' : '') + '</div>').join(''); }
+  const resto = tot.filter(k => got[k] && !usados.has(k)); if (resto.length) h += '<h4>Outras</h4>' + resto.map(k => '<div class="kp"><b>' + esc(RD.kp[k][0]) + '</b> — ' + esc(RD.kp[k][1]) + '</div>').join('');
+  if (!Object.keys(got).length) h += '<div class="vazio sub" style="margin-top:1em">Ainda não há anotações. Converse com as pessoas e examine os objetos da rua.</div>';
+  el.innerHTML = h;
+}
+function toggleNotes(on) { S.notesOpen = on == null ? !S.notesOpen : on; $('notes').style.display = S.notesOpen ? 'block' : 'none'; if (S.notesOpen) renderNotes(); }
+function showDay(r) {
+  const el = $('daycard'); let h = '<h2><span>A manhã na rua</span><span class="x" onclick="document.getElementById(\'daycard\').style.display=\'none\'">continuar (Esc)</span></h2>';
+  h += '<div>Na mesa foram <b>' + r.jogos.maos + '</b> mãos, <b>' + r.jogos.batidas + '</b> batidas e <b>' + r.jogos.trancadas + '</b> trancadas. Placar da partida: ' + r.placar[0] + ' × ' + r.placar[1] + '.</div>';
+  h += '<div>Você descobriu <b>' + r.kp + '</b> anotação(ões). Aconteceram <b>' + r.papos + '</b> conversa(s) entre moradores.</div>';
+  el.innerHTML = h; el.style.display = 'block';
+}
+function bindBus() {
+  const b = SIM.bus;
+  b.on('conhecimento', e => toast('<b>Anotação nova</b> · ' + esc(e.kp.titulo), 'kp', 4200));
+  b.on('dia_fim', e => showDay(e.resumo));
+  b.on('lia_fala', e => { LS.say = { text: e.texto, ttl: 2.6 }; });
+  b.on('lia_vez', () => { if (CTX.active !== 'mesa' && LS.mode === 'seated' && !LS.vezAvisada) { LS.vezAvisada = true; enterContext('mesa', { mode: 'participar' }); } });
+  b.on('dom_joga', e => { if (e.id !== 'lia') LS.vezAvisada = false; if (S.mesaOpen) renderMesa(); });
+  b.on('dom_passa', e => { LS.vezAvisada = false; if (S.mesaOpen) renderMesa(); });
+  b.on('dom_bate', e => { LS.vezAvisada = false; if (S.mesaOpen) renderMesa(); toast('<b>Batida</b> · ' + esc(nomeSeat(e.s)) + ' (' + e.pts + (e.pts === 1 ? ' ponto' : ' pontos') + ')', 'ev', 3600); });
+  b.on('dom_tranca', () => { toast('<b>Trancou!</b> Ninguém mais joga.', 'ev', 3600); });
+  b.on('lugar_pedido', e => { const A = SIM.assentos[e.assento]; if (A && A.ocup === 'lia' && LS.mode === 'seated' && !LS.cede) { LS.cede = 6; const n = SIM.npcs[e.id]; if (n) n.falar('Lia, me devolve o lugar? Já volto a te chamar.', 4); toast('<b>' + esc(nome(e.id)) + '</b> quer o lugar de volta.', 'ev', 4000); } });
+}
+
+// ---------------------------------------------------------------- entrada
+function canvasXY(e) { const r = cvs.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * VW, (e.clientY - r.top) / r.height * VH]; }
+function sceneXY(cx, cy) { computeView(); return [V.left + cx / V.z, V.top + cy / V.z]; }
+function hitAt(sx, sy) {
+  for (const id in SIM.npcs) { const n = SIM.npcs[id]; if (n.state === 'Away' || n.alpha < .6) continue; if (Math.abs(sx - n.x) < 11 && sy > n.y - 46 && sy < n.y + 3) return { k: 'npc', id, x: n.x, y: n.y }; }
+  const g = SIM.gato; if (Math.abs(sx - g.x) < 12 && sy > g.y - 14 && sy < g.y + 3) return { k: 'gato' };
+  for (const it of SCENE.inst) { if (it.id === 'gato_1') continue; const sp = PROPS[it.sprite]; if (!sp) continue; const bx = it.x - sp.ax, by = yw(it.x) + it.sy - sp.ay; if (sx >= bx && sx < bx + sp.w && sy >= by && sy < by + sp.h && it.tipo) return { k: it.id === 'mesa_domino' ? 'mesa' : 'obj', it }; }
+  return null;
+}
+function commandMove(cx, cy) {
+  if (CTX.active || CTX.anim) return;
+  const [sx, sy] = sceneXY(cx, cy); const L = SIM.lia; if (D.open) closeDialog();
+  const h = hitAt(sx, sy);
+  if (h && h.k === 'npc') { LS.goal = { k: 'npc', id: h.id }; const n = SIM.npcs[h.id]; goTo(n.x + (L.x < n.x ? -22 : 22), n.y + 2, LS.goal); return; }
+  if (h && h.k === 'gato') { const g = SIM.gato; goTo(g.x + (L.x < g.x ? -18 : 18), g.y + 3, { k: 'gato' }); return; }
+  if (h && h.k === 'mesa') { const a = [L.x < RD.mesa.x ? RD.mesa.x - 44 : RD.mesa.x + 44, yw(RD.mesa.x) + 22]; goTo(a[0], a[1], { k: 'mesa' }); return; }
+  if (h && h.k === 'obj') { const it = h.it; const st = it.stand || [0, 14]; goTo(it.x + st[0], yw(it.x) + it.sy + st[1] - 14, { k: 'obj', it }); return; }
+  for (const id in SIM.assentos) { const A = SIM.assentos[id]; const sp = A.def; if (Math.abs(sx - sp.x) < 10 && Math.abs(sy - (yw(sp.x) + sp.sy - 12)) < 16) { if (A.dominio) { if (!A.ocup && podeJogar()) { entrarMesa(id); return; } } else if (!A.ocup) { goTo(sp.aprox[0], yw(sp.aprox[0]) + sp.aprox[1], { k: 'sentar', id }); return; } } }
+  if (window.MUNDO_ATIVO) for (const k in PORTAS) { const sp = SIM.spot(k); if (Math.abs(sx - sp.x) < 16 && sy < sp.y + 6 && sy > sp.y - 60) { goTo(sp.x, sp.y, { k: 'porta', id: k }); return; } }
+  const ty = Math.max(yw(sx) + 9, Math.min(VH - 4, sy));
+  goTo(Math.max(10, Math.min(WORLD_W - 10, sx)), ty, null);
+}
+function chegou(goal) {
+  if (!goal) return; const L = SIM.lia;
+  if (goal.k === 'npc') { const n = SIM.npcs[goal.id]; if (n.state !== 'Away' && Math.hypot(n.x - L.x, (n.y - L.y) * 1.4) < 42) abrirConversa(goal.id); }
+  else if (goal.k === 'gato') { toast(SIM.afagar(), 'ev', 3500); LS.anim = 'interact'; LS.tAnim = 1.2; }
+  else if (goal.k === 'mesa') { L.face = L.x < RD.mesa.x ? 'right' : 'left'; abrirMesa(); }
+  else if (goal.k === 'obj') { L.face = 'up'; examinar(goal.it); }
+  else if (goal.k === 'sentar') { sentarEm(goal.id); }
+  else if (goal.k === 'porta') { entrarPorta(goal.id); }
+}
+cvs.addEventListener('pointerdown', e => { window.focus(); cvs.setPointerCapture(e.pointerId); const [cx, cy] = canvasXY(e); computeView(); drag = { cx, cy, vx: V.left + V.w / 2, vy: V.top + V.h / 2, moved: false }; });
+cvs.addEventListener('pointermove', e => { if (!drag) return; const [cx, cy] = canvasXY(e), dx = cx - drag.cx, dy = cy - drag.cy; if (!drag.moved && Math.hypot(dx, dy) > 5) { drag.moved = true; cvs.style.cursor = 'grabbing'; } if (drag.moved && !CTX.active && !CTX.anim) { S.free = true; S.vx = drag.vx - dx / V.z; S.vy = drag.vy - dy / V.z; syncUI(); } });
+cvs.addEventListener('pointerup', () => { if (!drag) return; const d = drag; drag = null; cvs.style.cursor = ''; if (d.moved) return; commandMove(d.cx, d.cy); });
+cvs.addEventListener('pointercancel', () => { drag = null; cvs.style.cursor = ''; });
+cvs.addEventListener('dblclick', e => { if (CTX.active || CTX.anim) return; const [cx, cy] = canvasXY(e); LS.path = []; if (S.zl === 0) setZoom(1, cx, cy); else setZoom(0); });
+let wheelAt = 0; cvs.addEventListener('wheel', e => { e.preventDefault(); const now = performance.now(); if (now - wheelAt < 130 || !e.deltaY) return; wheelAt = now; const [cx, cy] = canvasXY(e); setZoom(S.zl + (e.deltaY < 0 ? 1 : -1), cx, cy); }, { passive: false });
+addEventListener('keydown', e => {
+  const k = e.key.toLowerCase(); if (!started) return;
+  if (['arrowleft', 'arrowright', 'arrowup', 'arrowdown', ' ', 'a', 'd', 'w', 's', 'e', 'enter', 'r', 'c', 'b', 'f', 'escape', '+', '=', '-', '_', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'n'].includes(k)) e.preventDefault();
+  if (k === 'escape') { if (S.notesOpen) toggleNotes(false); else if ($('daycard').style.display === 'block') $('daycard').style.display = 'none'; else if (D.open) closeDialog(); else if (S.mesaOpen) closeMesa(); return; }
+  if (k === 'b') { toggleNotes(); return; }
+  if (D.open && /^[0-9]$/.test(k)) { dlgKey(+k); return; }
+  keys[k] = true;
+  if (k === 'r') { S.ruler = !S.ruler; syncUI(); } if (k === 'c') { S.coll = !S.coll; syncUI(); } if (k === 'f') toggleFast();
+  if (k === 'n') { SIM.clock.min = Math.min(719, SIM.clock.min + 20); }
+  if (k === '+' || k === '=') setZoom(S.zl + 1); if (k === '-' || k === '_') setZoom(S.zl - 1); if (k === '0') resetCamera();
+  if ((k === 'e' || k === 'enter' || k === ' ') && !S.notesOpen) pressAction();
+});
+addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
+function toggleFast() { SIM.clock.rate = SIM.clock.rate > 0.5 ? 0.25 : 2; syncUI(); }
+$('bF').onclick = toggleFast; $('bR').onclick = () => { S.ruler = !S.ruler; syncUI(); }; $('bC').onclick = () => { S.coll = !S.coll; syncUI(); };
+$('bN').onclick = () => { try { localStorage.removeItem(KEY); } catch (e) { } location.search = '?new=1'; }; $('dbtn').onclick = () => toggleNotes();
+$('bZm').onclick = () => setZoom(S.zl - 1); $('bZp').onclick = () => setZoom(S.zl + 1); $('bZr').onclick = resetCamera;
+
+// ---------------------------------------------------------------- desenho
+function drawProp(spr, x, y, f, flip) { const sp = PROPS[spr]; if (!sp) return; const fr = sp.frames[Math.min(f || 0, sp.frames.length - 1)]; ctx.drawImage(IMG.props, fr[0], fr[1], sp.w, sp.h, Math.round(x - sp.ax), Math.round(y - sp.ay), sp.w, sp.h); }
+function charDraw(id, n, alpha) {
+  const sit = n.state === 'Sitting' || n.state === 'SitIn' || n.state === 'SitOut';
+  CharLib.draw(ctx, { who: id, persp: 'side', x: n.x - S.cam, y: n.y, anim: n.anim, dir: n.face, t: n.at || 0 }, { shadow: !sit, alpha: alpha == null ? n.alpha : alpha });
+}
+function drawMesaTopo(cam) {
+  const P = SIM.mesa.game, G = SIM.mesa; const mx = RD.mesa.x - cam, base = yw(RD.mesa.x) + 15;
+  // pedras jogadas sobre o tampo (cobra em duas fileiras)
+  const n = P.cadeia.length; ctx.save();
+  for (let i = 0; i < n; i++) { const row = i < 8 ? 0 : 1, c = i < 8 ? i : i - 8, x = Math.round(mx - 12 + c * 3.1 + (row ? 1 : 0)), y = base - 20 + row * 3; ctx.fillStyle = '#f1e7cf'; ctx.fillRect(x, y, 3, 2); ctx.fillStyle = '#3a2a1c'; ctx.fillRect(x + 1, y, 1, 1); }
+  if (G.toc > 0) { ctx.fillStyle = 'rgba(255,240,200,.55)'; ctx.fillRect(Math.round(mx - 14), base - 21, 28, 1); }
+  // pedras na mão de cada jogador (costas viradas para a câmera, de pé na borda do tampo)
+  const spots = { E: [mx - 12, base - 17, 'h'], D: [mx + 11, base - 17, 'h'], F: [mx - 7, base - 23, 'v'], T: [mx - 7, base - 13, 'v'] };
+  for (const s of RD.ordem) {
+    const o = G.ocupante(s); if (!o) continue; const sitting = o === 'lia' ? SIM.lia.sentada : SIM.npcs[o].state === 'Sitting'; if (!sitting) continue;
+    const k = P.maos[s].length, [x0, y0, dir] = spots[s];
+    for (let i = 0; i < k; i++) {
+      const x = Math.round(dir === 'h' ? x0 : x0 + i * 3), y = Math.round(dir === 'h' ? y0 + i * 2 - 5 : y0);
+      ctx.fillStyle = '#2b3a34'; ctx.fillRect(x, y, 2, 3); ctx.fillStyle = '#e7dcc0'; ctx.fillRect(x, y, 2, 1);
+    }
+  }
+  ctx.restore();
+}
+// quem senta em banco/cadeira solta fica NA FRENTE do móvel (o pé do móvel e o da pessoa estão na mesma linha, mas yw() muda a cada 70 px)
+function seatBias(id) { return /^(banco_|cad_calcada)/.test(id || '') ? 3 : .1; }
+function render() {
+  computeView(); const cam = S.cam;
+  ctx.drawImage(IMG.far, Math.floor(cam * 0.35), 0, VW, VH, 0, 0, VW, VH);
+  ctx.drawImage(IMG.world, cam, 0, VW, VH, 0, 0, VW, VH);
+  const ents = [];
+  for (const it of SCENE.inst) {
+    if (it.id === 'gato_1' || it.sprite === 'cad_costas' && it.layer === 'over') continue;
+    const y = yw(it.x) + it.sy;
+    if (it.layer === 'wall') { drawProp(it.sprite, it.x - cam, y - 0, 0); continue; }
+    ents.push({ y, draw: () => { drawProp(it.sprite, it.x - cam, y, 0); if (it.id === 'mesa_domino') drawMesaTopo(cam); } });
+  }
+  const over = SCENE.inst.filter(i => i.layer === 'over');
+  const g = SIM.gato; ents.push({ y: g.y, draw: () => drawProp('gato', g.x - cam, g.y, g.estado === 'afago' ? 1 : 0) });
+  for (const p of SIM.pombos) ents.push({ y: p.y, draw: () => { if (p.estado === 'foge') { ctx.fillStyle = 'rgba(18,10,28,.25)'; ctx.fillRect(Math.round(p.x - cam - 2), Math.round(p.y + 6), 5, 1); drawProp('pombo', p.x - cam, p.y - 6, 2); } else drawProp('pombo', p.x - cam, p.y, p.f); } });
+  for (const id in SIM.npcs) { const n = SIM.npcs[id]; if (n.state === 'Away' || n.alpha <= 0.01) continue; const sit = n.state === 'Sitting' || n.state === 'SitIn' || n.state === 'SitOut'; ents.push({ y: n.y + (sit && n.seat ? seatBias(n.seat) : 0), draw: () => charDraw(id, n) }); }
+  const L = SIM.lia; const lsit = LS.mode !== 'free'; ents.push({ y: L.y + (lsit ? seatBias(L.seat || LS.seatId) : 0), draw: () => CharLib.draw(ctx, { who: 'lia', persp: 'side6', x: L.x - cam, y: L.y, anim: LS.anim, dir: L.face, t: LS.at }, { shadow: !lsit }) });
+  ents.sort((a, b) => a.y - b.y).forEach(e => e.draw());
+  for (const it of over) drawProp(it.sprite, it.x - cam, yw(it.x) + it.sy + .5, 0);
+  ctx.drawImage(IMG.front, cam, 0, VW, VH, 0, 0, VW, VH);
+  if (S.ruler) drawRuler(cam);
+  if (S.coll) drawColl(cam);
+  vctx.drawImage(off, V.sx, V.sy, V.w, V.h, 0, 0, VW, VH);
+}
+function drawRuler(cam) {
+  ctx.save(); ctx.font = '8px monospace'; ctx.textBaseline = 'middle'; const L = SIM.lia, px = Math.round(L.x - cam), py = Math.round(L.y);
+  for (let wx = Math.ceil(cam / 24) * 24; wx < cam + VW; wx += 24) { const gy = yw(wx) + 24, x = wx - cam; ctx.fillStyle = wx % 120 === 0 ? 'rgba(255,255,255,.9)' : 'rgba(255,255,255,.45)'; ctx.fillRect(x, gy, 1, wx % 120 === 0 ? 7 : 4); }
+  for (let m = 0; m <= 4; m++) { const y = py - m * 24; ctx.fillStyle = 'rgba(255,230,120,.95)'; ctx.fillRect(px + 14, y, 10, 1); if (m) { ctx.fillStyle = 'rgba(0,0,0,.65)'; ctx.fillRect(px + 25, y - 5, 17, 9); ctx.fillStyle = '#ffe678'; ctx.fillText(m + ' m', px + 27, y); } }
+  ctx.restore();
+}
+function drawColl(cam) {
+  ctx.fillStyle = 'rgba(255,60,60,.28)'; for (let x = cam; x < cam + VW; x += 2) for (let y = 200; y < VH; y += 2) if (SIM.blocked(x, y)) ctx.fillRect(x - cam, y, 2, 2);
+  for (const k in RD.spots) { const s = SIM.spot(k); ctx.fillStyle = '#7cf'; ctx.fillRect(Math.round(s.x - cam) - 1, Math.round(s.y) - 1, 3, 3); }
+}
+
+// ---------------------------------------------------------------- laço
+function loop(now) {
+  const dt = Math.min(.1, (now - last) / 1000); last = now; update(dt); render(); updateBubbles(); requestAnimationFrame(loop);
+}
+function update(dt) {
+  LS.at += dt; SIM.update(dt); liaStep(dt); updateCamera(dt);
+  if (LS.say) { LS.say.ttl -= dt; if (LS.say.ttl <= 0) LS.say = null; }
+  if (S.note) { S.note.ttl -= dt; if (S.note.ttl <= 0) S.note = null; }
+  // caminho: chegou? replaneja para alvos móveis
+  if (LS.mode === 'free' && LS.goal && !LS.path.length && !D.open) { const g = LS.goal; LS.goal = null; chegou(g); }
+  else if (LS.goal && LS.goal.k === 'npc' && LS.path.length) { LS.replan -= dt; if (LS.replan <= 0) { const n = SIM.npcs[LS.goal.id], L = SIM.lia; if (n.state !== 'Away') { const p = Sim.Nav.path(L.x, L.y, n.x + (L.x < n.x ? -22 : 22), n.y + 2); if (p) LS.path = p.slice(); } LS.replan = 1; } }
+  if (LS.cede > 0) { LS.cede -= dt; if (LS.cede <= 0) { LS.cede = 0; if (LS.mode === 'seated') { levantar(); toast('Você cedeu o lugar.', 'ev', 2600); } } }
+  uiT -= dt; if (uiT <= 0) { uiT = .12; updateHud(); const c = candidatos(); S.hint = LS.mode === 'seated' ? (SIM.assentos[LS.seatId] && SIM.assentos[LS.seatId].dominio ? { label: 'ver a mesa e jogar · mexa-se para levantar' } : { label: 'levantar · mexa-se para levantar' }) : (c[0] || null); if (S.mesaOpen) renderMesa(); updateReport(); }
+}
+function updateReport() {
+  const w = SIM, L = w.lia; document.title = JSON.stringify({ t: w.clock.label(), lia: [Math.round(L.x), Math.round(L.y), LS.anim, L.face, LS.mode, L.seat], mesa: w.mesa.fase, placar: w.mesa.game.placar, kp: Object.keys(w.kp).length, dlg: D.open ? D.id : null, hint: S.hint ? S.hint.label : null,
+    npcs: Object.values(w.npcs).filter(n => n.state !== 'Away').map(n => [n.id, Math.round(n.x), Math.round(n.y), n.state, n.anim]) });
+}
+// Lia chega de um interior pela porta: aparece diante da porta, virada para a rua
+function liaChega(k) { const sp = SIM.spot(k), L = SIM.lia; L.x = sp.x; L.y = sp.y + 7; L.face = 'down'; L.sentada = false; L.seat = null; LS.mode = 'free'; LS.path = []; LS.goal = null; LS.anim = 'idle'; SIM.liaFora = false; closeDialog && D.open && closeDialog(); S.free = false; S.vx = L.x; S.vy = L.y - 18; S.hint = null; if (CTX.active) exitContext(true); computeView(); }
+function liaSaiu() { SIM.liaFora = true; LS.path = []; LS.goal = null; }
+window.BALCAO = { liaChega, liaSaiu, PORTAS, S, LS, D, CTX, enterContext, exitContext, mesaEscolha, get SIM() { return SIM; }, setZoom, resetCamera, focusOn, abrirConversa, abrirMesa, closeMesa, toggleNotes, pressAction, sentarEm, goTo, ffwd, examinar, render, computeView };
+</script>
+</body>
+</html>

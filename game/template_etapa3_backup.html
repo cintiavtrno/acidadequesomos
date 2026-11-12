@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O balcão da vó — Etapa 3: objetos</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #140f12; color: #e9ddcb; font: 13px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  #app { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100%; padding: 10px 10px 8px; gap: 8px; }
+  #frame { position: relative; line-height: 0; background: #000; box-shadow: 0 0 0 1px #3a2e30; }
+  canvas { display: block; image-rendering: pixelated; image-rendering: crisp-edges; touch-action: none; cursor: pointer; }
+  #hud { width: 100%; max-width: 960px; display: flex; flex-wrap: wrap; gap: 6px 18px; justify-content: space-between; color: #cdbfae; }
+  #hud b { color: #f3e7d4; font-weight: 600; }
+  #hud .k { display: inline-block; padding: 0 5px; border: 1px solid #5a4a48; border-radius: 3px; font-size: 11px; color: #e9ddcb; background: #1e1618; }
+  #hud button { font: inherit; color: #e9ddcb; background: #1e1618; border: 1px solid #5a4a48; border-radius: 4px; padding: 2px 8px; cursor: pointer; }
+  #hud button[aria-pressed="true"] { background: #4a3a2c; border-color: #b78a52; }
+  #msg { min-height: 1.4em; color: #f0c98c; }
+  #scene { color: #9fc3b4; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="frame"><canvas id="c" width="480" height="270" aria-label="Cenário da rua e da padaria"></canvas></div>
+  <div id="hud">
+    <div><b id="scene">Rua</b> · <span id="cam">câmera lateral ortográfica</span></div>
+    <div id="msg" aria-live="polite"></div>
+    <div>
+      <span class="k">←→</span> / <span class="k">A D</span> andar &nbsp;
+      <span class="k">↑↓</span> / <span class="k">W S</span> profundidade (interior) &nbsp;
+      <span class="k">E</span> porta / interagir / falar com a Vó &nbsp; toque/clique: ir até lá
+    </div>
+    <div>
+      <button id="bT" aria-pressed="false" title="T">Bonecos de escala</button>
+      <button id="bR" aria-pressed="false" title="R">Régua (m)</button>
+      <button id="bC" aria-pressed="false" title="C">Colisões</button>
+      <button id="bI" aria-pressed="false" title="I">Inspeção (debug)</button>
+    </div>
+    <div id="zoombar" style="width:100%;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <b>Zoom</b>
+      <button id="bZm" title="Afastar ( − )" aria-label="Afastar">−</button>
+      <button id="bZp" title="Aproximar ( + )" aria-label="Aproximar">+</button>
+      <button id="bZr" title="Voltar ao enquadramento original ( 0 )">Enquadramento original</button>
+      <span id="zlabel" style="color:#f0c98c"></span>
+      <span style="color:#8f8173">roda do mouse: aproxima/afasta · duplo clique: alterna · arrastar: move a câmera</span>
+    </div>
+    <div style="width:100%;color:#8f8173">1 m = 24 px · Lia 1,38 m · Vó Áurea ~1,62 m · botão «Bonecos de escala» mostra as réguas cinzas (33 px / 42 px) · clique num objeto da padaria: Lia vai até ele e interage</div>
+  </div>
+</div>
+<script>
+/*CHARS_JS*/
+/*OBJECTS_JS*/
+const ASSETS = /*ASSETS*/{};
+const CHARATLAS = /*CHARATLAS*/{};
+const OBJCAT = /*OBJCAT*/{}, OBJSCENE = /*OBJSCENE*/{};
+const VW = 480, VH = 270;
+const WORLD_W = 1130, DOOR_X = 470, DOOR_HALF = 26;
+const LAYOUT = /*LAYOUT*/{};
+const X0 = LAYOUT.X0, X1 = LAYOUT.X1, YB = LAYOUT.YB, YF = LAYOUT.YF, EXIT_X = LAYOUT.EXIT_X;
+const FW = 16, FH = 44;
+const cvs = document.getElementById('c'), vctx = cvs.getContext('2d');
+const off = document.createElement('canvas'); off.width = VW; off.height = VH;     // cena sempre em resolução nativa 480x270
+const ctx = off.getContext('2d');
+ctx.imageSmoothingEnabled = false; vctx.imageSmoothingEnabled = false;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const Q = new URLSearchParams(location.search);
+
+const fGround = x => 222 + Math.floor(Math.max(0, x) / 36);
+
+function load(src) { return new Promise(r => { const i = new Image(); i.onload = () => r(i); i.src = src; }); }
+let IMG = {};
+Promise.all(Object.entries(ASSETS).map(([k, v]) => load(v).then(i => IMG[k] = i))).then(() => { const ci = {}; for (const k in CHARATLAS) ci[k] = IMG[k]; CharLib.init(CHARATLAS, ci); const oi = {}; for (const k in IMG) if (k.startsWith('obj_')) oi[k] = IMG[k]; ObjectSys.init(OBJCAT, OBJSCENE, oi); initObjects(); start(); });
+
+const S = {
+  scene: Q.get('s') === 'interior' ? 'interior' : 'street',
+  gauge: Q.get('g') === '1',
+  ruler: Q.get('r') === '1', coll: Q.get('c') === '1',
+  p: { x: 430, y: fGround(430), dir: 'r', face: 'right', moving: false, t: 0, at: 0, anim: 'idle', tx: null, ty: null, enter: false, stuck: 0, goal: null, act: null, path: [] },
+  vo: { x: 196, y: 168, face: 'down', anim: 'serve_idle', t: 0, state: 'work', timer: 2, tx: null, greeted: false, bubble: null },
+  bubble: null,
+  cam: 0, fade: 0, fadeDir: 0, fadeNext: null, msg: ''
+};
+if (Q.has('x')) S.p.x = +Q.get('x');
+if (S.scene === 'interior') { S.p.x = Q.has('x') ? +Q.get('x') : EXIT_X; S.p.y = Q.has('y') ? +Q.get('y') : YF - 14; S.p.dir = 'u'; S.p.face = 'up'; }
+else S.p.y = fGround(S.p.x);
+S.cam = Math.max(0, Math.min(WORLD_W - VW, Math.round(S.p.x) - 240));
+if (Q.has('cam')) S.cam = +Q.get('cam');
+// ---------- câmera com zoom ----------
+// Três níveis inteiros (1×, 2×, 3×): cada pixel da arte vira N×N pixels exatos, sem interpolação.
+const ZL = [1, 2, 3], ZN = ['Visão geral', 'Visão intermediária', 'Visão aproximada'];
+S.zl = Math.max(0, Math.min(2, +(Q.get('z') || 0)));
+S.insp = Q.get('i') === '1'; S.hover = null;
+S.free = false;                                   // true = câmera solta (arrastada); false = segue a personagem
+S.vx = S.scene === 'street' ? S.cam + 240 : S.p.x; S.vy = S.p.y - 18;
+if (Q.has('vx')) { S.vx = +Q.get('vx'); S.free = true; } if (Q.has('vy')) { S.vy = +Q.get('vy'); S.free = true; }
+let V = null;                                      // vista atual (em coordenadas de cena)
+function camBounds() { return S.scene === 'street' ? [0, WORLD_W, 0, VH] : [60, 420, 28, 246]; }
+function computeView() {
+  const z = ZL[S.zl], w = VW / z, h = VH / z, [bx0, bx1, by0, by1] = camBounds();
+  const cl = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  const cx = (bx1 - bx0) <= w ? VW / 2 : cl(S.vx, bx0 + w / 2, bx1 - w / 2);
+  const cy = (by1 - by0) <= h ? VH / 2 : cl(S.vy, by0 + h / 2, by1 - h / 2);
+  const left = Math.round(cx - w / 2), top = Math.round(cy - h / 2);   // inteiros: grade de pixels alinhada
+  let cam = 0, sx = left;
+  if (S.scene === 'street') { cam = cl(Math.round(cx) - 240, 0, WORLD_W - VW); sx = left - cam; S.cam = cam; }
+  if (S.free) { S.vx = cx; S.vy = cy; }                                  // câmera solta nunca sai do cenário
+  V = { z, w, h, left, top, sx, sy: top, cam };
+  return V;
+}
+function updateCamera(dt) {
+  if (S.free) return;
+  const k = Math.min(1, dt * 7), p = S.p;
+  S.vx += (p.x - S.vx) * k; S.vy += (p.y - 18 - S.vy) * k;
+}
+function snapCamera() { S.free = false; S.vx = S.p.x; S.vy = S.p.y - 18; }
+function setZoom(n, ax, ay) {                     // ax, ay: ponto de ancoragem em px do canvas (padrão: centro)
+  n = Math.max(0, Math.min(2, n)); if (n === S.zl) return;
+  computeView();
+  const cursor = ax != null, a_x = cursor ? ax : VW / 2, a_y = cursor ? ay : VH / 2;
+  const px = V.left + a_x / V.z, py = V.top + a_y / V.z;                // ponto de cena sob a âncora
+  S.zl = n; const z = ZL[n];
+  S.vx = px - a_x / z + VW / z / 2; S.vy = py - a_y / z + VH / z / 2;
+  if (n === 0) snapCamera(); else if (cursor) S.free = true;
+  syncUI();
+}
+function resetCamera() { S.zl = 0; snapCamera(); syncUI(); }
+// ---------- pontos de inspeção (estrutura para interações futuras; sem UI ainda) ----------
+// rect = [x, y, w, h] em coordenadas de cena (rua: mundo; interior: tela nativa). text/detail ficam nulos até a narrativa existir.
+const INSPECT = [
+  { id: 'porta',    scene: 'street',   rect: [444, 169, 52, 66], zoom: 1, title: 'Porta da padaria',     text: null },
+];
+function inspectableAt(sc, x, y) {
+  for (const o of INSPECT) { const [a, b, w, h] = o.rect; if (o.scene === sc && x >= a && x < a + w && y >= b && y < b + h) return o; }
+  return null;
+}
+function focusOn(id) {                              // leva a câmera a um objeto (nível de zoom sugerido por ele)
+  const o = INSPECT.find(i => i.id === id); if (!o || o.scene !== S.scene) return false;
+  S.zl = o.zoom != null ? o.zoom : 2; S.free = true;
+  S.vx = o.rect[0] + o.rect[2] / 2; S.vy = o.rect[1] + o.rect[3] / 2; syncUI(); return true;
+}
+window.BALCAO = { S, INSPECT, get INTERACT() { return INTERACT; }, focusOn, setZoom, resetCamera, onInspect: null, onState: null, onUse: null, objects: ObjectSys };
+
+const keys = {};
+addEventListener('keydown', e => {
+  const k = e.key.toLowerCase();
+  if (['arrowleft','arrowright','arrowup','arrowdown',' ','a','d','w','s','e','enter','t','r','c','i','+','=','-','_','0'].includes(k)) e.preventDefault();
+  keys[k] = true;
+  if (k === 't') toggleKind(); if (k === 'r') toggle('ruler'); if (k === 'c') toggle('coll'); if (k === 'i') toggle('insp');
+  if (k === '+' || k === '=') setZoom(S.zl + 1); if (k === '-' || k === '_') setZoom(S.zl - 1); if (k === '0') resetCamera();
+  if ((k === 'e' || k === 'enter' || k === ' ') && S.scene === 'street' && nearDoor()) { S.p.face = 'up'; beginEnter(); }
+  else if ((k === 'e' || k === 'enter' || k === ' ') && S.scene === 'interior' && !S.p.act) { const o = nearestInteract(); if (o) startInteract(o); }
+});
+addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
+
+const bT = document.getElementById('bT'), bR = document.getElementById('bR'), bC = document.getElementById('bC'), bI = document.getElementById('bI');
+function toggleKind() { S.gauge = !S.gauge; syncUI(); }
+function toggle(n) { S[n] = !S[n]; syncUI(); }
+function syncUI() {
+  bT.setAttribute('aria-pressed', !!S.gauge);
+  bR.setAttribute('aria-pressed', S.ruler); bC.setAttribute('aria-pressed', S.coll); bI.setAttribute('aria-pressed', !!S.insp);
+  document.getElementById('zlabel').textContent = ZN[S.zl] + ' (' + ZL[S.zl] + '×)' + (S.free ? ' · câmera solta' : '');
+  document.getElementById('scene').textContent = S.scene === 'street' ? 'Rua' : 'Padaria — interior';
+  document.getElementById('cam').textContent = S.scene === 'street'
+    ? 'câmera lateral ortográfica (side-view): fachadas frontais, andar só na horizontal'
+    : 'câmera 3/4 oblíqua: frente + topo visíveis, andar em profundidade';
+}
+bT.onclick = toggleKind; bR.onclick = () => toggle('ruler'); bC.onclick = () => toggle('coll'); bI.onclick = () => toggle('insp');
+document.getElementById('bZm').onclick = () => setZoom(S.zl - 1);
+document.getElementById('bZp').onclick = () => setZoom(S.zl + 1);
+document.getElementById('bZr').onclick = resetCamera;
+
+function fit() {
+  const hud = document.getElementById('hud').offsetHeight + 26;
+  let s = Math.min(innerWidth / VW, (innerHeight - hud) / VH);
+  s = s >= 1 ? Math.floor(s) : Math.max(0.5, s);
+  cvs.style.width = VW * s + 'px'; cvs.style.height = VH * s + 'px';
+}
+addEventListener('resize', fit);
+
+function canvasXY(e) { const r = cvs.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * VW, (e.clientY - r.top) / r.height * VH]; }
+function sceneXY(cx, cy) { computeView(); return [V.left + cx / V.z, V.top + cy / V.z]; }
+function commandMove(cx, cy) {                       // clique simples: personagem vai até o ponto (coordenadas de cena)
+  if (S.fadeDir) return;
+  const p = S.p; p.stuck = 0; S.free = false; p.act = null; S.say = null; p.goal = null; p.path = [];
+  const [sx, sy] = sceneXY(cx, cy);
+  if (S.scene === 'street') {
+    if (Math.abs(sx - DOOR_X) <= 30 && sy > 140 && sy < 235) { p.tx = DOOR_X; p.enter = true; }
+    else { p.tx = Math.max(14, Math.min(WORLD_W - 14, sx)); p.enter = false; }
+  } else {
+    const o = interactAt(sx, sy);
+    if (o) { startInteract(o); return; }
+    if (sy >= YF - 4 && Math.abs(sx - EXIT_X) <= 26) goTo(EXIT_X, YF + 6);
+    else goTo(sx, Math.max(YB + 6, Math.min(YF - 6, sy)));
+  }
+}
+let drag = null;
+cvs.addEventListener('pointerdown', e => {
+  window.focus(); cvs.setPointerCapture(e.pointerId);
+  const [cx, cy] = canvasXY(e); computeView();
+  drag = { cx, cy, vx: V.left + V.w / 2, vy: V.top + V.h / 2, moved: false };
+});
+cvs.addEventListener('pointermove', e => {
+  const [cx, cy] = canvasXY(e);
+  if (drag) {
+    const dx = cx - drag.cx, dy = cy - drag.cy;
+    if (!drag.moved && Math.hypot(dx, dy) > 5) { drag.moved = true; cvs.style.cursor = 'grabbing'; }
+    if (drag.moved) { S.free = true; S.vx = drag.vx - dx / V.z; S.vy = drag.vy - dy / V.z; syncUI(); }
+  } else if (S.insp) { const [sx, sy] = sceneXY(cx, cy); const o = inspectableAt(S.scene, sx, sy); S.hover = o ? o.id : null; }
+});
+function endDrag(e) {
+  if (!drag) return; const d = drag; drag = null; cvs.style.cursor = '';
+  if (d.moved) return;
+  const [sx, sy] = sceneXY(d.cx, d.cy), o = S.insp ? inspectableAt(S.scene, sx, sy) : null;
+  if (o) { focusOn(o.id); if (window.BALCAO.onInspect) window.BALCAO.onInspect(o); return; }
+  commandMove(d.cx, d.cy);
+}
+cvs.addEventListener('pointerup', endDrag);
+cvs.addEventListener('pointercancel', () => { drag = null; cvs.style.cursor = ''; });
+cvs.addEventListener('dblclick', e => {              // alterna visão geral <-> aproximação (nível intermediário) no ponto clicado
+  const [cx, cy] = canvasXY(e); S.p.tx = null; S.p.ty = null; S.p.enter = false;
+  if (S.zl === 0) setZoom(1, cx, cy); else setZoom(0);
+});
+let wheelAt = 0;
+cvs.addEventListener('wheel', e => {
+  e.preventDefault(); const now = performance.now(); if (now - wheelAt < 130 || !e.deltaY) return; wheelAt = now;
+  const [cx, cy] = canvasXY(e); setZoom(S.zl + (e.deltaY < 0 ? 1 : -1), cx, cy);
+}, { passive: false });
+
+// ---------- colisão do interior (pés = ponto) ----------
+function blockedIn(x, y) {
+  const inGap = Math.abs(x - EXIT_X) <= 24;
+  if (x < X0 + 8 || x > X1 - 8) return true;
+  if (y < YB + 6) return true;
+  if (y > YF - 6 && !inGap) return true;
+  if (y > YF + 10) return true;
+  for (const [a, b, c, d] of ObjectSys.solids) if (x >= a && x <= c && y >= b && y <= d) return true;
+  return false;
+}
+function nearDoor() { return Math.abs(S.p.x - DOOR_X) <= 22; }
+
+function beginEnter() { startFade('interior'); }
+function startFade(next) {
+  if (S.fadeDir) return;
+  S.fadeNext = next; S.fadeDir = 1; S.p.tx = null; S.p.ty = null; S.p.enter = false;
+  if (reduce) S.fade = 1;
+}
+function swapScene() {
+  const p = S.p;
+  if (S.fadeNext === 'interior') { S.scene = 'interior'; p.x = EXIT_X; p.y = YF - 12; p.dir = 'u'; p.face = 'up'; }
+  else { S.scene = 'street'; p.x = DOOR_X; p.y = fGround(DOOR_X); p.dir = 'r'; p.face = 'right'; }
+  p.act = null; p.goal = null; p.path = []; S.say = null;
+  p.moving = false; snapCamera(); syncUI();
+}
+
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  update(dt); draw(); requestAnimationFrame(frame);
+}
+function start() {
+  fit(); syncUI(); if (Q.get('go') === '1') beginEnter();
+  if (Q.has('keys')) Q.get('keys').split(',').forEach(k => keys[k] = true);
+  if (Q.has('do')) { const o = INTERACT.find(i => i.id === Q.get('do')); if (o) startInteract(o); }
+  const n = +(Q.get('step') || 0); for (let i = 0; i < n; i++) update(0.05);   // passos simulados (testes)
+  if (Q.get('report') === '1') { const p = S.p; document.title = JSON.stringify({ x: +p.x.toFixed(1), y: +p.y.toFixed(1), face: p.face, anim: p.anim, act: p.act ? p.act.o.id : null, note: S.note ? S.note.text : null, state: ObjectSys.state, zl: S.zl }); }
+  requestAnimationFrame(frame);
+}
+
+// ---------- interações da padaria (Lia vai até o ponto, vira, interage) ----------
+// sx,sy = onde Lia para (pés); face = para onde olha; anim = interact | interact_high | talk
+const INTERACT = [{ id: 'vo', title: 'Vó Áurea', sy: 194, face: 'up', anim: 'talk', tipo: 'conversa', say: [['lia', 'Bença, vó.'], ['vo', 'Deus te abençoe, minha filha.']] }];
+function initObjects() {                           // interativos vindos do catálogo (ObjectSys) viram pontos de inspeção e de interação
+  for (const o of OBJSCENE.interativos) {
+    INTERACT.push({ id: o.id, title: o.nome, rect: o.rect, sx: o.stand[0], sy: o.stand[1], face: o.face, anim: o.anim, tipo: o.tipo, classe: o.classe, desc: o.desc, zoom: o.zoom, states: o.states });
+    INSPECT.push({ id: o.id, scene: 'interior', rect: o.rect, zoom: o.zoom, title: o.nome, text: null, classe: o.classe, tipo: o.tipo, desc: o.desc });
+  }
+  ObjectSys.on('estado', e => { if (window.BALCAO.onState) window.BALCAO.onState(e); });
+}
+function interactAt(x, y) {
+  const v = S.vo; if (Math.abs(x - v.x) < 14 && y > v.y - 50 && y < v.y + 2) return INTERACT[0];
+  for (const o of INTERACT) if (o.rect && x >= o.rect[0] && x < o.rect[0] + o.rect[2] && y >= o.rect[1] && y < o.rect[1] + o.rect[3]) return o;
+  return null;
+}
+// Caminho por grade (A*, passo de 4 px, 8 vizinhos) respeitando as colisões do catálogo; depois simplificado por linha de visão.
+function planPath(x0, y0, x1, y1) {
+  const G = 4, ox = X0, oy = YB, W = Math.ceil((X1 - X0) / G) + 1, H = Math.ceil((YF + 12 - YB) / G) + 1;
+  const free = (i, j) => i >= 0 && j >= 0 && i < W && j < H && !blockedIn(ox + i * G, oy + j * G) && !blockedIn(ox + i * G - 2, oy + j * G) && !blockedIn(ox + i * G + 2, oy + j * G);
+  const cellOf = (x, y) => [Math.max(0, Math.min(W - 1, Math.round((x - ox) / G))), Math.max(0, Math.min(H - 1, Math.round((y - oy) / G)))];
+  const near = (c) => { if (free(c[0], c[1])) return c; for (let r = 1; r < 12; r++) for (let dj = -r; dj <= r; dj++) for (let di = -r; di <= r; di++) if (Math.max(Math.abs(di), Math.abs(dj)) === r && free(c[0] + di, c[1] + dj)) return [c[0] + di, c[1] + dj]; return c; };
+  const s = near(cellOf(x0, y0)), g = near(cellOf(x1, y1)), key = (i, j) => j * W + i;
+  const gs = new Map([[key(...s), 0]]), from = new Map(), open = [[0, s[0], s[1]]], done = new Set();
+  const hf = (i, j) => Math.hypot(i - g[0], j - g[1]);
+  while (open.length) {
+    open.sort((a, b) => a[0] - b[0]); const [, i, j] = open.shift(); const k = key(i, j); if (done.has(k)) continue; done.add(k);
+    if (i === g[0] && j === g[1]) break;
+    for (let di = -1; di <= 1; di++) for (let dj = -1; dj <= 1; dj++) {
+      if (!di && !dj) continue; const ni = i + di, nj = j + dj; if (!free(ni, nj)) continue;
+      if (di && dj && (!free(i + di, j) || !free(i, j + dj))) continue;
+      const c = gs.get(k) + (di && dj ? 1.414 : 1), nk = key(ni, nj);
+      if (!gs.has(nk) || c < gs.get(nk)) { gs.set(nk, c); from.set(nk, [i, j]); open.push([c + hf(ni, nj), ni, nj]); }
+    }
+  }
+  let pts = [], cur = g;
+  if (!from.has(key(...g)) && (s[0] !== g[0] || s[1] !== g[1])) return [[x1, y1]];
+  while (cur && !(cur[0] === s[0] && cur[1] === s[1])) { pts.unshift([ox + cur[0] * G, oy + cur[1] * G]); cur = from.get(key(...cur)); }
+  const los = (a, b) => { const n = Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / 2); for (let t = 1; t < n; t++) { const x = a[0] + (b[0] - a[0]) * t / n, y = a[1] + (b[1] - a[1]) * t / n; if (blockedIn(x, y) || blockedIn(x - 2, y) || blockedIn(x + 2, y)) return false; } return true; };
+  const out = []; let from0 = [x0, y0], i = 0; pts.push([x1, y1]);
+  while (i < pts.length) { let j = pts.length - 1; while (j > i && !los(from0, pts[j])) j--; out.push(pts[j]); from0 = pts[j]; i = j + 1; }
+  return out;
+}
+function goTo(x, y, goal) {
+  const p = S.p; p.act = null; S.say = null; p.goal = goal || null;
+  const path = S.scene === 'interior' ? planPath(p.x, p.y, x, y) : [[x, y]];
+  p.path = path; const f = p.path.shift(); p.tx = f[0]; p.ty = f[1];
+}
+function startInteract(o) {
+  const p = S.p, vx = S.vo.x;
+  const sx = o.id === 'vo' ? Math.max(112, Math.min(236, vx)) : o.sx;
+  goTo(sx, o.sy, o);
+}
+function beginAct(o) {
+  const p = S.p; const changed = p.face !== o.face; p.face = o.face;
+  const dur = o.id === 'vo' ? 3.6 : 1.5;
+  p.act = { anim: o.anim, t: 0, dur, turn: changed ? 0.17 : 0, o, fx: false };
+  S.say = null;
+  if (o.id === 'vo') { S.say = o.say.map((s, i) => ({ who: s[0], text: s[1], a: 0.2 + i * 1.7, b: 1.8 + i * 1.7 })); S.vo.state = 'talk'; S.vo.timer = 3.4; }
+}
+// efeito da interação, no meio do gesto (examinar / alternar / usar / função)
+function applyFx(o) {
+  const tipo = o.tipo || 'usar'; let m = o.title;
+  if (tipo === 'alternar') { const n = ObjectSys.toggle(o.id); m = o.title + ': ' + (o.states ? o.states[n] : n); }
+  else if (tipo === 'examinar') { S.prevZl = S.zl; if (focusOn(o.id)) S.restoreZoom = true; m = o.title + ' — ' + o.desc; }
+  else if (tipo === 'funcao') { m = o.title + ' (funcional) — ' + o.desc; if (window.BALCAO.onUse) window.BALCAO.onUse(o); }
+  else if (tipo === 'usar') { m = o.title + ' — ' + o.desc; if (window.BALCAO.onUse) window.BALCAO.onUse(o); }
+  S.note = { text: m, ttl: 4 };
+}
+function setAnim(o, anim) { if (o.anim !== anim) { o.anim = anim; o.at = 0; } }
+
+function updateVo(dt) {
+  const v = S.vo, L = S.p; v.at = (v.at || 0) + dt;
+  const spd = CharLib.speedPx('aurea');
+  const near = L.y > 172 && L.y < 220 && L.x > 96 && L.x < 250;
+  if (S.scene !== 'interior') { v.greeted = false; return; }
+  if (v.state === 'talk') {
+    setAnim(v, 'serve_give'); v.face = 'down'; v.timer -= dt; if (v.timer <= 0) { v.state = 'work'; v.timer = 1.5; }
+    if (S.p.act && S.p.act.o.id === 'vo') v.timer = Math.max(v.timer, 0.3);
+    return;
+  }
+  if (!v.greeted && Math.hypot(L.x - 196, L.y - 190) < 75) { v.greeted = true; v.state = 'greet'; v.timer = 0.9; v.face = 'down'; setAnim(v, 'serve_greet'); }
+  if (v.state === 'greet') { v.timer -= dt; if (v.timer <= 0) { v.state = 'work'; v.timer = 1.2; setAnim(v, 'serve_idle'); } return; }
+  if (v.state === 'walk') {
+    const dx = v.tx - v.x;
+    if (Math.abs(dx) < 1) { v.x = v.tx; v.state = 'work'; v.timer = 1.0; v.face = 'down'; setAnim(v, 'serve_idle'); return; }
+    v.x += Math.sign(dx) * Math.min(Math.abs(dx), spd * dt); v.face = dx < 0 ? 'left' : 'right'; setAnim(v, 'walk'); return;
+  }
+  // trabalho: ela acompanha a cliente ao longo do balcão e segue com suas tarefas
+  if (near) { const want = Math.max(124, Math.min(236, L.x)); if (Math.abs(want - v.x) > 18 && v.state !== 'walk') { v.state = 'walk'; v.tx = want; return; } }
+  if (v.state === 'cook') {
+    const dx = v.tx - v.x;
+    if (Math.abs(dx) > 1) { v.x += Math.sign(dx) * Math.min(Math.abs(dx), spd * dt); v.face = dx < 0 ? 'left' : 'right'; setAnim(v, 'walk'); return; }
+    v.x = v.tx; v.face = 'up'; setAnim(v, 'idle'); v.timer -= dt;
+    if (!v.fx && v.timer < 1.2) { v.fx = true; ObjectSys.toggle('fogao_1'); }
+    if (v.timer <= 0) { v.state = 'work'; v.timer = 1; v.face = 'down'; setAnim(v, 'serve_idle'); }
+    return;
+  }
+  v.cookT = (v.cookT === undefined ? 12 : v.cookT) - dt;
+  if (v.cookT <= 0 && !near) { v.cookT = ObjectSys.state['fogao_1'] ? 22 : 16; v.state = 'cook'; v.tx = 231; v.timer = 2.2; v.fx = false; return; }
+  v.timer -= dt;
+  if (v.timer <= 0) {
+    const r = Math.random(), next = r < 0.38 ? 'serve_wrap' : r < 0.72 ? 'serve_write' : 'serve_idle';
+    setAnim(v, next); v.timer = next === 'serve_idle' ? 2.2 + Math.random() * 2 : 2.4 + Math.random() * 1.6;
+    if (next === 'serve_idle' && !near && Math.random() < 0.35) { v.state = 'walk'; v.tx = 126 + Math.random() * 110; }
+  }
+  v.face = 'down'; if (!v.anim.startsWith('serve')) setAnim(v, 'serve_idle');
+}
+
+function update(dt) {
+  const p = S.p;
+  if (S.fadeDir === 1) { S.fade = Math.min(1, S.fade + dt / (reduce ? 0.01 : 0.22)); if (S.fade >= 1) { swapScene(); S.fadeDir = -1; } }
+  else if (S.fadeDir === -1) { S.fade = Math.max(0, S.fade - dt / (reduce ? 0.01 : 0.22)); if (S.fade <= 0) S.fadeDir = 0; }
+  if (S.fadeDir) { p.moving = false; p.at += dt; updateVo(dt); return; }
+
+  let ix = 0, iy = 0;
+  if (keys['arrowleft'] || keys['a']) ix -= 1;
+  if (keys['arrowright'] || keys['d']) ix += 1;
+  if (keys['arrowup'] || keys['w']) iy -= 1;
+  if (keys['arrowdown'] || keys['s']) iy += 1;
+  if (ix || iy) { p.tx = null; p.ty = null; p.path = []; p.goal = null; p.enter = false; p.act = null; S.say = null; S.free = false; }
+  else if (p.act) { ix = iy = 0; }
+  else if (p.tx != null) {
+    const dx = p.tx - p.x, dy = p.ty != null ? p.ty - p.y : 0;
+    if (Math.abs(dx) < 1.2 && Math.abs(dy) < 1.2) {
+      p.tx = null; p.ty = null;
+      if (p.path && p.path.length) { const f = p.path.shift(); p.tx = f[0]; p.ty = f[1]; }
+      else if (S.scene === 'street' && p.enter) { p.face = 'up'; beginEnter(); }
+      else if (p.goal) { const g = p.goal; p.goal = null; beginAct(g); }
+    } else { ix = Math.abs(dx) < 1.2 ? 0 : Math.sign(dx); iy = Math.abs(dy) < 1.2 ? 0 : Math.sign(dy); }
+  }
+  const SPD = CharLib.speedPx('lia');             // px/s horizontal (1,43 m/s): casa com a passada para o pé não patinar
+  p.moving = false;
+  if (S.scene === 'street') {
+    if (ix) { p.x = Math.max(14, Math.min(WORLD_W - 14, p.x + ix * SPD * dt)); p.dir = ix < 0 ? 'l' : 'r'; p.face = ix < 0 ? 'left' : 'right'; p.moving = true; }
+    if (iy < 0 && nearDoor() && p.tx == null) { p.face = 'up'; beginEnter(); }
+    p.y = fGround(p.x);
+  } else {
+    const vy = SPD * 16 / 24;                       // mesma velocidade real: profundidade vale 16 px/m
+    const L = ix && iy ? 0.7071 : 1;
+    const nx = p.x + ix * SPD * L * dt, ny = p.y + iy * vy * L * dt;
+    const ox = p.x, oy = p.y;
+    if (!blockedIn(nx, p.y)) p.x = nx;
+    if (!blockedIn(p.x, ny)) p.y = ny;
+    if (ix || iy) {
+      p.moving = Math.abs(p.x - ox) + Math.abs(p.y - oy) > 0.01;
+      p.face = CharLib.dir8(ix, iy); p.dir = ix ? (ix < 0 ? 'l' : 'r') : (iy < 0 ? 'u' : 'd');
+      if (!p.moving && p.tx != null) { p.stuck++; if (p.stuck > 8) { p.tx = null; p.ty = null; p.path = []; p.goal = null; p.stuck = 0; } }
+    }
+    if (p.y > YF - 1 && Math.abs(p.x - EXIT_X) <= 24) startFade('street');
+  }
+  // animação de Lia
+  let anim = p.moving ? 'walk' : 'idle';
+  if (p.act) {
+    p.act.t += dt; const a = p.act;
+    anim = a.t < a.turn ? 'turn' : a.anim;
+    if (!a.fx && a.t >= a.turn + 0.45 && a.o.id !== 'vo') { a.fx = true; applyFx(a.o); }
+    if (a.t >= a.dur + a.turn) { p.act = null; S.say = null; anim = 'idle'; if (S.restoreZoom) { S.restoreZoom = false; S.zl = S.prevZl || 0; S.free = false; syncUI(); } }
+  }
+  setAnim(p, anim); p.at += dt;
+  if (p.act) p.at = Math.max(0, p.act.t - p.act.turn) + (p.act.t < p.act.turn ? p.act.t : 0);
+  updateVo(dt); ObjectSys.tick(dt);
+  if (S.note) { S.note.ttl -= dt; if (S.note.ttl <= 0) S.note = null; }
+  updateCamera(dt);
+  S.msg = '';
+  if (S.scene === 'street' && nearDoor()) S.msg = 'E / ↑ / toque na porta: entrar na padaria';
+  if (S.scene === 'interior' && p.y > YF - 30 && Math.abs(p.x - EXIT_X) <= 30) S.msg = 'Desça pela soleira para sair para a rua';
+  if (S.scene === 'interior' && !S.msg) { const o = nearestInteract(); if (o) S.msg = 'E: ' + (o.id === 'vo' ? 'falar com a Vó Áurea' : (o.tipo === 'examinar' ? 'examinar' : o.tipo === 'alternar' ? 'abrir/fechar/ligar' : 'usar') + ' — ' + o.title); }
+  if (S.note) S.msg = S.note.text;
+  document.getElementById('msg').textContent = S.msg;
+}
+function nearestInteract() {
+  if (S.scene !== 'interior' || S.fadeDir) return null;
+  let best = null, bd = 30;
+  for (const o of INTERACT) { const sx = o.id === 'vo' ? Math.max(112, Math.min(236, S.vo.x)) : o.sx; const d = Math.hypot(S.p.x - sx, (S.p.y - o.sy) * 1.5); if (d < bd) { bd = d; best = o; } }
+  return best;
+}
+
+// ---------- desenho ----------
+function sprite(kind, x, y, dir, moving, t, alpha) {
+  const img = IMG['mannequin_' + kind];
+  const view = dir === 'u' ? 2 : dir === 'd' ? 1 : 0;
+  const ph = moving ? Math.floor(t * 8) % 4 : 0;
+  const px = Math.round(x), py = Math.round(y);
+  ctx.fillStyle = 'rgba(18,10,28,0.34)';
+  ctx.fillRect(px - 5, py - 1, 10, 1); ctx.fillRect(px - 6, py, 12, 1); ctx.fillRect(px - 4, py + 1, 8, 1);
+  ctx.save();
+  if (alpha != null) ctx.globalAlpha = alpha;
+  if (dir === 'l') { ctx.translate(px + 8, 0); ctx.scale(-1, 1); ctx.drawImage(img, ph * FW, view * FH, FW, FH, 0, py - (FH - 1), FW, FH); }
+  else ctx.drawImage(img, ph * FW, view * FH, FW, FH, px - 8, py - (FH - 1), FW, FH);
+  ctx.restore();
+}
+function drawLia(x, y, persp, alpha) {
+  const p = S.p;
+  CharLib.draw(ctx, { who: 'lia', persp, x, y, anim: p.anim, dir: p.face, t: p.at }, { alpha });
+}
+function drawVo() {
+  const v = S.vo; CharLib.draw(ctx, { who: 'aurea', persp: 'tq', x: v.x, y: v.y, anim: v.anim, dir: v.face, t: v.at || 0 });
+}
+// balão de fala sobre a cabeça (coordenadas de tela nativa)
+function drawBubble(text, x, y) {
+  ctx.save(); ctx.font = '8px monospace'; ctx.textBaseline = 'middle';
+  const w = Math.ceil(ctx.measureText(text).width) + 8, h = 12; let bx = Math.round(x - w / 2); bx = Math.max(2, Math.min(VW - w - 2, bx)); const by = Math.round(y - h);
+  ctx.fillStyle = '#2a1b14'; ctx.fillRect(bx - 1, by - 1, w + 2, h + 2);
+  ctx.fillStyle = '#f6ead2'; ctx.fillRect(bx, by, w, h);
+  ctx.fillStyle = '#2a1b14'; ctx.fillRect(Math.round(x) - 1, by + h + 1, 3, 1); ctx.fillRect(Math.round(x), by + h + 2, 1, 1);
+  ctx.fillText(text, bx + 4, by + h / 2 + 0.5); ctx.restore();
+}
+
+function drawStreet() {
+  const cam = Math.round(S.cam);
+  ctx.drawImage(IMG.street_far, Math.floor(cam * 0.35), 0, VW, VH, 0, 0, VW, VH);
+  ctx.drawImage(IMG.street_world, cam, 0, VW, VH, 0, 0, VW, VH);
+  // referência de escala parada: o outro porte, ao lado da porta
+  if (S.gauge) { sprite('adult', 528, fGround(528), 'l', false, 0); sprite('lia', 556, fGround(556), 'l', false, 0); }
+  drawLia(S.p.x - cam, S.p.y, 'side');
+  if (S.ruler) {
+    ctx.save(); ctx.font = '8px monospace'; ctx.textBaseline = 'middle';
+    const px = Math.round(S.p.x - cam), py = Math.round(S.p.y);
+    for (let wx = Math.ceil(cam / 24) * 24; wx < cam + VW; wx += 24) {
+      const gy = fGround(wx), x = wx - cam;
+      ctx.fillStyle = wx % 120 === 0 ? 'rgba(255,255,255,.9)' : 'rgba(255,255,255,.45)';
+      ctx.fillRect(x, gy - 1, 1, wx % 120 === 0 ? 7 : 4);
+    }
+    for (let m = 0; m <= 4; m++) {
+      const y = py - m * 24;
+      ctx.fillStyle = 'rgba(255,230,120,.95)'; ctx.fillRect(px + 14, y, 10, 1);
+      if (m) { ctx.fillStyle = 'rgba(0,0,0,.65)'; ctx.fillRect(px + 25, y - 5, 17, 9); ctx.fillStyle = '#ffe678'; ctx.fillText(m + ' m', px + 27, y); }
+    }
+    ctx.fillStyle = 'rgba(255,230,120,.5)'; ctx.fillRect(px + 14, py - 96, 1, 96);
+    ctx.restore();
+  }
+  if (S.coll) {
+    ctx.fillStyle = 'rgba(255,60,60,.35)';
+    ctx.fillRect(DOOR_X - 22 - cam, 150, 44, 85);
+  }
+}
+
+const VOCUT = 16;
+function drawInterior() {
+  ctx.drawImage(IMG.bakery_interior_base, 0, 0);
+  ObjectSys.drawWall(ctx);
+  const ents = ObjectSys.entities(ctx);
+  if (S.gauge) { ents.push({ y: 162, draw: () => sprite('adult', 150, 162, 'd', false, 0) }); ents.push({ y: 224, draw: () => sprite('lia', 160, 224, 'd', false, 0) }); }
+  ents.push({ y: S.vo.y + 0.5, draw: drawVo });
+  ents.push({ y: S.p.y + 0.5, draw: () => drawLia(S.p.x, S.p.y, 'tq') });
+  ents.sort((a, b) => a.y - b.y).forEach(e => e.draw());
+  // mãos e tronco da Vó acima do tampo do balcão: reaparecem por cima dele (o resto fica escondido atrás)
+  if (S.vo.anim.startsWith('serve')) { const v = S.vo; CharLib.draw(ctx, { who: 'aurea', persp: 'tq', x: v.x, y: v.y, anim: v.anim, dir: v.face, t: v.at || 0 }, { shadow: false, clipBelowY: v.y - VOCUT }); }
+  if (S.say) { const tl = S.p.act ? S.p.act.t - S.p.act.turn : 0; for (const s of S.say) if (tl >= s.a && tl < s.b) { if (s.who === 'lia') drawBubble(s.text, S.p.x, S.p.y - 44); else drawBubble(s.text, S.vo.x, S.vo.y - 54); } }
+  if (S.ruler) {
+    ctx.save(); ctx.font = '8px monospace'; ctx.textBaseline = 'middle';
+    ctx.strokeStyle = 'rgba(255,255,255,.22)'; ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let m = 0; m <= 14; m++) { const x = X0 + m * 24 + .5; ctx.moveTo(x, YB); ctx.lineTo(x, YF); }
+    for (let m = 0; m <= 7; m++) { const y = YB + m * 16 + .5; ctx.moveTo(X0, y); ctx.lineTo(X1, y); }
+    ctx.stroke();
+    for (let m = 0; m <= 4; m++) {
+      const y = YB - m * 24;
+      ctx.fillStyle = 'rgba(255,230,120,.95)'; ctx.fillRect(X0 + 2, y, 12, 1);
+      if (m) { ctx.fillStyle = 'rgba(0,0,0,.65)'; ctx.fillRect(X0 + 15, y - 5, 17, 9); ctx.fillStyle = '#ffe678'; ctx.fillText(m + ' m', X0 + 17, y); }
+    }
+    for (let m = 1; m <= 6; m++) { ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(X1 + 3, YB + m * 16 - 4, 14, 8); ctx.fillStyle = '#9fe0c8'; ctx.fillText(m + 'm', X1 + 5, YB + m * 16); }
+    ctx.restore();
+  }
+  if (S.coll) {
+    ctx.fillStyle = 'rgba(255,60,60,.32)';
+    for (const [a, b, c, d] of ObjectSys.solids) ctx.fillRect(a, b, c - a, d - b);
+    ctx.strokeStyle = 'rgba(255,230,90,.9)'; ctx.fillStyle = 'rgba(80,220,255,.95)';
+    for (const o of OBJSCENE.interativos) { ctx.strokeRect(o.rect[0] + .5, o.rect[1] + .5, o.rect[2] - 1, o.rect[3] - 1); ctx.fillRect(o.stand[0] - 1, o.stand[1] - 1, 3, 3); }
+    ctx.fillStyle = 'rgba(120,255,120,.95)'; for (const i of OBJSCENE.instancias) ctx.fillRect(Math.round(i.sx) , Math.round(i.base) - 1, 1, 1);
+    ctx.fillStyle = 'rgba(80,255,120,.28)'; ctx.fillRect(EXIT_X - 24, YF - 6, 48, 16);
+  }
+}
+
+function drawInspectDebug() {
+  if (!S.insp) return;
+  ctx.save(); ctx.font = '8px monospace'; ctx.textBaseline = 'top';
+  const camX = S.scene === 'street' ? V.cam : 0;
+  for (const o of INSPECT) {
+    if (o.scene !== S.scene) continue;
+    const [a, b, w, h] = o.rect, hot = S.hover === o.id;
+    ctx.strokeStyle = hot ? '#ffe678' : 'rgba(120,220,255,.8)'; ctx.lineWidth = 1;
+    ctx.strokeRect(a - camX + .5, b + .5, w - 1, h - 1);
+    if (hot) { ctx.fillStyle = 'rgba(0,0,0,.75)'; ctx.fillRect(a - camX, b - 10, o.title.length * 5 + 4, 9); ctx.fillStyle = '#ffe678'; ctx.fillText(o.title, a - camX + 2, b - 9); }
+  }
+  ctx.restore();
+}
+function draw() {
+  computeView();
+  ctx.fillStyle = '#140f12'; ctx.fillRect(0, 0, VW, VH);
+  if (S.scene === 'street') drawStreet(); else drawInterior();
+  drawInspectDebug();
+  vctx.fillStyle = '#140f12'; vctx.fillRect(0, 0, VW, VH);
+  vctx.drawImage(off, V.sx, V.sy, V.w, V.h, 0, 0, VW, VH);                 // ampliação inteira, vizinho mais próximo
+  if (S.fade > 0) { vctx.fillStyle = 'rgba(12,8,10,' + S.fade + ')'; vctx.fillRect(0, 0, VW, VH); }
+}
+</script>
+</body>
+</html>

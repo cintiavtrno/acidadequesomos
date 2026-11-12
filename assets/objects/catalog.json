@@ -1,0 +1,1477 @@
+{
+ "unidade": "1 m = 24 px (altura); piso 16 px/m (profundidade); âncora = ponto de apoio no chão",
+ "camera": "3/4 oblíqua",
+ "classes": [
+  "DECORATIVO",
+  "EXAMINAVEL",
+  "UTILIZAVEL",
+  "FUNCIONAL"
+ ],
+ "interacoes": [
+  "nenhum",
+  "examinar",
+  "usar",
+  "alternar",
+  "funcao"
+ ],
+ "camadas": [
+  "wall",
+  "floor",
+  "on",
+  "front"
+ ],
+ "assets": [
+  {
+   "id": "balcao",
+   "nome": "Balcão e vitrine",
+   "categoria": "mobiliario",
+   "classe": "FUNCIONAL",
+   "interacao": "funcao",
+   "size_m": [
+    7.7,
+    0.8,
+    1.0
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 1,
+   "desc": "Balcão de atendimento com vitrine, caixa e caderneta.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "balcao",
+   "folha": "objects/mobiliario.png",
+   "rect": [
+    2,
+    2,
+    183,
+    62
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    183,
+    62
+   ],
+   "ancora": null,
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "mesa_redonda",
+   "nome": "Mesa redonda",
+   "categoria": "mobiliario",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    1.0,
+    1.0,
+    0.75
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "Mesa redonda de madeira para dois a quatro lugares.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "mesa_redonda",
+   "folha": "objects/mobiliario.png",
+   "rect": [
+    187,
+    2,
+    24,
+    26
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    24,
+    26
+   ],
+   "ancora": null,
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "mesa_toalha",
+   "nome": "Mesa com toalha xadrez",
+   "categoria": "mobiliario",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    1.0,
+    1.0,
+    0.75
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "Mesa redonda com toalha xadrez vermelha.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "mesa_toalha",
+   "folha": "objects/mobiliario.png",
+   "rect": [
+    213,
+    2,
+    24,
+    26
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    24,
+    26
+   ],
+   "ancora": null,
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "cadeira_frente",
+   "nome": "Cadeira (de frente)",
+   "categoria": "mobiliario",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    0.42,
+    0.42,
+    0.95
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "cadeira_frente",
+   "folha": "objects/mobiliario.png",
+   "rect": [
+    239,
+    2,
+    12,
+    30
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    12,
+    30
+   ],
+   "ancora": null,
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "cadeira_frente_b",
+   "nome": "Cadeira (de frente, mesa 2)",
+   "categoria": "mobiliario",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    0.42,
+    0.42,
+    0.95
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "cadeira_frente_b",
+   "folha": "objects/mobiliario.png",
+   "rect": [
+    253,
+    2,
+    12,
+    30
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    12,
+    30
+   ],
+   "ancora": null,
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "cadeira_perfil_e_b",
+   "nome": "Cadeira (perfil esquerdo, mesa 2)",
+   "categoria": "mobiliario",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    0.42,
+    0.42,
+    0.95
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "cadeira_perfil_e_b",
+   "folha": "objects/mobiliario.png",
+   "rect": [
+    267,
+    2,
+    12,
+    30
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    12,
+    30
+   ],
+   "ancora": null,
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "cadeira_costas",
+   "nome": "Cadeira (de costas)",
+   "categoria": "mobiliario",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    0.42,
+    0.42,
+    0.95
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "cadeira_costas",
+   "folha": "objects/mobiliario.png",
+   "rect": [
+    281,
+    2,
+    12,
+    25
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    12,
+    25
+   ],
+   "ancora": null,
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "cadeira_perfil_e",
+   "nome": "Cadeira (perfil esquerdo)",
+   "categoria": "mobiliario",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    0.42,
+    0.42,
+    0.95
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "cadeira_perfil_e",
+   "folha": "objects/mobiliario.png",
+   "rect": [
+    295,
+    2,
+    12,
+    30
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    12,
+    30
+   ],
+   "ancora": null,
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "cadeira_perfil_d",
+   "nome": "Cadeira (perfil direito)",
+   "categoria": "mobiliario",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    0.42,
+    0.42,
+    0.95
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "cadeira_perfil_d",
+   "folha": "objects/mobiliario.png",
+   "rect": [
+    309,
+    2,
+    13,
+    30
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    13,
+    30
+   ],
+   "ancora": null,
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "aparador",
+   "nome": "Aparador do filtro",
+   "categoria": "mobiliario",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "size_m": [
+    1.1,
+    0.9,
+    1.2
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "Aparador de madeira que apoia o filtro de barro.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "aparador",
+   "folha": "objects/mobiliario.png",
+   "rect": [
+    324,
+    2,
+    29,
+    63
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    29,
+    63
+   ],
+   "ancora": null,
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "banco_madeira",
+   "nome": "Banco de madeira com encosto",
+   "categoria": "mobiliario",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    1.5,
+    0.4,
+    1.2
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "Banco comprido de madeira, encostado na parede.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "banco_madeira",
+   "folha": "objects/mobiliario.png",
+   "rect": [
+    355,
+    2,
+    38,
+    30
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    38,
+    30
+   ],
+   "ancora": [
+    19,
+    29
+   ],
+   "collide": [
+    -18,
+    -6,
+    18,
+    0
+   ],
+   "stand": [
+    0,
+    9
+   ]
+  },
+  {
+   "id": "prateleira_louca",
+   "nome": "Prateleira de louças",
+   "categoria": "mobiliario",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    1.4,
+    0.2,
+    0.35
+   ],
+   "layer": "wall",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "Prateleira de parede com pratos, canecas e utensílios.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "prateleira_louca",
+   "folha": "objects/mobiliario.png",
+   "rect": [
+    395,
+    2,
+    34,
+    18
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    34,
+    18
+   ],
+   "ancora": [
+    17,
+    12
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "filtro_barro",
+   "nome": "Filtro de barro",
+   "categoria": "equipamentos",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    0.45,
+    0.45,
+    1.0
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "Filtro de barro sobre suporte de madeira.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "filtro_barro",
+   "folha": "objects/equipamentos.png",
+   "rect": [
+    2,
+    2,
+    17,
+    62
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    17,
+    62
+   ],
+   "ancora": null,
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "fogao",
+   "nome": "Fogão de 4 bocas",
+   "categoria": "equipamentos",
+   "classe": "FUNCIONAL",
+   "interacao": "alternar",
+   "size_m": [
+    0.8,
+    0.6,
+    1.2
+   ],
+   "layer": "floor",
+   "states": [
+    "desligado",
+    "ligado"
+   ],
+   "supports": [
+    {
+     "nome": "boca_esq",
+     "dx": -5,
+     "dy": -28
+    },
+    {
+     "nome": "boca_dir",
+     "dx": 5,
+     "dy": -28
+    }
+   ],
+   "zoom": 2,
+   "desc": "Fogão a gás de quatro bocas, com forno. (Reservado: casa do seu Raimundo.)",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "fogao",
+   "folha": "objects/equipamentos.png",
+   "rect": [
+    21,
+    2,
+    24,
+    36
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    24,
+    36
+   ],
+   "ancora": [
+    12,
+    35
+   ],
+   "collide": [
+    -10,
+    -9,
+    10,
+    0
+   ],
+   "stand": [
+    0,
+    8
+   ]
+  },
+  {
+   "id": "panela",
+   "nome": "Panela de alumínio",
+   "categoria": "equipamentos",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0.28,
+    0.28,
+    0.2
+   ],
+   "layer": "on",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "Panela média de alumínio.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "panela",
+   "folha": "objects/equipamentos.png",
+   "rect": [
+    47,
+    2,
+    17,
+    9
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    17,
+    9
+   ],
+   "ancora": [
+    8,
+    9
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "cafeteira",
+   "nome": "Cafeteira esmaltada",
+   "categoria": "equipamentos",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0.2,
+    0.2,
+    0.3
+   ],
+   "layer": "on",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "cafeteira",
+   "folha": "objects/equipamentos.png",
+   "rect": [
+    66,
+    2,
+    10,
+    11
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    10,
+    11
+   ],
+   "ancora": [
+    5,
+    10
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "bandeja_paes",
+   "nome": "Bandeja de pães",
+   "categoria": "equipamentos",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "size_m": [
+    0.5,
+    0.35,
+    0.12
+   ],
+   "layer": "on",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "Bandeja metálica com pães do dia.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "bandeja_paes",
+   "folha": "objects/equipamentos.png",
+   "rect": [
+    78,
+    2,
+    18,
+    8
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    18,
+    8
+   ],
+   "ancora": [
+    9,
+    7
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "chama_fogao",
+   "nome": "Chama do fogão",
+   "categoria": "equipamentos",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0,
+    0,
+    0
+   ],
+   "layer": "on",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 2,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "chama_fogao#0",
+   "folha": "objects/equipamentos.png",
+   "rect": [
+    98,
+    2,
+    7,
+    3
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    7,
+    3
+   ],
+   "ancora": [
+    3,
+    1
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "chama_fogao",
+   "nome": "Chama do fogão",
+   "categoria": "equipamentos",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0,
+    0,
+    0
+   ],
+   "layer": "on",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 2,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "chama_fogao#1",
+   "folha": "objects/equipamentos.png",
+   "rect": [
+    107,
+    2,
+    7,
+    3
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    7,
+    3
+   ],
+   "ancora": [
+    3,
+    1
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "vapor_panela",
+   "nome": "Vapor da panela",
+   "categoria": "equipamentos",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0,
+    0,
+    0
+   ],
+   "layer": "on",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 2,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "vapor_panela#0",
+   "folha": "objects/equipamentos.png",
+   "rect": [
+    116,
+    2,
+    3,
+    8
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    3,
+    8
+   ],
+   "ancora": [
+    0,
+    7
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "vapor_panela",
+   "nome": "Vapor da panela",
+   "categoria": "equipamentos",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0,
+    0,
+    0
+   ],
+   "layer": "on",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 2,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "vapor_panela#1",
+   "folha": "objects/equipamentos.png",
+   "rect": [
+    121,
+    2,
+    3,
+    8
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    3,
+    8
+   ],
+   "ancora": [
+    1,
+    8
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "quadro_bonfim",
+   "nome": "Quadro do Bonfim",
+   "categoria": "decorativos",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "size_m": [
+    0.8,
+    0.05,
+    0.6
+   ],
+   "layer": "wall",
+   "states": null,
+   "supports": null,
+   "zoom": 3,
+   "desc": "Quadro com a colina da igreja e fitinhas coloridas.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "quadro_bonfim",
+   "folha": "objects/decorativos.png",
+   "rect": [
+    2,
+    2,
+    20,
+    15
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    20,
+    15
+   ],
+   "ancora": [
+    10,
+    15
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "fotografias",
+   "nome": "Fotografias emolduradas",
+   "categoria": "decorativos",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "size_m": [
+    1.0,
+    0.05,
+    0.5
+   ],
+   "layer": "wall",
+   "states": null,
+   "supports": null,
+   "zoom": 3,
+   "desc": "Três retratos antigos em molduras pequenas.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "fotografias",
+   "folha": "objects/decorativos.png",
+   "rect": [
+    24,
+    2,
+    23,
+    12
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    23,
+    12
+   ],
+   "ancora": [
+    12,
+    14
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "planta_vaso",
+   "nome": "Vaso de folhagem",
+   "categoria": "decorativos",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0.8,
+    0.4,
+    1.2
+   ],
+   "layer": "floor",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "Folhagem em vaso de barro.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "planta_vaso",
+   "folha": "objects/decorativos.png",
+   "rect": [
+    49,
+    2,
+    47,
+    33
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    47,
+    33
+   ],
+   "ancora": [
+    24,
+    32
+   ],
+   "collide": [
+    -6,
+    -4,
+    6,
+    0
+   ],
+   "stand": null
+  },
+  {
+   "id": "vela_altar",
+   "nome": "Vela do nicho acesa",
+   "categoria": "decorativos",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0,
+    0,
+    0
+   ],
+   "layer": "wall",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 2,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "vela_altar#0",
+   "folha": "objects/decorativos.png",
+   "rect": [
+    98,
+    2,
+    3,
+    2
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    3,
+    2
+   ],
+   "ancora": [
+    1,
+    1
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "vela_altar",
+   "nome": "Vela do nicho acesa",
+   "categoria": "decorativos",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0,
+    0,
+    0
+   ],
+   "layer": "wall",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 2,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "vela_altar#1",
+   "folha": "objects/decorativos.png",
+   "rect": [
+    103,
+    2,
+    3,
+    3
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    3,
+    3
+   ],
+   "ancora": [
+    1,
+    2
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "brasa_forno",
+   "nome": "Brasa do forno",
+   "categoria": "decorativos",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0,
+    0,
+    0
+   ],
+   "layer": "wall",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 2,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "brasa_forno#0",
+   "folha": "objects/decorativos.png",
+   "rect": [
+    108,
+    2,
+    28,
+    7
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    28,
+    7
+   ],
+   "ancora": [
+    14,
+    6
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "brasa_forno",
+   "nome": "Brasa do forno",
+   "categoria": "decorativos",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "size_m": [
+    0,
+    0,
+    0
+   ],
+   "layer": "wall",
+   "states": null,
+   "supports": null,
+   "zoom": 2,
+   "desc": "",
+   "frames": 2,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "brasa_forno#1",
+   "folha": "objects/decorativos.png",
+   "rect": [
+    138,
+    2,
+    28,
+    7
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    28,
+    7
+   ],
+   "ancora": [
+    14,
+    6
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "gaveta_balcao_aberta",
+   "nome": "Gaveta do balcão (aberta)",
+   "categoria": "interativos",
+   "classe": "EXAMINAVEL",
+   "interacao": "alternar",
+   "size_m": [
+    1.0,
+    0.5,
+    0.5
+   ],
+   "layer": "front",
+   "states": [
+    "fechada",
+    "aberta"
+   ],
+   "supports": null,
+   "zoom": 2,
+   "desc": "Gaveta com papéis, lápis e um caderno.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "gaveta_balcao_aberta",
+   "folha": "objects/interativos.png",
+   "rect": [
+    2,
+    2,
+    32,
+    20
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    32,
+    20
+   ],
+   "ancora": [
+    16,
+    18
+   ],
+   "collide": null,
+   "stand": null
+  },
+  {
+   "id": "porta_escada_aberta",
+   "nome": "Porta da escada (aberta)",
+   "categoria": "interativos",
+   "classe": "UTILIZAVEL",
+   "interacao": "alternar",
+   "size_m": [
+    0.9,
+    0.1,
+    2.2
+   ],
+   "layer": "wall",
+   "states": [
+    "fechada",
+    "aberta"
+   ],
+   "supports": null,
+   "zoom": 2,
+   "desc": "Porta que sobe para a casa da Vó.",
+   "frames": 1,
+   "anim": "interact",
+   "face": "up",
+   "sprite": "porta_escada_aberta",
+   "folha": "objects/interativos.png",
+   "rect": [
+    36,
+    2,
+    22,
+    54
+   ],
+   "perspectiva": "3/4 interior",
+   "dim_px": [
+    22,
+    54
+   ],
+   "ancora": [
+    11,
+    54
+   ],
+   "collide": null,
+   "stand": null
+  }
+ ],
+ "fixtures": [
+  {
+   "id": "forno_lenha",
+   "nome": "Forno de lenha",
+   "categoria": "equipamentos",
+   "classe": "FUNCIONAL",
+   "interacao": "funcao",
+   "rect": [
+    118,
+    90,
+    90,
+    62
+   ],
+   "collide": [
+    118,
+    132,
+    208,
+    152
+   ],
+   "stand": [
+    160,
+    0
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 2,
+   "desc": "Forno de alvenaria com chaminé; fica atrás do balcão.",
+   "stand_abs": [
+    190,
+    160
+   ]
+  },
+  {
+   "id": "lenha",
+   "nome": "Pilha de lenha",
+   "categoria": "equipamentos",
+   "classe": "DECORATIVO",
+   "interacao": "nenhum",
+   "rect": [
+    204,
+    130,
+    22,
+    18
+   ],
+   "collide": [
+    204,
+    132,
+    226,
+    147
+   ]
+  },
+  {
+   "id": "bancada",
+   "nome": "Bancada de trabalho",
+   "categoria": "mobiliario",
+   "classe": "UTILIZAVEL",
+   "interacao": "usar",
+   "rect": [
+    222,
+    100,
+    82,
+    50
+   ],
+   "collide": [
+    222,
+    132,
+    304,
+    149
+   ],
+   "stand_abs": [
+    262,
+    154
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Bancada onde a massa é aberta; janela do quintal acima."
+  },
+  {
+   "id": "estante",
+   "nome": "Estante",
+   "categoria": "mobiliario",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "rect": [
+    307,
+    67,
+    40,
+    66
+   ],
+   "collide": [
+    306,
+    132,
+    348,
+    143
+   ],
+   "stand_abs": [
+    326,
+    152
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 2,
+   "desc": "Estante com rádio, potes, latas e cestos."
+  },
+  {
+   "id": "altar_sao_jorge",
+   "nome": "Altar de São Jorge",
+   "categoria": "decorativos",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "rect": [
+    348,
+    46,
+    31,
+    54
+   ],
+   "stand_abs": [
+    364,
+    142
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 2,
+   "desc": "Nicho com a imagem do santo, vela, copo d'água e flores."
+  },
+  {
+   "id": "lousa_fiado",
+   "nome": "Lousa do fiado",
+   "categoria": "decorativos",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "rect": [
+    206,
+    56,
+    27,
+    29
+   ],
+   "stand_abs": [
+    216,
+    158
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 2,
+   "desc": "Lousa do cardápio com o aviso do fiado."
+  },
+  {
+   "id": "calendario",
+   "nome": "Calendário",
+   "categoria": "decorativos",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "rect": [
+    282,
+    70,
+    16,
+    21
+   ],
+   "stand_abs": [
+    298,
+    154
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 3,
+   "desc": "Calendário de parede."
+  },
+  {
+   "id": "radio",
+   "nome": "Rádio de pilha",
+   "categoria": "decorativos",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "rect": [
+    312,
+    76,
+    14,
+    11
+   ],
+   "stand_abs": [
+    326,
+    152
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 3,
+   "desc": "Rádio de pilha na estante."
+  },
+  {
+   "id": "caderneta",
+   "nome": "Caderneta do fiado",
+   "categoria": "decorativos",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "rect": [
+    231,
+    153,
+    11,
+    6
+   ],
+   "stand_abs": [
+    236,
+    194
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 3,
+   "desc": "Caderneta de capa vermelha, sobre o balcão."
+  },
+  {
+   "id": "caixa",
+   "nome": "Caixa registradora",
+   "categoria": "equipamentos",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "rect": [
+    206,
+    143,
+    22,
+    10
+   ],
+   "stand_abs": [
+    217,
+    194
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 3,
+   "desc": "Caixa registradora de teclas."
+  },
+  {
+   "id": "vitrine",
+   "nome": "Vitrine de pães e bolos",
+   "categoria": "equipamentos",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "rect": [
+    88,
+    131,
+    64,
+    26
+   ],
+   "stand_abs": [
+    120,
+    194
+   ],
+   "face": "up",
+   "anim": "interact",
+   "zoom": 2,
+   "desc": "Vitrine de vidro com pães e bolos do dia."
+  },
+  {
+   "id": "janela_quintal",
+   "nome": "Janela do quintal",
+   "categoria": "decorativos",
+   "classe": "EXAMINAVEL",
+   "interacao": "examinar",
+   "rect": [
+    232,
+    58,
+    62,
+    46
+   ],
+   "stand_abs": [
+    262,
+    154
+   ],
+   "face": "up",
+   "anim": "interact_high",
+   "zoom": 2,
+   "desc": "Janela com vista para as folhagens do quintal."
+  }
+ ]
+}

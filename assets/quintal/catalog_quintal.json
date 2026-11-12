@@ -1,0 +1,1527 @@
+{
+ "unidade": "1 m = 24 px (X e altura); 16 px/m (profundidade). pos_px = canto superior esquerdo do sprite em px do mundo (720x270). Ordem de desenho: pela base (y + profundidade).",
+ "camera": "3/4 oblíqua",
+ "base": "quintal_base.png",
+ "copa": "mangueira_copa.png",
+ "sprites": {
+  "F09": {
+   "folha": "mobiliario.png",
+   "rect": [
+    2,
+    2,
+    66,
+    39
+   ],
+   "pos_px": [
+    124,
+    104
+   ],
+   "mundo": {
+    "x": 4.3,
+    "y": 0.1,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Bancada de preparo"
+  },
+  "F12": {
+   "folha": "mobiliario.png",
+   "rect": [
+    70,
+    2,
+    88,
+    40
+   ],
+   "pos_px": [
+    256,
+    104
+   ],
+   "mundo": {
+    "x": 9.8,
+    "y": 0.1,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Aparador de serviço"
+  },
+  "M01": {
+   "folha": "mobiliario.png",
+   "rect": [
+    160,
+    2,
+    126,
+    38
+   ],
+   "pos_px": [
+    297,
+    164
+   ],
+   "mundo": {
+    "x": 11.5,
+    "y": 3.6,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Mesa longa"
+  },
+  "M02": {
+   "folha": "mobiliario.png",
+   "rect": [
+    288,
+    2,
+    18,
+    34
+   ],
+   "pos_px": [
+    303,
+    145
+   ],
+   "mundo": {
+    "x": 11.75,
+    "y": 2.7,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Cadeira fundo 1"
+  },
+  "M03": {
+   "folha": "mobiliario.png",
+   "rect": [
+    308,
+    2,
+    18,
+    34
+   ],
+   "pos_px": [
+    334,
+    145
+   ],
+   "mundo": {
+    "x": 13.05,
+    "y": 2.7,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Cadeira fundo 2"
+  },
+  "M04": {
+   "folha": "mobiliario.png",
+   "rect": [
+    328,
+    2,
+    18,
+    34
+   ],
+   "pos_px": [
+    365,
+    145
+   ],
+   "mundo": {
+    "x": 14.35,
+    "y": 2.7,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Cadeira fundo 3"
+  },
+  "M05": {
+   "folha": "mobiliario.png",
+   "rect": [
+    348,
+    2,
+    18,
+    34
+   ],
+   "pos_px": [
+    397,
+    145
+   ],
+   "mundo": {
+    "x": 15.65,
+    "y": 2.7,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Cadeira fundo 4"
+  },
+  "M06": {
+   "folha": "mobiliario.png",
+   "rect": [
+    368,
+    2,
+    18,
+    34
+   ],
+   "pos_px": [
+    280,
+    164
+   ],
+   "mundo": {
+    "x": 10.8,
+    "y": 3.85,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Cabeceira oeste"
+  },
+  "M07": {
+   "folha": "mobiliario.png",
+   "rect": [
+    388,
+    2,
+    18,
+    34
+   ],
+   "pos_px": [
+    422,
+    164
+   ],
+   "mundo": {
+    "x": 16.7,
+    "y": 3.85,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Cabeceira leste"
+  },
+  "M08": {
+   "folha": "mobiliario.png",
+   "rect": [
+    408,
+    2,
+    78,
+    21
+   ],
+   "pos_px": [
+    309,
+    189
+   ],
+   "mundo": {
+    "x": 12.0,
+    "y": 4.7,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Banco comprido (frente)"
+  },
+  "M09": {
+   "folha": "mobiliario.png",
+   "rect": [
+    488,
+    2,
+    49,
+    29
+   ],
+   "pos_px": [
+    443,
+    203
+   ],
+   "mundo": {
+    "x": 17.6,
+    "y": 5.7,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Mesinha das crianças"
+  },
+  "M10": {
+   "folha": "mobiliario.png",
+   "rect": [
+    539,
+    2,
+    16,
+    17
+   ],
+   "pos_px": [
+    430,
+    209
+   ],
+   "mundo": {
+    "x": 17.05,
+    "y": 5.75,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Banquinho crianças 1"
+  },
+  "M11": {
+   "folha": "mobiliario.png",
+   "rect": [
+    557,
+    2,
+    16,
+    17
+   ],
+   "pos_px": [
+    430,
+    219
+   ],
+   "mundo": {
+    "x": 17.05,
+    "y": 6.35,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Banquinho crianças 2"
+  },
+  "M12": {
+   "folha": "mobiliario.png",
+   "rect": [
+    575,
+    2,
+    16,
+    17
+   ],
+   "pos_px": [
+    490,
+    209
+   ],
+   "mundo": {
+    "x": 19.55,
+    "y": 5.75,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Banquinho crianças 3"
+  },
+  "M13": {
+   "folha": "mobiliario.png",
+   "rect": [
+    593,
+    2,
+    16,
+    17
+   ],
+   "pos_px": [
+    490,
+    219
+   ],
+   "mundo": {
+    "x": 19.55,
+    "y": 6.35,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Banquinho crianças 4"
+  },
+  "M14": {
+   "folha": "mobiliario.png",
+   "rect": [
+    2,
+    44,
+    35,
+    41
+   ],
+   "pos_px": [
+    501,
+    167
+   ],
+   "mundo": {
+    "x": 20.0,
+    "y": 3.8,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Mesa de dominó"
+  },
+  "M15": {
+   "folha": "mobiliario.png",
+   "rect": [
+    39,
+    44,
+    18,
+    34
+   ],
+   "pos_px": [
+    509,
+    152
+   ],
+   "mundo": {
+    "x": 20.35,
+    "y": 3.1,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Cadeira dominó N"
+  },
+  "M16": {
+   "folha": "mobiliario.png",
+   "rect": [
+    59,
+    44,
+    18,
+    28
+   ],
+   "pos_px": [
+    509,
+    190
+   ],
+   "mundo": {
+    "x": 20.35,
+    "y": 5.1,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Cadeira dominó S"
+  },
+  "M17": {
+   "folha": "mobiliario.png",
+   "rect": [
+    79,
+    44,
+    18,
+    34
+   ],
+   "pos_px": [
+    484,
+    170
+   ],
+   "mundo": {
+    "x": 19.3,
+    "y": 4.25,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Cadeira dominó O"
+  },
+  "M18": {
+   "folha": "mobiliario.png",
+   "rect": [
+    99,
+    44,
+    18,
+    34
+   ],
+   "pos_px": [
+    535,
+    170
+   ],
+   "mundo": {
+    "x": 21.4,
+    "y": 4.25,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Cadeira dominó L"
+  },
+  "M20": {
+   "folha": "mobiliario.png",
+   "rect": [
+    119,
+    44,
+    18,
+    34
+   ],
+   "pos_px": [
+    592,
+    146
+   ],
+   "mundo": {
+    "x": 23.8,
+    "y": 2.6,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Cadeira de Rita"
+  },
+  "F08": {
+   "folha": "equipamentos.png",
+   "rect": [
+    2,
+    2,
+    28,
+    37
+   ],
+   "pos_px": [
+    95,
+    104
+   ],
+   "mundo": {
+    "x": 3.1,
+    "y": 0.1,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Fogão a gás 4 bocas"
+  },
+  "F10": {
+   "folha": "equipamentos.png",
+   "rect": [
+    32,
+    2,
+    30,
+    44
+   ],
+   "pos_px": [
+    35,
+    97
+   ],
+   "mundo": {
+    "x": 0.6,
+    "y": 0.0,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Tanque com torneira"
+  },
+  "F11": {
+   "folha": "equipamentos.png",
+   "rect": [
+    64,
+    2,
+    21,
+    34
+   ],
+   "pos_px": [
+    190,
+    104
+   ],
+   "mundo": {
+    "x": 7.0,
+    "y": 0.0,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Talha de barro"
+  },
+  "M22": {
+   "folha": "equipamentos.png",
+   "rect": [
+    87,
+    2,
+    23,
+    19
+   ],
+   "pos_px": [
+    266,
+    213
+   ],
+   "mundo": {
+    "x": 10.2,
+    "y": 6.0,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Lavatório (talha com caneca)"
+  },
+  "M27": {
+   "folha": "equipamentos.png",
+   "rect": [
+    112,
+    2,
+    28,
+    37
+   ],
+   "pos_px": [
+    429,
+    105
+   ],
+   "mundo": {
+    "x": 17.0,
+    "y": 0.2,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Tabuleiro de Nena (só fase C)"
+  },
+  "F14": {
+   "folha": "decorativos.png",
+   "rect": [
+    2,
+    2,
+    20,
+    64
+   ],
+   "pos_px": [
+    562,
+    108
+   ],
+   "mundo": {
+    "x": 22.3,
+    "y": 2.4,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Tronco da mangueira"
+  },
+  "D01": {
+   "folha": "decorativos.png",
+   "rect": [
+    24,
+    2,
+    28,
+    26
+   ],
+   "pos_px": [
+    18,
+    194
+   ],
+   "mundo": {
+    "x": 0.2,
+    "y": 5.4,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Vaso em lata (recepção O)"
+  },
+  "D02": {
+   "folha": "decorativos.png",
+   "rect": [
+    54,
+    2,
+    28,
+    26
+   ],
+   "pos_px": [
+    167,
+    198
+   ],
+   "mundo": {
+    "x": 6.4,
+    "y": 5.6,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Vaso em lata (recepção L)"
+  },
+  "D03": {
+   "folha": "decorativos.png",
+   "rect": [
+    84,
+    2,
+    28,
+    26
+   ],
+   "pos_px": [
+    18,
+    181
+   ],
+   "mundo": {
+    "x": 0.2,
+    "y": 4.55,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Vaso em lata (cozinha)"
+  },
+  "D04": {
+   "folha": "decorativos.png",
+   "rect": [
+    114,
+    2,
+    28,
+    26
+   ],
+   "pos_px": [
+    656,
+    113
+   ],
+   "mundo": {
+    "x": 26.8,
+    "y": 0.3,
+    "z": 0
+   },
+   "layer": "obj",
+   "nome": "Vaso em lata (muro)"
+  },
+  "B01": {
+   "folha": "decorativos.png",
+   "rect": [
+    144,
+    2,
+    37,
+    68
+   ],
+   "pos_px": [
+    238,
+    21
+   ],
+   "mundo": {
+    "x": 9.325,
+    "y": 0,
+    "z": 3.8
+   },
+   "layer": "parede",
+   "nome": "Bandeira de Cosme e Damião (pano pendurado)",
+   "z_topo": 3.8
+  },
+  "E01": {
+   "folha": "decorativos.png",
+   "rect": [
+    183,
+    2,
+    55,
+    35
+   ],
+   "pos_px": [
+    228,
+    175
+   ],
+   "mundo": {
+    "x": 8.65,
+    "y": 3.45,
+    "z": 0
+   },
+   "layer": "chao",
+   "nome": "Toalha de chita dos sete meninos"
+  },
+  "S01": {
+   "folha": "itens.png",
+   "rect": [
+    2,
+    2,
+    8,
+    5
+   ],
+   "pos_px": [
+    99,
+    105
+   ],
+   "mundo": {
+    "x": 3.12,
+    "y": 0.15,
+    "z": 0.9
+   },
+   "layer": "item",
+   "nome": "Panela de vatapá (fogão)",
+   "sup": "F08",
+   "zona": "Z1"
+  },
+  "S02": {
+   "folha": "itens.png",
+   "rect": [
+    12,
+    2,
+    7,
+    4
+   ],
+   "pos_px": [
+    110,
+    110
+   ],
+   "mundo": {
+    "x": 3.6,
+    "y": 0.45,
+    "z": 0.9
+   },
+   "layer": "item",
+   "nome": "Caçarola de camarão e dendê (fogão)",
+   "sup": "F08",
+   "zona": "Z1"
+  },
+  "S03": {
+   "folha": "itens.png",
+   "rect": [
+    21,
+    2,
+    14,
+    4
+   ],
+   "pos_px": [
+    131,
+    108
+   ],
+   "mundo": {
+    "x": 4.45,
+    "y": 0.2,
+    "z": 0.9
+   },
+   "layer": "item",
+   "nome": "Tábua de corte",
+   "sup": "F09",
+   "zona": "Z1"
+  },
+  "S04": {
+   "folha": "itens.png",
+   "rect": [
+    37,
+    2,
+    10,
+    4
+   ],
+   "pos_px": [
+    148,
+    108
+   ],
+   "mundo": {
+    "x": 5.15,
+    "y": 0.2,
+    "z": 0.9
+   },
+   "layer": "item",
+   "nome": "Bacia de quiabo cortado",
+   "sup": "F09",
+   "zona": "Z1"
+  },
+  "S05": {
+   "folha": "itens.png",
+   "rect": [
+    49,
+    2,
+    7,
+    4
+   ],
+   "pos_px": [
+    160,
+    107
+   ],
+   "mundo": {
+    "x": 5.65,
+    "y": 0.25,
+    "z": 0.9
+   },
+   "layer": "item",
+   "nome": "Bacia de camarão seco e castanha",
+   "sup": "F09",
+   "zona": "Z1"
+  },
+  "S06": {
+   "folha": "itens.png",
+   "rect": [
+    58,
+    2,
+    10,
+    6
+   ],
+   "pos_px": [
+    169,
+    106
+   ],
+   "mundo": {
+    "x": 6.05,
+    "y": 0.2,
+    "z": 0.9
+   },
+   "layer": "item",
+   "nome": "Cesto de temperos (cebola, tomate, pimenta)",
+   "sup": "F09",
+   "zona": "Z1"
+  },
+  "S07": {
+   "folha": "itens.png",
+   "rect": [
+    70,
+    2,
+    7,
+    5
+   ],
+   "pos_px": [
+    180,
+    105
+   ],
+   "mundo": {
+    "x": 6.5,
+    "y": 0.2,
+    "z": 0.9
+   },
+   "layer": "item",
+   "nome": "Faca e colheres de pau (bandeja)",
+   "sup": "F09",
+   "zona": "Z1"
+  },
+  "S08": {
+   "folha": "itens.png",
+   "rect": [
+    79,
+    2,
+    8,
+    9
+   ],
+   "pos_px": [
+    53,
+    101
+   ],
+   "mundo": {
+    "x": 1.2,
+    "y": 0.12,
+    "z": 0.9
+   },
+   "layer": "item",
+   "nome": "Balde de água (borda do tanque)",
+   "sup": "F10",
+   "zona": "Z1"
+  },
+  "E12": {
+   "folha": "itens.png",
+   "rect": [
+    89,
+    2,
+    6,
+    4
+   ],
+   "pos_px": [
+    263,
+    112
+   ],
+   "mundo": {
+    "x": 9.9,
+    "y": 0.55,
+    "z": 0.9
+   },
+   "layer": "item",
+   "nome": "Prato dos santos (primeira porção)",
+   "sup": "F12",
+   "zona": "ZE"
+  },
+  "E13": {
+   "folha": "itens.png",
+   "rect": [
+    97,
+    2,
+    5,
+    9
+   ],
+   "pos_px": [
+    271,
+    100
+   ],
+   "mundo": {
+    "x": 10.3,
+    "y": 0.25,
+    "z": 0.9
+   },
+   "layer": "item",
+   "nome": "Vela em pires",
+   "sup": "F12",
+   "zona": "ZE"
+  },
+  "E14": {
+   "folha": "itens.png",
+   "rect": [
+    104,
+    2,
+    4,
+    10
+   ],
+   "pos_px": [
+    275,
+    104
+   ],
+   "mundo": {
+    "x": 10.45,
+    "y": 0.55,
+    "z": 0.9
+   },
+   "layer": "item",
+   "nome": "Vasinho com flores brancas",
+   "sup": "F12",
+   "zona": "ZE"
+  },
+  "S12": {
+   "folha": "itens.png",
+   "rect": [
+    110,
+    2,
+    6,
+    4
+   ],
+   "pos_px": [
+    284,
+    113
+   ],
+   "mundo": {
+    "x": 10.8,
+    "y": 0.6,
+    "z": 0.9
+   },
+   "layer": "item",
+   "nome": "Pilha de pratos",
+   "sup": "F12",
+   "zona": "Z2"
+  },
+  "S13": {
+   "folha": "itens.png",
+   "rect": [
+    118,
+    2,
+    13,
+    7
+   ],
+   "pos_px": [
+    292,
+    111
+   ],
+   "mundo": {
+    "x": 11.15,
+    "y": 0.6,
+    "z": 0.9
+   },
+   "layer": "item",
+   "nome": "Travessa de caruru",
+   "sup": "F12",
+   "zona": "Z2"
+  },
+  "S14": {
+   "folha": "itens.png",
+   "rect": [
+    133,
+    2,
+    13,
+    7
+   ],
+   "pos_px": [
+    306,
+    111
+   ],
+   "mundo": {
+    "x": 11.75,
+    "y": 0.6,
+    "z": 0.9
+   },
+   "layer": "item",
+   "nome": "Travessa de vatapá",
+   "sup": "F12",
+   "zona": "Z2"
+  },
+  "S15": {
+   "folha": "itens.png",
+   "rect": [
+    148,
+    2,
+    14,
+    6
+   ],
+   "pos_px": [
+    320,
+    112
+   ],
+   "mundo": {
+    "x": 12.35,
+    "y": 0.6,
+    "z": 0.9
+   },
+   "layer": "item",
+   "nome": "Travessa de arroz e farofa",
+   "sup": "F12",
+   "zona": "Z2"
+  },
+  "S16": {
+   "folha": "itens.png",
+   "rect": [
+    164,
+    2,
+    5,
+    7
+   ],
+   "pos_px": [
+    284,
+    103
+   ],
+   "mundo": {
+    "x": 10.85,
+    "y": 0.25,
+    "z": 0.9
+   },
+   "layer": "item",
+   "nome": "Cuia com talheres",
+   "sup": "F12",
+   "zona": "Z2"
+  },
+  "S17": {
+   "folha": "itens.png",
+   "rect": [
+    171,
+    2,
+    11,
+    6
+   ],
+   "pos_px": [
+    294,
+    104
+   ],
+   "mundo": {
+    "x": 11.2,
+    "y": 0.2,
+    "z": 0.9
+   },
+   "layer": "item",
+   "nome": "Bandeja de copos",
+   "sup": "F12",
+   "zona": "Z2"
+  },
+  "S18": {
+   "folha": "itens.png",
+   "rect": [
+    184,
+    2,
+    9,
+    2
+   ],
+   "pos_px": [
+    308,
+    108
+   ],
+   "mundo": {
+    "x": 11.85,
+    "y": 0.22,
+    "z": 0.9
+   },
+   "layer": "item",
+   "nome": "Conchas e colheres de servir",
+   "sup": "F12",
+   "zona": "Z2"
+  },
+  "S19": {
+   "folha": "itens.png",
+   "rect": [
+    195,
+    2,
+    6,
+    7
+   ],
+   "pos_px": [
+    319,
+    103
+   ],
+   "mundo": {
+    "x": 12.3,
+    "y": 0.22,
+    "z": 0.9
+   },
+   "layer": "item",
+   "nome": "Jarra de água",
+   "sup": "F12",
+   "zona": "Z2"
+  },
+  "S20": {
+   "folha": "itens.png",
+   "rect": [
+    203,
+    2,
+    8,
+    4
+   ],
+   "pos_px": [
+    433,
+    109
+   ],
+   "mundo": {
+    "x": 17.05,
+    "y": 0.3,
+    "z": 0.9
+   },
+   "layer": "item",
+   "nome": "Tacho de dendê (tabuleiro)",
+   "sup": "M27",
+   "zona": "Z2"
+  },
+  "S21": {
+   "folha": "itens.png",
+   "rect": [
+    213,
+    2,
+    8,
+    4
+   ],
+   "pos_px": [
+    444,
+    108
+   ],
+   "mundo": {
+    "x": 17.5,
+    "y": 0.3,
+    "z": 0.9
+   },
+   "layer": "item",
+   "nome": "Bacia de massa coberta com pano",
+   "sup": "M27",
+   "zona": "Z2"
+  },
+  "S23": {
+   "folha": "itens.png",
+   "rect": [
+    223,
+    2,
+    14,
+    5
+   ],
+   "pos_px": [
+    349,
+    170
+   ],
+   "mundo": {
+    "x": 13.55,
+    "y": 3.95,
+    "z": 0.76
+   },
+   "layer": "item",
+   "nome": "Travessa central de caruru",
+   "sup": "M01",
+   "zona": "Z3"
+  },
+  "S24": {
+   "folha": "itens.png",
+   "rect": [
+    239,
+    2,
+    14,
+    5
+   ],
+   "pos_px": [
+    366,
+    170
+   ],
+   "mundo": {
+    "x": 14.25,
+    "y": 3.95,
+    "z": 0.76
+   },
+   "layer": "item",
+   "nome": "Travessa de vatapá",
+   "sup": "M01",
+   "zona": "Z3"
+  },
+  "S25": {
+   "folha": "itens.png",
+   "rect": [
+    255,
+    2,
+    12,
+    5
+   ],
+   "pos_px": [
+    328,
+    170
+   ],
+   "mundo": {
+    "x": 12.65,
+    "y": 3.95,
+    "z": 0.76
+   },
+   "layer": "item",
+   "nome": "Cesto de acarajé e banana frita",
+   "sup": "M01",
+   "zona": "Z3"
+  },
+  "S26": {
+   "folha": "itens.png",
+   "rect": [
+    269,
+    2,
+    6,
+    7
+   ],
+   "pos_px": [
+    384,
+    163
+   ],
+   "mundo": {
+    "x": 15.0,
+    "y": 3.8,
+    "z": 0.76
+   },
+   "layer": "item",
+   "nome": "Jarra de água",
+   "sup": "M01",
+   "zona": "Z3"
+  },
+  "S27": {
+   "folha": "itens.png",
+   "rect": [
+    277,
+    2,
+    6,
+    7
+   ],
+   "pos_px": [
+    394,
+    163
+   ],
+   "mundo": {
+    "x": 15.4,
+    "y": 3.8,
+    "z": 0.76
+   },
+   "layer": "item",
+   "nome": "Jarra de suco",
+   "sup": "M01",
+   "zona": "Z3"
+  },
+  "S28": {
+   "folha": "itens.png",
+   "rect": [
+    285,
+    2,
+    8,
+    3
+   ],
+   "pos_px": [
+    310,
+    166
+   ],
+   "mundo": {
+    "x": 11.9,
+    "y": 3.7,
+    "z": 0.76
+   },
+   "layer": "item",
+   "nome": "Pratos individuais (10 lugares)",
+   "sup": "M01",
+   "zona": "Z3"
+  },
+  "S29": {
+   "folha": "itens.png",
+   "rect": [
+    295,
+    2,
+    7,
+    6
+   ],
+   "pos_px": [
+    456,
+    204
+   ],
+   "mundo": {
+    "x": 17.95,
+    "y": 5.85,
+    "z": 0.5
+   },
+   "layer": "item",
+   "nome": "Prato de cocada (mesinha das crianças)",
+   "sup": "M09",
+   "zona": "Z3"
+  },
+  "S30": {
+   "folha": "itens.png",
+   "rect": [
+    304,
+    2,
+    11,
+    2
+   ],
+   "pos_px": [
+    512,
+    177
+   ],
+   "mundo": {
+    "x": 20.35,
+    "y": 4.2,
+    "z": 0.75
+   },
+   "layer": "item",
+   "nome": "Peças de dominó",
+   "sup": "M14",
+   "zona": "Z4"
+  },
+  "E02": {
+   "folha": "itens.png",
+   "rect": [
+    317,
+    2,
+    10,
+    4
+   ],
+   "pos_px": [
+    240,
+    187
+   ],
+   "mundo": {
+    "x": 9.0,
+    "y": 3.8,
+    "z": 0.01
+   },
+   "layer": "item",
+   "nome": "Bacia central de caruru",
+   "sup": "E01",
+   "zona": "ZE"
+  },
+  "E03": {
+   "folha": "itens.png",
+   "rect": [
+    329,
+    2,
+    8,
+    3
+   ],
+   "pos_px": [
+    233,
+    181
+   ],
+   "mundo": {
+    "x": 8.725,
+    "y": 3.488,
+    "z": 0.01
+   },
+   "layer": "item",
+   "nome": "Pratinho de barro 1",
+   "sup": "E01",
+   "zona": "ZE"
+  },
+  "E04": {
+   "folha": "itens.png",
+   "rect": [
+    339,
+    2,
+    8,
+    3
+   ],
+   "pos_px": [
+    230,
+    186
+   ],
+   "mundo": {
+    "x": 8.562999999999999,
+    "y": 3.808,
+    "z": 0.01
+   },
+   "layer": "item",
+   "nome": "Pratinho de barro 2",
+   "sup": "E01",
+   "zona": "ZE"
+  },
+  "E05": {
+   "folha": "itens.png",
+   "rect": [
+    349,
+    2,
+    8,
+    3
+   ],
+   "pos_px": [
+    232,
+    192
+   ],
+   "mundo": {
+    "x": 8.655,
+    "y": 4.154,
+    "z": 0.01
+   },
+   "layer": "item",
+   "nome": "Pratinho de barro 3",
+   "sup": "E01",
+   "zona": "ZE"
+  },
+  "E06": {
+   "folha": "itens.png",
+   "rect": [
+    359,
+    2,
+    8,
+    3
+   ],
+   "pos_px": [
+    251,
+    192
+   ],
+   "mundo": {
+    "x": 9.465,
+    "y": 4.154,
+    "z": 0.01
+   },
+   "layer": "item",
+   "nome": "Pratinho de barro 4",
+   "sup": "E01",
+   "zona": "ZE"
+  },
+  "E07": {
+   "folha": "itens.png",
+   "rect": [
+    369,
+    2,
+    8,
+    3
+   ],
+   "pos_px": [
+    253,
+    186
+   ],
+   "mundo": {
+    "x": 9.556999999999999,
+    "y": 3.808,
+    "z": 0.01
+   },
+   "layer": "item",
+   "nome": "Pratinho de barro 5",
+   "sup": "E01",
+   "zona": "ZE"
+  },
+  "E08": {
+   "folha": "itens.png",
+   "rect": [
+    379,
+    2,
+    8,
+    3
+   ],
+   "pos_px": [
+    249,
+    181
+   ],
+   "mundo": {
+    "x": 9.395,
+    "y": 3.488,
+    "z": 0.01
+   },
+   "layer": "item",
+   "nome": "Pratinho de barro 6",
+   "sup": "E01",
+   "zona": "ZE"
+  },
+  "E09": {
+   "folha": "itens.png",
+   "rect": [
+    389,
+    2,
+    8,
+    3
+   ],
+   "pos_px": [
+    241,
+    179
+   ],
+   "mundo": {
+    "x": 9.059999999999999,
+    "y": 3.36,
+    "z": 0.01
+   },
+   "layer": "item",
+   "nome": "Pratinho de barro 7",
+   "sup": "E01",
+   "zona": "ZE"
+  },
+  "E10": {
+   "folha": "itens.png",
+   "rect": [
+    399,
+    2,
+    11,
+    5
+   ],
+   "pos_px": [
+    240,
+    195
+   ],
+   "mundo": {
+    "x": 9.0,
+    "y": 4.5,
+    "z": 0.01
+   },
+   "layer": "item",
+   "nome": "Bandeja de doces e banana",
+   "sup": "E01",
+   "zona": "ZE"
+  },
+  "E11": {
+   "folha": "itens.png",
+   "rect": [
+    412,
+    2,
+    2,
+    2
+   ],
+   "pos_px": [
+    251,
+    194
+   ],
+   "mundo": {
+    "x": 9.399999999999999,
+    "y": 4.45,
+    "z": 0.01
+   },
+   "layer": "item",
+   "nome": "Sete copinhos (um à direita de cada pratinho; grupo)",
+   "sup": "E01",
+   "zona": "ZE"
+  }
+ }
+}

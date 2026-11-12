@@ -1,0 +1,1 @@
+const { make } = require('./harness.js'); const { w } = make({ seed: 7 }); w.cena = 'street'; w.step(60); console.log(w.stats, w.service.queue, w.clock.label()); w.step(120); console.log(w.stats, w.service.queue, w.clock.label());

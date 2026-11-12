@@ -1,0 +1,624 @@
+{
+ "W": 1130,
+ "VH": 270,
+ "slope": {
+  "base": 212,
+  "div": 70
+ },
+ "SW": 22,
+ "walk": {
+  "top": 8,
+  "bot": 267
+ },
+ "inst": [
+  {
+   "id": "poste_1",
+   "sprite": "poste",
+   "x": 114,
+   "sy": 24,
+   "nome": "poste de concreto",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -3,
+    -3,
+    3,
+    2
+   ],
+   "stand": [
+    0,
+    14
+   ],
+   "zoom": 1,
+   "desc": "Poste de concreto com transformador e fios que seguem para as casas. Já foi usado como quadro de avisos por toda a vizinhança.",
+   "layer": "sorted"
+  },
+  {
+   "id": "poste_2",
+   "sprite": "poste",
+   "x": 395,
+   "sy": 24,
+   "nome": "poste de concreto",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -3,
+    -3,
+    3,
+    2
+   ],
+   "stand": [
+    0,
+    14
+   ],
+   "zoom": 1,
+   "desc": "Poste de concreto com transformador e fios que seguem para as casas. Já foi usado como quadro de avisos por toda a vizinhança.",
+   "layer": "sorted"
+  },
+  {
+   "id": "poste_3",
+   "sprite": "poste",
+   "x": 868,
+   "sy": 24,
+   "nome": "poste de concreto",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -3,
+    -3,
+    3,
+    2
+   ],
+   "stand": [
+    0,
+    14
+   ],
+   "zoom": 1,
+   "desc": "Poste de concreto com transformador e fios que seguem para as casas. Já foi usado como quadro de avisos por toda a vizinhança.",
+   "layer": "sorted"
+  },
+  {
+   "id": "orelhao_1",
+   "sprite": "orelhao",
+   "x": 600,
+   "sy": 15,
+   "nome": "orelhão",
+   "tipo": "examinar",
+   "classe": "UTILIZÁVEL",
+   "collide": [
+    -4,
+    -3,
+    4,
+    2
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 3,
+   "desc": "Orelhão de fibra azul, daqueles de ficha. Alguém rabiscou um número de telefone na cúpula.",
+   "layer": "sorted"
+  },
+  {
+   "id": "cavalete_pao",
+   "sprite": "cavalete_pao",
+   "x": 525,
+   "sy": 14,
+   "nome": "cavalete da padaria",
+   "tipo": "examinar",
+   "classe": "UTILIZÁVEL",
+   "collide": [
+    -12,
+    -3,
+    12,
+    2
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 3,
+   "desc": "Cavalete de lousa na porta da padaria. A letra é da Vó; o preço é do dia.",
+   "layer": "sorted"
+  },
+  {
+   "id": "lixeira_1",
+   "sprite": "lixeira",
+   "x": 294,
+   "sy": 19,
+   "nome": "lixeira de tela",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -4,
+    -3,
+    4,
+    2
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 3,
+   "desc": "Cesto de tela de aço preso num pé de ferro. Sacos de pão vazios, copo de café, papel de bala.",
+   "layer": "sorted"
+  },
+  {
+   "id": "lixeira_2",
+   "sprite": "lixeira",
+   "x": 786,
+   "sy": 19,
+   "nome": "lixeira de tela",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -4,
+    -3,
+    4,
+    2
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 3,
+   "desc": "Cesto de tela de aço preso num pé de ferro. Sacos de pão vazios, copo de café, papel de bala.",
+   "layer": "sorted"
+  },
+  {
+   "id": "banco_1",
+   "sprite": "banco",
+   "x": 562,
+   "sy": 14,
+   "nome": "banco de madeira",
+   "tipo": "nenhum",
+   "classe": "UTILIZÁVEL",
+   "collide": [
+    -23,
+    -3,
+    23,
+    2
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "desc": "Banco de ripas sobre pés de concreto, de frente para a rua.",
+   "layer": "sorted"
+  },
+  {
+   "id": "bike_1",
+   "sprite": "bicicleta",
+   "x": 702,
+   "sy": 11,
+   "nome": "bicicleta encostada",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -18,
+    -2,
+    18,
+    2
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 2,
+   "desc": "Bicicleta de entregador com cesto de vime no guidão. A corrente tem mais graxa que tinta.",
+   "layer": "sorted"
+  },
+  {
+   "id": "caixote_1",
+   "sprite": "caixote_laranja",
+   "x": 318,
+   "sy": 15,
+   "nome": "caixote de laranjas",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -9,
+    -2,
+    9,
+    2
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 3,
+   "desc": "Caixote de feira com laranjas-bahia que o menino da banca deixou. Ninguém mexe.",
+   "layer": "sorted"
+  },
+  {
+   "id": "obra_1",
+   "sprite": "pilha_obra",
+   "x": 28,
+   "sy": 13,
+   "nome": "tijolos e sacos de cimento",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -17,
+    -3,
+    17,
+    2
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 2,
+   "desc": "Pilha de tijolos e dois sacos de cimento. Alguém está consertando o reboco da casa, devagar, no tempo do dinheiro.",
+   "layer": "sorted"
+  },
+  {
+   "id": "gato_1",
+   "sprite": "gato",
+   "x": 186,
+   "sy": 10,
+   "anim": "gato",
+   "nome": "gato",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": null,
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 3,
+   "desc": "Gato malhado dormindo no calor da pedra. Abre um olho quando você passa.",
+   "layer": "sorted"
+  },
+  {
+   "id": "mesa_domino",
+   "sprite": "mesa_domino",
+   "x": 240,
+   "sy": 15,
+   "nome": "mesa de dominó",
+   "tipo": "examinar",
+   "classe": "UTILIZÁVEL",
+   "stand": [
+    0,
+    14
+   ],
+   "collide": [
+    -14,
+    -4,
+    14,
+    4
+   ],
+   "zoom": 2,
+   "desc": "Mesa quadrada de madeira, pintada de verde há muito tempo; o tampo tem as marcas de cada partida. Garrafa térmica de café e copinhos num canto.",
+   "layer": "sorted"
+  },
+  {
+   "id": "cad_dom_E",
+   "sprite": "cad_dir",
+   "x": 212,
+   "sy": 15,
+   "nome": "cadeira (frente para a direita)",
+   "tipo": "nenhum",
+   "classe": "UTILIZÁVEL",
+   "collide": [
+    -8,
+    -3,
+    8,
+    3
+   ],
+   "layer": "sorted"
+  },
+  {
+   "id": "cad_dom_D",
+   "sprite": "cad_esq",
+   "x": 268,
+   "sy": 15,
+   "nome": "cadeira (frente para a esquerda)",
+   "tipo": "nenhum",
+   "classe": "UTILIZÁVEL",
+   "collide": [
+    -8,
+    -3,
+    8,
+    3
+   ],
+   "layer": "sorted"
+  },
+  {
+   "id": "cad_dom_F",
+   "sprite": "cad_fundo",
+   "x": 240,
+   "sy": 8,
+   "nome": "cadeira (de frente para a câmera)",
+   "tipo": "nenhum",
+   "classe": "UTILIZÁVEL",
+   "collide": [
+    -7,
+    -3,
+    7,
+    3
+   ],
+   "layer": "sorted"
+  },
+  {
+   "id": "cad_dom_T",
+   "sprite": "cad_fundo",
+   "x": 240,
+   "sy": 22,
+   "nome": "cadeira (de frente para a câmera)",
+   "tipo": "nenhum",
+   "classe": "UTILIZÁVEL",
+   "collide": [
+    -7,
+    -3,
+    7,
+    3
+   ],
+   "layer": "sorted"
+  },
+  {
+   "id": "cad_dom_T_enc",
+   "sprite": "cad_costas",
+   "x": 240,
+   "sy": 22,
+   "layer": "over",
+   "nome": "encosto (cadeira de costas para a câmera)",
+   "tipo": "nenhum",
+   "classe": "UTILIZÁVEL"
+  },
+  {
+   "id": "banquinho_1",
+   "sprite": "banquinho",
+   "x": 292,
+   "sy": 12,
+   "nome": "banquinho",
+   "tipo": "nenhum",
+   "classe": "UTILIZÁVEL",
+   "collide": [
+    -5,
+    -3,
+    5,
+    3
+   ],
+   "layer": "sorted"
+  },
+  {
+   "id": "banquinho_2",
+   "sprite": "banquinho",
+   "x": 182,
+   "sy": 21,
+   "nome": "banquinho",
+   "tipo": "nenhum",
+   "classe": "UTILIZÁVEL",
+   "collide": [
+    -5,
+    -3,
+    5,
+    3
+   ],
+   "layer": "sorted"
+  },
+  {
+   "id": "cad_calcada_1",
+   "sprite": "cad_calcada",
+   "x": 1088,
+   "sy": 10,
+   "nome": "cadeira de fio",
+   "tipo": "nenhum",
+   "classe": "UTILIZÁVEL",
+   "collide": [
+    -7,
+    -3,
+    7,
+    3
+   ],
+   "layer": "sorted"
+  },
+  {
+   "id": "quadro_avisos",
+   "sprite": "quadro_avisos",
+   "x": 718,
+   "sy": 0,
+   "layer": "wall",
+   "nome": "quadro de avisos",
+   "tipo": "examinar",
+   "classe": "EXAMINÁVEL",
+   "collide": null,
+   "stand": [
+    0,
+    14
+   ],
+   "zoom": 3,
+   "desc": "Quadro de cortiça da associação: reunião de moradores, rifa de uma geladeira, aviso sobre a água, anúncio de aluguel de cômodo."
+  }
+ ],
+ "solids": [
+  {
+   "id": "poste_1",
+   "x0": 111,
+   "x1": 117,
+   "sy0": 21,
+   "sy1": 26
+  },
+  {
+   "id": "poste_2",
+   "x0": 392,
+   "x1": 398,
+   "sy0": 21,
+   "sy1": 26
+  },
+  {
+   "id": "poste_3",
+   "x0": 865,
+   "x1": 871,
+   "sy0": 21,
+   "sy1": 26
+  },
+  {
+   "id": "orelhao_1",
+   "x0": 596,
+   "x1": 604,
+   "sy0": 12,
+   "sy1": 17
+  },
+  {
+   "id": "cavalete_pao",
+   "x0": 513,
+   "x1": 537,
+   "sy0": 11,
+   "sy1": 16
+  },
+  {
+   "id": "lixeira_1",
+   "x0": 290,
+   "x1": 298,
+   "sy0": 16,
+   "sy1": 21
+  },
+  {
+   "id": "lixeira_2",
+   "x0": 782,
+   "x1": 790,
+   "sy0": 16,
+   "sy1": 21
+  },
+  {
+   "id": "banco_1",
+   "x0": 539,
+   "x1": 585,
+   "sy0": 11,
+   "sy1": 16
+  },
+  {
+   "id": "bike_1",
+   "x0": 684,
+   "x1": 720,
+   "sy0": 9,
+   "sy1": 13
+  },
+  {
+   "id": "caixote_1",
+   "x0": 309,
+   "x1": 327,
+   "sy0": 13,
+   "sy1": 17
+  },
+  {
+   "id": "obra_1",
+   "x0": 11,
+   "x1": 45,
+   "sy0": 10,
+   "sy1": 15
+  },
+  {
+   "id": "mesa_domino",
+   "x0": 226,
+   "x1": 254,
+   "sy0": 11,
+   "sy1": 19
+  },
+  {
+   "id": "cad_dom_E",
+   "x0": 204,
+   "x1": 220,
+   "sy0": 12,
+   "sy1": 18
+  },
+  {
+   "id": "cad_dom_D",
+   "x0": 260,
+   "x1": 276,
+   "sy0": 12,
+   "sy1": 18
+  },
+  {
+   "id": "cad_dom_F",
+   "x0": 233,
+   "x1": 247,
+   "sy0": 5,
+   "sy1": 11
+  },
+  {
+   "id": "cad_dom_T",
+   "x0": 233,
+   "x1": 247,
+   "sy0": 19,
+   "sy1": 25
+  },
+  {
+   "id": "banquinho_1",
+   "x0": 287,
+   "x1": 297,
+   "sy0": 9,
+   "sy1": 15
+  },
+  {
+   "id": "banquinho_2",
+   "x0": 177,
+   "x1": 187,
+   "sy0": 18,
+   "sy1": 24
+  },
+  {
+   "id": "cad_calcada_1",
+   "x0": 1081,
+   "x1": 1095,
+   "sy0": 7,
+   "sy1": 13
+  }
+ ],
+ "buildings": {
+  "b0": {
+   "x0": -40,
+   "w": 150,
+   "base": 212,
+   "door_x": null,
+   "flat": [
+    112
+   ]
+  },
+  "sobrado": {
+   "x0": 110,
+   "w": 180,
+   "base": 214,
+   "door_x": null,
+   "flat": [
+    54
+   ]
+  },
+  "padaria": {
+   "x0": 290,
+   "w": 360,
+   "base": 218,
+   "door_x": 180,
+   "flat": [
+    324
+   ]
+  },
+  "azul": {
+   "x0": 650,
+   "w": 160,
+   "base": 222,
+   "door_x": 106,
+   "flat": null
+  },
+  "verde": {
+   "x0": 810,
+   "w": 140,
+   "base": 224,
+   "door_x": null,
+   "flat": [
+    36
+   ]
+  },
+  "b5": {
+   "x0": 950,
+   "w": 210,
+   "base": 227,
+   "door_x": null,
+   "flat": [
+    40
+   ]
+  }
+ }
+}
