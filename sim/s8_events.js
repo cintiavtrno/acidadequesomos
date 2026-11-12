@@ -12,7 +12,7 @@ Sim.Events = class {
         w.rel.change('dandara', 'lucia', { aff: -.03, tens: .08 }, 'radio');
       } },
       { id: 'procura', cond: w => this.procura(w) },
-      { id: 'dia_fim', hora: 1020, run: w => w.endDay() },
+      { id: 'dia_fim', hora: 1140, run: w => w.endDay() },
     ];
   }
   procura(w) {                                                                        // "alguém procura outro": quem ficou sente falta de quem já saiu

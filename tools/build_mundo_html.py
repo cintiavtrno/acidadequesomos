@@ -44,4 +44,5 @@ SH = open('../mundo/shell_template.html', encoding='utf-8').read()
 SH = SH.replace('/*MUNDO_JS*/', open('../mundo/mundo.js', encoding='utf-8').read().replace('</script', '<\\/script'))
 SH = SH.replace('/*SRC*/{}', json.dumps({'rua': b64(rua), 'padaria': b64(pad), 'casa': b64(casa), 'quintal': b64(qui)}))
 open(G + 'balcao_etapa7_mundo.html', 'w', encoding='utf-8').write(SH)
+open('../index.html', 'w', encoding='utf-8').write(SH)   # index.html é o jogável: sempre igual ao mundo recém-montado
 print('ok', round(len(SH) / 1e6, 1), 'MB')

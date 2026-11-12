@@ -766,7 +766,7 @@ function bindUI() {
   B.on('desistiu', d => toast('<b>' + esc(P[d.id].nome) + '</b> cansou de esperar e foi embora.', 'ev', 5000));
   B.on('procura', d => { });
   B.on('dialogo_interrompido', d => { if (D.open && D.id === d.id) { closeDialog(); say(P[d.id].nome + ': "Peraí, minha filha, chegou minha vez."', 4); } });
-  B.on('dia_fim', d => showDayCard(d.resumo));
+  B.on('dia_fim', d => { if (!window.MUNDO_ATIVO) showDayCard(d.resumo); });
   B.on('furou_fila', d => toast('<b>Fila</b> · ' + esc(P[d.passou].nome) + ' deixou ' + esc(P[d.quem].nome) + ' passar.', 'ev', 4200));
   $('dbtn').onclick = () => toggleDiary();
 }

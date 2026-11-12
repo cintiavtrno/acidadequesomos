@@ -2,7 +2,7 @@
 // Toda fala nova é PROPOSTA (precisa de aprovação). Falas de reza/saudação religiosa têm revisar:true → revisão de quem é da cultura do axé.
 // Linguagem: português baiano sem caricatura de sotaque. Nada aqui cita pessoa real; figuras de poder são fictícias.
 Sim.Data = {};
-Sim.Data.dia = { inicio: '07:00', abre: '07:00', fecha: '17:00' };
+Sim.Data.dia = { inicio: '07:00', abre: '07:00', fecha: '19:00' };
 
 // ---- lugares (plano para NPCs acessarem outros ambientes; só 'padaria' e 'rua' existem nesta etapa) ----
 Sim.Data.locais = {

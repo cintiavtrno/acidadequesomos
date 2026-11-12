@@ -16,4 +16,6 @@ O jogo ocupa 100% da janela mantendo 16:9: resolução lógica 480×270, amplia�
 - `tools/` — geradores de arte (`quintal_art.py`, pxl), builders (`build_*_html.py`) e testes de dados.
 - `tests/` — suítes de simulação.
 
-Reconstruir (a partir de `tools/`): `python3 build_html.py && python3 build_casa_html.py && python3 build_rua_html.py && python3 build_quintal_html.py && python3 build_mundo_html.py`.
+Reconstruir: `sh tools/build_all.sh`. Ele monta padaria, casa, rua, quintal e o mundo, e grava o resultado em `game/balcao_etapa7_mundo.html` **e em `index.html`**. O `index.html` é o jogável, então depois de mexer em qualquer arquivo de `sim/`, `mundo/`, `quintal/`, `game/*template*` ou `assets/`, rode o build antes de subir.
+
+Dia: 07:00 às 19:00 em todos os ambientes (a padaria não fecha antes). Às 19:00 o shell encerra o dia: se a meta da fase foi cumprida, segue a fase; se não, "Recomeçar o dia" volta de manhã mantendo as anotações.

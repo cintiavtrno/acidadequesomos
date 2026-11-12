@@ -4,7 +4,7 @@ Sim.World = class {
   constructor(o) {
     o = o || {}; this.scene = o.scene; this.hooks = o.hooks || { objs: {} }; this.seed = o.seed || 1991; this.rng = Sim.RNG(this.seed);
     this.persist = Object.assign({ evita: {}, fiado: {}, dia: 1, rel: null, mem: null, kp: null }, o.persist || {});
-    this.bus = new Sim.EventSystem(); this.clock = new Sim.WorldClock({ start: o.start != null ? o.start : 420, rate: o.rate || 1, openAt: 420, closeAt: 1020, day: this.persist.dia });
+    this.bus = new Sim.EventSystem(); this.clock = new Sim.WorldClock({ start: o.start != null ? o.start : 420, rate: o.rate || 1, openAt: 420, closeAt: 1140, day: this.persist.dia });
     this.pontos = this.scene.pontos; this.flags = {}; this.timers = []; this.cena = 'interior'; this.carry = null; this.fim = false;
     this.lia = { x: 240, y: 222, face: 'up', seat: null, state: 'idle' };
     this.rel = new Sim.Relations(this.bus, Sim.Data.relacoes); if (this.persist.rel) this.rel.import(this.persist.rel);

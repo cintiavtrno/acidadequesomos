@@ -1975,7 +1975,7 @@ function showDay(r) {
 function bindBus() {
   const b = SIM.bus;
   b.on('conhecimento', e => toast('<b>Anotação nova</b> · ' + esc(e.kp.titulo), 'kp', 4200));
-  b.on('dia_fim', e => showDay(e.resumo));
+  b.on('dia_fim', e => { if (!window.MUNDO_ATIVO) showDay(e.resumo); });
   b.on('lia_fala', e => { LS.say = { text: e.texto, ttl: 2.6 }; });
   b.on('lia_vez', () => { if (CTX.active !== 'mesa' && LS.mode === 'seated' && !LS.vezAvisada) { LS.vezAvisada = true; enterContext('mesa', { mode: 'participar' }); } });
   b.on('dom_joga', e => { if (e.id !== 'lia') LS.vezAvisada = false; if (S.mesaOpen) renderMesa(); });

@@ -93,20 +93,31 @@ function historia() {
   if (Q.get('new') === '1') { try { localStorage.removeItem('balcao_ano'); localStorage.removeItem('balcao_base'); } catch (e) { } }
   if (Q.get('skip') === '1') return;   // testes automáticos
   let base = 0; try { base = +localStorage.getItem('balcao_base') || 0; } catch (e) { }
+  let retorno = false; try { retorno = localStorage.getItem('balcao_retorno') === '1'; localStorage.removeItem('balcao_retorno'); } catch (e) { }
   const chip = document.getElementById('chip');
   let visitou = false, fim = false;
+  const fimDoDia = (n, meta, pronto) => {
+    fim = true; chip.style.display = 'none';
+    if (pronto) { if (ANO === 1991) tela(ANOITECEU_91(n), 'Seguir para 1994', para94); else tela(FIM94, 'Recomeçar do início', recomecar); }
+    else tela(ANOITECEU(n, meta), 'Recomeçar o dia', amanha);
+  };
   setInterval(() => {
     if (fim || document.getElementById('hist').style.display === 'flex') return;
     const n = notas() - (ANO === 1994 ? base : 0), meta = META[ANO]; if (ANO === 1994 && mundo.cenas.atual === 'quintal' && mundo.minuto() >= 720) visitou = true;
     const pronto = ANO === 1991 ? n >= meta : (n >= meta && visitou);
+    if (mundo.minuto() >= FIM_DIA) { fimDoDia(n, meta, pronto); return; }
     chip.style.display = 'block';
     chip.innerHTML = ANO === 1991 ? '<b>1991</b> · anotações ' + Math.min(n, meta) + '/' + meta + (pronto ? ' <span class="ok">✓</span><button id="cb">Seguir para 1994</button>' : '')
       : '<b>1994</b> · caruru ' + (visitou ? '<span class="ok">✓</span>' : '·') + ' · anotações novas ' + Math.min(n, meta) + '/' + meta + (pronto ? ' <button id="cb">Encerrar a fase</button>' : '');
-    const b = document.getElementById('cb'); if (b) b.onclick = () => { if (ANO === 1991) para94(); else { fim = true; chip.style.display = 'none'; tela(FIM94, 'Recomeçar do início', () => { try { localStorage.removeItem('balcao_ano'); localStorage.removeItem('balcao_base'); } catch (e) { } location.search = '?new=1'; }); } };
+    const b = document.getElementById('cb'); if (b) b.onclick = () => { if (ANO === 1991) para94(); else { fim = true; chip.style.display = 'none'; tela(FIM94, 'Recomeçar do início', recomecar); } };
   }, 500);
+  if (retorno) return;   // novo dia da mesma fase: sem abertura
   if (ANO === 1991) tela(INTRO, 'Continuar', () => tela(C91, 'Entrar em 1991'));
   else tela(C94, 'Começar 1994');
 }
+const FIM_DIA = 1140;   // 19:00: o dia acaba para todos os ambientes ao mesmo tempo
+function recomecar() { try { localStorage.removeItem('balcao_ano'); localStorage.removeItem('balcao_base'); localStorage.removeItem('balcao_retorno'); } catch (e) { } location.search = '?new=1'; }
+function amanha() { try { localStorage.setItem('balcao_retorno', '1'); } catch (e) { } const u = new URLSearchParams(location.search); u.delete('new'); const s = u.toString(); if (s === location.search.replace(/^\?/, '')) location.reload(); else location.search = s; }
 function para94() {
   try { localStorage.setItem('balcao_ano', '1994'); localStorage.setItem('balcao_base', String(notas())); } catch (e) { }
   const f = document.getElementById('fade'); document.getElementById('fadeT').textContent = '1994'; document.getElementById('fadeS').textContent = 'três anos depois'; f.style.transition = 'opacity 1.2s'; f.style.opacity = 1; pausar(true);
@@ -115,6 +126,8 @@ function para94() {
 const INTRO = '<div class="ano">O balcão da vó</div><h1>Um jogo sobre um bairro que se cuida</h1><p>Você é Lia, neta de Dona Áurea, no Pelourinho, em Salvador. Entre a padaria, a rua, a casa de Seu Raimundo e o quintal de Dona Zefa, você escuta, ajuda e anota.</p><p>O assunto do jogo é o que muda quando alguém de fora decide medir a rua, e o que as pessoas do lugar fazem uns pelos outros enquanto isso acontece. Ninguém aqui é herói ou vilão: cada um tem seus motivos. O jogo não pede que você escolha um lado. Pede que preste atenção.</p>';
 const C91 = '<div class="ano">1991</div><h1>O Programa foi anunciado</h1><p>O rádio falou, a rua ouviu e ninguém sabe direito o que vai mudar. Lia tem 10 anos e passa as manhãs entre o balcão da vó e a calçada.</p><h3>Objetivo</h3><p>Reunir e entender informações sobre o Programa e sobre quem vive aqui. Converse, observe, ajude e anote.</p><h3>Para seguir adiante</h3><p>Reúna <b>10 anotações</b>. Quando chegar lá, aparece o botão para seguir para 1994, quando Dona Zefa faz um caruru e convida a rua.</p>' + COMO;
 const C94 = '<div class="ano">1994</div><h1>O caruru de Dona Zefa</h1><p>Três anos se passaram. Lia tem 13 anos. Dona Zefa convidou a rua inteira para um caruru no quintal dela, a partir do meio-dia. O Programa já começou: tem obra, tem medição e tem gente nova no bairro.</p><h3>Objetivo</h3><p>Ver como estão o bairro, a vizinhança e as primeiras consequências do Programa, depois que ele saiu do papel. Vá ao caruru, ajude no que for pedido e escute o que cada um diz.</p><h3>Para encerrar a fase</h3><p>Vá ao quintal de Dona Zefa durante o caruru e reúna <b>6 anotações novas</b>.</p>' + COMO;
+const ANOITECEU = (n, meta) => '<div class="ano">19:00</div><h1>Anoiteceu</h1><p>Você anotou ' + Math.min(n, meta) + ' de ' + meta + '. Faltam ' + Math.max(0, meta - n) + '. O dia recomeça de manhã e as anotações que você já fez continuam no caderninho.</p>';
+const ANOITECEU_91 = n => '<div class="ano">19:00</div><h1>Anoiteceu</h1><p>Você reuniu ' + n + ' anotações em 1991. Três anos depois, Dona Zefa faz um caruru e convida a rua.</p>';
 const FIM94 = '<div class="ano">Fim da fase de 1994</div><h1>O que ficou da conversa</h1><p>O caruru acabou, mas o assunto continua na calçada. Você viu o que mudou e o que as pessoas ainda fazem umas pelas outras. As próximas fases (1996 em diante) ainda não foram construídas.</p>';
 function dbg() { const d = document.getElementById('dbg'); d.style.display = 'block'; const m = mundo.minuto(); d.textContent = 'cena ' + mundo.cenas.atual + ' · ' + String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(Math.floor(m % 60)).padStart(2, '0') + '\nonde ' + JSON.stringify(mundo.viagens.onde); }
 const iv = setInterval(() => { if (pronto()) { clearInterval(iv); montar(); } }, 120);

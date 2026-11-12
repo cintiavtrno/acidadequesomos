@@ -365,7 +365,7 @@ Sim.Nav = {
 // Toda fala nova é PROPOSTA (precisa de aprovação). Falas de reza/saudação religiosa têm revisar:true → revisão de quem é da cultura do axé.
 // Linguagem: português baiano sem caricatura de sotaque. Nada aqui cita pessoa real; figuras de poder são fictícias.
 Sim.Data = {};
-Sim.Data.dia = { inicio: '07:00', abre: '07:00', fecha: '17:00' };
+Sim.Data.dia = { inicio: '07:00', abre: '07:00', fecha: '19:00' };
 
 // ---- lugares (plano para NPCs acessarem outros ambientes; só 'padaria' e 'rua' existem nesta etapa) ----
 Sim.Data.locais = {
@@ -1090,7 +1090,7 @@ Sim.Events = class {
         w.rel.change('dandara', 'lucia', { aff: -.03, tens: .08 }, 'radio');
       } },
       { id: 'procura', cond: w => this.procura(w) },
-      { id: 'dia_fim', hora: 1020, run: w => w.endDay() },
+      { id: 'dia_fim', hora: 1140, run: w => w.endDay() },
     ];
   }
   procura(w) {                                                                        // "alguém procura outro": quem ficou sente falta de quem já saiu
@@ -1213,7 +1213,7 @@ Sim.World = class {
   constructor(o) {
     o = o || {}; this.scene = o.scene; this.hooks = o.hooks || { objs: {} }; this.seed = o.seed || 1991; this.rng = Sim.RNG(this.seed);
     this.persist = Object.assign({ evita: {}, fiado: {}, dia: 1, rel: null, mem: null, kp: null }, o.persist || {});
-    this.bus = new Sim.EventSystem(); this.clock = new Sim.WorldClock({ start: o.start != null ? o.start : 420, rate: o.rate || 1, openAt: 420, closeAt: 1020, day: this.persist.dia });
+    this.bus = new Sim.EventSystem(); this.clock = new Sim.WorldClock({ start: o.start != null ? o.start : 420, rate: o.rate || 1, openAt: 420, closeAt: 1140, day: this.persist.dia });
     this.pontos = this.scene.pontos; this.flags = {}; this.timers = []; this.cena = 'interior'; this.carry = null; this.fim = false;
     this.lia = { x: 240, y: 222, face: 'up', seat: null, state: 'idle' };
     this.rel = new Sim.Relations(this.bus, Sim.Data.relacoes); if (this.persist.rel) this.rel.import(this.persist.rel);
@@ -1282,10 +1282,10 @@ Sim.Data.casa = {
     { id: 'cama',   zona: 'cama',     fases: [{ ponto: 'cama', face: 'right', anim: 'interact' }], dur: [3, 4], janela: [420, 445], peso: 2.6, nome: 'arruma a cama' },
     { id: 'planta', zona: 'planta',   fases: [{ ponto: 'planta', face: 'up', anim: 'interact' }], dur: [2, 3], janela: [420, 450], peso: 2.1, nome: 'rega a planta' },
     { id: 'reza',   zona: 'oratorio', fases: [{ ponto: 'oratorio', face: 'up', anim: 'idle', reza: true }], dur: [3, 5], janela: [420, 450], peso: 2.4, devocao: true, nome: 'reza' },
-    { id: 'janela', zona: 'janela',   fases: [{ seat: 'balanco_1', anim: 'sit' }], dur: [9, 15], janela: [440, 720], peso: 1.0, cansaco: true, nome: 'embala na cadeira de balanço, ao lado da janela' },
-    { id: 'radio',  zona: 'radio',    fases: [{ ponto: 'radio', face: 'up', anim: 'interact_high' }], dur: [3, 5], janela: [630, 720], peso: 1.3, nome: 'liga o rádio' },
+    { id: 'janela', zona: 'janela',   fases: [{ seat: 'balanco_1', anim: 'sit' }], dur: [9, 15], janela: [440, 1140], peso: 1.0, cansaco: true, nome: 'embala na cadeira de balanço, ao lado da janela' },
+    { id: 'radio',  zona: 'radio',    fases: [{ ponto: 'radio', face: 'up', anim: 'interact_high' }], dur: [3, 5], janela: [630, 1140], peso: 1.3, nome: 'liga o rádio' },
     { id: 'cafe',   zona: 'fogao',    fases: [{ ponto: 'fogao', face: 'up', anim: 'interact', fogao: 1, nome: 'coa o café' }, { seat: 'cad_esq', anim: 'sit', zona: 'mesa', nome: 'toma o café sentado' }], dur: [4, 5], dur2: [8, 11], janela: [635, 700], peso: 2.4, fome: true, nome: 'faz café' },
-    { id: 'mesa',   zona: 'mesa',     fases: [{ seat: 'cad_frente', anim: 'sit' }], dur: [6, 10], janela: [640, 720], peso: 1.1, nome: 'mexe nas pedras de dominó' },
+    { id: 'mesa',   zona: 'mesa',     fases: [{ seat: 'cad_frente', anim: 'sit' }], dur: [6, 10], janela: [640, 1140], peso: 1.1, nome: 'mexe nas pedras de dominó' },
     { id: 'cozinha', zona: 'fogao',   fases: [{ ponto: 'fogao', face: 'up', anim: 'interact', fogao: 1 }], dur: [11, 16], janela: [690, 720], peso: 2.8, fome: true, nome: 'cozinha o almoço' },
   ],
   saidaPadaria: { a: 432, jit: 4 },           // ~07:12 sai pela rua, chega na padaria (sobrado vizinho) ~07:20 (Etapa 4)
@@ -1490,7 +1490,7 @@ Sim.CasaWorld = class {
     Sim.Casa.install(); o = o || {};
     this.scene = o.scene; this.hooks = o.hooks || { objs: {} }; this.seed = o.seed || 1991; this.rng = Sim.RNG(this.seed);
     this.persist = Object.assign({ evita: {}, fiado: {}, dia: 1, rel: null, mem: null, kp: null, casa: null }, o.persist || {});
-    this.bus = new Sim.EventSystem(); this.clock = new Sim.WorldClock({ start: o.start != null ? o.start : 420, rate: o.rate || 1, openAt: 420, closeAt: 720, day: this.persist.dia });
+    this.bus = new Sim.EventSystem(); this.clock = new Sim.WorldClock({ start: o.start != null ? o.start : 420, rate: o.rate || 1, openAt: 420, closeAt: 1140, day: this.persist.dia });
     this.pontos = this.scene.pontos; this.flags = {}; this.timers = []; this.cena = 'casa'; this.carry = null; this.fim = false;
     this.lia = { x: 240, y: 222, face: 'up', seat: null, state: 'idle' };
     this.rel = new Sim.Relations(this.bus, Sim.Data.relacoes); if (this.persist.rel) this.rel.import(this.persist.rel);
@@ -6013,7 +6013,7 @@ function bindUI() {
   B.on('desistiu', d => toast('<b>' + esc(P[d.id].nome) + '</b> cansou de esperar e foi embora.', 'ev', 5000));
   B.on('procura', d => { });
   B.on('dialogo_interrompido', d => { if (D.open && D.id === d.id) { closeDialog(); say(P[d.id].nome + ': "Peraí, minha filha, chegou minha vez."', 4); } });
-  B.on('dia_fim', d => showDayCard(d.resumo));
+  B.on('dia_fim', d => { if (!window.MUNDO_ATIVO) showDayCard(d.resumo); });
   B.on('furou_fila', d => toast('<b>Fila</b> · ' + esc(P[d.passou].nome) + ' deixou ' + esc(P[d.quem].nome) + ' passar.', 'ev', 4200));
   $('dbtn').onclick = () => toggleDiary();
 }

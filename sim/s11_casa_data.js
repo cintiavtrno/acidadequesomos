@@ -7,10 +7,10 @@ Sim.Data.casa = {
     { id: 'cama',   zona: 'cama',     fases: [{ ponto: 'cama', face: 'right', anim: 'interact' }], dur: [3, 4], janela: [420, 445], peso: 2.6, nome: 'arruma a cama' },
     { id: 'planta', zona: 'planta',   fases: [{ ponto: 'planta', face: 'up', anim: 'interact' }], dur: [2, 3], janela: [420, 450], peso: 2.1, nome: 'rega a planta' },
     { id: 'reza',   zona: 'oratorio', fases: [{ ponto: 'oratorio', face: 'up', anim: 'idle', reza: true }], dur: [3, 5], janela: [420, 450], peso: 2.4, devocao: true, nome: 'reza' },
-    { id: 'janela', zona: 'janela',   fases: [{ seat: 'balanco_1', anim: 'sit' }], dur: [9, 15], janela: [440, 720], peso: 1.0, cansaco: true, nome: 'embala na cadeira de balanço, ao lado da janela' },
-    { id: 'radio',  zona: 'radio',    fases: [{ ponto: 'radio', face: 'up', anim: 'interact_high' }], dur: [3, 5], janela: [630, 720], peso: 1.3, nome: 'liga o rádio' },
+    { id: 'janela', zona: 'janela',   fases: [{ seat: 'balanco_1', anim: 'sit' }], dur: [9, 15], janela: [440, 1140], peso: 1.0, cansaco: true, nome: 'embala na cadeira de balanço, ao lado da janela' },
+    { id: 'radio',  zona: 'radio',    fases: [{ ponto: 'radio', face: 'up', anim: 'interact_high' }], dur: [3, 5], janela: [630, 1140], peso: 1.3, nome: 'liga o rádio' },
     { id: 'cafe',   zona: 'fogao',    fases: [{ ponto: 'fogao', face: 'up', anim: 'interact', fogao: 1, nome: 'coa o café' }, { seat: 'cad_esq', anim: 'sit', zona: 'mesa', nome: 'toma o café sentado' }], dur: [4, 5], dur2: [8, 11], janela: [635, 700], peso: 2.4, fome: true, nome: 'faz café' },
-    { id: 'mesa',   zona: 'mesa',     fases: [{ seat: 'cad_frente', anim: 'sit' }], dur: [6, 10], janela: [640, 720], peso: 1.1, nome: 'mexe nas pedras de dominó' },
+    { id: 'mesa',   zona: 'mesa',     fases: [{ seat: 'cad_frente', anim: 'sit' }], dur: [6, 10], janela: [640, 1140], peso: 1.1, nome: 'mexe nas pedras de dominó' },
     { id: 'cozinha', zona: 'fogao',   fases: [{ ponto: 'fogao', face: 'up', anim: 'interact', fogao: 1 }], dur: [11, 16], janela: [690, 720], peso: 2.8, fome: true, nome: 'cozinha o almoço' },
   ],
   saidaPadaria: { a: 432, jit: 4 },           // ~07:12 sai pela rua, chega na padaria (sobrado vizinho) ~07:20 (Etapa 4)
