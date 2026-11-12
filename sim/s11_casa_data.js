@@ -14,7 +14,7 @@ Sim.Data.casa = {
     { id: 'cozinha', zona: 'fogao',   fases: [{ ponto: 'fogao', face: 'up', anim: 'interact', fogao: 1 }], dur: [11, 16], janela: [690, 720], peso: 2.8, fome: true, nome: 'cozinha o almoço' },
   ],
   saidaPadaria: { a: 432, jit: 4 },           // ~07:12 sai pela rua, chega na padaria (sobrado vizinho) ~07:20 (Etapa 4)
-  voltaPadaria: { a: 625, jit: 10 },          // ~10:25 (a estadia dele na padaria é 150–200 min)
+  voltaPadaria: { a: 600, jit: 4 },           // ~10:00, hora em que Lia pode levar a sacola esquecida (proposta)
   // frase da Lia que explica POR QUE ela puxa o assunto (PROPOSTA)
   cafeJuntosDef: { id: 'cafe_juntos', zona: 'fogao', ctrl: true, fases: [{ ponto: 'fogao', face: 'up', anim: 'interact', fogao: 1, nome: 'coa o café' }, { seat: 'cad_dir', anim: 'sit', zona: 'mesa', nome: 'toma o café com a Lia' }], dur: [1, 1], janela: [0, 999], peso: 0 },
   asks: {
@@ -35,7 +35,7 @@ Sim.Data.casa = {
         linhas: [{ quem: 'lia', texto: 'O senhor me conta da casa? Cada coisa parece ter história.' }, { quem: 'raimundo', texto: 'Tem. A colcha de retalhos foi feita pra casa cheia. A mesa eu ponho pra um, mas deixo a outra cadeira puxada. Hábito. Pode ser que alguém chegue.' }], kps: ['kp_c_colcha', 'kp_c_mesa'], trust: .03 },
       retrato: { t: 'Foi sua mãe que ensinou, a do retrato?', quando: (w) => w.knowledge.has('kp_c_retrato') || w.knowledge.has('kp_c_foto'),
         linhas: (w) => [{ quem: 'lia', texto: 'Foi a sua mãe que ensinou? A do retrato, de lenço?' }, w.rel.nivel('raimundo', 'lia') >= 2
-          ? { quem: 'raimundo', texto: 'Foi. Ela deixava o pão de sexta na porta de cada vizinho. Quem podia pagava na hora, quem não podia pagava depois. Dali eu aprendi que dívida não é vergonha, é compromisso.' }
+          ? { quem: 'raimundo', texto: 'Foi. Ela deixava o pão de sexta na porta de cada vizinho. Quem podia pagava na hora, quem não podia pagava depois. Dali eu aprendi que dívida se paga olhando nos olhos, e que isso é coisa de gente honrada.' }
           : { quem: 'raimundo', texto: 'Foi. Mas hoje não é dia de contar tudo, filha. Volta outro dia e a gente conversa.' }], kpSe: ['kp_c_mae', 2], trust: .03 },
       programa: { t: 'O que o senhor acha do que andam fazendo na rua?', quando: (w) => !!w.viv.ouviu_programa,
         linhas: [{ quem: 'lia', texto: 'Vi gente medindo as casas. O que o senhor acha disso?' }, { quem: 'raimundo', texto: 'Medir, medem. Perguntar, não perguntam. Eu não assino o que não sei ler, e o que sei ler eu mostro pra Áurea antes.' }], kp: 'kp_c_assinar', trust: .03, marca: 'p_programa' },
@@ -82,7 +82,7 @@ Sim.Data.casa = {
     perguntar: {
       rua: [F('rc_pr0', 'Daqui de cima a rua parece parada. Mas tá tudo mudando por baixo.'), F('rc_pr1', 'Todo dia alguém sai e não volta pra rua. Uns vão pra longe, outros vão pro papel.', { conf: [2, 3] })],
       mae: [F('rc_pm0', 'Minha mãe? Fazia o pão da sexta. Por enquanto é só isso que eu conto.', { conf: [0, 1] }),
-            F('rc_pm1', 'Ela deixava o pão de sexta na porta de cada um. Quem podia pagava na hora; quem não podia, depois. Dali eu aprendi que dívida não é vergonha, é compromisso.', { conf: [2, 3] })],
+            F('rc_pm1', 'Ela deixava o pão de sexta na porta de cada um. Quem podia pagava na hora; quem não podia, depois. Dali eu aprendi que dívida se paga olhando nos olhos, e que isso é coisa de gente honrada.', { conf: [2, 3] })],
       casa: [F('rc_pk0', 'Essa casa tem mais lembrança que móvel. Gosto assim.'), F('rc_pk1', 'Cada coisa aqui tem de onde veio. Pergunta que eu conto.', { conf: [1, 3] })],
       retrato: [F('rc_pt0', 'É ela. Não gostava de retrato, mas deixou esse. Disse que era pra eu não esquecer a cara de brava.')],
       forno: [F('rc_pf0', 'O forno da minha mãe. Antes do sol ela já tava com a lenha acesa. A Áurea sabe.'), F('rc_pf1', 'A sexta começou ali: pão quente de manhã, conta fechada à noite. Eu só não quis mudar.', { conf: [1, 3] })],
@@ -119,7 +119,7 @@ Sim.Data.casa = {
     retrato_1: { kp: 'kp_c_retrato', texto: () => 'Retrato oval em sépia: uma senhora de lenço branco na cabeça, séria. É o mesmo lenço da moça de uma das fotografias da padaria.' },
     armario_1: { kp: 'kp_c_armario', texto: () => 'Guarda-roupa de duas portas, uma com espelho. Pela fresta: um paletó de domingo bem passado e camisas gastas nos punhos, remendadas com linha da mesma cor.' },
     criado_1: { kp: 'kp_c_radio', texto: () => 'Criado-mudo com um rádio de pilha e óculos de haste colada com esparadrapo. O dial está na mesma estação do rádio da vó.' },
-    cama_1: { kp: 'kp_c_colcha', texto: () => 'Cama de solteiro com colcha de retalhos. A colcha é grande demais para uma cama só: foi feita para uma casa com mais gente.' },
+    cama_1: { kp: 'kp_c_colcha', texto: () => 'Cama de solteiro com colcha de retalhos. A colcha é grande demais para uma cama só. Alguém a fez pensando numa casa mais cheia.' },
     mesa_1: { kp: 'kp_c_mesa', texto: () => 'Mesa de toalha branca posta para um, mas com a segunda cadeira puxada, como se alguém pudesse chegar.' },
     domino_1: { kp: 'kp_c_domino', texto: () => 'Caixa de dominó de madeira. Faltava a pedra seis-seis; alguém fez outra, de madeira, e pintou os pontos à mão.' },
     janela_sacada: { kp: 'kp_c_janela', texto: () => 'A porta-janela dá para a sacada de ferro e para a fachada rosa do outro lado da rua. Da cadeira de balanço, ao lado, ele escuta quem passa.' },
@@ -128,8 +128,9 @@ Sim.Data.casa = {
   kps: [
     K('kp_c_visita', 'Receber visita', 'Seu Raimundo me recebeu na porta de casa e falou em café antes de perguntar o que eu queria.', 'raimundo'),
     K('kp_c_cafe', 'O café dele', 'Coei o café com Seu Raimundo. Ele mede o pó com a colher do jeito que a mãe media: duas, nem mais, nem menos.', 'raimundo', { obj: 'fiado' }),
+    K('kp_c_sacola_pao', 'O pão esquecido', 'Levei o pão que Seu Raimundo deixou no balcão. Ele agradeceu duas vezes e disse que a cabeça anda cheia de lembrança e vazia de sacola.', 'raimundo'),
     K('kp_c_rotina', 'A manhã dele', 'Ele arruma a cama, rega a planta, reza e só depois sai pra padaria. Não pula nenhuma etapa.', 'raimundo'),
-    K('kp_c_mae', 'O pão de sexta', 'A mãe dele deixava o pão na porta de cada vizinho. Quem podia pagava na hora; quem não podia, na sexta. O fiado dele não é falta de dinheiro: é herança.', 'raimundo', { obj: 'fiado' }),
+    K('kp_c_mae', 'O pão de sexta', 'A mãe dele deixava o pão na porta de cada vizinho. Quem podia pagava na hora; quem não podia, na sexta. O fiado dele vem de casa; a mãe já anotava assim.', 'raimundo', { obj: 'fiado' }),
     K('kp_c_convite', 'O convite do dominó', 'Seu Raimundo me chamou pra ver o dominó na calçada. Disse que dominó se aprende olhando.', 'raimundo'),
     K('kp_c_assinar', 'O que ele não assina', 'Seu Raimundo só assina o que sabe ler, e mostra pra vó antes. Isso também é um jeito de se proteger do Programa.', 'raimundo', { obj: 'programa' }),
     K('kp_c_fogao', 'O fogão', 'Quatro bocas, duas em uso. O resto está limpo demais pra quem cozinha todo dia.', 'lugar'),
@@ -140,7 +141,7 @@ Sim.Data.casa = {
     K('kp_c_retrato', 'A mãe, de lenço', 'Retrato oval de uma senhora de lenço branco. O mesmo lenço da moça da fotografia da padaria.', 'lugar', { obj: 'fiado' }),
     K('kp_c_armario', 'O paletó de domingo', 'Um paletó bem passado e camisas remendadas com linha da mesma cor. Cuida do que tem.', 'lugar'),
     K('kp_c_radio', 'O rádio de cabeceira', 'Está na mesma estação do rádio da vó. Óculos com a haste colada com esparadrapo ao lado.', 'lugar'),
-    K('kp_c_colcha', 'A colcha de retalhos', 'Grande demais para uma cama só: foi feita para uma casa com mais gente do que cabe nela hoje.', 'lugar'),
+    K('kp_c_colcha', 'A colcha de retalhos', 'Grande demais para uma cama só. Alguém a fez pensando numa casa mais cheia do que esta hoje.', 'lugar'),
     K('kp_c_mesa', 'A mesa posta para um', 'A toalha branca, a segunda cadeira puxada. Como se alguém pudesse chegar.', 'lugar'),
     K('kp_c_domino', 'A caixa de dominó', 'Faltava o seis-seis; ele fez outra pedra de madeira e pintou os pontos. Joga assim mesmo.', 'lugar'),
     K('kp_c_cafe_juntos', 'Café na mesa dele', 'Tomei café sentada na mesa de Seu Raimundo. Ele serve devagar, fala pouco e conta mais quando ninguém pergunta tudo de uma vez.', 'raimundo'),

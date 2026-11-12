@@ -284,6 +284,26 @@ Sim.WorldClock = class {
   at(hhmm) { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; }
 };
 
+// Missão da sacola (proposta): Raimundo esquece o pão no balcão; Lia leva ao sobrado perto das 10h. Estado compartilhado entre as janelas do mundo.
+Sim.Sacola = {
+  H() { try { const P = window.parent; if (P && P !== window && P.MUNDO_BRIDGE) return P; } catch (e) { } return typeof window !== 'undefined' ? window : globalThis; },
+  get S() { const H = this.H(); return H.__sacola || (H.__sacola = { estado: 'nada' }); },
+  esquece(w) {
+    const S = this.S; if (S.estado !== 'nada') return; S.estado = 'balcao';
+    const v = w.npcs && w.npcs.aurea; if (v && w.dialogue) w.dialogue.speak(v, 'Ih, o Raimundo deixou o pão em cima do balcão. Lia, leva lá no sobrado, mas só pelas dez, que ele já está em casa.');
+  },
+  pegar(w) {
+    const S = this.S; if (S.estado !== 'balcao') return false; S.estado = 'lia';
+    const v = w.npcs && w.npcs.aurea; if (v && w.dialogue) w.dialogue.speak(v, 'Isso, minha filha. O sobrado amarelo, na rua de cima. Ele agradece com café.');
+    if (w.bus) w.bus.emit('sacola_pegou', {}); return true;
+  },
+  entrega(w) {                                   // chamado na casa, perto de Raimundo
+    const S = this.S; if (S.estado !== 'lia' || !w.casaPick) return false; S.estado = 'entregue';
+    const R = w.npcs.raimundo; try { w.dialogue.speak(R, 'O pão! Cabeça de quem tem muita coisa pra lembrar. Fica pra um café, minha filha?'); } catch (e) { }
+    w.rel.change('raimundo', 'lia', { aff: .08, trust: .1 }, 'sacola'); w.knowledge.award('kp_c_sacola_pao', { via: 'entregou' }); if (w.bus) w.bus.emit('sacola_entregue', {}); return true;
+  },
+};
+
 // ===== s2_nav.js — navegação (grade + A*), independente do desenho =====
 // Nav.init({ blocked(x,y), X0,X1,YB,YF }) — o jogo fornece a colisão (ObjectSys.solids + paredes).
 Sim.Nav = {
@@ -429,7 +449,7 @@ RD.spots = {
 const A = (t, tipo, o) => Object.assign({ t: T(t), tipo }, o || {});
 RD.agenda = {
   raimundo: [A('07:03', 'sair', { porta: 'porta_sobrado' }), A('07:04', 'sentar', { assento: 'E' }), A('08:40', 'levantar'), A('08:40', 'ir', { spot: 'porta_padaria' }), A('08:41', 'entrar', { porta: 'porta_padaria', dur: 14 }),
-             A('08:56', 'sair', { porta: 'porta_padaria' }), A('08:57', 'sentar', { assento: 'E' }), A('10:32', 'levantar'), A('10:32', 'ir', { spot: 'porta_sobrado' }), A('10:33', 'entrar', { porta: 'porta_sobrado', dur: 300 })],
+             A('08:56', 'sair', { porta: 'porta_padaria' }), A('08:57', 'sentar', { assento: 'E' }), A('09:58', 'levantar'), A('09:58', 'ir', { spot: 'porta_sobrado' }), A('10:00', 'entrar', { porta: 'porta_sobrado', dur: 300 })],
   ze:       [A('07:00', 'sair', { porta: 'porta_b0' }), A('07:01', 'sentar', { assento: 'D' })],
   nonato:   [A('07:00', 'sair', { porta: 'porta_verde' }), A('07:01', 'sentar', { assento: 'F' }), A('11:20', 'levantar'), A('11:20', 'ir', { spot: 'porta_verde' }), A('11:21', 'entrar', { porta: 'porta_verde', dur: 300 })],
   bela:     [A('07:06', 'sair', { porta: 'porta_assoc' }), A('07:07', 'sentar', { assento: 'T' }), A('10:00', 'levantar'), A('10:00', 'ir', { spot: 'porta_lateral' }), A('10:01', 'entrar', { porta: 'porta_lateral', dur: 300 })],
@@ -556,7 +576,19 @@ RD.dom = {
   reage_bom: ['Boa, parceiro!', 'Isso!', 'Assim se joga.'], reage_ruim: ['Era essa mesmo?', 'Ai, ai.', 'Vai começar...'],
 };
 // pontos de conhecimento (vão para as anotações da rua)
+// lata colaborativa do bairro, explicada a Lia antes da primeira mão (proposta · revisar com leitura cultural)
+RD.lata = [
+  ['nonato', 'Antes de embaralhar: a lata passou por aqui hoje?'],
+  ['raimundo', 'Passou. Pus a minha. O gás da Dona Cícera acaba essa semana.'],
+  ['ze', 'Menina, a lata é assim. Quem pode, põe um trocado. Quem aperta, tira. Ninguém pergunta o motivo.'],
+  ['bela', 'Fica na mesa da Dona Áurea. Todo mundo sabe onde está e ninguém mexe sem precisar.'],
+  ['nonato', 'Eu ainda queria um caderno. Quanto entrou, quanto saiu, tudo escrito.'],
+  ['raimundo', 'Com caderno a lata vira cobrança, Nonato. Do jeito que está, ela anda na confiança.'],
+  ['bela', 'E de gente que lembra de repor quando o mês melhora.'],
+  ['ze', 'Pronto, resolvido. Agora eu embaralho.'],
+];
 RD.kp = {
+  kp_lata: ['A lata do bairro', 'Na mesa do dominó se explica a lata: quem pode põe um trocado, quem aperta tira, sem perguntar. Nonato queria caderno; Raimundo e Bela preferem a confiança.'],
   kp_dom_paciencia: ['Dominó pede paciência', 'Seu Raimundo joga devagar de propósito: quem tem pressa joga a pedra errada.'],
   kp_dom_pai: ['A mesa do pai', 'Seu Raimundo aprendeu dominó com o pai, na mesma calçada, no tempo do lampião a gás.'],
   kp_ray_sobrado: ['O sobrado e as medições', 'Seu Raimundo viu a casa do lado ser medida e ninguém perguntou nada a quem mora.'],
@@ -1531,6 +1563,15 @@ function setTimeoutish(w, s, fn) { const sm = w.social; sm.timers = sm.timers ||
         if (this.fase === 'pausado') { this.pausaT += dt; if (this.pausaT > 3 && this.pausaMsg < w.t - 25) { this.pausaMsg = w.t; const vaz = RD.ordem.find(s => !this.ocupante(s) || (this.ocupante(s) !== 'lia' && w.npcs[this.ocupante(s)].state !== 'Sitting')); const quem = RD.ordem.find(s => this.ocupante(s) && s !== vaz && w.npcs[this.ocupante(s)] && w.npcs[this.ocupante(s)].state === 'Sitting' && RD.dupla[s] !== RD.dupla[vaz]); if (quem) this.falaSeat(quem, ['Cadê o parceiro?', 'Vai esperar ele voltar?', 'Sem o quarto a mesa fica manca.'][Math.floor(w.rng() * 3)], 3.5); } }
         else this.fase = 'esperando';
         for (const s of RD.ordem) { const o = this.ocupante(s); if (o && o !== 'lia' && w.npcs[o].state === 'Sitting' && (w.npcs[o].anim === 'think' || w.npcs[o].anim === 'play')) w.npcs[o].setAnim('sit'); }
+        return;
+      }
+      if (!this.lataFeita) {                                                  // antes da primeira mão: a lata colaborativa (proposta, revisar)
+        const L = this.lata = this.lata || { i: 0, t: 2 }; L.t -= dt;
+        if (L.t <= 0) {
+          const e = RD.lata[L.i++];
+          if (!e) { this.lataFeita = true; if (RD.ordem.some(s => this.ocupante(s) === 'lia')) w.knowledge.award('kp_lata', { via: 'ouvida' }); }
+          else { const s = RD.ordem.find(q => this.ocupante(q) === e[0]); if (s) { this.falaSeat(s, e[1], 3.6); L.t = 3.9; } }
+        }
         return;
       }
       if (this.fase === 'esperando' || this.fase === 'pausado') { this.pensando = null; if (g.estado !== 'jogando') { this.fase = 'reagindo'; this.tt = 4.4; } else if (g.cadeia.length) { this.fase = 'jogando'; this.tt = 0; } else { this.fase = 'embaralhando'; this.tt = 0; } }

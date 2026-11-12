@@ -350,6 +350,15 @@
         for (const s of RD.ordem) { const o = this.ocupante(s); if (o && o !== 'lia' && w.npcs[o].state === 'Sitting' && (w.npcs[o].anim === 'think' || w.npcs[o].anim === 'play')) w.npcs[o].setAnim('sit'); }
         return;
       }
+      if (!this.lataFeita) {                                                  // antes da primeira mão: a lata colaborativa (proposta, revisar)
+        const L = this.lata = this.lata || { i: 0, t: 2 }; L.t -= dt;
+        if (L.t <= 0) {
+          const e = RD.lata[L.i++];
+          if (!e) { this.lataFeita = true; if (RD.ordem.some(s => this.ocupante(s) === 'lia')) w.knowledge.award('kp_lata', { via: 'ouvida' }); }
+          else { const s = RD.ordem.find(q => this.ocupante(q) === e[0]); if (s) { this.falaSeat(s, e[1], 3.6); L.t = 3.9; } }
+        }
+        return;
+      }
       if (this.fase === 'esperando' || this.fase === 'pausado') { this.pensando = null; if (g.estado !== 'jogando') { this.fase = 'reagindo'; this.tt = 4.4; } else if (g.cadeia.length) { this.fase = 'jogando'; this.tt = 0; } else { this.fase = 'embaralhando'; this.tt = 0; } }
       if (this.fase === 'embaralhando') {
         if (this.tt > 4.2) { this.fase = 'jogando'; this.tt = 0; this.novoTurno(); }

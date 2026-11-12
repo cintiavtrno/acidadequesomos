@@ -291,6 +291,26 @@ Sim.WorldClock = class {
   at(hhmm) { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; }
 };
 
+// Missão da sacola (proposta): Raimundo esquece o pão no balcão; Lia leva ao sobrado perto das 10h. Estado compartilhado entre as janelas do mundo.
+Sim.Sacola = {
+  H() { try { const P = window.parent; if (P && P !== window && P.MUNDO_BRIDGE) return P; } catch (e) { } return typeof window !== 'undefined' ? window : globalThis; },
+  get S() { const H = this.H(); return H.__sacola || (H.__sacola = { estado: 'nada' }); },
+  esquece(w) {
+    const S = this.S; if (S.estado !== 'nada') return; S.estado = 'balcao';
+    const v = w.npcs && w.npcs.aurea; if (v && w.dialogue) w.dialogue.speak(v, 'Ih, o Raimundo deixou o pão em cima do balcão. Lia, leva lá no sobrado, mas só pelas dez, que ele já está em casa.');
+  },
+  pegar(w) {
+    const S = this.S; if (S.estado !== 'balcao') return false; S.estado = 'lia';
+    const v = w.npcs && w.npcs.aurea; if (v && w.dialogue) w.dialogue.speak(v, 'Isso, minha filha. O sobrado amarelo, na rua de cima. Ele agradece com café.');
+    if (w.bus) w.bus.emit('sacola_pegou', {}); return true;
+  },
+  entrega(w) {                                   // chamado na casa, perto de Raimundo
+    const S = this.S; if (S.estado !== 'lia' || !w.casaPick) return false; S.estado = 'entregue';
+    const R = w.npcs.raimundo; try { w.dialogue.speak(R, 'O pão! Cabeça de quem tem muita coisa pra lembrar. Fica pra um café, minha filha?'); } catch (e) { }
+    w.rel.change('raimundo', 'lia', { aff: .08, trust: .1 }, 'sacola'); w.knowledge.award('kp_c_sacola_pao', { via: 'entregou' }); if (w.bus) w.bus.emit('sacola_entregue', {}); return true;
+  },
+};
+
 // ===== s2_nav.js — navegação (grade + A*), independente do desenho =====
 // Nav.init({ blocked(x,y), X0,X1,YB,YF }) — o jogo fornece a colisão (ObjectSys.solids + paredes).
 Sim.Nav = {
@@ -358,14 +378,14 @@ Sim.Data.pessoas = {
     nome: 'Dandara', curto: 'Dandara', cor: '#c88aa0', papel: 'líder da associação de moradores', idade: 41,
     tracos: { sociavel: .6, paciencia: .35, determinada: .9, desconfiada: .6 },
     interesses: ['ata', 'associação', 'mãe doente'], necessidades: { cansaco: .35, social: .55, fome: .4 }, humor: 'normal',
-    olha: 2, visitas: [{ a: '07:45', jit: 3, estadia: [110, 165] }], pedido: { itens: { pao: 6, cafe: 1 }, fiado: false, papo: 4 }, paciencia: 30,
+    olha: 2, visitas: [{ a: '07:45', jit: 3, estadia: [110, 165] }], pedido: { itens: { pao: 6, cafe: 1 }, fiado: false, fiadoChance: .3, papo: 4 }, paciencia: 30,
     assentos: ['chair_a_back', 'chair_a_r', 'chair_b_back'],
   },
   lucia: {
     nome: 'Lúcia', curto: 'Lúcia', cor: '#e8a050', papel: 'técnica do Programa', idade: 34,
     tracos: { sociavel: .35, paciencia: .6, metodica: .9, cuidadosa: .8 },
     interesses: ['medir', 'prancheta', 'café'], necessidades: { cansaco: .5, social: .3, fome: .5 }, humor: 'normal',
-    visitas: [{ a: '07:38', jit: 3, estadia: [100, 160] }], pedido: { itens: { cafe: 1, pao: 1 }, fiado: false, papo: 2 }, paciencia: 50,
+    visitas: [{ a: '07:38', jit: 3, estadia: [100, 160] }], pedido: { itens: { cafe: 1, pao: 1 }, fiado: false, fiadoChance: .12, papo: 2 }, paciencia: 50,
     assentos: ['chair_a_l', 'chair_b_f', 'banco_2'], mede: ['porta', 'balcao', 'vitrine'], olha: 4,
   },
 };
@@ -401,7 +421,7 @@ Sim.Data.falas = {
     ],
     perguntar: {
       rua: [F('a_pr0', 'A rua é a casa maior. Tem gente que entra sem bater, mas tem que aprender a pedir licença.'), F('a_pr1', 'Cada porta daqui sabe o nome de quem mora. Isso vale mais que placa.', { conf: [2, 3] })],
-      caderneta: [F('a_pc0', 'Quem cobra é a caderneta, minha filha, não eu.'), F('a_pc1', 'Fiado é confiança. Dívida é coisa de banco.', { conf: [2, 3] })],
+      caderneta: [F('a_pc0', 'A caderneta é que cobra, minha filha. Eu só anoto.'), F('a_pc1', 'Fiado é confiança. Dívida é coisa de banco.', { conf: [2, 3] })],
       altar: [F('a_pa0', 'É São Jorge. E é o outro nome também, o que a minha avó não dizia alto. É os dois.', { }, { revisar: true }), F('a_pa1', 'A vela fica acesa porque a rua precisa de quem guarde.', { conf: [2, 3] }, { revisar: true })],
       gaveta: [F('a_pg0', 'Gaveta é de papel, minha filha. E papel a gente não mostra pra todo mundo.'), F('a_pg1', 'Hoje não. Quando eu decidir o que fazer, tu sabe primeiro.', { flag: 'lia_pressionou' })],
       casa: [F('a_pk0', 'Lá em cima é nossa casa. Um dia a gente sobe junto e eu te mostro com calma.')],
@@ -518,6 +538,8 @@ Sim.Data.reacoes = {
   radio: { raimundo: 'Escutou isso, Áurea? Já falaram em medir tudo.', dandara: 'Aí está. Já falaram. Falta só dizer a quem.', lucia: '(Lúcia abaixa os olhos para a prancheta.)', aurea: '(A vó baixa o volume do rádio.)' },
   desistiu: { raimundo: 'Ih, a fila tá longa. Volto mais tarde.', dandara: 'Eu volto depois. Não dá pra esperar.', lucia: 'Preciso voltar ao trabalho.' },
   furada: { raimundo: 'Pode passar, minha filha.', lucia: '(Lúcia ergue as sobrancelhas, mas não diz nada.)', dandara: 'Obrigada. Eu retribuo.' },
+  // proposta: fala extra quando o vizinho pede fiado (revisar)
+  pedidoFiado: { dandara: 'A reunião atrasou o pagamento do mês. Anota pra mim, Dona Áurea? Semana que vem eu acerto.', lucia: 'Esqueci a carteira no escritório. A senhora anota até amanhã?' },
   fiado_visto: { raimundo: 'Anota aí, Áurea. Sexta eu acerto.', lucia: '(Lúcia anota algo na prancheta, discreta.)' },
   fila_cheia: { raimundo: 'Tá cheio hoje, hein.', dandara: 'Assim eu não chego na reunião.', lucia: 'Vou esperar. Não tem problema.' },
   procura: { lucia: 'A senhora viu Seu Raimundo hoje?', raimundo: 'Dandara já passou por aqui?', dandara: 'Seu Raimundo já veio, Dona Áurea?' },
@@ -895,6 +917,7 @@ Sim.Decision = {
   },
   sair(n, w) {
     if (n.seat) { w.seatOcc[n.seat.id] = null; n.seat = null; }
+    if (n.id === 'raimundo' && n.ses.served) Sim.Sacola.esquece(w);
     w.service.sair(n); const dx = Sim.Nav.nearestFree(240, w.pontos.porta[1] - 6); n.goTo(dx[0], dx[1]); n.path.push([240, 244]); n.setState('Leaving'); w.bus.emit('saindo', { id: n.id, atendido: n.ses.served, desistiu: n.ses.gaveUp });
     const v = n.def.visitas[0];
     if (n.ses.gaveUp && !n.ses.retry && (w.persist.evita[n.id] || 0) < 2) n.visitas.push({ at: w.clock.min + 22 + w.rng.range(0, 6), retry: true, estadia: [30, 50] });
@@ -947,12 +970,15 @@ Sim.Service = class {
     if (n.dialogLia) w.bus.emit('dialogo_interrompido', { id: n.id });
     this.jobLia = { cust: n.id, t: 0, stage: 'pedir', dit: false }; n.setState('Ordering'); w.bus.emit('lia_atende', { id: n.id }); return n;
   }
+  // fiado por visita: Raimundo sempre; os outros, às vezes (proposta)
+  fiadoDe(n) { const p = n.def.pedido; if (n.ses.fiado === undefined) n.ses.fiado = p.fiado === true || (!!p.fiadoChance && this.w.rng() < p.fiadoChance); return n.ses.fiado; }
+  pedeFiado(n) { const F = Sim.Data.reacoes.pedidoFiado && Sim.Data.reacoes.pedidoFiado[n.id]; if (F && n.def.pedido.fiado !== true && this.fiadoDe(n)) this.w.dialogue.speak(n, F); }
   cancelaLia() { const j = this.jobLia; if (!j) return; const n = this.w.npcs[j.cust]; this.jobLia = null; if (n && n.state === 'Ordering' && this.queue.includes(n.id)) { n.setState('Waiting'); n.ses.slotI = -1; } this.w.bus.emit('lia_largou', { id: j.cust }); }
   tickLia(dt) {
     const j = this.jobLia; if (!j) return; const w = this.w, n = w.npcs[j.cust];
     if (!n || n.loc !== 'padaria') { this.jobLia = null; return; }
     j.t += dt; const p = n.def.pedido;
-    if (j.stage === 'pedir') { if (!j.dit) { j.dit = true; const L = w.dialogue.line(n.id, 'pedido', w.dialogue.ctx(n.id)); if (L) w.dialogue.speak(n, L.texto); } if (j.t > 1.2) { j.stage = 'preparar'; j.t = 0; } }
+    if (j.stage === 'pedir') { if (!j.dit) { j.dit = true; const L = w.dialogue.line(n.id, 'pedido', w.dialogue.ctx(n.id)); if (L) w.dialogue.speak(n, L.texto); this.pedeFiado(n); } if (j.t > 1.2) { j.stage = 'preparar'; j.t = 0; } }
     else if (j.stage === 'preparar') { if (j.t > 2.2) { for (const k in p.itens) { const q = Math.min(p.itens[k], this.stock[k]); this.stock[k] -= q; if (q < p.itens[k]) w.bus.emit('falta', { item: k }); } j.stage = 'cobrar'; j.t = 0; this.cobra(n, w.npcs.aurea, true); } }
     else if (j.stage === 'cobrar' && j.t > 1.2) {
       this.jobLia = null; this.sair(n); n.ses.served = true; w.stats.servidos++; w.stats.pela_lia = (w.stats.pela_lia || 0) + 1; w.stats.esperas.push(Math.round(w.clock.min - n.ses.filaDesde));
@@ -973,7 +999,7 @@ Sim.Service = class {
     j.t += dt; const p = n.def.pedido;
     const falar = (id, t) => { const N = w.npcs[id]; w.dialogue.speak(N, t); };
     switch (j.stage) {
-      case 'ir': if (!v.stepMove(dt)) { v.face = 'down'; v.setAnim('serve_idle'); j.stage = 'pedir'; j.t = 0; const L = w.dialogue.line(n.id, 'pedido', w.dialogue.ctx(n.id)); if (L) falar(n.id, L.texto); if (p.fiado && w.liaPerto(n, 95)) w.knowledge.award('kp_raimundo_fiado', { via: 'ouvida' }); } break;
+      case 'ir': if (!v.stepMove(dt)) { v.face = 'down'; v.setAnim('serve_idle'); j.stage = 'pedir'; j.t = 0; const L = w.dialogue.line(n.id, 'pedido', w.dialogue.ctx(n.id)); if (L) falar(n.id, L.texto); this.pedeFiado(n); if (n.id === 'raimundo' && p.fiado && w.liaPerto(n, 95)) w.knowledge.award('kp_raimundo_fiado', { via: 'ouvida' }); } break;
       case 'pedir': v.face = 'down'; if (j.t > 2.8) { j.stage = 'anotar'; j.t = 0; v.setAnim('serve_write'); const B = w.dialogue.line('aurea', 'balcao', w.dialogue.ctx('aurea', {})); if (B) falar('aurea', B.texto); } break;
       case 'anotar': if (j.t > 2.2) { j.stage = 'preparar'; j.t = 0; v.setAnim('serve_wrap'); } break;
       case 'preparar': if (j.t > 4.2) { for (const k in p.itens) { const q = Math.min(p.itens[k], this.stock[k]); this.stock[k] -= q; if (q < p.itens[k]) w.bus.emit('falta', { item: k }); } j.stage = p.papo && w.rng.chance(.9) ? 'papo' : 'entregar'; j.t = 0; j.i = 0; v.setAnim('serve_idle'); if (j.stage === 'papo') { const bank = Sim.Data.bate_papo_balcao[n.id]; j.papo = bank ? w.rng.pick(bank) : null; j.pw = 0; } } break;
@@ -983,12 +1009,12 @@ Sim.Service = class {
         v.setAnim(j.i % 2 ? 'serve_idle' : 'serve_wrap'); n.setAnim('talk'); if (j.t > 40) { j.stage = 'entregar'; j.t = 0; } break;
       }
       case 'entregar': v.setAnim('serve_give'); if (j.t > 1.8) { j.stage = 'cobrar'; j.t = 0; v.setAnim('serve_write'); this.cobra(n, v); } break;
-      case 'cobrar': if (j.t > (p.fiado ? 3 : 2)) { this.fim(n, v); } break;
+      case 'cobrar': if (j.t > (this.fiadoDe(n) ? 3 : 2)) { this.fim(n, v); } break;
     }
   }
   cobra(n, v, mudo) {
     const w = this.w, p = n.def.pedido; let val = 0; for (const k in p.itens) val += p.itens[k] * Sim.Data.precos[k];
-    if (p.fiado) {
+    if (this.fiadoDe(n)) {
       const f = this.fiado[n.id] = this.fiado[n.id] || { n: 0, valor: 0 }; f.n++; f.valor += val; w.persist.fiado[n.id] = f;
       w.mem.remember('aurea', 'fiado_' + n.id); const B = w.dialogue.line('aurea', 'balcao', w.dialogue.ctx('aurea', { estado: 'fiado' })); if (B && !mudo) w.dialogue.speak(v, B.texto);
       w.bus.emit('fiado', { id: n.id, valor: val });
@@ -1250,7 +1276,7 @@ Sim.Data.casa = {
     { id: 'cozinha', zona: 'fogao',   fases: [{ ponto: 'fogao', face: 'up', anim: 'interact', fogao: 1 }], dur: [11, 16], janela: [690, 720], peso: 2.8, fome: true, nome: 'cozinha o almoço' },
   ],
   saidaPadaria: { a: 432, jit: 4 },           // ~07:12 sai pela rua, chega na padaria (sobrado vizinho) ~07:20 (Etapa 4)
-  voltaPadaria: { a: 625, jit: 10 },          // ~10:25 (a estadia dele na padaria é 150–200 min)
+  voltaPadaria: { a: 600, jit: 4 },           // ~10:00, hora em que Lia pode levar a sacola esquecida (proposta)
   // frase da Lia que explica POR QUE ela puxa o assunto (PROPOSTA)
   cafeJuntosDef: { id: 'cafe_juntos', zona: 'fogao', ctrl: true, fases: [{ ponto: 'fogao', face: 'up', anim: 'interact', fogao: 1, nome: 'coa o café' }, { seat: 'cad_dir', anim: 'sit', zona: 'mesa', nome: 'toma o café com a Lia' }], dur: [1, 1], janela: [0, 999], peso: 0 },
   asks: {
@@ -1271,7 +1297,7 @@ Sim.Data.casa = {
         linhas: [{ quem: 'lia', texto: 'O senhor me conta da casa? Cada coisa parece ter história.' }, { quem: 'raimundo', texto: 'Tem. A colcha de retalhos foi feita pra casa cheia. A mesa eu ponho pra um, mas deixo a outra cadeira puxada. Hábito. Pode ser que alguém chegue.' }], kps: ['kp_c_colcha', 'kp_c_mesa'], trust: .03 },
       retrato: { t: 'Foi sua mãe que ensinou, a do retrato?', quando: (w) => w.knowledge.has('kp_c_retrato') || w.knowledge.has('kp_c_foto'),
         linhas: (w) => [{ quem: 'lia', texto: 'Foi a sua mãe que ensinou? A do retrato, de lenço?' }, w.rel.nivel('raimundo', 'lia') >= 2
-          ? { quem: 'raimundo', texto: 'Foi. Ela deixava o pão de sexta na porta de cada vizinho. Quem podia pagava na hora, quem não podia pagava depois. Dali eu aprendi que dívida não é vergonha, é compromisso.' }
+          ? { quem: 'raimundo', texto: 'Foi. Ela deixava o pão de sexta na porta de cada vizinho. Quem podia pagava na hora, quem não podia pagava depois. Dali eu aprendi que dívida se paga olhando nos olhos, e que isso é coisa de gente honrada.' }
           : { quem: 'raimundo', texto: 'Foi. Mas hoje não é dia de contar tudo, filha. Volta outro dia e a gente conversa.' }], kpSe: ['kp_c_mae', 2], trust: .03 },
       programa: { t: 'O que o senhor acha do que andam fazendo na rua?', quando: (w) => !!w.viv.ouviu_programa,
         linhas: [{ quem: 'lia', texto: 'Vi gente medindo as casas. O que o senhor acha disso?' }, { quem: 'raimundo', texto: 'Medir, medem. Perguntar, não perguntam. Eu não assino o que não sei ler, e o que sei ler eu mostro pra Áurea antes.' }], kp: 'kp_c_assinar', trust: .03, marca: 'p_programa' },
@@ -1318,7 +1344,7 @@ Sim.Data.casa = {
     perguntar: {
       rua: [F('rc_pr0', 'Daqui de cima a rua parece parada. Mas tá tudo mudando por baixo.'), F('rc_pr1', 'Todo dia alguém sai e não volta pra rua. Uns vão pra longe, outros vão pro papel.', { conf: [2, 3] })],
       mae: [F('rc_pm0', 'Minha mãe? Fazia o pão da sexta. Por enquanto é só isso que eu conto.', { conf: [0, 1] }),
-            F('rc_pm1', 'Ela deixava o pão de sexta na porta de cada um. Quem podia pagava na hora; quem não podia, depois. Dali eu aprendi que dívida não é vergonha, é compromisso.', { conf: [2, 3] })],
+            F('rc_pm1', 'Ela deixava o pão de sexta na porta de cada um. Quem podia pagava na hora; quem não podia, depois. Dali eu aprendi que dívida se paga olhando nos olhos, e que isso é coisa de gente honrada.', { conf: [2, 3] })],
       casa: [F('rc_pk0', 'Essa casa tem mais lembrança que móvel. Gosto assim.'), F('rc_pk1', 'Cada coisa aqui tem de onde veio. Pergunta que eu conto.', { conf: [1, 3] })],
       retrato: [F('rc_pt0', 'É ela. Não gostava de retrato, mas deixou esse. Disse que era pra eu não esquecer a cara de brava.')],
       forno: [F('rc_pf0', 'O forno da minha mãe. Antes do sol ela já tava com a lenha acesa. A Áurea sabe.'), F('rc_pf1', 'A sexta começou ali: pão quente de manhã, conta fechada à noite. Eu só não quis mudar.', { conf: [1, 3] })],
@@ -1355,7 +1381,7 @@ Sim.Data.casa = {
     retrato_1: { kp: 'kp_c_retrato', texto: () => 'Retrato oval em sépia: uma senhora de lenço branco na cabeça, séria. É o mesmo lenço da moça de uma das fotografias da padaria.' },
     armario_1: { kp: 'kp_c_armario', texto: () => 'Guarda-roupa de duas portas, uma com espelho. Pela fresta: um paletó de domingo bem passado e camisas gastas nos punhos, remendadas com linha da mesma cor.' },
     criado_1: { kp: 'kp_c_radio', texto: () => 'Criado-mudo com um rádio de pilha e óculos de haste colada com esparadrapo. O dial está na mesma estação do rádio da vó.' },
-    cama_1: { kp: 'kp_c_colcha', texto: () => 'Cama de solteiro com colcha de retalhos. A colcha é grande demais para uma cama só: foi feita para uma casa com mais gente.' },
+    cama_1: { kp: 'kp_c_colcha', texto: () => 'Cama de solteiro com colcha de retalhos. A colcha é grande demais para uma cama só. Alguém a fez pensando numa casa mais cheia.' },
     mesa_1: { kp: 'kp_c_mesa', texto: () => 'Mesa de toalha branca posta para um, mas com a segunda cadeira puxada, como se alguém pudesse chegar.' },
     domino_1: { kp: 'kp_c_domino', texto: () => 'Caixa de dominó de madeira. Faltava a pedra seis-seis; alguém fez outra, de madeira, e pintou os pontos à mão.' },
     janela_sacada: { kp: 'kp_c_janela', texto: () => 'A porta-janela dá para a sacada de ferro e para a fachada rosa do outro lado da rua. Da cadeira de balanço, ao lado, ele escuta quem passa.' },
@@ -1364,8 +1390,9 @@ Sim.Data.casa = {
   kps: [
     K('kp_c_visita', 'Receber visita', 'Seu Raimundo me recebeu na porta de casa e falou em café antes de perguntar o que eu queria.', 'raimundo'),
     K('kp_c_cafe', 'O café dele', 'Coei o café com Seu Raimundo. Ele mede o pó com a colher do jeito que a mãe media: duas, nem mais, nem menos.', 'raimundo', { obj: 'fiado' }),
+    K('kp_c_sacola_pao', 'O pão esquecido', 'Levei o pão que Seu Raimundo deixou no balcão. Ele agradeceu duas vezes e disse que a cabeça anda cheia de lembrança e vazia de sacola.', 'raimundo'),
     K('kp_c_rotina', 'A manhã dele', 'Ele arruma a cama, rega a planta, reza e só depois sai pra padaria. Não pula nenhuma etapa.', 'raimundo'),
-    K('kp_c_mae', 'O pão de sexta', 'A mãe dele deixava o pão na porta de cada vizinho. Quem podia pagava na hora; quem não podia, na sexta. O fiado dele não é falta de dinheiro: é herança.', 'raimundo', { obj: 'fiado' }),
+    K('kp_c_mae', 'O pão de sexta', 'A mãe dele deixava o pão na porta de cada vizinho. Quem podia pagava na hora; quem não podia, na sexta. O fiado dele vem de casa; a mãe já anotava assim.', 'raimundo', { obj: 'fiado' }),
     K('kp_c_convite', 'O convite do dominó', 'Seu Raimundo me chamou pra ver o dominó na calçada. Disse que dominó se aprende olhando.', 'raimundo'),
     K('kp_c_assinar', 'O que ele não assina', 'Seu Raimundo só assina o que sabe ler, e mostra pra vó antes. Isso também é um jeito de se proteger do Programa.', 'raimundo', { obj: 'programa' }),
     K('kp_c_fogao', 'O fogão', 'Quatro bocas, duas em uso. O resto está limpo demais pra quem cozinha todo dia.', 'lugar'),
@@ -1376,7 +1403,7 @@ Sim.Data.casa = {
     K('kp_c_retrato', 'A mãe, de lenço', 'Retrato oval de uma senhora de lenço branco. O mesmo lenço da moça da fotografia da padaria.', 'lugar', { obj: 'fiado' }),
     K('kp_c_armario', 'O paletó de domingo', 'Um paletó bem passado e camisas remendadas com linha da mesma cor. Cuida do que tem.', 'lugar'),
     K('kp_c_radio', 'O rádio de cabeceira', 'Está na mesma estação do rádio da vó. Óculos com a haste colada com esparadrapo ao lado.', 'lugar'),
-    K('kp_c_colcha', 'A colcha de retalhos', 'Grande demais para uma cama só: foi feita para uma casa com mais gente do que cabe nela hoje.', 'lugar'),
+    K('kp_c_colcha', 'A colcha de retalhos', 'Grande demais para uma cama só. Alguém a fez pensando numa casa mais cheia do que esta hoje.', 'lugar'),
     K('kp_c_mesa', 'A mesa posta para um', 'A toalha branca, a segunda cadeira puxada. Como se alguém pudesse chegar.', 'lugar'),
     K('kp_c_domino', 'A caixa de dominó', 'Faltava o seis-seis; ele fez outra pedra de madeira e pintou os pontos. Joga assim mesmo.', 'lugar'),
     K('kp_c_cafe_juntos', 'Café na mesa dele', 'Tomei café sentada na mesa de Seu Raimundo. Ele serve devagar, fala pouco e conta mais quando ninguém pergunta tudo de uma vez.', 'raimundo'),
@@ -1785,7 +1812,7 @@ RD.spots = {
 const A = (t, tipo, o) => Object.assign({ t: T(t), tipo }, o || {});
 RD.agenda = {
   raimundo: [A('07:03', 'sair', { porta: 'porta_sobrado' }), A('07:04', 'sentar', { assento: 'E' }), A('08:40', 'levantar'), A('08:40', 'ir', { spot: 'porta_padaria' }), A('08:41', 'entrar', { porta: 'porta_padaria', dur: 14 }),
-             A('08:56', 'sair', { porta: 'porta_padaria' }), A('08:57', 'sentar', { assento: 'E' }), A('10:32', 'levantar'), A('10:32', 'ir', { spot: 'porta_sobrado' }), A('10:33', 'entrar', { porta: 'porta_sobrado', dur: 300 })],
+             A('08:56', 'sair', { porta: 'porta_padaria' }), A('08:57', 'sentar', { assento: 'E' }), A('09:58', 'levantar'), A('09:58', 'ir', { spot: 'porta_sobrado' }), A('10:00', 'entrar', { porta: 'porta_sobrado', dur: 300 })],
   ze:       [A('07:00', 'sair', { porta: 'porta_b0' }), A('07:01', 'sentar', { assento: 'D' })],
   nonato:   [A('07:00', 'sair', { porta: 'porta_verde' }), A('07:01', 'sentar', { assento: 'F' }), A('11:20', 'levantar'), A('11:20', 'ir', { spot: 'porta_verde' }), A('11:21', 'entrar', { porta: 'porta_verde', dur: 300 })],
   bela:     [A('07:06', 'sair', { porta: 'porta_assoc' }), A('07:07', 'sentar', { assento: 'T' }), A('10:00', 'levantar'), A('10:00', 'ir', { spot: 'porta_lateral' }), A('10:01', 'entrar', { porta: 'porta_lateral', dur: 300 })],
@@ -1912,7 +1939,19 @@ RD.dom = {
   reage_bom: ['Boa, parceiro!', 'Isso!', 'Assim se joga.'], reage_ruim: ['Era essa mesmo?', 'Ai, ai.', 'Vai começar...'],
 };
 // pontos de conhecimento (vão para as anotações da rua)
+// lata colaborativa do bairro, explicada a Lia antes da primeira mão (proposta · revisar com leitura cultural)
+RD.lata = [
+  ['nonato', 'Antes de embaralhar: a lata passou por aqui hoje?'],
+  ['raimundo', 'Passou. Pus a minha. O gás da Dona Cícera acaba essa semana.'],
+  ['ze', 'Menina, a lata é assim. Quem pode, põe um trocado. Quem aperta, tira. Ninguém pergunta o motivo.'],
+  ['bela', 'Fica na mesa da Dona Áurea. Todo mundo sabe onde está e ninguém mexe sem precisar.'],
+  ['nonato', 'Eu ainda queria um caderno. Quanto entrou, quanto saiu, tudo escrito.'],
+  ['raimundo', 'Com caderno a lata vira cobrança, Nonato. Do jeito que está, ela anda na confiança.'],
+  ['bela', 'E de gente que lembra de repor quando o mês melhora.'],
+  ['ze', 'Pronto, resolvido. Agora eu embaralho.'],
+];
 RD.kp = {
+  kp_lata: ['A lata do bairro', 'Na mesa do dominó se explica a lata: quem pode põe um trocado, quem aperta tira, sem perguntar. Nonato queria caderno; Raimundo e Bela preferem a confiança.'],
   kp_dom_paciencia: ['Dominó pede paciência', 'Seu Raimundo joga devagar de propósito: quem tem pressa joga a pedra errada.'],
   kp_dom_pai: ['A mesa do pai', 'Seu Raimundo aprendeu dominó com o pai, na mesma calçada, no tempo do lampião a gás.'],
   kp_ray_sobrado: ['O sobrado e as medições', 'Seu Raimundo viu a casa do lado ser medida e ninguém perguntou nada a quem mora.'],
@@ -2452,6 +2491,15 @@ Sim.Rua.D.dicaSemAssunto = 'Você ainda não tem um motivo para puxar esse assun
         if (this.fase === 'pausado') { this.pausaT += dt; if (this.pausaT > 3 && this.pausaMsg < w.t - 25) { this.pausaMsg = w.t; const vaz = RD.ordem.find(s => !this.ocupante(s) || (this.ocupante(s) !== 'lia' && w.npcs[this.ocupante(s)].state !== 'Sitting')); const quem = RD.ordem.find(s => this.ocupante(s) && s !== vaz && w.npcs[this.ocupante(s)] && w.npcs[this.ocupante(s)].state === 'Sitting' && RD.dupla[s] !== RD.dupla[vaz]); if (quem) this.falaSeat(quem, ['Cadê o parceiro?', 'Vai esperar ele voltar?', 'Sem o quarto a mesa fica manca.'][Math.floor(w.rng() * 3)], 3.5); } }
         else this.fase = 'esperando';
         for (const s of RD.ordem) { const o = this.ocupante(s); if (o && o !== 'lia' && w.npcs[o].state === 'Sitting' && (w.npcs[o].anim === 'think' || w.npcs[o].anim === 'play')) w.npcs[o].setAnim('sit'); }
+        return;
+      }
+      if (!this.lataFeita) {                                                  // antes da primeira mão: a lata colaborativa (proposta, revisar)
+        const L = this.lata = this.lata || { i: 0, t: 2 }; L.t -= dt;
+        if (L.t <= 0) {
+          const e = RD.lata[L.i++];
+          if (!e) { this.lataFeita = true; if (RD.ordem.some(s => this.ocupante(s) === 'lia')) w.knowledge.award('kp_lata', { via: 'ouvida' }); }
+          else { const s = RD.ordem.find(q => this.ocupante(q) === e[0]); if (s) { this.falaSeat(s, e[1], 3.6); L.t = 3.9; } }
+        }
         return;
       }
       if (this.fase === 'esperando' || this.fase === 'pausado') { this.pensando = null; if (g.estado !== 'jogando') { this.fase = 'reagindo'; this.tt = 4.4; } else if (g.cadeia.length) { this.fase = 'jogando'; this.tt = 0; } else { this.fase = 'embaralhando'; this.tt = 0; } }
@@ -5699,6 +5747,8 @@ function pressAction() {
   if (S.fadeDir || p.act) return;
   if (p.sit) { p.sit.stand = true; return; }
   const t = nearestInteract(); if (!t) return;
+  if (t.sacola) { Sim.Sacola.pegar(SIM); return; }
+  if (t.n && (t.n.id || (t.n.def && t.n.def.id)) === 'raimundo' && Sim.Sacola.entrega(SIM)) return;
   if (t.atender) startAtender(); else if (t.n) startTalk(t.n.id); else startInteract(t.o);
 }
 function startAtender() {                           // Lia atende no balcão (proposta): pedido → separar → cobrar, ~4,6 s; mexer-se cancela e devolve o cliente à fila
@@ -5707,6 +5757,7 @@ function startAtender() {                           // Lia atende no balcão (pr
 function nearestInteract() {
   if (S.scene !== 'interior' || S.fadeDir || !SIM) return null;
   if (SIM.service && SIM.service.podeLia && !SIM.service.jobLia && S.p.x > 110 && S.p.x < 255 && S.p.y > 150 && S.p.y < 212) { const c = SIM.service.podeLia(); if (c) return { atender: c }; }   // perto do balcão com gente esperando: Lia atende
+  if (Sim.Sacola && Sim.Sacola.S.estado === 'balcao' && SIM.service && S.p.x > 110 && S.p.x < 255 && S.p.y > 150 && S.p.y < 212) return { sacola: 'pegar' };   // sacola esquecida no balcão
   let best = null, bd = 34;
   for (const n of SIM.mobiles()) { if (n.loc !== 'padaria' || n.state === 'Away') continue; const d = Math.hypot(S.p.x - n.x, (S.p.y - n.y) * 1.3); if (d < bd) { bd = d; best = { n }; } }
   if (best) return best;
@@ -5964,7 +6015,7 @@ function uiTick(dt) {
   else if (S.scene === 'interior') {
     if (S.p.y > YF - 30 && Math.abs(S.p.x - EXIT_X) <= 30) txt = 'Desça pela soleira para sair para a rua';
     else if (p_sitting()) txt = 'Sentada · qualquer tecla de movimento para levantar';
-    else if (!D.open && !S.p.act) { const t = nearestInteract(); if (t) txt = t.atender ? 'E · atender ' + t.atender.def.nome + ' · clique na pessoa para conversar' : t.n ? 'E · falar com ' + t.n.def.nome : 'E · ' + (t.o.tipo === 'examinar' ? 'examinar' : t.o.tipo === 'alternar' ? 'abrir / fechar' : t.o.id.startsWith('chair') ? 'sentar' : t.o.id === 'aparador' ? 'pegar água' : 'usar') + ' — ' + t.o.title; }
+    else if (!D.open && !S.p.act) { const t = nearestInteract(); if (t) txt = t.sacola ? 'E · pegar a sacola de pão do Seu Raimundo' : t.atender ? 'E · atender ' + t.atender.def.nome + ' · clique na pessoa para conversar' : t.n ? 'E · falar com ' + t.n.def.nome : 'E · ' + (t.o.tipo === 'examinar' ? 'examinar' : t.o.tipo === 'alternar' ? 'abrir / fechar' : t.o.id.startsWith('chair') ? 'sentar' : t.o.id === 'aparador' ? 'pegar água' : 'usar') + ' — ' + t.o.title; }
   }
   if (S.note && !D.open) { nt.style.display = 'block'; nt.textContent = S.note.text; h.style.display = 'none'; } else { nt.style.display = 'none'; h.style.display = txt && !D.open ? 'block' : 'none'; h.textContent = txt; }
   if (D.open && D.mode !== 'cena' && D.mode !== 'fim') { const n = SIM.npcs[D.id]; if (!n || n.loc !== 'padaria' || n.state === 'Away' || S.scene !== 'interior') closeDialog(); else if (Math.hypot(n.x - S.p.x, n.y - S.p.y) > 70 && !D.near) { closeDialog(); } }

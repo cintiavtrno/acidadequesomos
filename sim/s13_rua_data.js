@@ -68,7 +68,7 @@ RD.spots = {
 const A = (t, tipo, o) => Object.assign({ t: T(t), tipo }, o || {});
 RD.agenda = {
   raimundo: [A('07:03', 'sair', { porta: 'porta_sobrado' }), A('07:04', 'sentar', { assento: 'E' }), A('08:40', 'levantar'), A('08:40', 'ir', { spot: 'porta_padaria' }), A('08:41', 'entrar', { porta: 'porta_padaria', dur: 14 }),
-             A('08:56', 'sair', { porta: 'porta_padaria' }), A('08:57', 'sentar', { assento: 'E' }), A('10:32', 'levantar'), A('10:32', 'ir', { spot: 'porta_sobrado' }), A('10:33', 'entrar', { porta: 'porta_sobrado', dur: 300 })],
+             A('08:56', 'sair', { porta: 'porta_padaria' }), A('08:57', 'sentar', { assento: 'E' }), A('09:58', 'levantar'), A('09:58', 'ir', { spot: 'porta_sobrado' }), A('10:00', 'entrar', { porta: 'porta_sobrado', dur: 300 })],
   ze:       [A('07:00', 'sair', { porta: 'porta_b0' }), A('07:01', 'sentar', { assento: 'D' })],
   nonato:   [A('07:00', 'sair', { porta: 'porta_verde' }), A('07:01', 'sentar', { assento: 'F' }), A('11:20', 'levantar'), A('11:20', 'ir', { spot: 'porta_verde' }), A('11:21', 'entrar', { porta: 'porta_verde', dur: 300 })],
   bela:     [A('07:06', 'sair', { porta: 'porta_assoc' }), A('07:07', 'sentar', { assento: 'T' }), A('10:00', 'levantar'), A('10:00', 'ir', { spot: 'porta_lateral' }), A('10:01', 'entrar', { porta: 'porta_lateral', dur: 300 })],
@@ -195,7 +195,19 @@ RD.dom = {
   reage_bom: ['Boa, parceiro!', 'Isso!', 'Assim se joga.'], reage_ruim: ['Era essa mesmo?', 'Ai, ai.', 'Vai começar...'],
 };
 // pontos de conhecimento (vão para as anotações da rua)
+// lata colaborativa do bairro, explicada a Lia antes da primeira mão (proposta · revisar com leitura cultural)
+RD.lata = [
+  ['nonato', 'Antes de embaralhar: a lata passou por aqui hoje?'],
+  ['raimundo', 'Passou. Pus a minha. O gás da Dona Cícera acaba essa semana.'],
+  ['ze', 'Menina, a lata é assim. Quem pode, põe um trocado. Quem aperta, tira. Ninguém pergunta o motivo.'],
+  ['bela', 'Fica na mesa da Dona Áurea. Todo mundo sabe onde está e ninguém mexe sem precisar.'],
+  ['nonato', 'Eu ainda queria um caderno. Quanto entrou, quanto saiu, tudo escrito.'],
+  ['raimundo', 'Com caderno a lata vira cobrança, Nonato. Do jeito que está, ela anda na confiança.'],
+  ['bela', 'E de gente que lembra de repor quando o mês melhora.'],
+  ['ze', 'Pronto, resolvido. Agora eu embaralho.'],
+];
 RD.kp = {
+  kp_lata: ['A lata do bairro', 'Na mesa do dominó se explica a lata: quem pode põe um trocado, quem aperta tira, sem perguntar. Nonato queria caderno; Raimundo e Bela preferem a confiança.'],
   kp_dom_paciencia: ['Dominó pede paciência', 'Seu Raimundo joga devagar de propósito: quem tem pressa joga a pedra errada.'],
   kp_dom_pai: ['A mesa do pai', 'Seu Raimundo aprendeu dominó com o pai, na mesma calçada, no tempo do lampião a gás.'],
   kp_ray_sobrado: ['O sobrado e as medições', 'Seu Raimundo viu a casa do lado ser medida e ninguém perguntou nada a quem mora.'],

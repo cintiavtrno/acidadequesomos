@@ -28,14 +28,14 @@ Sim.Data.pessoas = {
     nome: 'Dandara', curto: 'Dandara', cor: '#c88aa0', papel: 'líder da associação de moradores', idade: 41,
     tracos: { sociavel: .6, paciencia: .35, determinada: .9, desconfiada: .6 },
     interesses: ['ata', 'associação', 'mãe doente'], necessidades: { cansaco: .35, social: .55, fome: .4 }, humor: 'normal',
-    olha: 2, visitas: [{ a: '07:45', jit: 3, estadia: [110, 165] }], pedido: { itens: { pao: 6, cafe: 1 }, fiado: false, papo: 4 }, paciencia: 30,
+    olha: 2, visitas: [{ a: '07:45', jit: 3, estadia: [110, 165] }], pedido: { itens: { pao: 6, cafe: 1 }, fiado: false, fiadoChance: .3, papo: 4 }, paciencia: 30,
     assentos: ['chair_a_back', 'chair_a_r', 'chair_b_back'],
   },
   lucia: {
     nome: 'Lúcia', curto: 'Lúcia', cor: '#e8a050', papel: 'técnica do Programa', idade: 34,
     tracos: { sociavel: .35, paciencia: .6, metodica: .9, cuidadosa: .8 },
     interesses: ['medir', 'prancheta', 'café'], necessidades: { cansaco: .5, social: .3, fome: .5 }, humor: 'normal',
-    visitas: [{ a: '07:38', jit: 3, estadia: [100, 160] }], pedido: { itens: { cafe: 1, pao: 1 }, fiado: false, papo: 2 }, paciencia: 50,
+    visitas: [{ a: '07:38', jit: 3, estadia: [100, 160] }], pedido: { itens: { cafe: 1, pao: 1 }, fiado: false, fiadoChance: .12, papo: 2 }, paciencia: 50,
     assentos: ['chair_a_l', 'chair_b_f', 'banco_2'], mede: ['porta', 'balcao', 'vitrine'], olha: 4,
   },
 };
@@ -71,7 +71,7 @@ Sim.Data.falas = {
     ],
     perguntar: {
       rua: [F('a_pr0', 'A rua é a casa maior. Tem gente que entra sem bater, mas tem que aprender a pedir licença.'), F('a_pr1', 'Cada porta daqui sabe o nome de quem mora. Isso vale mais que placa.', { conf: [2, 3] })],
-      caderneta: [F('a_pc0', 'Quem cobra é a caderneta, minha filha, não eu.'), F('a_pc1', 'Fiado é confiança. Dívida é coisa de banco.', { conf: [2, 3] })],
+      caderneta: [F('a_pc0', 'A caderneta é que cobra, minha filha. Eu só anoto.'), F('a_pc1', 'Fiado é confiança. Dívida é coisa de banco.', { conf: [2, 3] })],
       altar: [F('a_pa0', 'É São Jorge. E é o outro nome também, o que a minha avó não dizia alto. É os dois.', { }, { revisar: true }), F('a_pa1', 'A vela fica acesa porque a rua precisa de quem guarde.', { conf: [2, 3] }, { revisar: true })],
       gaveta: [F('a_pg0', 'Gaveta é de papel, minha filha. E papel a gente não mostra pra todo mundo.'), F('a_pg1', 'Hoje não. Quando eu decidir o que fazer, tu sabe primeiro.', { flag: 'lia_pressionou' })],
       casa: [F('a_pk0', 'Lá em cima é nossa casa. Um dia a gente sobe junto e eu te mostro com calma.')],
@@ -188,6 +188,8 @@ Sim.Data.reacoes = {
   radio: { raimundo: 'Escutou isso, Áurea? Já falaram em medir tudo.', dandara: 'Aí está. Já falaram. Falta só dizer a quem.', lucia: '(Lúcia abaixa os olhos para a prancheta.)', aurea: '(A vó baixa o volume do rádio.)' },
   desistiu: { raimundo: 'Ih, a fila tá longa. Volto mais tarde.', dandara: 'Eu volto depois. Não dá pra esperar.', lucia: 'Preciso voltar ao trabalho.' },
   furada: { raimundo: 'Pode passar, minha filha.', lucia: '(Lúcia ergue as sobrancelhas, mas não diz nada.)', dandara: 'Obrigada. Eu retribuo.' },
+  // proposta: fala extra quando o vizinho pede fiado (revisar)
+  pedidoFiado: { dandara: 'A reunião atrasou o pagamento do mês. Anota pra mim, Dona Áurea? Semana que vem eu acerto.', lucia: 'Esqueci a carteira no escritório. A senhora anota até amanhã?' },
   fiado_visto: { raimundo: 'Anota aí, Áurea. Sexta eu acerto.', lucia: '(Lúcia anota algo na prancheta, discreta.)' },
   fila_cheia: { raimundo: 'Tá cheio hoje, hein.', dandara: 'Assim eu não chego na reunião.', lucia: 'Vou esperar. Não tem problema.' },
   procura: { lucia: 'A senhora viu Seu Raimundo hoje?', raimundo: 'Dandara já passou por aqui?', dandara: 'Seu Raimundo já veio, Dona Áurea?' },

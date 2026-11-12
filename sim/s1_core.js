@@ -36,3 +36,23 @@ Sim.WorldClock = class {
   periodo() { const h = this.hh; return h < 9 ? 'manhã cedo' : h < 11 ? 'manhã' : h < 13 ? 'fim de manhã' : 'tarde'; }
   at(hhmm) { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; }
 };
+
+// Missão da sacola (proposta): Raimundo esquece o pão no balcão; Lia leva ao sobrado perto das 10h. Estado compartilhado entre as janelas do mundo.
+Sim.Sacola = {
+  H() { try { const P = window.parent; if (P && P !== window && P.MUNDO_BRIDGE) return P; } catch (e) { } return typeof window !== 'undefined' ? window : globalThis; },
+  get S() { const H = this.H(); return H.__sacola || (H.__sacola = { estado: 'nada' }); },
+  esquece(w) {
+    const S = this.S; if (S.estado !== 'nada') return; S.estado = 'balcao';
+    const v = w.npcs && w.npcs.aurea; if (v && w.dialogue) w.dialogue.speak(v, 'Ih, o Raimundo deixou o pão em cima do balcão. Lia, leva lá no sobrado, mas só pelas dez, que ele já está em casa.');
+  },
+  pegar(w) {
+    const S = this.S; if (S.estado !== 'balcao') return false; S.estado = 'lia';
+    const v = w.npcs && w.npcs.aurea; if (v && w.dialogue) w.dialogue.speak(v, 'Isso, minha filha. O sobrado amarelo, na rua de cima. Ele agradece com café.');
+    if (w.bus) w.bus.emit('sacola_pegou', {}); return true;
+  },
+  entrega(w) {                                   // chamado na casa, perto de Raimundo
+    const S = this.S; if (S.estado !== 'lia' || !w.casaPick) return false; S.estado = 'entregue';
+    const R = w.npcs.raimundo; try { w.dialogue.speak(R, 'O pão! Cabeça de quem tem muita coisa pra lembrar. Fica pra um café, minha filha?'); } catch (e) { }
+    w.rel.change('raimundo', 'lia', { aff: .08, trust: .1 }, 'sacola'); w.knowledge.award('kp_c_sacola_pao', { via: 'entregou' }); if (w.bus) w.bus.emit('sacola_entregue', {}); return true;
+  },
+};

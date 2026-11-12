@@ -1,0 +1,218 @@
+{
+ "bandeira_m2": 3.8,
+ "bandeira_pct": 0.35,
+ "parede_livre_m2": 10.84,
+ "meninos_visivel": {
+  "m6": 1.0,
+  "junior": 0.95,
+  "m5": 0.9,
+  "m1": 0.74,
+  "m4": 0.74,
+  "m2": 1.0,
+  "m3": 1.0
+ },
+ "comida_visivel": {
+  "E09": 1.0,
+  "E03": 1.0,
+  "E08": 1.0,
+  "E04": 0.57,
+  "E07": 0.57,
+  "E02": 1.0,
+  "E05": 1.0,
+  "E06": 1.0,
+  "E10": 1.0
+ },
+ "n_itens_menores": 41,
+ "rotas_C1": [
+  {
+   "de": "soleira",
+   "para": "banner",
+   "lia_m": 8.6,
+   "npc_m": 8.6,
+   "folga_npc": 0.3
+  },
+  {
+   "de": "porta de serviço",
+   "para": "aparador",
+   "lia_m": 2.9,
+   "npc_m": 2.9,
+   "folga_npc": 0.3
+  },
+  {
+   "de": "cozinha",
+   "para": "aparador",
+   "lia_m": 7.6,
+   "npc_m": 7.6,
+   "folga_npc": 0.3
+  },
+  {
+   "de": "aparador",
+   "para": "borda da faixa de respeito (Zefa dá 1 passo para dentro)",
+   "lia_m": 5.3,
+   "npc_m": 5.3,
+   "folga_npc": 0.4
+  },
+  {
+   "de": "soleira",
+   "para": "mesa frente",
+   "lia_m": 9.7,
+   "npc_m": 9.7,
+   "folga_npc": 0.5
+  },
+  {
+   "de": "soleira",
+   "para": "dominó",
+   "lia_m": 19.2,
+   "npc_m": 19.3,
+   "folga_npc": 0.3
+  },
+  {
+   "de": "recepção",
+   "para": "lavatório",
+   "lia_m": 5.7,
+   "npc_m": 5.7,
+   "folga_npc": 0.3
+  },
+  {
+   "de": "cozinha",
+   "para": "mesa (lado oeste, por baixo)",
+   "lia_m": 7.6,
+   "npc_m": 7.6,
+   "folga_npc": 0.3
+  },
+  {
+   "de": "portão",
+   "para": "aparador",
+   "lia_m": 15.5,
+   "npc_m": 15.5,
+   "folga_npc": 0.3
+  }
+ ],
+ "verificacoes": [
+  {
+   "nome": "1a. todo objeto menor está dentro do suporte e na altura do topo (sem flutuar nem atravessar)",
+   "ok": true,
+   "info": "[]"
+  },
+  {
+   "nome": "1b. nenhum objeto sobre a mesma superfície se sobrepõe a outro",
+   "ok": true,
+   "info": "[]"
+  },
+  {
+   "nome": "1c. item no chão (S10) não sobrepõe nenhum objeto aprovado",
+   "ok": true,
+   "info": "[]"
+  },
+  {
+   "nome": "1d. nenhuma panela fica no chão sem justificativa funcional",
+   "ok": true,
+   "info": "[]"
+  },
+  {
+   "nome": "2a. bandeira dentro da parede da casa (X≤11, Z≤4) e à direita do puxadinho (X≥7,6)",
+   "ok": true,
+   "info": "(9.325, 10.875, 1.35, 3.8)"
+  },
+  {
+   "nome": "2b. bandeira não cobre a porta de serviço (X 8,0–9,2; Z≤2,3)",
+   "ok": true,
+   "info": "9.325"
+  },
+  {
+   "nome": "2c. nada sobre o aparador toca a bandeira (folga ≥ 0,05 m abaixo de Z 1,25)",
+   "ok": true,
+   "info": "[('E12', 0.93), ('E13', 1.02), ('E14', 1.1800000000000002), ('S12', 1.08), ('S16', 1.0)]"
+  },
+  {
+   "nome": "2d. proporção: 3.80 m² = 35% do pano de parede livre (10.84 m²); decisão da Cíntia (12/11): reduzida um pouco, meta 33–38%",
+   "ok": true,
+   "info": ""
+  },
+  {
+   "nome": "2e. Lia alcança o ponto de examinar a bandeira (sem entrar em zona de respeito) a ≤ 2,2 m da parede",
+   "ok": true,
+   "info": "(10.1, 1.95)"
+  },
+  {
+   "nome": "3a. nenhum objeto aprovado (mesa, cadeira, banco, móvel) dentro da toalha nem da faixa de respeito de 0,4 m",
+   "ok": true,
+   "info": "[]"
+  },
+  {
+   "nome": "3b. toalha dentro do piso, no chão livre à esquerda (sem tocar tanque, fogão, bancada ou talha, y≥2,5 m)",
+   "ok": true,
+   "info": ""
+  },
+  {
+   "nome": "3c. sete meninos em roda: menor distância entre dois meninos 0.82 m (≥ 0,55 m)",
+   "ok": true,
+   "info": "0.82"
+  },
+  {
+   "nome": "3d. os sete lugares estão dentro da toalha com 0,25 m de folga",
+   "ok": true,
+   "info": ""
+  },
+  {
+   "nome": "3e. cada pratinho a 0.47 m do menino (alcance com as mãos ≤ 0,5 m)",
+   "ok": true,
+   "info": ""
+  },
+  {
+   "nome": "4a. cada menino ≥ 50% visível na vista 3/4 (pior: 74%)",
+   "ok": true,
+   "info": "{'m6': np.float64(1.0), 'junior': np.float64(0.95), 'm5': np.float64(0.9), 'm1': np.float64(0.74), 'm4': np.float64(0.74), 'm2': np.float64(1.0), 'm3': np.float64(1.0)}"
+  },
+  {
+   "nome": "4b. a comida (bacia central, pratinhos e bandeja) ≥ 40% visível (pior: 57%)",
+   "ok": true,
+   "info": "{'E09': np.float64(1.0), 'E03': np.float64(1.0), 'E08': np.float64(1.0), 'E04': np.float64(0.57), 'E07': np.float64(0.57), 'E02': np.float64(1.0), 'E05': np.float64(1.0), 'E06': np.float64(1.0), 'E10': np.float64(1.0)}"
+  },
+  {
+   "nome": "5a. fase C1: 22 pessoas (Lia + 14 adultos/jovens + 7 meninos); distância mínima 0.80 m (caio–bia); 7.8 m² livres/pessoa",
+   "ok": true,
+   "info": "[]"
+  },
+  {
+   "nome": "6a. fase C1: todas as rotas de serviço e circulação existem com a toalha bloqueada (Lia e NPC)",
+   "ok": true,
+   "info": "[]"
+  },
+  {
+   "nome": "6b. folga mínima de 0,30 m do eixo do corpo em todas as rotas da C1",
+   "ok": true,
+   "info": "[]"
+  },
+  {
+   "nome": "6c. a toalha e a faixa de respeito não são andáveis na fase C1",
+   "ok": true,
+   "info": ""
+  },
+  {
+   "nome": "6d. corredor entre o aparador (Y 1,0) e a faixa de respeito: 1.30 m (≥ 1,2 m: uma pessoa serve e outra passa)",
+   "ok": true,
+   "info": "1.3"
+  },
+  {
+   "nome": "7a. todo objeto menor está a ≤ 0,95 m de seu ponto de uso (alcance do braço)",
+   "ok": true,
+   "info": "[]"
+  },
+  {
+   "nome": "7b. pontos de uso novos livres e alcançáveis",
+   "ok": true,
+   "info": "[]"
+  },
+  {
+   "nome": "7c. servir e receber lado a lado no aparador (pontos F12a e F12b a 1.10 m ≥ 0,75 m)",
+   "ok": true,
+   "info": "1.1"
+  },
+  {
+   "nome": "7d. a oferta aos santos fica a mais de 1,0 m do ponto de serviço F12b",
+   "ok": true,
+   "info": "2.33"
+  }
+ ]
+}

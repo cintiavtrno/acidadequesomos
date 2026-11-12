@@ -160,6 +160,7 @@ Sim.Decision = {
   },
   sair(n, w) {
     if (n.seat) { w.seatOcc[n.seat.id] = null; n.seat = null; }
+    if (n.id === 'raimundo' && n.ses.served) Sim.Sacola.esquece(w);
     w.service.sair(n); const dx = Sim.Nav.nearestFree(240, w.pontos.porta[1] - 6); n.goTo(dx[0], dx[1]); n.path.push([240, 244]); n.setState('Leaving'); w.bus.emit('saindo', { id: n.id, atendido: n.ses.served, desistiu: n.ses.gaveUp });
     const v = n.def.visitas[0];
     if (n.ses.gaveUp && !n.ses.retry && (w.persist.evita[n.id] || 0) < 2) n.visitas.push({ at: w.clock.min + 22 + w.rng.range(0, 6), retry: true, estadia: [30, 50] });

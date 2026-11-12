@@ -44,12 +44,15 @@ Sim.Service = class {
     if (n.dialogLia) w.bus.emit('dialogo_interrompido', { id: n.id });
     this.jobLia = { cust: n.id, t: 0, stage: 'pedir', dit: false }; n.setState('Ordering'); w.bus.emit('lia_atende', { id: n.id }); return n;
   }
+  // fiado por visita: Raimundo sempre; os outros, às vezes (proposta)
+  fiadoDe(n) { const p = n.def.pedido; if (n.ses.fiado === undefined) n.ses.fiado = p.fiado === true || (!!p.fiadoChance && this.w.rng() < p.fiadoChance); return n.ses.fiado; }
+  pedeFiado(n) { const F = Sim.Data.reacoes.pedidoFiado && Sim.Data.reacoes.pedidoFiado[n.id]; if (F && n.def.pedido.fiado !== true && this.fiadoDe(n)) this.w.dialogue.speak(n, F); }
   cancelaLia() { const j = this.jobLia; if (!j) return; const n = this.w.npcs[j.cust]; this.jobLia = null; if (n && n.state === 'Ordering' && this.queue.includes(n.id)) { n.setState('Waiting'); n.ses.slotI = -1; } this.w.bus.emit('lia_largou', { id: j.cust }); }
   tickLia(dt) {
     const j = this.jobLia; if (!j) return; const w = this.w, n = w.npcs[j.cust];
     if (!n || n.loc !== 'padaria') { this.jobLia = null; return; }
     j.t += dt; const p = n.def.pedido;
-    if (j.stage === 'pedir') { if (!j.dit) { j.dit = true; const L = w.dialogue.line(n.id, 'pedido', w.dialogue.ctx(n.id)); if (L) w.dialogue.speak(n, L.texto); } if (j.t > 1.2) { j.stage = 'preparar'; j.t = 0; } }
+    if (j.stage === 'pedir') { if (!j.dit) { j.dit = true; const L = w.dialogue.line(n.id, 'pedido', w.dialogue.ctx(n.id)); if (L) w.dialogue.speak(n, L.texto); this.pedeFiado(n); } if (j.t > 1.2) { j.stage = 'preparar'; j.t = 0; } }
     else if (j.stage === 'preparar') { if (j.t > 2.2) { for (const k in p.itens) { const q = Math.min(p.itens[k], this.stock[k]); this.stock[k] -= q; if (q < p.itens[k]) w.bus.emit('falta', { item: k }); } j.stage = 'cobrar'; j.t = 0; this.cobra(n, w.npcs.aurea, true); } }
     else if (j.stage === 'cobrar' && j.t > 1.2) {
       this.jobLia = null; this.sair(n); n.ses.served = true; w.stats.servidos++; w.stats.pela_lia = (w.stats.pela_lia || 0) + 1; w.stats.esperas.push(Math.round(w.clock.min - n.ses.filaDesde));
@@ -70,7 +73,7 @@ Sim.Service = class {
     j.t += dt; const p = n.def.pedido;
     const falar = (id, t) => { const N = w.npcs[id]; w.dialogue.speak(N, t); };
     switch (j.stage) {
-      case 'ir': if (!v.stepMove(dt)) { v.face = 'down'; v.setAnim('serve_idle'); j.stage = 'pedir'; j.t = 0; const L = w.dialogue.line(n.id, 'pedido', w.dialogue.ctx(n.id)); if (L) falar(n.id, L.texto); if (p.fiado && w.liaPerto(n, 95)) w.knowledge.award('kp_raimundo_fiado', { via: 'ouvida' }); } break;
+      case 'ir': if (!v.stepMove(dt)) { v.face = 'down'; v.setAnim('serve_idle'); j.stage = 'pedir'; j.t = 0; const L = w.dialogue.line(n.id, 'pedido', w.dialogue.ctx(n.id)); if (L) falar(n.id, L.texto); this.pedeFiado(n); if (n.id === 'raimundo' && p.fiado && w.liaPerto(n, 95)) w.knowledge.award('kp_raimundo_fiado', { via: 'ouvida' }); } break;
       case 'pedir': v.face = 'down'; if (j.t > 2.8) { j.stage = 'anotar'; j.t = 0; v.setAnim('serve_write'); const B = w.dialogue.line('aurea', 'balcao', w.dialogue.ctx('aurea', {})); if (B) falar('aurea', B.texto); } break;
       case 'anotar': if (j.t > 2.2) { j.stage = 'preparar'; j.t = 0; v.setAnim('serve_wrap'); } break;
       case 'preparar': if (j.t > 4.2) { for (const k in p.itens) { const q = Math.min(p.itens[k], this.stock[k]); this.stock[k] -= q; if (q < p.itens[k]) w.bus.emit('falta', { item: k }); } j.stage = p.papo && w.rng.chance(.9) ? 'papo' : 'entregar'; j.t = 0; j.i = 0; v.setAnim('serve_idle'); if (j.stage === 'papo') { const bank = Sim.Data.bate_papo_balcao[n.id]; j.papo = bank ? w.rng.pick(bank) : null; j.pw = 0; } } break;
@@ -80,12 +83,12 @@ Sim.Service = class {
         v.setAnim(j.i % 2 ? 'serve_idle' : 'serve_wrap'); n.setAnim('talk'); if (j.t > 40) { j.stage = 'entregar'; j.t = 0; } break;
       }
       case 'entregar': v.setAnim('serve_give'); if (j.t > 1.8) { j.stage = 'cobrar'; j.t = 0; v.setAnim('serve_write'); this.cobra(n, v); } break;
-      case 'cobrar': if (j.t > (p.fiado ? 3 : 2)) { this.fim(n, v); } break;
+      case 'cobrar': if (j.t > (this.fiadoDe(n) ? 3 : 2)) { this.fim(n, v); } break;
     }
   }
   cobra(n, v, mudo) {
     const w = this.w, p = n.def.pedido; let val = 0; for (const k in p.itens) val += p.itens[k] * Sim.Data.precos[k];
-    if (p.fiado) {
+    if (this.fiadoDe(n)) {
       const f = this.fiado[n.id] = this.fiado[n.id] || { n: 0, valor: 0 }; f.n++; f.valor += val; w.persist.fiado[n.id] = f;
       w.mem.remember('aurea', 'fiado_' + n.id); const B = w.dialogue.line('aurea', 'balcao', w.dialogue.ctx('aurea', { estado: 'fiado' })); if (B && !mudo) w.dialogue.speak(v, B.texto);
       w.bus.emit('fiado', { id: n.id, valor: val });

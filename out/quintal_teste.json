@@ -1,0 +1,411 @@
+{
+ "area_piso_m2": 224.0,
+ "area_livre_adulto_m2": 172.2,
+ "frac_livre": 0.769,
+ "mundo_px": [
+  720,
+  270
+ ],
+ "ocupacao": {
+  "A": {
+   "n": 6,
+   "dmin": 1.95,
+   "par": [
+    "zefa",
+    "cicera"
+   ],
+   "livre_por_pessoa": 28.7,
+   "problemas": []
+  },
+  "B": {
+   "n": 14,
+   "dmin": 0.9,
+   "par": [
+    "aurea",
+    "dandara"
+   ],
+   "livre_por_pessoa": 12.3,
+   "problemas": []
+  },
+  "C": {
+   "n": 16,
+   "dmin": 0.6,
+   "par": [
+    "caio",
+    "bia"
+   ],
+   "livre_por_pessoa": 10.8,
+   "problemas": []
+  },
+  "D": {
+   "n": 17,
+   "dmin": 0.6,
+   "par": [
+    "caio",
+    "bia"
+   ],
+   "livre_por_pessoa": 10.1,
+   "problemas": []
+  }
+ },
+ "rotas": [
+  {
+   "de": "soleira",
+   "para": "recepcao",
+   "lia_m": 1.2,
+   "npc_m": 1.2,
+   "folga_lia": 1.12,
+   "folga_npc": 1.12,
+   "reta_m": 1.0
+  },
+  {
+   "de": "soleira",
+   "para": "cozinha_trempe",
+   "lia_m": 6.7,
+   "npc_m": 6.7,
+   "folga_lia": 0.5,
+   "folga_npc": 0.5,
+   "reta_m": 6.3
+  },
+  {
+   "de": "soleira",
+   "para": "mesa_frente",
+   "lia_m": 9.7,
+   "npc_m": 9.7,
+   "folga_lia": 0.8,
+   "folga_npc": 0.8,
+   "reta_m": 9.1
+  },
+  {
+   "de": "soleira",
+   "para": "dominó",
+   "lia_m": 20.1,
+   "npc_m": 20.1,
+   "folga_lia": 0.6,
+   "folga_npc": 0.6,
+   "reta_m": 18.2
+  },
+  {
+   "de": "recepcao",
+   "para": "servico_aparador",
+   "lia_m": 9.6,
+   "npc_m": 9.6,
+   "folga_lia": 0.6,
+   "folga_npc": 0.6,
+   "reta_m": 9.0
+  },
+  {
+   "de": "cozinha_trempe",
+   "para": "servico_aparador",
+   "lia_m": 8.4,
+   "npc_m": 8.4,
+   "folga_lia": 0.5,
+   "folga_npc": 0.5,
+   "reta_m": 8.0
+  },
+  {
+   "de": "cozinha_bancada",
+   "para": "mesa_oeste",
+   "lia_m": 5.6,
+   "npc_m": 5.6,
+   "folga_lia": 0.5,
+   "folga_npc": 0.5,
+   "reta_m": 5.3
+  },
+  {
+   "de": "porta_servico",
+   "para": "servico_aparador",
+   "lia_m": 3.8,
+   "npc_m": 3.8,
+   "folga_lia": 0.6,
+   "folga_npc": 0.6,
+   "reta_m": 3.1
+  },
+  {
+   "de": "porta_servico",
+   "para": "mesa_frente",
+   "lia_m": 8.8,
+   "npc_m": 8.8,
+   "folga_lia": 0.6,
+   "folga_npc": 0.6,
+   "reta_m": 7.2
+  },
+  {
+   "de": "servico_aparador",
+   "para": "mesa_leste",
+   "lia_m": 7.9,
+   "npc_m": 7.9,
+   "folga_lia": 0.6,
+   "folga_npc": 0.6,
+   "reta_m": 7.0
+  },
+  {
+   "de": "mesa_leste",
+   "para": "dominó",
+   "lia_m": 6.9,
+   "npc_m": 6.9,
+   "folga_lia": 0.7,
+   "folga_npc": 0.7,
+   "reta_m": 4.5
+  },
+  {
+   "de": "dominó",
+   "para": "cadeira_rita",
+   "lia_m": 1.9,
+   "npc_m": 1.9,
+   "folga_lia": 0.6,
+   "folga_npc": 0.6,
+   "reta_m": 1.7
+  },
+  {
+   "de": "portao",
+   "para": "cadeira_rita",
+   "lia_m": 2.9,
+   "npc_m": 2.9,
+   "folga_lia": 0.6,
+   "folga_npc": 0.6,
+   "reta_m": 2.7
+  },
+  {
+   "de": "portao",
+   "para": "mesa_frente",
+   "lia_m": 16.3,
+   "npc_m": 16.3,
+   "folga_lia": 0.63,
+   "folga_npc": 0.63,
+   "reta_m": 13.5
+  },
+  {
+   "de": "criancas",
+   "para": "servico_aparador",
+   "lia_m": 10.7,
+   "npc_m": 10.7,
+   "folga_lia": 0.6,
+   "folga_npc": 0.6,
+   "reta_m": 6.6
+  },
+  {
+   "de": "tabuleiro",
+   "para": "mesa_frente",
+   "lia_m": 8.6,
+   "npc_m": 8.6,
+   "folga_lia": 0.5,
+   "folga_npc": 0.5,
+   "reta_m": 6.1
+  },
+  {
+   "de": "cozinha_trempe",
+   "para": "portao",
+   "lia_m": 24.6,
+   "npc_m": 24.6,
+   "folga_lia": 0.5,
+   "folga_npc": 0.5,
+   "reta_m": 23.4
+  }
+ ],
+ "alternativas": {
+  "Faixa de trás": 16.8,
+  "Faixa da frente": 15.7
+ },
+ "copa_bbox_px": [
+  494,
+  0,
+  638,
+  113
+ ],
+ "area_sob_copa_m2": 6.5,
+ "copa_cobre_ate_y_m": 1.85,
+ "sob_copa": {
+  "A": [],
+  "B": [],
+  "C": [],
+  "D": []
+ },
+ "interativos_sob_copa": [],
+ "sob_puxadinho": [
+  "F08",
+  "F09",
+  "F10",
+  "F11",
+  "D02",
+  "D03"
+ ],
+ "puxadinho_px": {
+  "beiral_frontal_y": 144.8,
+  "juncao_parede_y": 42.4,
+  "x0": 24.0,
+  "x1": 206.39999999999998
+ },
+ "telhado_rita_px": {
+  "topo_muro": 66.4,
+  "beiral": 32.8,
+  "cume": -28.0
+ },
+ "verificacoes": [
+  {
+   "nome": "1a. área livre andável (corpo r=0,25 m)",
+   "ok": true,
+   "info": "172.2 de 224 m² = 77%"
+  },
+  {
+   "nome": "1b. nenhum objeto se sobrepõe a outro",
+   "ok": true,
+   "info": "[]"
+  },
+  {
+   "nome": "1c. todos os objetos estão dentro do piso",
+   "ok": true,
+   "info": "[]"
+  },
+  {
+   "nome": "1d. zona de respeito da oferenda sem outros objetos",
+   "ok": true,
+   "info": "[]"
+  },
+  {
+   "nome": "1e. mundo projetado = 24+28·24+24 por 124+8·16+borda",
+   "ok": true,
+   "info": ""
+  },
+  {
+   "nome": "2A. fase A: 6 pessoas, distância mínima 1.95 m (zefa–cicera), 28.7 m² livres/pessoa",
+   "ok": true,
+   "info": "[]"
+  },
+  {
+   "nome": "2B. fase B: 14 pessoas, distância mínima 0.90 m (aurea–dandara), 12.3 m² livres/pessoa",
+   "ok": true,
+   "info": "[]"
+  },
+  {
+   "nome": "2C. fase C: 16 pessoas, distância mínima 0.60 m (caio–bia), 10.8 m² livres/pessoa",
+   "ok": true,
+   "info": "[]"
+  },
+  {
+   "nome": "2D. fase D: 17 pessoas, distância mínima 0.60 m (caio–bia), 10.1 m² livres/pessoa",
+   "ok": true,
+   "info": "[]"
+  },
+  {
+   "nome": "2Ab. fase A: lugares sentados sem repetição (0)",
+   "ok": true,
+   "info": ""
+  },
+  {
+   "nome": "2Bb. fase B: lugares sentados sem repetição (0)",
+   "ok": true,
+   "info": ""
+  },
+  {
+   "nome": "2Cb. fase C: lugares sentados sem repetição (14)",
+   "ok": true,
+   "info": ""
+  },
+  {
+   "nome": "2Db. fase D: lugares sentados sem repetição (7)",
+   "ok": true,
+   "info": ""
+  },
+  {
+   "nome": "2E. capacidade: lugares sentados ≥ 17 pessoas",
+   "ok": true,
+   "info": "19 lugares"
+  },
+  {
+   "nome": "3a. todo lugar sentado tem aproximação alcançável (Lia e NPC)",
+   "ok": true,
+   "info": "[]"
+  },
+  {
+   "nome": "3b. todo ponto de parada é alcançável (Lia e NPC)",
+   "ok": true,
+   "info": "[]"
+  },
+  {
+   "nome": "3c. pontos de parada a ≤ 0,9 m do objeto",
+   "ok": true,
+   "info": "[]"
+  },
+  {
+   "nome": "3d. espaço livre atrás de cada lugar para sentar/levantar",
+   "ok": true,
+   "info": "[]"
+  },
+  {
+   "nome": "4a. todas as rotas existem (Lia e NPC) sem atravessar móveis/paredes",
+   "ok": true,
+   "info": "[]"
+  },
+  {
+   "nome": "4b. folga mínima de 0,30 m do eixo do corpo às colisões em todas as rotas",
+   "ok": true,
+   "info": "[]"
+  },
+  {
+   "nome": "4c. sem a faixa de trás OU sem a faixa da frente ainda há caminho cozinha→mesa (rota não é fixa)",
+   "ok": true,
+   "info": "{'Faixa de trás': 16.8, 'Faixa da frente': 15.7}"
+  },
+  {
+   "nome": "4d. Lia não consegue andar na zona de respeito da oferenda",
+   "ok": true,
+   "info": ""
+  },
+  {
+   "nome": "4e. pontos de nascimento na soleira e no portão são livres",
+   "ok": true,
+   "info": "{'soleira': True, 'portao': True}"
+  },
+  {
+   "nome": "4f. seis pessoas lado a lado na soleira (0,6 m entre centros) cabem na faixa de entrada",
+   "ok": true,
+   "info": ""
+  },
+  {
+   "nome": "5a. copa cabe no mundo (topo ≥ 0 px)",
+   "ok": true,
+   "info": "[494, 0, 638, 113]"
+  },
+  {
+   "nome": "5b. só a faixa de fundo atrás da mangueira fica sob a copa (≈6.5 m², até Y=1.9 m): recorte translúcido só ali",
+   "ok": true,
+   "info": ""
+  },
+  {
+   "nome": "5c. nenhuma posição de atividade (assento, ponto de parada, âncora) fica sob a copa",
+   "ok": true,
+   "info": "{'A': [], 'B': [], 'C': [], 'D': []}"
+  },
+  {
+   "nome": "5d0. o trecho de dano do telhado de Rita (X 26,0–27,5) não é coberto pela copa",
+   "ok": true,
+   "info": ""
+  },
+  {
+   "nome": "5d1. nenhum objeto interativo fica sob a silhueta da copa",
+   "ok": true,
+   "info": "[]"
+  },
+  {
+   "nome": "5c. (puxadinho removido a pedido em 12/11) objetos de cozinha F08–F11 ao ar livre",
+   "ok": true,
+   "info": ""
+  },
+  {
+   "nome": "5d. telhado de Rita aparece acima do muro (beiral acima do topo do muro, dentro do quadro)",
+   "ok": true,
+   "info": "{'topo_muro': 66.4, 'beiral': 32.8, 'cume': -28.0}"
+  },
+  {
+   "nome": "6a. projeção: 24 px/m em X, 16 px/m em Y (profundidade), 24 px/m em Z (altura)",
+   "ok": true,
+   "info": ""
+  },
+  {
+   "nome": "6b. adulto de 1,75 m = 42 px (célula do sprite 40×52, pés em (20,46))",
+   "ok": true,
+   "info": ""
+  }
+ ]
+}
