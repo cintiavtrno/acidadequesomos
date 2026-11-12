@@ -64,12 +64,12 @@ S.CRESCE = { comer: .0045, trabalhar: .003, descansar: .0035, socializar: .006, 
 // ---------------------------------------------------------------------------------------------- INFORMAÇÕES / RUMORES (seção 8)
 // versoes[0] = o que de fato aconteceu; as seguintes perdem detalhe ou distorcem. corretas: índices considerados verdadeiros/aproximados.
 S.INFOS = {
-  i_medicao: { tema: 'programa', sigilo: 0, versoes: ['Uma moça do Programa anda medindo porta, janela e telhado de todo o quarteirão.', 'Tem gente do governo medindo as casas da rua.', 'Estão medindo as casas pra ver quais vão ser tiradas.'], corretas: [0, 1] },
+  i_medicao: { tema: 'programa', sigilo: 0, versoes: ['Uma moça do Programa anda medindo porta, janela e telhado de todo o quarteirão.', 'Tem gente do governo medindo as casas da rua.', 'Estão medindo as casas pra ver quais vão ser tiradas.'], corretas: [0, 1], eu: { id: 'lucia', versoes: ["Estou medindo porta, janela e telhado do quarteirão inteiro.", "Estou medindo as casas da rua.", "Estou medindo as casas pra ver quais entram na lista."] } },
   i_programa: { tema: 'programa', sigilo: .5, revisar: true, versoes: ['O Programa vai pintar e consertar as fachadas, e quem mora continua morando.', 'O Programa vai mexer nas casas, mas tem letra miúda que ninguém leu.', 'O Programa quer comprar os imóveis e tirar os moradores.'], corretas: [0] },
-  i_reuniao: { tema: 'associacao', sigilo: 0, versoes: ['Dandara marcou reunião da associação pra sábado, depois do almoço.', 'Vai ter reunião da associação, mas ninguém sabe o dia.', 'A reunião da associação foi cancelada.'], corretas: [0, 1] },
+  i_reuniao: { tema: 'associacao', sigilo: 0, versoes: ['Dandara marcou reunião da associação pra sábado, depois do almoço.', 'Vai ter reunião da associação, mas ninguém sabe o dia.', 'A reunião da associação foi cancelada.'], corretas: [0, 1], eu: { id: 'dandara', versoes: ["Marquei a reunião da associação pra sábado, depois do almoço.", "Vai ter reunião da associação, só não fechei o dia.", "A reunião da associação foi cancelada."] } },
   i_fiado: { tema: 'padaria', sigilo: .85, revisar: true, versoes: ['Seu Raimundo leva o pão no fiado e paga na sexta; nunca deixou de pagar.', 'Seu Raimundo anda devendo na padaria.', 'Vó Áurea perde dinheiro com fiado e pode fechar a padaria.'], corretas: [0] },
-  i_obra: { tema: 'obra', sigilo: 0, versoes: ['Nonato vai refazer o reboco da casa da tia e paga a obra com café.', 'Nonato pegou uma obra.', 'Nonato anda sem dinheiro e trabalhando de graça.'], corretas: [0, 1] },
-  i_gato: { tema: 'rua', sigilo: 0, versoes: ['O gato da rua anda dormindo no sobrado; Júnior leva resto de pão pra ele.', 'Júnior anda dando comida pro gato.', 'O gato é de Júnior.'], corretas: [0, 1] },
+  i_obra: { tema: 'obra', sigilo: 0, versoes: ['Nonato vai refazer o reboco da casa da tia e paga a obra com café.', 'Nonato pegou uma obra.', 'Nonato anda sem dinheiro e trabalhando de graça.'], corretas: [0, 1], eu: { id: 'nonato', versoes: ["Vou refazer o reboco da casa da minha tia. Ela paga com café.", "Peguei uma obra.", "Estou sem dinheiro e trabalhando de graça."] } },
+  i_gato: { tema: 'rua', sigilo: 0, versoes: ['O gato da rua anda dormindo no sobrado; Júnior leva resto de pão pra ele.', 'Júnior anda dando comida pro gato.', 'O gato é de Júnior.'], corretas: [0, 1], eu: { id: 'junior', versoes: ["O gato dorme no sobrado e eu levo resto de pão pra ele.", "Eu dou comida pro gato.", "O gato é meu."] } },
 };
 S.FRAME = {   // como cada tipo de informação é contada
   fato: ['Eu sei que ', 'Olha, '], testemunhada: ['Eu vi: ', 'Vi com meus olhos: '], recebida: ['Me contaram que ', 'Soube que '], suposicao: ['Eu acho que ', 'Pra mim, '], boato: ['Dizem por aí que ', 'Anda correndo que '], incorreta: ['Dizem que '],
@@ -176,7 +176,7 @@ Sim.SocialMind = class {
     return { versao, tipo, duvida };
   }
   // fala de repasse (bolha): enquadra pelo tipo; incorreta/boato ganham ressalva
-  fala(de, info) { const h = this.infos[info][de]; const tp = h.tipo, fr = S.FRAME[tp] || S.FRAME.boato; const txt = this.texto(info, h); return fr[Math.floor(this.R() * fr.length)] + (/^(Uma|Um|O|A|Os|As|Tem|Vai|Estão|Foi|Teve)\b/.test(txt) ? txt.charAt(0).toLowerCase() + txt.slice(1) : txt); }
+  fala(de, info) { const h = this.infos[info][de]; const I0 = S.INFOS[info], r = this.R(); if (I0 && I0.eu && I0.eu.id === de) return I0.eu.versoes[Math.min(h.versao, I0.eu.versoes.length - 1)]; const tp = h.tipo, fr = S.FRAME[tp] || S.FRAME.boato; const txt = this.texto(info, h); return fr[Math.floor(r * fr.length)] + (/^(Uma|Um|O|A|Os|As|Tem|Vai|Estão|Foi|Teve)\b/.test(txt) ? txt.charAt(0).toLowerCase() + txt.slice(1) : txt); }
   // Lia pergunta "o que andam comentando?"
   comentarios(id) {
     const lia = this.w.trust[id] || 0; const out = [];

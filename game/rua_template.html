@@ -220,9 +220,9 @@ function syncUI() {
 function hhmm() { return SIM.clock.label(); }
 function updateHud() {
   const n = Object.keys(SIM.kp).length, tot = Object.keys(RD.kp).length;
-  $('clock').innerHTML = '<b>' + hhmm() + '</b><span>Dia ' + (persist && persist.dia || 1) + ' · rua</span>';
-  const ms = Sim.Sacola.missao(); if (ms && Sim.Sacola.S.estado === 'balcao' && !Sim.Sacola.S.avisoRua) { Sim.Sacola.S.avisoRua = true; toast('<b>Missão</b> · Dona Áurea chama: Seu Raimundo esqueceu o pão. Pegue a sacola no balcão da padaria e leve ao sobrado.', 'ev', 9000); }
-  $('objs').innerHTML = (ms ? '<div class="t">◦ ' + ms[0] + '</div><div class="d" style="margin-bottom:.4em">' + ms[1] + '</div>' : '') + '<div class="t">Anotações da rua</div><div class="d">' + n + ' de ' + tot + ' descobertas</div>';
+  $('clock').innerHTML = '<b>' + hhmm() + '</b><span>Dia ' + ((window.MUNDO_ATIVO && window.MUNDO_DIA) || (persist && persist.dia) || 1) + ' · rua</span>';
+  { const SC = Sim.Sacola; if (SC.visivel() && !SC.S.avisoRua) { SC.S.avisoRua = true; toast('<b>Missão</b> · Dona Áurea chama: Seu Raimundo esqueceu o pão. A sacola está em cima do balcão da padaria, entre a vitrine e a caixa. Leve ao sobrado amarelo, ao lado.', 'ev', 9000); } }
+  $('objs').innerHTML = Sim.Sacola.painel() + '<div class="t">Anotações da rua</div><div class="d">' + n + ' de ' + tot + ' descobertas</div>';
   const nt = S.note; const nel = $('note'); if (nt) { nel.style.display = 'block'; nel.textContent = nt.text; } else nel.style.display = 'none';
   const h = S.hint, hel = $('hint'); if (h && !D.open && !S.mesaOpen && !S.notesOpen) { hel.style.display = 'block'; hel.innerHTML = '<span class="k" style="border:1px solid #7a5c3c;border-radius:3px;padding:0 4px">E</span> ' + esc(h.label); } else hel.style.display = 'none';
 }
@@ -302,7 +302,7 @@ function entrarPorta(k) {
   const sp = SIM.spot(k); SIM.lia.x = sp.x; SIM.lia.y = sp.y; SIM.lia.face = 'up'; LS.path = []; LS.goal = null; LS.anim = 'idle'; const r = window.MUNDO_ENTRAR(PORTAS[k].cena, k); if (r && r.ok === false) toast(r.motivo, '', 3500); }
 function candidatos() {
   const L = SIM.lia, out = []; if (LS.mode !== 'free') return out;
-  const pp = portaPerto(); if (pp) out.push({ k: 'porta', id: pp.k, d: pp.d - 40, label: PORTAS[pp.k].label, run: () => entrarPorta(pp.k) });
+  const pp = portaPerto(); if (pp) out.push({ k: 'porta', id: pp.k, d: pp.d - (pp.k === 'porta_lateral' ? 0 : 40), label: PORTAS[pp.k].label, run: () => entrarPorta(pp.k) });
   for (const id in SIM.npcs) { const n = SIM.npcs[id]; if (n.state === 'Away' || n.alpha < .6) continue; const d = Math.hypot(n.x - L.x, (n.y - L.y) * 1.4); if (d < 38) out.push({ k: 'npc', id, d, label: 'Falar com ' + nome(id), run: () => abrirConversa(id) }); }
   const g = SIM.gato, dg = Math.hypot(g.x - L.x, (g.y - L.y) * 1.4); if (dg < 30) out.push({ k: 'gato', d: dg + 4, label: 'Afagar o gato', run: () => { toast(SIM.afagar(), 'ev', 3500); LS.anim = 'interact'; LS.tAnim = 1.2; } });
   const mx = RD.mesa.x, my = yw(mx) + 16; const dm = Math.hypot(mx - L.x, (my - L.y) * 1.2);

@@ -291,27 +291,43 @@ Sim.WorldClock = class {
   at(hhmm) { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; }
 };
 
-// Missão da sacola (proposta): Raimundo esquece o pão no balcão; Lia leva ao sobrado perto das 10h. Estado compartilhado entre as janelas do mundo.
+// Missão da sacola de pão do Seu Raimundo. É única: acontece uma vez só, em 1991, e atravessa quantos dias forem precisos.
+// estados: nada → balcao (sacola em cima do balcão) → lia (Lia pegou) → entregue (fim, nunca mais volta). Guardado no localStorage.
 Sim.Sacola = {
+  KEY: 'balcao_sacola', LOCAL: { x: 172, y: 194 },   // onde Lia fica para pegar: de frente para a sacola, entre a vitrine e a caixa
   H() { try { const P = window.parent; if (P && P !== window && P.MUNDO_BRIDGE) return P; } catch (e) { } return typeof window !== 'undefined' ? window : globalThis; },
-  get S() { const H = this.H(); return H.__sacola || (H.__sacola = { estado: 'nada' }); },
-  esquece(w) {
-    const S = this.S, dia = (w.persist && w.persist.dia) || 1; if (S.dia !== dia) { S.dia = dia; S.estado = 'nada'; } if (S.estado !== 'nada') return; S.estado = 'balcao'; S.avisoRua = false; if (w.bus) w.bus.emit('sacola_aviso', {});
-    const v = w.npcs && w.npcs.aurea; if (v && w.dialogue) w.dialogue.speak(v, 'Ih, o Raimundo deixou o pão em cima do balcão. Lia, leva lá no sobrado. Ele já está voltando pra casa.');
+  ano() { const H = this.H(); return (H && H.MUNDO_ANO) || 1991; },
+  get S() {
+    const H = this.H(); if (H.__sacola) return H.__sacola;
+    const S = H.__sacola = { estado: 'nada' };
+    try { const v = typeof localStorage !== 'undefined' && localStorage.getItem(this.KEY); if (v) { const e = JSON.parse(v).estado; if (['balcao', 'lia', 'entregue'].includes(e)) S.estado = e; } } catch (e) { }
+    return S;
   },
-  missao() {                                     // texto para o painel de objetivos (padaria e rua)
-    const e = this.S.estado;
-    if (e === 'balcao') return ['Levar o pão do Seu Raimundo', 'Ele esqueceu a sacola no balcão. Pegue (E) e leve ao sobrado; ele já está voltando para casa.'];
-    if (e === 'lia') return ['Levar o pão do Seu Raimundo', 'Entregue a sacola a ele, no sobrado amarelo.'];
-    return null;
+  salvar() { try { if (typeof localStorage !== 'undefined') localStorage.setItem(this.KEY, JSON.stringify({ estado: this.S.estado })); } catch (e) { } },
+  limpar() { try { if (typeof localStorage !== 'undefined') localStorage.removeItem(this.KEY); } catch (e) { } const H = this.H(); if (H) H.__sacola = null; },
+  esquece(w) {
+    if (this.ano() === 1994) return;
+    const S = this.S; if (S.estado !== 'nada') return; S.estado = 'balcao'; S.avisoRua = false; this.salvar(); if (w.bus) w.bus.emit('sacola_aviso', {});
+    const v = w.npcs && w.npcs.aurea; if (v && w.dialogue) w.dialogue.speak(v, 'Ih, o Raimundo deixou a sacola de pão em cima do balcão, entre a vitrine e a caixa. Lia, leva lá no sobrado amarelo, aqui do lado.');
+  },
+  perto(p) { return Math.hypot(p.x - this.LOCAL.x, (p.y - this.LOCAL.y) * 1.5) < 34; },
+  visivel() { return this.ano() !== 1994 && this.S.estado === 'balcao'; },
+  painel() {                                     // HTML do painel de objetivos (padaria, casa e rua)
+    if (this.ano() === 1994) return ''; const e = this.S.estado; if (e === 'nada') return '';
+    const ok = e === 'entregue', l = (f, t) => '<div class="d">' + (f ? '✓ ' : '◦ ') + t + '</div>';
+    const peg = e === 'lia' || ok;
+    return '<div class="t">' + (ok ? '✓ ' : '◦ ') + 'Levar o pão do Seu Raimundo' + (ok ? ' · cumprida' : '') + '</div>'
+      + l(peg, peg ? 'Sacola pega.' : 'Pegar a sacola de pano: está em cima do balcão da padaria, entre a vitrine de pães e a caixa registradora.')
+      + l(ok, ok ? 'Entregue ao Seu Raimundo.' : 'Levar ao sobrado amarelo, ao lado da padaria (porta da rua, à esquerda). Ele chega em casa por volta das 10h.')
+      + '<div style="margin-bottom:.4em"></div>';
   },
   pegar(w) {
-    const S = this.S; if (S.estado !== 'balcao') return false; S.estado = 'lia';
-    const v = w.npcs && w.npcs.aurea; if (v && w.dialogue) w.dialogue.speak(v, 'Isso, minha filha. O sobrado amarelo, na rua de cima. Ele agradece com café.');
+    const S = this.S; if (S.estado !== 'balcao') return false; S.estado = 'lia'; this.salvar();
+    const v = w.npcs && w.npcs.aurea; if (v && w.dialogue) w.dialogue.speak(v, 'Isso, minha filha. O sobrado amarelo é aqui do lado, pela esquerda. Ele agradece com café.');
     if (w.bus) w.bus.emit('sacola_pegou', {}); return true;
   },
   entrega(w) {                                   // chamado na casa, perto de Raimundo
-    const S = this.S; if (S.estado !== 'lia' || !w.casaPick) return false; S.estado = 'entregue';
+    const S = this.S; if (S.estado !== 'lia' || !w.casaPick) return false; S.estado = 'entregue'; this.salvar();
     const R = w.npcs.raimundo; try { w.dialogue.speak(R, 'O pão! Cabeça de quem tem muita coisa pra lembrar. Fica pra um café, minha filha?'); } catch (e) { }
     w.rel.change('raimundo', 'lia', { aff: .08, trust: .1 }, 'sacola'); w.knowledge.award('kp_c_sacola_pao', { via: 'entregou' }); if (w.bus) w.bus.emit('sacola_entregue', {}); return true;
   },
@@ -883,12 +899,12 @@ S.CRESCE = { comer: .0045, trabalhar: .003, descansar: .0035, socializar: .006, 
 // ---------------------------------------------------------------------------------------------- INFORMAÇÕES / RUMORES (seção 8)
 // versoes[0] = o que de fato aconteceu; as seguintes perdem detalhe ou distorcem. corretas: índices considerados verdadeiros/aproximados.
 S.INFOS = {
-  i_medicao: { tema: 'programa', sigilo: 0, versoes: ['Uma moça do Programa anda medindo porta, janela e telhado de todo o quarteirão.', 'Tem gente do governo medindo as casas da rua.', 'Estão medindo as casas pra ver quais vão ser tiradas.'], corretas: [0, 1] },
+  i_medicao: { tema: 'programa', sigilo: 0, versoes: ['Uma moça do Programa anda medindo porta, janela e telhado de todo o quarteirão.', 'Tem gente do governo medindo as casas da rua.', 'Estão medindo as casas pra ver quais vão ser tiradas.'], corretas: [0, 1], eu: { id: 'lucia', versoes: ["Estou medindo porta, janela e telhado do quarteirão inteiro.", "Estou medindo as casas da rua.", "Estou medindo as casas pra ver quais entram na lista."] } },
   i_programa: { tema: 'programa', sigilo: .5, revisar: true, versoes: ['O Programa vai pintar e consertar as fachadas, e quem mora continua morando.', 'O Programa vai mexer nas casas, mas tem letra miúda que ninguém leu.', 'O Programa quer comprar os imóveis e tirar os moradores.'], corretas: [0] },
-  i_reuniao: { tema: 'associacao', sigilo: 0, versoes: ['Dandara marcou reunião da associação pra sábado, depois do almoço.', 'Vai ter reunião da associação, mas ninguém sabe o dia.', 'A reunião da associação foi cancelada.'], corretas: [0, 1] },
+  i_reuniao: { tema: 'associacao', sigilo: 0, versoes: ['Dandara marcou reunião da associação pra sábado, depois do almoço.', 'Vai ter reunião da associação, mas ninguém sabe o dia.', 'A reunião da associação foi cancelada.'], corretas: [0, 1], eu: { id: 'dandara', versoes: ["Marquei a reunião da associação pra sábado, depois do almoço.", "Vai ter reunião da associação, só não fechei o dia.", "A reunião da associação foi cancelada."] } },
   i_fiado: { tema: 'padaria', sigilo: .85, revisar: true, versoes: ['Seu Raimundo leva o pão no fiado e paga na sexta; nunca deixou de pagar.', 'Seu Raimundo anda devendo na padaria.', 'Vó Áurea perde dinheiro com fiado e pode fechar a padaria.'], corretas: [0] },
-  i_obra: { tema: 'obra', sigilo: 0, versoes: ['Nonato vai refazer o reboco da casa da tia e paga a obra com café.', 'Nonato pegou uma obra.', 'Nonato anda sem dinheiro e trabalhando de graça.'], corretas: [0, 1] },
-  i_gato: { tema: 'rua', sigilo: 0, versoes: ['O gato da rua anda dormindo no sobrado; Júnior leva resto de pão pra ele.', 'Júnior anda dando comida pro gato.', 'O gato é de Júnior.'], corretas: [0, 1] },
+  i_obra: { tema: 'obra', sigilo: 0, versoes: ['Nonato vai refazer o reboco da casa da tia e paga a obra com café.', 'Nonato pegou uma obra.', 'Nonato anda sem dinheiro e trabalhando de graça.'], corretas: [0, 1], eu: { id: 'nonato', versoes: ["Vou refazer o reboco da casa da minha tia. Ela paga com café.", "Peguei uma obra.", "Estou sem dinheiro e trabalhando de graça."] } },
+  i_gato: { tema: 'rua', sigilo: 0, versoes: ['O gato da rua anda dormindo no sobrado; Júnior leva resto de pão pra ele.', 'Júnior anda dando comida pro gato.', 'O gato é de Júnior.'], corretas: [0, 1], eu: { id: 'junior', versoes: ["O gato dorme no sobrado e eu levo resto de pão pra ele.", "Eu dou comida pro gato.", "O gato é meu."] } },
 };
 S.FRAME = {   // como cada tipo de informação é contada
   fato: ['Eu sei que ', 'Olha, '], testemunhada: ['Eu vi: ', 'Vi com meus olhos: '], recebida: ['Me contaram que ', 'Soube que '], suposicao: ['Eu acho que ', 'Pra mim, '], boato: ['Dizem por aí que ', 'Anda correndo que '], incorreta: ['Dizem que '],
@@ -995,7 +1011,7 @@ Sim.SocialMind = class {
     return { versao, tipo, duvida };
   }
   // fala de repasse (bolha): enquadra pelo tipo; incorreta/boato ganham ressalva
-  fala(de, info) { const h = this.infos[info][de]; const tp = h.tipo, fr = S.FRAME[tp] || S.FRAME.boato; const txt = this.texto(info, h); return fr[Math.floor(this.R() * fr.length)] + (/^(Uma|Um|O|A|Os|As|Tem|Vai|Estão|Foi|Teve)\b/.test(txt) ? txt.charAt(0).toLowerCase() + txt.slice(1) : txt); }
+  fala(de, info) { const h = this.infos[info][de]; const I0 = S.INFOS[info], r = this.R(); if (I0 && I0.eu && I0.eu.id === de) return I0.eu.versoes[Math.min(h.versao, I0.eu.versoes.length - 1)]; const tp = h.tipo, fr = S.FRAME[tp] || S.FRAME.boato; const txt = this.texto(info, h); return fr[Math.floor(r * fr.length)] + (/^(Uma|Um|O|A|Os|As|Tem|Vai|Estão|Foi|Teve)\b/.test(txt) ? txt.charAt(0).toLowerCase() + txt.slice(1) : txt); }
   // Lia pergunta "o que andam comentando?"
   comentarios(id) {
     const lia = this.w.trust[id] || 0; const out = [];
@@ -1792,9 +1808,9 @@ function syncUI() {
 function hhmm() { return SIM.clock.label(); }
 function updateHud() {
   const n = Object.keys(SIM.kp).length, tot = Object.keys(RD.kp).length;
-  $('clock').innerHTML = '<b>' + hhmm() + '</b><span>Dia ' + (persist && persist.dia || 1) + ' · rua</span>';
-  const ms = Sim.Sacola.missao(); if (ms && Sim.Sacola.S.estado === 'balcao' && !Sim.Sacola.S.avisoRua) { Sim.Sacola.S.avisoRua = true; toast('<b>Missão</b> · Dona Áurea chama: Seu Raimundo esqueceu o pão. Pegue a sacola no balcão da padaria e leve ao sobrado.', 'ev', 9000); }
-  $('objs').innerHTML = (ms ? '<div class="t">◦ ' + ms[0] + '</div><div class="d" style="margin-bottom:.4em">' + ms[1] + '</div>' : '') + '<div class="t">Anotações da rua</div><div class="d">' + n + ' de ' + tot + ' descobertas</div>';
+  $('clock').innerHTML = '<b>' + hhmm() + '</b><span>Dia ' + ((window.MUNDO_ATIVO && window.MUNDO_DIA) || (persist && persist.dia) || 1) + ' · rua</span>';
+  { const SC = Sim.Sacola; if (SC.visivel() && !SC.S.avisoRua) { SC.S.avisoRua = true; toast('<b>Missão</b> · Dona Áurea chama: Seu Raimundo esqueceu o pão. A sacola está em cima do balcão da padaria, entre a vitrine e a caixa. Leve ao sobrado amarelo, ao lado.', 'ev', 9000); } }
+  $('objs').innerHTML = Sim.Sacola.painel() + '<div class="t">Anotações da rua</div><div class="d">' + n + ' de ' + tot + ' descobertas</div>';
   const nt = S.note; const nel = $('note'); if (nt) { nel.style.display = 'block'; nel.textContent = nt.text; } else nel.style.display = 'none';
   const h = S.hint, hel = $('hint'); if (h && !D.open && !S.mesaOpen && !S.notesOpen) { hel.style.display = 'block'; hel.innerHTML = '<span class="k" style="border:1px solid #7a5c3c;border-radius:3px;padding:0 4px">E</span> ' + esc(h.label); } else hel.style.display = 'none';
 }
@@ -1874,7 +1890,7 @@ function entrarPorta(k) {
   const sp = SIM.spot(k); SIM.lia.x = sp.x; SIM.lia.y = sp.y; SIM.lia.face = 'up'; LS.path = []; LS.goal = null; LS.anim = 'idle'; const r = window.MUNDO_ENTRAR(PORTAS[k].cena, k); if (r && r.ok === false) toast(r.motivo, '', 3500); }
 function candidatos() {
   const L = SIM.lia, out = []; if (LS.mode !== 'free') return out;
-  const pp = portaPerto(); if (pp) out.push({ k: 'porta', id: pp.k, d: pp.d - 40, label: PORTAS[pp.k].label, run: () => entrarPorta(pp.k) });
+  const pp = portaPerto(); if (pp) out.push({ k: 'porta', id: pp.k, d: pp.d - (pp.k === 'porta_lateral' ? 0 : 40), label: PORTAS[pp.k].label, run: () => entrarPorta(pp.k) });
   for (const id in SIM.npcs) { const n = SIM.npcs[id]; if (n.state === 'Away' || n.alpha < .6) continue; const d = Math.hypot(n.x - L.x, (n.y - L.y) * 1.4); if (d < 38) out.push({ k: 'npc', id, d, label: 'Falar com ' + nome(id), run: () => abrirConversa(id) }); }
   const g = SIM.gato, dg = Math.hypot(g.x - L.x, (g.y - L.y) * 1.4); if (dg < 30) out.push({ k: 'gato', d: dg + 4, label: 'Afagar o gato', run: () => { toast(SIM.afagar(), 'ev', 3500); LS.anim = 'interact'; LS.tAnim = 1.2; } });
   const mx = RD.mesa.x, my = yw(mx) + 16; const dm = Math.hypot(mx - L.x, (my - L.y) * 1.2);

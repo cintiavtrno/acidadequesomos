@@ -37,27 +37,43 @@ Sim.WorldClock = class {
   at(hhmm) { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; }
 };
 
-// Missão da sacola (proposta): Raimundo esquece o pão no balcão; Lia leva ao sobrado perto das 10h. Estado compartilhado entre as janelas do mundo.
+// Missão da sacola de pão do Seu Raimundo. É única: acontece uma vez só, em 1991, e atravessa quantos dias forem precisos.
+// estados: nada → balcao (sacola em cima do balcão) → lia (Lia pegou) → entregue (fim, nunca mais volta). Guardado no localStorage.
 Sim.Sacola = {
+  KEY: 'balcao_sacola', LOCAL: { x: 172, y: 194 },   // onde Lia fica para pegar: de frente para a sacola, entre a vitrine e a caixa
   H() { try { const P = window.parent; if (P && P !== window && P.MUNDO_BRIDGE) return P; } catch (e) { } return typeof window !== 'undefined' ? window : globalThis; },
-  get S() { const H = this.H(); return H.__sacola || (H.__sacola = { estado: 'nada' }); },
-  esquece(w) {
-    const S = this.S, dia = (w.persist && w.persist.dia) || 1; if (S.dia !== dia) { S.dia = dia; S.estado = 'nada'; } if (S.estado !== 'nada') return; S.estado = 'balcao'; S.avisoRua = false; if (w.bus) w.bus.emit('sacola_aviso', {});
-    const v = w.npcs && w.npcs.aurea; if (v && w.dialogue) w.dialogue.speak(v, 'Ih, o Raimundo deixou o pão em cima do balcão. Lia, leva lá no sobrado. Ele já está voltando pra casa.');
+  ano() { const H = this.H(); return (H && H.MUNDO_ANO) || 1991; },
+  get S() {
+    const H = this.H(); if (H.__sacola) return H.__sacola;
+    const S = H.__sacola = { estado: 'nada' };
+    try { const v = typeof localStorage !== 'undefined' && localStorage.getItem(this.KEY); if (v) { const e = JSON.parse(v).estado; if (['balcao', 'lia', 'entregue'].includes(e)) S.estado = e; } } catch (e) { }
+    return S;
   },
-  missao() {                                     // texto para o painel de objetivos (padaria e rua)
-    const e = this.S.estado;
-    if (e === 'balcao') return ['Levar o pão do Seu Raimundo', 'Ele esqueceu a sacola no balcão. Pegue (E) e leve ao sobrado; ele já está voltando para casa.'];
-    if (e === 'lia') return ['Levar o pão do Seu Raimundo', 'Entregue a sacola a ele, no sobrado amarelo.'];
-    return null;
+  salvar() { try { if (typeof localStorage !== 'undefined') localStorage.setItem(this.KEY, JSON.stringify({ estado: this.S.estado })); } catch (e) { } },
+  limpar() { try { if (typeof localStorage !== 'undefined') localStorage.removeItem(this.KEY); } catch (e) { } const H = this.H(); if (H) H.__sacola = null; },
+  esquece(w) {
+    if (this.ano() === 1994) return;
+    const S = this.S; if (S.estado !== 'nada') return; S.estado = 'balcao'; S.avisoRua = false; this.salvar(); if (w.bus) w.bus.emit('sacola_aviso', {});
+    const v = w.npcs && w.npcs.aurea; if (v && w.dialogue) w.dialogue.speak(v, 'Ih, o Raimundo deixou a sacola de pão em cima do balcão, entre a vitrine e a caixa. Lia, leva lá no sobrado amarelo, aqui do lado.');
+  },
+  perto(p) { return Math.hypot(p.x - this.LOCAL.x, (p.y - this.LOCAL.y) * 1.5) < 34; },
+  visivel() { return this.ano() !== 1994 && this.S.estado === 'balcao'; },
+  painel() {                                     // HTML do painel de objetivos (padaria, casa e rua)
+    if (this.ano() === 1994) return ''; const e = this.S.estado; if (e === 'nada') return '';
+    const ok = e === 'entregue', l = (f, t) => '<div class="d">' + (f ? '✓ ' : '◦ ') + t + '</div>';
+    const peg = e === 'lia' || ok;
+    return '<div class="t">' + (ok ? '✓ ' : '◦ ') + 'Levar o pão do Seu Raimundo' + (ok ? ' · cumprida' : '') + '</div>'
+      + l(peg, peg ? 'Sacola pega.' : 'Pegar a sacola de pano: está em cima do balcão da padaria, entre a vitrine de pães e a caixa registradora.')
+      + l(ok, ok ? 'Entregue ao Seu Raimundo.' : 'Levar ao sobrado amarelo, ao lado da padaria (porta da rua, à esquerda). Ele chega em casa por volta das 10h.')
+      + '<div style="margin-bottom:.4em"></div>';
   },
   pegar(w) {
-    const S = this.S; if (S.estado !== 'balcao') return false; S.estado = 'lia';
-    const v = w.npcs && w.npcs.aurea; if (v && w.dialogue) w.dialogue.speak(v, 'Isso, minha filha. O sobrado amarelo, na rua de cima. Ele agradece com café.');
+    const S = this.S; if (S.estado !== 'balcao') return false; S.estado = 'lia'; this.salvar();
+    const v = w.npcs && w.npcs.aurea; if (v && w.dialogue) w.dialogue.speak(v, 'Isso, minha filha. O sobrado amarelo é aqui do lado, pela esquerda. Ele agradece com café.');
     if (w.bus) w.bus.emit('sacola_pegou', {}); return true;
   },
   entrega(w) {                                   // chamado na casa, perto de Raimundo
-    const S = this.S; if (S.estado !== 'lia' || !w.casaPick) return false; S.estado = 'entregue';
+    const S = this.S; if (S.estado !== 'lia' || !w.casaPick) return false; S.estado = 'entregue'; this.salvar();
     const R = w.npcs.raimundo; try { w.dialogue.speak(R, 'O pão! Cabeça de quem tem muita coisa pra lembrar. Fica pra um café, minha filha?'); } catch (e) { }
     w.rel.change('raimundo', 'lia', { aff: .08, trust: .1 }, 'sacola'); w.knowledge.award('kp_c_sacola_pao', { via: 'entregou' }); if (w.bus) w.bus.emit('sacola_entregue', {}); return true;
   },

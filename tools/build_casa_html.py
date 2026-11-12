@@ -26,7 +26,7 @@ T = T[:i0] + """SIM = new Sim.CasaWorld({ scene: OBJSCENE, seed: +(Q.get('seed')
 """ + T[i1:]
 # relógio, rua, dicas
 a = T.index("  $('clock').innerHTML ="); b = T.index("  if (uiT <= 0)", a)
-T = T[:a] + """  $('clock').innerHTML = '<b>' + hhmm() + '</b><span>Dia ' + w.clock.day + ' · casa de Seu Raimundo</span>';
+T = T[:a] + """  $('clock').innerHTML = '<b>' + hhmm() + '</b><span>Dia ' + ((window.MUNDO_ATIVO && window.MUNDO_DIA) || w.clock.day) + ' · casa de Seu Raimundo</span>';
   const st = $('street'); const R = w.npcs.raimundo; if (R.state === 'Away' && !w.clock.ended) { st.style.display = 'block'; st.textContent = 'Seu Raimundo saiu · volta por volta das ' + String(Math.floor(R.volta / 60)).padStart(2, '0') + ':' + String(Math.floor(R.volta % 60)).padStart(2, '0') + ''; } else st.style.display = 'none';
 """ + T[b:]
 sub("if (S.scene === 'street' && nearDoor()) txt = 'E · entrar na padaria';\n  else if (S.scene === 'interior') {", "if (S.scene === 'interior') {")
