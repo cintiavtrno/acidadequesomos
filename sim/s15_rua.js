@@ -142,7 +142,7 @@
     }
     passo(n, dt) {
       let k = n.path[0]; if (!k) { n.state = 'Idle'; n.setAnim('idle'); const f = n.fim; n.fim = null; f && f(); return; }
-      const dx = k[0] - n.x, dy = k[1] - n.y, dist = Math.hypot(dx, dy), step = n.vel * (n.id === 'tonho' && n.estado.pressa ? 1.4 : 1) * dt;
+      const dx = k[0] - n.x, dy = k[1] - n.y, dist = Math.hypot(dx, dy), step = n.vel * (n.id === 'tonho' && n.estado.pressa ? 1.4 : 1) * (this.clock.rate > 1 ? Math.min(3, this.clock.rate) : 1) * dt;   // relógio rápido: moradores andam mais depressa para a agenda continuar fazendo sentido
       if (dist <= step) { n.x = k[0]; n.y = k[1]; n.path.shift(); if (!n.path.length) { n.state = 'Idle'; n.setAnim('idle'); const f = n.fim; n.fim = null; f && f(); } return; }
       n.x += dx / dist * step; n.y += dy / dist * step; n.face = dirDe(dx, dy); n.setAnim('walk');
     }

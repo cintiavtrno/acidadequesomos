@@ -70,7 +70,7 @@ Sim.Service = class {
     const w = this.w, j = this.job; if (!j) { v.setState('Work'); return; }
     const n = w.npcs[j.cust]; if (!n || n.loc !== 'padaria') { this.job = null; v.setState('Work'); return; }
     if (v.dialogLia) { v.setAnim('serve_give'); v.face = 'down'; return; }                 // a Vó para para falar com a Lia: a fila espera
-    j.t += dt; const p = n.def.pedido;
+    j.t += dt * (this.w.clock.rate > 1 ? Math.min(3, this.w.clock.rate) : 1); const p = n.def.pedido;
     const falar = (id, t) => { const N = w.npcs[id]; w.dialogue.speak(N, t); };
     switch (j.stage) {
       case 'ir': if (!v.stepMove(dt)) { v.face = 'down'; v.setAnim('serve_idle'); j.stage = 'pedir'; j.t = 0; const L = w.dialogue.line(n.id, 'pedido', w.dialogue.ctx(n.id)); if (L) falar(n.id, L.texto); this.pedeFiado(n); if (n.id === 'raimundo' && p.fiado && w.liaPerto(n, 95)) w.knowledge.award('kp_raimundo_fiado', { via: 'ouvida' }); } break;

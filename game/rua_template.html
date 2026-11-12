@@ -21,7 +21,7 @@
   #mesa .regras { color: #b8aa98; font-size: .8em; margin-top: .4em; } #mesa .regras summary { cursor: pointer; }
   #mesa .chain { margin: .3em 0; padding: .3em .45em; min-height: 2.4em; } #mesa .seatrow { margin: .2em 0; }
   #notes.modal { inset: 5% 8%; background: var(--paper); color: var(--ink); border: 0; border-radius: 10px; font-family: var(--hand); font-size: 1.35em; line-height: 1.25em; }
-  #notes h2 { font: 700 1.4em var(--hand); color: var(--ink); } #notes h4 { font: 700 1em var(--hand); color: var(--pen); } #notes .kp { border-left: 2px solid var(--pencil); } #notes .kp b { color: var(--ink); } #notes .sub { color: var(--ink-soft); } #notes .x { background: none; border: 0; color: var(--pen); font: 700 .8em var(--hand); }
+  #notes h2 { font: 700 1.4em var(--hand); color: var(--ink); } #notes h4 { font: 700 1em var(--hand); color: var(--pen); } #notes .kp { background: rgba(60,40,20,.07); border-radius: 6px; padding: .3em .6em; margin: .3em 0; } #notes .kp b { color: var(--ink); } #notes .sub { color: var(--ink-soft); } #notes .x { background: none; border: 0; color: var(--pen); font: 700 .8em var(--hand); }
   #notes .rev { color: var(--pencil); font-size: .8em; }
 
   /* tela cheia: o cenário ocupa a janela inteira; a barra de ajuda vira uma pílula discreta no canto */
@@ -221,7 +221,7 @@ function hhmm() { return SIM.clock.label(); }
 function updateHud() {
   const n = Object.keys(SIM.kp).length, tot = Object.keys(RD.kp).length;
   $('clock').innerHTML = '<b>' + hhmm() + '</b><span>Dia ' + (persist && persist.dia || 1) + ' · rua</span>';
-  $('objs').innerHTML = '<div class="t">Anotações da rua</div><div class="d">' + n + ' de ' + tot + ' descobertas</div>';
+  const ms = Sim.Sacola.missao(); $('objs').innerHTML = (ms ? '<div class="t">◦ ' + ms[0] + '</div><div class="d" style="margin-bottom:.4em">' + ms[1] + '</div>' : '') + '<div class="t">Anotações da rua</div><div class="d">' + n + ' de ' + tot + ' descobertas</div>';
   const nt = S.note; const nel = $('note'); if (nt) { nel.style.display = 'block'; nel.textContent = nt.text; } else nel.style.display = 'none';
   const h = S.hint, hel = $('hint'); if (h && !D.open && !S.mesaOpen && !S.notesOpen) { hel.style.display = 'block'; hel.innerHTML = '<span class="k" style="border:1px solid #7a5c3c;border-radius:3px;padding:0 4px">E</span> ' + esc(h.label); } else hel.style.display = 'none';
 }

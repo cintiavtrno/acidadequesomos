@@ -42,8 +42,14 @@ Sim.Sacola = {
   H() { try { const P = window.parent; if (P && P !== window && P.MUNDO_BRIDGE) return P; } catch (e) { } return typeof window !== 'undefined' ? window : globalThis; },
   get S() { const H = this.H(); return H.__sacola || (H.__sacola = { estado: 'nada' }); },
   esquece(w) {
-    const S = this.S; if (S.estado !== 'nada') return; S.estado = 'balcao';
-    const v = w.npcs && w.npcs.aurea; if (v && w.dialogue) w.dialogue.speak(v, 'Ih, o Raimundo deixou o pão em cima do balcão. Lia, leva lá no sobrado, mas só pelas dez, que ele já está em casa.');
+    const S = this.S, dia = (w.persist && w.persist.dia) || 1; if (S.dia !== dia) { S.dia = dia; S.estado = 'nada'; } if (S.estado !== 'nada') return; S.estado = 'balcao'; if (w.bus) w.bus.emit('sacola_aviso', {});
+    const v = w.npcs && w.npcs.aurea; if (v && w.dialogue) w.dialogue.speak(v, 'Ih, o Raimundo deixou o pão em cima do balcão. Lia, leva lá no sobrado. Ele já está voltando pra casa.');
+  },
+  missao() {                                     // texto para o painel de objetivos (padaria e rua)
+    const e = this.S.estado;
+    if (e === 'balcao') return ['Levar o pão do Seu Raimundo', 'Ele esqueceu a sacola no balcão. Pegue (E) e leve ao sobrado; ele já está voltando para casa.'];
+    if (e === 'lia') return ['Levar o pão do Seu Raimundo', 'Entregue a sacola a ele, no sobrado amarelo.'];
+    return null;
   },
   pegar(w) {
     const S = this.S; if (S.estado !== 'balcao') return false; S.estado = 'lia';
