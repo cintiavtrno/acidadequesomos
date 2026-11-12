@@ -81,7 +81,7 @@ Sim.Data.falas = {
     },
     ajudar: { sovar: [F('a_aj0', 'Assim, com a palma da mão. A massa sente a pressa de quem mexe.')] },
     balcao: [
-      F('a_b0', 'Já vai, já vai.'), F('a_b1', 'Toma, cuidado que tá quente.'), F('a_b2', 'Anotado. Quem anota, lembra.', { estado: 'fiado' }),
+      F('a_b0', 'Já vai, já vai.'), F('a_b1', 'Toma, cuidado que tá quente.'), F('a_b2', 'Anotado na caderneta.', { estado: 'fiado' }),
       F('a_b3', 'Pagou, tá pago. Obrigada, minha filha.', { estado: 'pago' }), F('a_b4', 'Só mais um segundo, que o pão não deixa a gente na mão.'),
     ],
   },

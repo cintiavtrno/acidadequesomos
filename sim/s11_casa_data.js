@@ -145,7 +145,7 @@ Sim.Data.casa = {
     K('kp_c_mesa', 'A mesa posta para um', 'A toalha branca, a segunda cadeira puxada. Como se alguém pudesse chegar.', 'lugar'),
     K('kp_c_domino', 'A caixa de dominó', 'Faltava o seis-seis; ele fez outra pedra de madeira e pintou os pontos. Joga assim mesmo.', 'lugar'),
     K('kp_c_cafe_juntos', 'Café na mesa dele', 'Tomei café sentada na mesa de Seu Raimundo. Ele serve devagar, fala pouco e conta mais quando ninguém pergunta tudo de uma vez.', 'raimundo'),
-    K('kp_c_janela', 'A janela da sacada', 'Sentado ali ao lado, ele escuta a rua inteira passar. Quem passa, quem entra, quem não vem mais.', 'lugar'),
+    K('kp_c_janela', 'A janela da sacada', 'Sentado ali ao lado, ele escuta a rua inteira passar. Ele reconhece quem passa, quem entra e quem deixou de vir.', 'lugar'),
   ],
 };
 

@@ -106,7 +106,7 @@ RD.falas = {
     ouvir: ['(Seu Raimundo ajeita as pedras na mão e olha a mesa sem pressa.)', '(Ele bate de leve o dedo no tampo, pensando.)'],
     perguntar: {
       jogo: [{ t: 'Dominó é conta e é paciência. Quem tem pressa joga a pedra errada.', kp: 'kp_dom_paciencia' }, { t: 'Aprendi com meu pai, nessa mesma calçada, quando aqui ainda tinha lampião a gás.', conf: [2, 3], kp: 'kp_dom_pai' }],
-      rua: [{ t: 'A rua mudou de pintura, mas as pessoas são as mesmas. Quem sai, volta.', kp: null }],
+      rua: [{ t: 'A rua mudou de pintura, mas as pessoas são as mesmas.', kp: null }],
       sobrado: [{ t: 'O sobrado é o que a gente tem. Mexeram na casa do lado e eu fiquei olhando, quieto. Eles medem tudo, mas não perguntam nada.', kp: 'kp_ray_sobrado' }],
     },
     ajudar: [],
@@ -199,7 +199,7 @@ RD.dom = {
 RD.lata = [
   ['nonato', 'Antes de embaralhar: a lata passou por aqui hoje?'],
   ['raimundo', 'Passou. Pus a minha. O gás da Dona Cícera acaba essa semana.'],
-  ['ze', 'Menina, a lata é assim. Quem pode, põe um trocado. Quem aperta, tira. Ninguém pergunta o motivo.'],
+  ['ze', 'Menina, a lata é assim. Cada um deixa o que pode, e quem está apertado leva o que precisa, sem ter que explicar.'],
   ['bela', 'Fica na mesa da Dona Áurea. Todo mundo sabe onde está e ninguém mexe sem precisar.'],
   ['nonato', 'Eu ainda queria um caderno. Quanto entrou, quanto saiu, tudo escrito.'],
   ['raimundo', 'Com caderno a lata vira cobrança, Nonato. Do jeito que está, ela anda na confiança.'],

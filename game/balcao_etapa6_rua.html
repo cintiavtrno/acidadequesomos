@@ -143,8 +143,15 @@
 // redução suave final até o tamanho exato da janela (sem pixels de larguras desiguais nem sprites borrados).
 (function () {
   let disp, dctx, inter, ictx, src, W = 0, H = 0, n = 1, iw = 0, ih = 0, VWr = 480, VHr = 270;
+  // fundo ambiente: onde a janela é mais larga/alta que 16:9, as faixas laterais mostram uma versão borrada e escurecida da própria cena (sem esticar o jogo)
+  let amb, actx, ambN = 0;
+  function ambiente() {
+    if (!amb) { amb = document.createElement('canvas'); amb.width = 96; amb.height = 54; amb.setAttribute('aria-hidden', 'true'); actx = amb.getContext('2d'); amb.style.cssText = 'position:fixed;left:-6%;top:-6%;width:112%;height:112%;z-index:-1;pointer-events:none;filter:blur(10px) brightness(.85) saturate(1.15);image-rendering:auto'; document.body.prepend(amb); document.body.style.background = 'transparent'; }
+    actx.drawImage(src, 0, 0, 96, 54);
+  }
   function blit() {
     requestAnimationFrame(blit); if (!disp || !src || document.hidden) return;
+    if ((ambN++ % 8) === 0 && (innerWidth * VHr > innerHeight * VWr * 1.02 || innerHeight * VWr > innerWidth * VHr * 1.02)) ambiente();
     if (inter) { ictx.imageSmoothingEnabled = false; ictx.drawImage(src, 0, 0, iw, ih); dctx.imageSmoothingEnabled = true; dctx.imageSmoothingQuality = 'high'; dctx.drawImage(inter, 0, 0, W, H); }
     else { dctx.imageSmoothingEnabled = false; dctx.drawImage(src, 0, 0, W, H); }
   }
@@ -487,7 +494,7 @@ RD.falas = {
     ouvir: ['(Seu Raimundo ajeita as pedras na mão e olha a mesa sem pressa.)', '(Ele bate de leve o dedo no tampo, pensando.)'],
     perguntar: {
       jogo: [{ t: 'Dominó é conta e é paciência. Quem tem pressa joga a pedra errada.', kp: 'kp_dom_paciencia' }, { t: 'Aprendi com meu pai, nessa mesma calçada, quando aqui ainda tinha lampião a gás.', conf: [2, 3], kp: 'kp_dom_pai' }],
-      rua: [{ t: 'A rua mudou de pintura, mas as pessoas são as mesmas. Quem sai, volta.', kp: null }],
+      rua: [{ t: 'A rua mudou de pintura, mas as pessoas são as mesmas.', kp: null }],
       sobrado: [{ t: 'O sobrado é o que a gente tem. Mexeram na casa do lado e eu fiquei olhando, quieto. Eles medem tudo, mas não perguntam nada.', kp: 'kp_ray_sobrado' }],
     },
     ajudar: [],
@@ -580,7 +587,7 @@ RD.dom = {
 RD.lata = [
   ['nonato', 'Antes de embaralhar: a lata passou por aqui hoje?'],
   ['raimundo', 'Passou. Pus a minha. O gás da Dona Cícera acaba essa semana.'],
-  ['ze', 'Menina, a lata é assim. Quem pode, põe um trocado. Quem aperta, tira. Ninguém pergunta o motivo.'],
+  ['ze', 'Menina, a lata é assim. Cada um deixa o que pode, e quem está apertado leva o que precisa, sem ter que explicar.'],
   ['bela', 'Fica na mesa da Dona Áurea. Todo mundo sabe onde está e ninguém mexe sem precisar.'],
   ['nonato', 'Eu ainda queria um caderno. Quanto entrou, quanto saiu, tudo escrito.'],
   ['raimundo', 'Com caderno a lata vira cobrança, Nonato. Do jeito que está, ela anda na confiança.'],

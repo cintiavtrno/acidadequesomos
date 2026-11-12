@@ -4,8 +4,15 @@
 // redução suave final até o tamanho exato da janela (sem pixels de larguras desiguais nem sprites borrados).
 (function () {
   let disp, dctx, inter, ictx, src, W = 0, H = 0, n = 1, iw = 0, ih = 0, VWr = 480, VHr = 270;
+  // fundo ambiente: onde a janela é mais larga/alta que 16:9, as faixas laterais mostram uma versão borrada e escurecida da própria cena (sem esticar o jogo)
+  let amb, actx, ambN = 0;
+  function ambiente() {
+    if (!amb) { amb = document.createElement('canvas'); amb.width = 96; amb.height = 54; amb.setAttribute('aria-hidden', 'true'); actx = amb.getContext('2d'); amb.style.cssText = 'position:fixed;left:-6%;top:-6%;width:112%;height:112%;z-index:-1;pointer-events:none;filter:blur(10px) brightness(.85) saturate(1.15);image-rendering:auto'; document.body.prepend(amb); document.body.style.background = 'transparent'; }
+    actx.drawImage(src, 0, 0, 96, 54);
+  }
   function blit() {
     requestAnimationFrame(blit); if (!disp || !src || document.hidden) return;
+    if ((ambN++ % 8) === 0 && (innerWidth * VHr > innerHeight * VWr * 1.02 || innerHeight * VWr > innerWidth * VHr * 1.02)) ambiente();
     if (inter) { ictx.imageSmoothingEnabled = false; ictx.drawImage(src, 0, 0, iw, ih); dctx.imageSmoothingEnabled = true; dctx.imageSmoothingQuality = 'high'; dctx.drawImage(inter, 0, 0, W, H); }
     else { dctx.imageSmoothingEnabled = false; dctx.drawImage(src, 0, 0, W, H); }
   }
