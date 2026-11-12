@@ -284,6 +284,21 @@ Sim.Data.virar94 = () => {
   P.dandara.perguntar.lucia = [F('d_pl0', 'A moça da prancheta agora assina ficha de saída. Educada como sempre, e é isso que me dá medo.'), F('d_pl1', 'Ela não é má. Mas a ficha vira valor de indenização, e a conta não conhece ninguém.', { conf: [2, 3] })];
   P.lucia.perguntar.programa = [F('l_pp0', 'O levantamento acabou e agora vem a fase de obra. Eu confiro as fichas das casas que já têm aviso.'), F('l_pp1', 'O Programa apostou que o turista de fora sustenta o comércio da rua. Eu escrevi que ainda é cedo para saber.', { conf: [1, 3] }, { revisar: true }), F('l_pp2', 'No órgão já se fala em programar festa e show, para trazer gente de Salvador. Ainda é conversa de corredor.', { conf: [2, 3] }, { revisar: true })];
   P.lucia.perguntar.prancheta = [F('l_pn0', 'Hoje é ficha de casa: nome de quem mora, quantos são, valor oferecido.'), F('l_pn1', 'Eu escrevo o menos que posso. Mesmo assim é o que decide.', { conf: [1, 3] })];
+  P.dandara.perguntar.programa.push(F('d_pp2', 'Agora tem o Dia & Noite: show de graça todo dia nos largos, para a rua não esvaziar. Eu vou. Só pergunto quem mora nos casarões que viram bar.', { conf: [2, 3] }, { revisar: true }));
+  // objetivos e anotações de 1994
+  const O = id => Sim.Data.objetivos.find(o => o.id === id), KK = id => Sim.Data.conhecimentos.find(k => k.id === id);
+  Object.assign(O('fiado'), { titulo: 'A casa de Seu Raimundo', dica: 'Entender o que ele guarda dentro de casa e o que o aviso ameaça.', aviso: 'O sobrado está marcado e ele ainda não assinou.', fim: 'Entendi o que está em jogo no sobrado de Seu Raimundo. Falta saber o que ele vai decidir.' });
+  Object.assign(O('programa'), { titulo: 'A aposta do Programa', dica: 'Descobrir o que o Programa espera da rua: turista, show de graça e quem fica.', aviso: 'Tem cartaz novo na rua e papel novo na gaveta.', fim: 'Entendi a aposta: turista e show de graça para encher a rua. Falta saber se a rua cheia é a rua de quem mora.' });
+  Object.assign(KK('kp_radio'), { titulo: 'O rádio da vó', texto: 'O rádio fala das ruas reformadas e do Pelourinho Dia & Noite, com show de graça todo dia nos largos. A vó ouve calada.' });
+  Object.assign(KK('kp_lucia_programa'), { titulo: 'A ficha vira valor', texto: 'Lúcia faz a ficha de cada casa que sai. A ficha entra no cadastro, e o cadastro define a indenização.' });
+  Object.assign(KK('kp_dandara_programa'), { titulo: 'Do conserto à remoção', texto: 'Dandara diz que o Programa saiu da pintura e entrou em obra pesada, com casa interditada e gente indo embora. Quer a lista de quem recebeu aviso.' });
+  Object.assign(KK('kp_gaveta'), { titulo: 'A gaveta do balcão', texto: 'O aluguel novo da padaria, com valor de loja para turista, e uma pasta do Programa.' });
+  Sim.Data.conhecimentos.push(
+    K('kp_gaveta_aluguel', 'O aluguel novo', 'Na gaveta, o papel do aluguel novo da padaria, num valor de loja para turista. Tem um número riscado a lápis e outro escrito por cima. A vó ainda não respondeu.', 'lugar', { obj: 'programa' }),
+    K('kp_gaveta_dn', 'A pasta do Dia & Noite', 'Na gaveta, uma pasta do Programa: agenda semanal de shows de graça nos largos (Terreiro de Jesus, Pedro Archanjo, Tereza Batista e Quincas Berro D\'Água) e uma lista de bares e lojas de artesanato dos casarões que devem lucrar com o movimento.', 'lugar', { obj: 'programa', revisar: true }));
+  Sim.Data.objetos.gaveta_1 = { kp: 'kp_gaveta', kps: ['kp_gaveta_aluguel', 'kp_gaveta_dn'], texto: (w, ctx) => ctx.vo_longe
+    ? 'Você abre a gaveta. Em cima, o papel do aluguel novo, com um valor riscado a lápis e outro por cima. Embaixo, uma pasta do Programa: PELOURINHO DIA & NOITE, agenda de shows de graça nos largos, e uma lista de bares e lojas dos casarões que devem lucrar com o movimento.'
+    : 'Gaveta com papéis e lápis. A vó está olhando; melhor não mexer agora.' };
   Sim.Data.bate_papo_balcao = {
     raimundo: [[['raimundo', 'A senhora ainda tem o forno aceso, Áurea?'], ['aurea', 'Tenho. Mas vendo menos pão do que fazia.'], ['raimundo', 'Falta quem coma.'], ['aurea', 'Falta quem more.']]],
     dandara: [[['dandara', 'A senhora vai à reunião de sábado, Dona Áurea?'], ['aurea', 'Vou. Levo o papel do aluguel pra ler junto com os outros.']]],

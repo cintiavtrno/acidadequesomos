@@ -340,7 +340,10 @@ Sim.Rua.D.virar94 = () => {
   kp('kp_94_programa', 'Da pintura à remoção', 'Dandara conta que o Programa começou com pintura e conserto e agora tem obra pesada, casa interditada e gente indo embora.', true);
   kp('kp_94_lucia_ficha', 'A ficha vira valor', 'Lúcia agora faz a ficha de cada casa. A ficha alimenta o cadastro, e o cadastro define o valor da indenização.', true);
   kp('kp_94_lucia_aposta', 'A aposta no turista', 'O Programa apostava que turistas do Brasil e de fora sustentariam o comércio da rua sozinhos. Lúcia escreveu no relatório que ainda é cedo para saber.', true);
-  kp('kp_94_lucia_evento', 'Conversa de corredor', 'No órgão do Programa já se fala em festas e shows para trazer moradores de Salvador para a região. Ainda não há plano escrito.', true);
+  kp('kp_94_lucia_evento', 'Conversa de corredor', 'No órgão do Programa já se fala em um evento maior, para trazer moradores de Salvador para a região. Ainda não há plano escrito.', true);
+  kp('kp_94_dandara_dn', 'Pelourinho Dia & Noite', 'O Dia & Noite nasceu logo depois da entrega das primeiras etapas da reforma. O governo contrata artistas, grupos, companhias de teatro, dança e mestres de capoeira para show de graça todo dia nos largos. A ideia é rua cheia de dia e de noite para os bares, restaurantes e lojas de artesanato dos casarões girarem.', true);
+  kp('kp_94_tonho_show', 'Quando o show acaba', 'Tonho vende antes e depois da roda de capoeira no Terreiro. Quando o grupo termina, a rua esvazia em dez minutos.', true);
+  kp('kp_94_obj_dn', 'O cartaz do Dia & Noite', 'O cartaz do Pelourinho Dia & Noite lista a semana: roda de capoeira, banda, teatro e dança, de graça, no Terreiro de Jesus e nos largos Pedro Archanjo, Tereza Batista e Quincas Berro D\'Água.', true);
   kp('kp_associacao', 'A associação', 'A associação confere quem recebeu aviso, quem aceitou indenização e quem ainda mora na casa.');
   kp('kp_obj_quadro', 'O quadro de avisos', 'O quadro tem a convocação da reunião de sábado e uma lista das casas que receberam aviso.');
   kp('kp_obj_obra', 'Tijolos e sacos de cimento', 'A pilha de material é da empreiteira que trabalha no casarão da esquina.');
@@ -349,7 +352,7 @@ Sim.Rua.D.virar94 = () => {
   kp('kp_94_obj_placa', 'A placa da obra', 'A placa no andaime anuncia obra do Programa de Recuperação, com a data de 1994.');
   kp('kp_94_obj_faixa', 'Aqui mora gente', 'A associação pendurou na fachada uma faixa com a frase AQUI MORA GENTE.');
   kp('kp_94_obj_turista', 'A placa em inglês', 'A padaria ganhou uma placa pequena em português e em inglês, para quem vem de fora.');
-  RD.kpObj94 = { aviso_sobrado: 'kp_94_obj_aviso', marca_sobrado: 'kp_94_ray_marca', tapume_verde: 'kp_94_obj_tapume', placa_obra: 'kp_94_obj_placa', faixa_assoc: 'kp_94_obj_faixa', placa_padaria: 'kp_94_obj_turista' };
+  RD.kpObj94 = { quadro_avisos: 'kp_94_obj_dn', aviso_sobrado: 'kp_94_obj_aviso', marca_sobrado: 'kp_94_ray_marca', tapume_verde: 'kp_94_obj_tapume', placa_obra: 'kp_94_obj_placa', faixa_assoc: 'kp_94_obj_faixa', placa_padaria: 'kp_94_obj_turista' };
   // ---- falas e assuntos ----
   const eu = (id, saudar, ouvir, perguntar, ordem) => { F[id].saudar = saudar; F[id].ouvir = ouvir; Object.keys(F[id].perguntar).forEach(t => { if (t !== 'jogo' && t !== 'lia_jogar' && t !== 'gato') delete F[id].perguntar[t]; if (G[id]) { if (t !== 'jogo' && t !== 'lia_jogar' && t !== 'gato') delete G[id][t]; } }); Object.assign(F[id].perguntar, perguntar); };
   eu('raimundo', ['Lia. Senta aí. O jogo anda com pouca gente, o Zé até parou de reclamar.', 'Ô, Lia. Já viu o que colaram na minha porta?'],
@@ -392,20 +395,24 @@ Sim.Rua.D.virar94 = () => {
   abre('junior', 'gato', 'O gato', 'Júnior, aquele gato é de quem?');
   eu('tonho', ['Cocada, queijadinha! Quer provar, Lia? Para turista eu cobro mais, mas para você não.'], ['(Tonho ajeita o isopor no ombro e olha para a rua, contando quem passa de câmera.)'], {
       cocada: [{ t: 'Minha mãe faz de madrugada. Eu só carrego e sorrio. O sorriso vende mais que o açúcar.', kp: 'kp_cocada' }],
+      show: [{ t: 'Agora tem show de graça no Terreiro, quase todo dia, em hora diferente. Roda de capoeira de tarde, banda de noite. Eu vendo antes e depois. Quando o grupo acaba, em dez minutos a rua está vazia. Show de graça traz gente, mas gente que não gasta.', kp: 'kp_94_tonho_show', revisar: true }],
       rua: [{ t: 'Sábado e domingo eu vendo o dobro, porque vem ônibus de turista. De terça a quinta passa um ou outro, e a cocada volta no isopor. Se eu dependesse só disso, comia dois dias por semana.', kp: 'kp_94_tonho_turista', revisar: true }],
     });
   abre('tonho', 'cocada', 'A cocada', 'Tonho, a cocada é sua mesmo ou você vende para alguém?');
   abre('tonho', 'rua', 'O turista', 'Tonho, o turista compra bastante?');
+  abre('tonho', 'show', 'Os shows no Terreiro', 'Tonho, o show no Terreiro ajuda a vender?', ['apos:tonho:rua']);
   eu('dandara', ['Lia, bom dia. A reunião é sábado e a lista de avisados tem mais nome do que eu esperava. Tem um minuto?'], ['(Dandara folheia o caderno de capa dura, riscando um nome e acrescentando outro.)'], {
+      dn: [{ t: 'Isso é o Pelourinho Dia & Noite. Saiu logo depois que entregaram as primeiras etapas da reforma. O governo contrata artista, banda, grupo de teatro, de dança, mestre de capoeira, e põe todo dia da semana, em hora diferente, de graça, no Terreiro de Jesus e nos largos Pedro Archanjo, Tereza Batista e Quincas Berro D\'Água. A ideia é rua cheia de dia e de noite para o bar, o restaurante e a loja de artesanato dos casarões girarem. Eu vou aos shows. Pergunto só quem mora nesses casarões.', kp: 'kp_94_dandara_dn', revisar: true }],
       associacao: [{ t: 'Aqui a gente confere quem recebeu aviso, quem aceitou indenização e quem ainda está na casa. Quem não tem advogado tem a associação. O quadro de avisos hoje é lista de casa.', kp: 'kp_associacao' }],
       programa: [{ t: 'O Programa começou com pintura e conserto. Hoje é obra pesada, casa interditada e gente indo embora. A aposta é que o turista sustenta o comércio sozinho. Eu quero ver o caixa de quem vende aqui para saber.', kp: 'kp_94_programa', revisar: true }],
     });
   abre('dandara', 'associacao', 'A associação', 'Dandara, o que a associação está fazendo agora?');
   abre('dandara', 'programa', 'O Programa', 'Dandara, o que mudou no Programa desde que ele foi anunciado?');
+  abre('dandara', 'dn', 'O Dia & Noite', 'Dandara, o que é esse palco montado no Terreiro de Jesus?');
   eu('lucia', ['Oi, Lia. Este ano eu assino mais ficha do que meço parede.', 'Bom dia, Lia. O dia está longo e as fichas estão cheias.'], ['(Lúcia confere uma ficha e a fecha devagar, sem dizer o que viu.)'], {
       medir: [{ t: 'Em 91 eu media para o relatório. Agora meço para saber o que se interdita. A ficha da casa vai para o cadastro, e do cadastro sai o valor da indenização.', kp: 'kp_94_lucia_ficha', revisar: true }],
       programa: [{ t: 'O Programa foi desenhado com uma aposta: o turista, de outros estados e de fora do país, sustenta o comércio da rua sozinho. Eu escrevi no relatório que ainda é cedo para saber. Ninguém pediu a minha opinião, mas ela está escrita.', kp: 'kp_94_lucia_aposta', revisar: true },
-                 { t: 'No corredor do órgão já se fala em programar festa, show, evento, para trazer gente de Salvador mesmo, que mora na cidade e tem carro. Ainda é conversa. Não está em papel nenhum.', conf: [2, 3], kp: 'kp_94_lucia_evento', revisar: true }],
+                 { t: 'Os shows do Dia & Noite seguram a rua no fim de semana, mas de terça a quinta ela esvazia. No corredor do órgão já se fala em programar um evento maior, para trazer gente de Salvador mesmo, que mora na cidade e tem carro. Ainda é conversa. Não está em papel nenhum.', conf: [2, 3], kp: 'kp_94_lucia_evento', revisar: true }],
     });
   abre('lucia', 'medir', 'A ficha da casa', 'Lúcia, a senhora ainda mede a rua?');
   abre('lucia', 'programa', 'A aposta do Programa', 'Lúcia, o turista está enchendo a rua como o Programa previa?');
@@ -417,7 +424,7 @@ Sim.Rua.D.virar94 = () => {
     ['tonho>nonato', ['Cocada, Nonato? Hoje sobrou, que o ônibus não veio.', 'Depois, Tonho. Hoje é dia de pagamento e eu vou receber.']],
   ];
   RD.desc94 = {
-    quadro_avisos: 'No quadro: reunião da associação no sábado, uma lista datilografada de casas que receberam aviso, um recado de procura-se inquilino e uma rifa de bujão de gás.',
+    quadro_avisos: 'No quadro: reunião da associação no sábado, uma lista datilografada de casas que receberam aviso, um recado de procura-se inquilino e uma rifa de bujão de gás. Por cima de tudo, um cartaz colorido: PELOURINHO DIA & NOITE, shows grátis toda a semana no Terreiro de Jesus e nos largos.',
     obra_1: 'Tijolos e sacos de cimento da empreiteira, empilhados ao lado do casarão da esquina. Já não é obra de quem mora.',
   };
 };

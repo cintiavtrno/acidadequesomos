@@ -78,4 +78,42 @@ const scene = JSON.parse(fs.readFileSync(__dirname + '/../assets/street6/scene_r
   const vicios = [/não é [^.,;]{1,40}, é /i, /E aqui está o ponto/i, /Mais do que isso/i, /No fim do dia/i, /A verdade é simples/i];
   ok('quintal: nenhum texto usa as muletas retóricas da lista', todos.every(x => vicios.every(v => !v.test(x))));
 }
+// ---------------------------------------------------------------- Dia & Noite, gaveta, café, jogo novo, rótulo
+{
+  const S = load(), RD = S.Rua.D; RD.virar94();
+  const w = new S.Rua.World({ scene, seed: 94 }); w.update(1);
+  w.perguntar('dandara', 'dn'); ok('rua: Dandara explica o Dia & Noite (largos, cachê, casarões) e rende anotação', !!w.kp.kp_94_dandara_dn && /Terreiro de Jesus/.test(RD.falas.dandara.perguntar.dn[0].t) && /Quincas Berro/.test(RD.falas.dandara.perguntar.dn[0].t));
+  ok('rua: o assunto do show de Tonho só abre depois de "o turista"', !w.topicos('tonho').some(t => t.id === 'show'));
+  w.perguntar('tonho', 'rua'); ok('rua: depois de "o turista" abre "Os shows no Terreiro"', w.topicos('tonho').some(t => t.id === 'show')); w.perguntar('tonho', 'show'); ok('rua: Tonho conta que a rua esvazia quando o show acaba', !!w.kp.kp_94_tonho_show);
+  const q = w.examinar({ id: 'quadro_avisos', nome: 'q', desc: 'velho' }); ok('rua: o cartaz do Dia & Noite está no quadro e rende anotação', /DIA & NOITE/.test(q.texto) && !!w.kp.kp_94_obj_dn);
+  ok('rua: Lúcia já fala do Dia & Noite e da conversa de um evento maior', /Dia & Noite/.test(JSON.stringify(RD.falas.lucia)) && /evento maior/.test(JSON.stringify(RD.falas.lucia)));
+}
+{
+  const { make: mk } = require('./harness.js'); const { Sim, w } = mk({ seed: 94 }); Sim.Data.virar94(); w.cena = 'interior';
+  ok('padaria: objetivos de 1994 trocados (casa de Raimundo e aposta do Programa)', Sim.Data.objetivos.map(o => o.titulo).join('|') === 'A casa de Seu Raimundo|A aposta do Programa');
+  ok('padaria: Dandara cita o Dia & Noite', Sim.Data.falas.dandara.perguntar.programa.some(f => /Dia & Noite/.test(f.texto)));
+  const aurea = w.npcs.aurea; aurea.state = 'Away'; w.lia.x = aurea.x + 10; w.lia.y = aurea.y;
+  const r = w.interaction.objeto({ id: 'gaveta_1' });
+  ok('gaveta: com a vó fora (mesmo que a posição dela esteja perto) dá para mexer, sem "ela está olhando"', !/olhando/.test(r.texto) && /DIA & NOITE/.test(r.texto) && /aluguel/.test(r.texto), r.texto.slice(0, 60));
+  ok('gaveta: rende o aluguel e a pasta do Dia & Noite', w.knowledge.has('kp_gaveta') && w.knowledge.has('kp_gaveta_aluguel') && w.knowledge.has('kp_gaveta_dn'));
+  const { w: w2, Sim: S2 } = mk({ seed: 95 }); S2.Data.virar94(); w2.cena = 'interior'; const a2 = w2.npcs.aurea; a2.state = 'Idle'; w2.lia.x = a2.x + 10; w2.lia.y = a2.y;
+  ok('gaveta: com a vó presente e perto, ela barra ("Aí não")', /olhando/.test(w2.interaction.objeto({ id: 'gaveta_1' }).texto) && !w2.knowledge.has('kp_gaveta_aluguel'));
+}
+{
+  const sc = JSON.parse(fs.readFileSync(__dirname + '/../assets/objects/scene_casa.json')), Lt = JSON.parse(fs.readFileSync(__dirname + '/../assets/layout.json'));
+  const solids = sc.colisao_arquitetura.concat(sc.instancias.filter(i => i.collide).map(i => i.collide)), { X0, X1, YB, YF, EXIT_X } = Lt;
+  const blocked = (x, y) => { const g = Math.abs(x - EXIT_X) <= 24; if (x < X0 + 8 || x > X1 - 8 || y < YB + 6) return true; if (y > YF - 6 && !g) return true; if (y > YF + 10) return true; for (const [a, b, c, d] of solids) if (x > a && x < c && y > b && y < d) return true; return false; };
+  const mk = (a94, start) => { const Sim = load(); Sim.Nav.init({ X0, X1, YB, YF, EXIT_X, blocked }); const w = new Sim.CasaWorld({ scene: sc, seed: 1994, rate: 1, start, hooks: { objs: {} } }); w.ano94 = a94; return w; };
+  const a = mk(true, 760); let g = 0; while (!a.presente('raimundo') && g++ < 3000) a.update(.5);
+  const c = a.interaction.cafeJuntos(); ok('casa: em 1994 o café com Seu Raimundo está liberado depois do meio-dia (12h40)', c.ok || /movimento|rezando/.test(c.motivo || ''), c.motivo || '');
+  const b = mk(false, 760); g = 0; while (!b.presente('raimundo') && g++ < 3000) b.update(.5); const cb = b.interaction.cafeJuntos(); ok('casa: em 1991 a regra antiga continua (depois das 11h40 é hora do almoço)', !cb.ok && /almoço/.test(cb.motivo));
+}
+{
+  const sh = fs.readFileSync(__dirname + '/../mundo/shell_template.html', 'utf8');
+  ok('jogo novo: o shell zera tudo o que começa com "balcao" ao abrir ?new=1, ao recomeçar e ao fim de 1994', /function zerarJogo/.test(sh) && /\^balcao/.test(sh) && /if \(Q\.get\('new'\) === '1'\) zerarJogo\(\)/.test(sh) && /function recomecar\(\) \{ zerarJogo\(\)/.test(sh) && (sh.match(/zerarJogo\(\)/g) || []).length >= 4);
+  const rd = fs.readFileSync(__dirname + '/../quintal/render.js', 'utf8');
+  ok('quintal: a etiqueta pixelada com o nome de quem está perto não é mais desenhada (o aviso "E Falar com ..." já traz o nome)', !/this\.nome\(g, o, h\)/.test(rd));
+  const Q = require('../quintal/quintal.js'); const T = Q.Dialogo.T;
+  ok('quintal: Dia & Noite na boca de Zefa, Dandara e Tonho', /Dia & Noite/.test(T.zefa.dn.resp) && /Pedro Archanjo/.test(T.zefa.dn.resp) && /cachê/.test(T.dandara.dn.resp) && /[Ss]how de graça/.test(T.tonho.show.resp));
+}
 console.log('\n' + pass + ' passaram, ' + fail + ' falharam'); process.exit(fail ? 1 : 0);

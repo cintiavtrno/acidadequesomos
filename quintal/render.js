@@ -214,7 +214,7 @@
         if (k === 0) { if (o.id === 'M27' && sim.fasen !== 'C' && sim.fasen !== 'D') continue; this.obj(g, o); }
         else if (k === 1) this.item(g, o);
         else { const al = o.alpha != null ? o.alpha : 1; if (o.id === 'lia') this.ent(g, { id: 'lia', x: o.x, y: o.y, face: o.face, anim: o.anim, state: o.state === 'sentada' ? 'sentado' : 'livre', seat: o.seat, chao: false, t: o.t }, 1); else this.ent(g, o, al);
-          const h = this.D.CH[o.id][1] * 24 * (o.state === 'sentado' ? .72 : 1); heads.push([sx(o.x), sy(o.y, 0) - h]); if (o.id !== 'lia' && o === this.perto) this.nome(g, o, h); }
+          const h = this.D.CH[o.id][1] * 24 * (o.state === 'sentado' ? .72 : 1); heads.push([sx(o.x), sy(o.y, 0) - h]); }
       }
       // vapor do panelão e cheiro de dendê (partículas leves)
       for (let i = 0; i < 4; i++) { const ph = (this.t * .5 + i * .25) % 1, x = sx(3.75) + Math.sin(this.t * 2 + i * 2) * 3, y = sy(1.2, 0.95) - ph * 22; g.fillStyle = 'rgba(245,245,240,' + (0.35 * (1 - ph)).toFixed(2) + ')'; g.fillRect(x | 0, y | 0, 3, 2); }

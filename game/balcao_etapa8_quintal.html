@@ -1888,7 +1888,10 @@ const CharLib = {
     q_comodos: ['Quem aluga cômodo', 'Quem aluga cômodo não aparece em papel nenhum, então a indenização não passa por ele. A associação vai de porta em porta conferir quem mora onde.', true],
     q_lucia_convite: ['Lúcia no caruru', 'Dona Zefa convidou Lúcia pessoalmente. Disse que quem mede a rua também come nela. Lúcia veio sabendo que muita gente aqui não queria vê-la.'],
     q_lucia_ficha: ['A ficha vira valor', 'Lúcia agora faz a ficha de cada casa que sai: quem mora, quantos são e o valor oferecido. Ela assina embaixo e não sabe para onde essas pessoas vão.', true],
-    q_lucia_evento: ['Conversa de corredor', 'Lúcia conta que o turista enche a rua no fim de semana e que na terça a conta do comércio não fecha. No órgão do Programa já se fala em festas e shows para trazer gente de Salvador. Ainda não há plano escrito.', true],
+    q_lucia_evento: ['Conversa de corredor', 'Lúcia conta que o turista enche a rua no fim de semana e em dia de show, e que na terça a conta do comércio não fecha. No órgão do Programa já se fala em um evento maior, para trazer gente de Salvador. Ainda não há plano escrito.', true],
+    q_zefa_dn: ['Pelourinho Dia & Noite', 'Dona Zefa gosta do Dia & Noite: show de graça todo dia nos largos reformados, com banda, teatro, dança e capoeira. Para ela, rua cheia de dia e de noite é o Programa funcionando.', true],
+    q_tonho_show: ['Quando o show acaba', 'Tonho vende bem na roda de capoeira e na banda do Terreiro, mas a rua esvazia assim que o grupo termina. Show de graça traz gente que não gasta.', true],
+    q_dandara_dn: ['Quem toca e quem mora', 'Dandara vai aos shows, mas lembra que o governo paga cachê a quem toca no largo e não paga nada a quem morava no casarão ao lado e foi embora.', true],
     q_rita_telhado: ['O telhado da Rita', 'O laudo diz que o telhado da Rita não vale conserto, mas ela não pode consertar por conta própria. A lona é o que sobrou.', true],
     q_rita_sombra: ['A sombra da mangueira', 'A mangueira é de Dona Zefa e a sombra cai na casa da Rita. Se a Rita for embora, a sombra fica sem quem use.'],
     q_nonato_empreita: ['Obra que acaba', 'Nonato trabalha por empreita nas obras do Programa e levanta a parede de uma casa cujos donos já saíram. Recebe por semana, e o contrato acaba com a fachada.', true],
@@ -1923,6 +1926,7 @@ const CharLib = {
       pai: { label: 'A bandeira', quando: ['viu_banner'], ask: 'A bandeira é de Cosme e Damião, não é? A senhora faz todo ano?', resp: 'Meu pai fazia. Quando ele parou, o quintal ficou quieto uns anos. Voltei a fazer porque a rua veio me pedir.', kp: 'q_zefa_pai' },
       reforma: { label: 'O Programa', fases: DEPOIS_A, ask: 'Dona Zefa, o que a senhora acha do que está acontecendo na rua?', resp: 'Acho bom, Lia. Vinte anos esse bairro caindo e ninguém olhava. Agora tem calçada nova, tem luz, tem polícia na esquina. Meu quintal nunca recebeu tanta visita.', kp: 'q_zefa_reforma' },
       turista: { label: 'O turista', fases: MESA, quando: ['apos:zefa:reforma'], ask: 'E o comércio da rua, Dona Zefa? Quem vai comprar?', resp: 'O povo de fora. Vem com dinheiro e não regateia. Se a rua tem turista, tem freguês para todo mundo: o barbeiro, a Áurea, o Tonho. Foi o que o governo disse na reunião e eu acredito. Quero vender caruru para eles.', kp: 'q_zefa_turista' },
+      dn: { label: 'Os shows nos largos', fases: MESA, quando: ['apos:zefa:reforma'], ask: 'Dona Zefa, o que é esse palco no Terreiro de Jesus?', resp: 'É o Pelourinho Dia & Noite, menina. Saiu logo depois que entregaram as primeiras ruas reformadas. Todo dia tem show de graça, em hora diferente: banda, teatro, dança, mestre de capoeira. Terreiro de Jesus, Largo Pedro Archanjo, Largo Tereza Batista, Largo Quincas Berro D\'Água. Antes a rua era escura depois das seis. Agora tem gente até tarde.', kp: 'q_zefa_dn' },
       casa: { label: 'A casa', fases: FIM, quando: ['apos:zefa:reforma'], ask: 'Dona Zefa, a sua casa também entrou no Programa?', resp: 'Entrou entre as que o Programa conserta e devolve para o dono. Refizeram o telhado e não me cobraram nada. Por isso eu falo bem, e sei que nem todo mundo pode falar igual.', kp: 'q_zefa_casa' },
     },
     aurea: {
@@ -1936,12 +1940,13 @@ const CharLib = {
     },
     dandara: {
       lista: { label: 'A lista', fases: DEPOIS_A, ask: 'Dandara, a lista do Programa saiu?', resp: 'Saiu a lista de quem recebeu aviso. Tem nome de morador, tem nome de dono, e tem casa sem nome nenhum. Sábado eu leio tudo na reunião da associação.', kp: 'q_lista' },
+      dn: { label: 'Os shows nos largos', fases: FIM, quando: ['apos:dandara:lista'], ask: 'Dandara, a senhora vai aos shows do Terreiro?', resp: 'Vou, e é bom. O governo contrata o grupo e paga o cachê. A família da esquina saiu em março e não recebeu cachê nenhum. A rua cheia de noite precisa de gente que more nela de dia.', kp: 'q_dandara_dn' },
       comodos: { label: 'Quem ficou fora', fases: FIM, quando: ['apos:dandara:lista'], ask: 'Quem são as casas sem nome?', resp: 'Quem aluga cômodo. Não aparece em papel nenhum, então a indenização não passa por ele. A associação vai de porta em porta conferir, e eu preciso de gente que saiba quem mora onde.', kp: 'q_comodos' },
     },
     lucia: {
       convite: { label: 'O convite', fases: MESA, ask: 'Lúcia, a senhora veio por causa da Dona Zefa?', resp: 'Ela me chamou pessoalmente. Disse que quem mede a rua também come nela. Vim. Sei que muita gente aqui preferia que eu não viesse.', kp: 'q_lucia_convite' },
       ficha: { label: 'O trabalho', fases: FIM, quando: ['apos:lucia:convite'], ask: 'E o que a senhora faz agora na rua?', resp: 'Faço a ficha de cada casa que sai. Quem mora, quantos são, o valor oferecido. Eu assino embaixo e não sei para onde essas pessoas vão.', kp: 'q_lucia_ficha' },
-      evento: { label: 'O turista e o comércio', fases: ['D'], quando: ['apos:lucia:ficha'], ask: 'Lúcia, o turista está enchendo a rua como o Programa previa?', resp: 'Enche no fim de semana e em dia de show. Na terça a rua esvazia, e a conta do comércio não fecha só com isso. No corredor do órgão já se fala em festa, evento, para trazer gente de Salvador mesmo, que mora na cidade e tem carro. Ainda é conversa. Não está em papel nenhum.', kp: 'q_lucia_evento' },
+      evento: { label: 'O turista e o comércio', fases: ['D'], quando: ['apos:lucia:ficha'], ask: 'Lúcia, o turista está enchendo a rua como o Programa previa?', resp: 'Enche no fim de semana e em dia de show do Dia & Noite. Na terça a rua esvazia, e a conta do comércio não fecha só com isso. No corredor do órgão já se fala em um evento maior, para trazer gente de Salvador mesmo, que mora na cidade e tem carro. Ainda é conversa. Não está em papel nenhum.', kp: 'q_lucia_evento' },
     },
     rita: {
       telhado: { label: 'O telhado', fases: DEPOIS_A, quando: ['viu_portao'], ask: 'Dona Rita, o seu telhado entrou no Programa?', resp: 'Entrou na lista. Veio a lona e um laudo que diz que o telhado não vale conserto. Eu disse que consertava com meu dinheiro e responderam que não pode mexer.', kp: 'q_rita_telhado' },
@@ -1967,6 +1972,7 @@ const CharLib = {
     },
     tonho: {
       cocada: { label: 'A cocada', fases: DEPOIS_A, quando: ['viu_cocada'], ask: 'Tonho, essa cocada é pra vender?', resp: 'Hoje não. Minha mãe fez cinquenta e mandou trazer. É presente pros meninos. Vender no caruru dá azar.', kp: 'q_tonho_cocada' },
+      show: { label: 'Os shows', fases: FIM, quando: ['apos:tonho:turista'], ask: 'Tonho, o show no Terreiro ajuda a vender?', resp: 'Ajuda. Na roda de capoeira eu vendo antes e depois, e a banda da noite é boa de isopor. Só que o grupo acaba e em dez minutos a rua está vazia. Show de graça traz gente que não gasta.', kp: 'q_tonho_show' },
       turista: { label: 'O turista', fases: FIM, quando: ['apos:tonho:cocada'], ask: 'Tonho, e o turista, compra cocada?', resp: 'Compra, e paga mais. Sábado e domingo eu vendo o dobro. De terça a quinta passa um ônibus de manhã e acabou. Se eu vivesse só do turista, comia dois dias.', kp: 'q_tonho_turista' },
     },
     nena: {
@@ -2289,7 +2295,7 @@ const CharLib = {
         if (k === 0) { if (o.id === 'M27' && sim.fasen !== 'C' && sim.fasen !== 'D') continue; this.obj(g, o); }
         else if (k === 1) this.item(g, o);
         else { const al = o.alpha != null ? o.alpha : 1; if (o.id === 'lia') this.ent(g, { id: 'lia', x: o.x, y: o.y, face: o.face, anim: o.anim, state: o.state === 'sentada' ? 'sentado' : 'livre', seat: o.seat, chao: false, t: o.t }, 1); else this.ent(g, o, al);
-          const h = this.D.CH[o.id][1] * 24 * (o.state === 'sentado' ? .72 : 1); heads.push([sx(o.x), sy(o.y, 0) - h]); if (o.id !== 'lia' && o === this.perto) this.nome(g, o, h); }
+          const h = this.D.CH[o.id][1] * 24 * (o.state === 'sentado' ? .72 : 1); heads.push([sx(o.x), sy(o.y, 0) - h]); }
       }
       // vapor do panelão e cheiro de dendê (partículas leves)
       for (let i = 0; i < 4; i++) { const ph = (this.t * .5 + i * .25) % 1, x = sx(3.75) + Math.sin(this.t * 2 + i * 2) * 3, y = sy(1.2, 0.95) - ph * 22; g.fillStyle = 'rgba(245,245,240,' + (0.35 * (1 - ph)).toFixed(2) + ')'; g.fillRect(x | 0, y | 0, 3, 2); }

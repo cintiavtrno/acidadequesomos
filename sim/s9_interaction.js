@@ -57,8 +57,9 @@ Sim.Interaction = class {
   objeto(o, ctx) {
     const w = this.w, D = Sim.Data.objetos[o.id], r = { texto: D ? D.texto(w, ctx || {}) : (o.desc || o.title || ''), kp: null };
     if (o.id === 'aparador') { w.carry = 'copo'; r.texto = 'Você enche um copo com a água do filtro de barro. Fresquinha.'; }
-    if (o.id === 'gaveta_1') { const perto = w.npcs.aurea && Sim.dist(w.lia, w.npcs.aurea) < 90; r.texto = D.texto(w, { vo_longe: !perto }); if (perto) { w.dialogue.speak(w.npcs.aurea, 'Aí não, minha filha.'); w.mem.remember('aurea', 'lia_xeretou_gaveta'); w.rel.change('aurea', 'lia', { trust: -.03 }, 'xeretou_gaveta'); return r; } }
+    if (o.id === 'gaveta_1') { const perto = !!w.npcs.aurea && w.npcs.aurea.state !== 'Away' && Sim.dist(w.lia, w.npcs.aurea) < 90; r.texto = D.texto(w, { vo_longe: !perto }); if (perto) { w.dialogue.speak(w.npcs.aurea, 'Aí não, minha filha.'); w.mem.remember('aurea', 'lia_xeretou_gaveta'); w.rel.change('aurea', 'lia', { trust: -.03 }, 'xeretou_gaveta'); return r; } }
     if (D && D.kp) { r.kp = D.kp; w.knowledge.award(D.kp, { via: 'examinou' }); }
+    if (D && D.kps) D.kps.forEach(k => w.knowledge.award(k, { via: 'examinou' }));
     w.bus.emit('objeto', { id: o.id });
     return r;
   }
