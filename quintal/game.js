@@ -21,7 +21,7 @@
     };
     addEventListener('keydown', press); addEventListener('keyup', e => { press(e); if (e.key === 'Shift') sim.corre = 0; });
     cv.addEventListener('pointerdown', e => {
-      const r = cv.getBoundingClientRect(), px = (e.clientX - r.left) / r.width * 480 + R.cam, py = (e.clientY - r.top) / r.height * 270;
+      const r = cv.getBoundingClientRect(), px = (e.clientX - r.left) / r.width * 480 + (R.camF != null ? R.camF : R.cam), py = (e.clientY - r.top) / r.height * 270;
       const X = (px - 24) / 24, Y = (py - 124) / 16; if (sim.conversa) sim.fecharConversa(); if (sim.lia.state === 'sentada') { sim.levantar(); return; }
       for (const id in sim.npcs) { const n = sim.npcs[id]; if (n.vis && Math.hypot(n.x - X, n.y - Y) < 0.55) { if (Math.hypot(n.x - sim.lia.x, n.y - sim.lia.y) < 1.4) sim.falar(id); else sim.liaIr(n.x, n.y + 0.5); return; } }
       sim.liaIr(Math.max(0.2, Math.min(27.8, X)), Math.max(0.3, Math.min(7.95, Y)));

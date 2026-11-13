@@ -200,7 +200,9 @@
     keySeat(e) { if (e.chao) return e.y + 0.25; const o = this.sim.OB[this.D.SEATS[e.seat][2]]; return o.y + o.d + 0.01; }
     frame(dt, zoomW) {
       this.t += dt; const g = this.ctx, sim = this.sim, L = sim.lia, D = this.D;
-      this.cam = Math.max(0, Math.min(W - 480, Math.round(sx(L.x) - 240)));
+      // câmera: mola amortecida em número fracionário; o recorte usa a parte inteira e a fração vira deslocamento em subpixel na exibição (fitSub)
+      const cs = this.cs || (this.cs = { vx: sx(L.x), vy: 0 }), dtc = dt || 0.016; Cam.follow(cs, Math.round(sx(L.x)), 0, dtc, { lead: 10 });
+      const camF = Math.max(0, Math.min(W - 480, cs.vx - 240)); this.camF = camF; this.cam = Math.floor(camF); if (window.fitSub) { window.fitSub.x = camF - this.cam; window.fitSub.y = 0; }
       g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = '#120d10'; g.fillRect(0, 0, 480, 270); g.save(); g.translate(-this.cam, 0); g.drawImage(this.sim.normal ? this.estN : this.est, 0, 0);
       const lista = [];
       for (const o of Object.values(sim.OB)) { if (/^F0[1-4]$/.test(o.id)) continue; lista.push([o.y + o.d, 0, o]); }

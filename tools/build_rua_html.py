@@ -9,7 +9,9 @@ css = re.search(r'<style>(.*?)</style>', old, re.S).group(1)
 T = T.replace('/*CSS*/', css)
 
 def uri(p): return 'data:image/png;base64,' + base64.b64encode(open(p, 'rb').read()).decode()
+FARL = {'far_' + k: uri(A + 'far/rua_%s.png' % k) for k in ['sky', 'clouds', 'hill', 'casas']}
 assets = {'far': uri(A + 'street_far.png'), 'world': uri(A + 'street6/world.png'), 'front': uri(A + 'street6/front.png'), 'props': uri(A + 'street6/props.png')}
+assets.update(FARL)
 atlas = {}
 for who in ['lia_side6', 'raimundo_side', 'dandara_side', 'lucia_side', 'ze_side', 'nonato_side', 'bela_side', 'cicera_side', 'junior_side', 'tonho_side']:
     assets[who] = uri(A + 'chars/%s.png' % who); atlas[who] = json.load(open(A + 'chars/%s.json' % who))

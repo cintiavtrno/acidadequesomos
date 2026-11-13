@@ -9,7 +9,9 @@ css = re.search(r'<style>(.*?)</style>', old, re.S).group(1)
 fit = re.search(r'<script>(// fit\.js.*?)</script>', open(B + 'game/rua_template.html').read(), re.S).group(1)
 def uri(p): return 'data:image/png;base64,' + base64.b64encode(open(p, 'rb').read()).decode()
 S = A + 'street96/'
+FARL = {'far_' + k: uri(S.rsplit('street96', 1)[0] + 'far/rua96_%s.png' % k) for k in ['sky', 'clouds', 'hill', 'casas']}
 assets = {'far': uri(S + 'far.png'), 'world': uri(S + 'world.png'), 'front': uri(S + 'front.png'), 'props': uri(S + 'props.png')}
+assets.update(FARL)
 atlas = {}
 elenco = open(B + 'sim/s96_elenco.js').read()
 import subprocess

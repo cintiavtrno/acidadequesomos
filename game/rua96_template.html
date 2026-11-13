@@ -78,6 +78,7 @@ function load(src) { return new Promise(r => { const i = new Image(); i.onload =
 let IMG = {}, SIM = null, started = false;
 Promise.all(Object.entries(ASSETS).map(([k, v]) => load(v).then(i => IMG[k] = i))).then(() => {
   const ci = {}; for (const k in CHARATLAS) ci[k] = IMG[k]; CharLib.init(CHARATLAS, ci);
+  Plx.layers = [{ img: IMG.far_sky, f: 0, tile: true }, { img: IMG.far_clouds, f: 0.06, fy: 0, tile: true, drift: 1.4 }, { img: IMG.far_hill, f: 0.18, fy: 0.2 }, { img: IMG.far_casas, f: 0.35, fy: 0.2 }];
   start();
 });
 
@@ -106,13 +107,15 @@ function computeView() {
   const z = S.zAnim != null ? S.zAnim : ZL[S.zl], w = VW / z, h = VH / z;
   const cl = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
   const cx = cl(S.vx, w / 2, WORLD_W - w / 2), cy = VH <= h ? VH / 2 : cl(S.vy, h / 2, VH - h / 2);
-  const left = Math.round(cx - w / 2), top = Math.round(cy - h / 2);
-  const cam = cl(Math.round(cx) - VW / 2, 0, WORLD_W - VW);
+  // câmera em número fracionário: a parte inteira recorta o mundo, a fração vai para fitSub (deslocamento em subpixel na exibição)
+  const lf = cx - w / 2, tf = cy - h / 2, left = Math.floor(lf), top = Math.floor(tf), fx = lf - left, fy = tf - top;
+  const cam = cl(left - Math.floor((VW - w) / 2), 0, WORLD_W - VW);
   if (S.free) { S.vx = cx; S.vy = cy; }
-  S.cam = cam; V = { z, w, h, left, top, sx: left - cam, sy: top, cam }; return V;
+  fitSub.x = fx * z; fitSub.y = fy * z; Plx.view.x = lf; Plx.view.y = tf; Plx.view.z = z;
+  S.cam = cam; V = { z, w, h, left, top, sx: left - cam, sy: top, cam, fx, fy }; return V;
 }
-function updateCamera(dt) { if (S.free) return; const k = Math.min(1, dt * 6), L = SIM.lia; S.vx += (L.x - S.vx) * k; S.vy += (L.y - 18 - S.vy) * k; }
-function snapCamera() { S.free = false; S.vx = SIM.lia.x; S.vy = SIM.lia.y - 18; }
+function updateCamera(dt) { if (S.free) return; const L = SIM.lia; Cam.follow(S, Math.round(L.x), Math.round(L.y) - 18, dt); }
+function snapCamera() { S.free = false; S.vx = SIM.lia.x; S.vy = SIM.lia.y - 18; Cam.reset(S); }
 function setZoom(n, ax, ay) {
   n = Math.max(0, Math.min(2, n)); if (n === S.zl) return; computeView();
   const cursor = ax != null, a_x = cursor ? ax : VW / 2, a_y = cursor ? ay : VH / 2;
@@ -328,7 +331,7 @@ function drawAtor(a) {
 }
 function render() {
   computeView(); const cam = S.cam;
-  ctx.drawImage(IMG.far, Math.floor(cam * 0.35), 0, VW, VH, 0, 0, VW, VH);
+  ctx.clearRect(0, 0, VW, VH);
   ctx.drawImage(IMG.world, cam, 0, VW, VH, 0, 0, VW, VH);
   const ents = [];
   for (const it of SCENE.inst) {
@@ -344,7 +347,7 @@ function render() {
   ctx.drawImage(IMG.front, cam, 0, VW, VH, 0, 0, VW, VH);
   if (S.ruler) drawRuler(cam);
   if (S.coll) drawColl(cam);
-  vctx.drawImage(off, V.sx, V.sy, V.w, V.h, 0, 0, VW, VH);
+  vctx.clearRect(0, 0, VW, VH); vctx.drawImage(off, V.sx, V.sy, V.w, V.h, 0, 0, VW, VH);
 }
 function drawRuler(cam) {
   ctx.save(); ctx.font = '8px monospace'; ctx.textBaseline = 'middle'; const L = SIM.lia, px = Math.round(L.x - cam), py = Math.round(L.y);
