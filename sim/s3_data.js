@@ -242,7 +242,7 @@ Sim.Data.conhecimentos = [
   K('kp_vitrine', 'A vitrine', 'Pães e bolos do dia. A vitrine é o primeiro lugar onde todo cliente para e pensa.', 'lugar'),
   K('kp_banco', 'O banco do nicho', 'Um banco comprido encostado na parede, de frente pro nicho. Parece feito pra esperar rezando.', 'lugar'),
   K('kp_bancada', 'A bancada da massa', 'Aqui a vó abre a massa. Tem marcas de dedos na madeira, de muitos anos.', 'lugar'),
-  K('kp_escada', 'A porta da escada', 'A porta que sobe pra nossa casa. Ainda não é hora de subir.', 'lugar'),
+  K('kp_escada', 'A porta da escada', 'A porta que sobe pra nossa casa. Depois das três da tarde dá para subir e dormir quando a Lia quiser.', 'lugar'),
 ];
 // níveis do Caderninho por pessoa (quantos pontos de conhecimento viram qual rótulo)
 Sim.Data.nivelPessoa = [[0, 'Ainda estou conhecendo'], [2, 'Já me conhece'], [4, 'Confia em mim'], [7, 'Sei o que pesa nela']];
@@ -270,7 +270,7 @@ Sim.Data.objetos = {
   forno_lenha: { kp: 'kp_forno', texto: w => w.obj('forno_aceso') ? 'O forno de lenha, aceso desde cedo. O calor chega até o balcão.' : 'O forno de lenha, ainda frio; a vó vai acendê-lo.' },
   bancada: { kp: 'kp_bancada', texto: () => 'Bancada de trabalho. Marcas de dedos na madeira, de muitos anos de massa.' },
   banco_altar: { kp: 'kp_banco', texto: () => 'Um banco comprido encostado na parede, de frente pro nicho.' },
-  porta_escada_1: { kp: 'kp_escada', texto: w => w.obj('porta_escada_1') ? 'A porta da escada está aberta. Ainda não é hora de subir.' : 'A porta da escada, fechada. Lá em cima fica a nossa casa.' },
+  porta_escada_1: { kp: 'kp_escada', texto: w => w.obj('porta_escada_1') ? (w.semFimDeDia && w.clock.min >= 900 ? 'A porta da escada está aberta. Lá em cima é a nossa casa: dá para subir e dormir quando você quiser.' : 'A porta da escada está aberta. Ainda não é hora de subir.') : 'A porta da escada, fechada. Lá em cima fica a nossa casa.' },
 };
 
 // ---- 1994 na padaria: quem passa pelo balcão já conta o efeito do Programa (aviso, saída de moradores, turista). Proposta; revisar. ----

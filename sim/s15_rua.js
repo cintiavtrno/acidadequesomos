@@ -66,7 +66,7 @@
       this.mesa.update(dt);
       this.social.update(dt); this.updateViv(dt);
       this.updateBichos(dt); this.updateGreetings(dt);
-      if (this.clock.min >= RD.dia.fim && !this.clock.ended) { this.clock.ended = true; this.bus.emit('dia_fim', { resumo: this.resumo() }); }
+      if (this.clock.min >= RD.dia.fim && !this.clock.ended && !this.semFimDeDia) { this.clock.ended = true; this.bus.emit('dia_fim', { resumo: this.resumo() }); }
     }
     lugar(n, sp) { n.x = sp.x; n.y = sp.y; if (sp.face) n.face = sp.face; }
     proximaTarefa(n) {

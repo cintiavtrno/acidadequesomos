@@ -175,8 +175,11 @@
 
   // ------------------------------------------------------------------ adaptadores (um por ambiente)
   // ui = ponte opcional com a tela do ambiente (no navegador: o iframe). Sem ui (testes) só a posição da Lia na simulação é ajustada.
+  M.NOITE_FIXA = 1200;   // 20:00: a noite chega e permanece. Quem decide passar para o dia seguinte é o jogador.
+  const semFim = sim => { sim.semFimDeDia = true; sim.clock.hold = M.NOITE_FIXA; sim.clock.mult = 1; };
   M.Adapters = {
     rua(Sim, sim, ui) {
+      semFim(sim);
       return {
         sim, ui, step(dt) { sim.update(dt); }, visita(id) { return Sim.Rua.D.visitas[id] || [10, 15]; },
         liaSai(p) { sim.liaFora = true; ui && ui.liaSaiu && ui.liaSaiu(); },
@@ -184,6 +187,7 @@
       };
     },
     padaria(Sim, sim, ui) {
+      semFim(sim);
       for (const id in M.VIAJANTES) if (sim.npcs[id]) sim.npcs[id].visitas = [];               // as visitas agora vêm da rua
       if (root && root.MUNDO_ANO === 1994) sim.caruruSaida = 735;                                // 12:15: a vó vai ao caruru e deixa o balcão com a Lia
       return {
@@ -193,6 +197,7 @@
       };
     },
     casa(Sim, sim, ui) {
+      semFim(sim);
       const R = sim.npcs.raimundo; R.sai = 423; R.volta = 630; sim.mundoAguarda = true; sim.mundoLibera = false;   // sai às 07:03 e só volta quando a rua entregar (volta=630 só alimenta o texto)
       sim.bus.on('saiu_casa', () => { sim.mundoLibera = false; });   // saiu de novo: a casa espera a rua entregar
       const orig = Sim.HomeStates.Away; Sim.HomeStates.Away = function (n, w, dt) { if (w.mundoAguarda && !w.mundoLibera) return; return orig.call(this, n, w, dt); };
@@ -206,6 +211,7 @@
     },
   };
   M.Adapters.quintal = function (Sim, sim, ui) {
+    semFim(sim);
     return { sim, ui, step(dt) { sim.update(dt); }, liaSai() { ui && ui.liaSaiu && ui.liaSaiu(); }, liaChega() { ui && ui.liaChega && ui.liaChega(); } };
   };
   M.criar = function (cenas, atual) { const w = new WorldManager(); for (const k in cenas) w.cenas.registrar(k, cenas[k]); w.iniciar(atual || 'rua'); return w; };

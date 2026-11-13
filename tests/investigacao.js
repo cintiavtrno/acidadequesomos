@@ -7,7 +7,7 @@ const scene = JSON.parse(fs.readFileSync(__dirname + '/../assets/street6/scene_r
 const NSEM = +(process.argv[2] || 4), REL = process.argv.includes('--relatorio');
 let pass = 0, fail = 0; const ok = (n, c, x) => { c ? pass++ : fail++; console.log((c ? 'PASS ' : 'FAIL ') + n + (x !== undefined ? ' · ' + x : '')); };
 
-const RATE = +process.env.RATE || +(/ANO === 1994 \? 0\.5 : ([\d.]+)/.exec(fs.readFileSync(__dirname + '/../mundo/shell_template.html', 'utf8')) || [0, 1.5])[1];   // min de jogo por segundo real
+const RATE = +process.env.RATE || +(/RATE_ANO = ([\d.]+)/.exec(fs.readFileSync(__dirname + '/../mundo/shell_template.html', 'utf8')) || [0, 1.5])[1];   // min de jogo por segundo real
 const sec = x => x * RATE;   // segundos reais de jogador -> minutos de jogo
 const S0 = load(), RD0 = S0.Rua.D, KS = Object.keys(RD0.kp), META = RD0.kpMeta;
 const CENTRAIS = KS.filter(k => META[k].cat === 'central');

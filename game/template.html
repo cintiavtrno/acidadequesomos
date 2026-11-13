@@ -281,7 +281,7 @@ function focusOn(id) {                              // leva a câmera a um objet
   S.zl = Math.max(0, Math.min(ZL.length - 1, o.zoom != null ? o.zoom : 2)); S.free = true;    // zoom = índice em ZL (0..2); valores fora da faixa davam tela preta
   S.vx = o.rect[0] + o.rect[2] / 2; S.vy = o.rect[1] + o.rect[3] / 2; syncUI(); return true;
 }
-window.BALCAO = { S, INSPECT, get SIM() { return SIM; }, get INTERACT() { return INTERACT; }, openDialog: id => openDialog(id), closeDialog: () => closeDialog(), toggleDiary: () => toggleDiary(), focusOn, setZoom, resetCamera, onInspect: null, onState: null, onUse: null, objects: ObjectSys };
+window.BALCAO = { ocupado: () => !!(D.open || (typeof diaryOpen === 'function' && diaryOpen())), S, INSPECT, get SIM() { return SIM; }, get INTERACT() { return INTERACT; }, openDialog: id => openDialog(id), closeDialog: () => closeDialog(), toggleDiary: () => toggleDiary(), focusOn, setZoom, resetCamera, onInspect: null, onState: null, onUse: null, objects: ObjectSys };
 
 const keys = {};
 addEventListener('keydown', e => {
@@ -488,6 +488,7 @@ function applyFx(o) {
   const tipo = o.tipo || 'usar'; let m = o.title;
   if (tipo === 'alternar') {
     const n = ObjectSys.toggle(o.id); const r = SIM.interaction.objeto(o, { estado: n });
+    if (o.id === 'porta_escada_1' && n === 1 && window.MUNDO_ATIVO && SIM.clock.min >= 900) setTimeout(() => { try { window.parent.MUNDO_DORMIR && window.parent.MUNDO_DORMIR(); } catch (e) { } }, 1200);
     m = (o.states ? o.title + ': ' + o.states[n] + '. ' : '') + (n === 1 || o.id !== 'gaveta_1' ? r.texto : '');
   } else {
     const r = SIM.interaction.objeto(o, {}); m = r.texto || o.desc || o.title;

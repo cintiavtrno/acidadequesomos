@@ -404,8 +404,9 @@ Sim.EventSystem = class {
 // WorldClock — relógio do mundo em minutos de jogo. O mundo anda mesmo que a câmera esteja em outro lugar.
 // rate = minutos de jogo por segundo real (padrão 1). Horário de funcionamento e fim do dia vêm daqui.
 Sim.WorldClock = class {
-  constructor(o) { o = o || {}; this.min = o.start != null ? o.start : 420; this.rate = o.rate || 1; this.openAt = o.openAt || 420; this.closeAt = o.closeAt || 780; this.day = o.day || 1; this.paused = false; this.ended = false; this.tReal = 0; }
-  tick(dt) { if (this.paused || this.ended) return 0; this.tReal += dt; const d = dt * this.rate; this.min += d; return d; }
+  constructor(o) { o = o || {}; this.min = o.start != null ? o.start : 420; this.rate = o.rate || 1; this.openAt = o.openAt || 420; this.closeAt = o.closeAt || 780; this.day = o.day || 1; this.paused = false; this.ended = false; this.tReal = 0; this.hold = o.hold != null ? o.hold : null; this.mult = 1; }
+  // hold = minuto em que o relógio para (a noite permanece); mult = fator de ritmo (cai quando o jogador fica parado). O relógio não decide o fim do dia.
+  tick(dt) { if (this.paused || this.ended) return 0; if (this.hold != null && this.min >= this.hold) return 0; this.tReal += dt; let d = dt * this.rate * (this.mult == null ? 1 : this.mult); if (this.hold != null && this.min + d > this.hold) d = this.hold - this.min; this.min += d; return d; }
   get hh() { return Math.floor(this.min / 60); }
   get mm() { return Math.floor(this.min % 60); }
   label() { return String(this.hh).padStart(2, '0') + ':' + String(this.mm).padStart(2, '0'); }
@@ -746,7 +747,7 @@ Sim.Data.conhecimentos = [
   K('kp_vitrine', 'A vitrine', 'Pães e bolos do dia. A vitrine é o primeiro lugar onde todo cliente para e pensa.', 'lugar'),
   K('kp_banco', 'O banco do nicho', 'Um banco comprido encostado na parede, de frente pro nicho. Parece feito pra esperar rezando.', 'lugar'),
   K('kp_bancada', 'A bancada da massa', 'Aqui a vó abre a massa. Tem marcas de dedos na madeira, de muitos anos.', 'lugar'),
-  K('kp_escada', 'A porta da escada', 'A porta que sobe pra nossa casa. Ainda não é hora de subir.', 'lugar'),
+  K('kp_escada', 'A porta da escada', 'A porta que sobe pra nossa casa. Depois das três da tarde dá para subir e dormir quando a Lia quiser.', 'lugar'),
 ];
 // níveis do Caderninho por pessoa (quantos pontos de conhecimento viram qual rótulo)
 Sim.Data.nivelPessoa = [[0, 'Ainda estou conhecendo'], [2, 'Já me conhece'], [4, 'Confia em mim'], [7, 'Sei o que pesa nela']];
@@ -774,7 +775,7 @@ Sim.Data.objetos = {
   forno_lenha: { kp: 'kp_forno', texto: w => w.obj('forno_aceso') ? 'O forno de lenha, aceso desde cedo. O calor chega até o balcão.' : 'O forno de lenha, ainda frio; a vó vai acendê-lo.' },
   bancada: { kp: 'kp_bancada', texto: () => 'Bancada de trabalho. Marcas de dedos na madeira, de muitos anos de massa.' },
   banco_altar: { kp: 'kp_banco', texto: () => 'Um banco comprido encostado na parede, de frente pro nicho.' },
-  porta_escada_1: { kp: 'kp_escada', texto: w => w.obj('porta_escada_1') ? 'A porta da escada está aberta. Ainda não é hora de subir.' : 'A porta da escada, fechada. Lá em cima fica a nossa casa.' },
+  porta_escada_1: { kp: 'kp_escada', texto: w => w.obj('porta_escada_1') ? (w.semFimDeDia && w.clock.min >= 900 ? 'A porta da escada está aberta. Lá em cima é a nossa casa: dá para subir e dormir quando você quiser.' : 'A porta da escada está aberta. Ainda não é hora de subir.') : 'A porta da escada, fechada. Lá em cima fica a nossa casa.' },
 };
 
 // ---- 1994 na padaria: quem passa pelo balcão já conta o efeito do Programa (aviso, saída de moradores, turista). Proposta; revisar. ----
@@ -1274,7 +1275,7 @@ Sim.Events = class {
         w.rel.change('dandara', 'lucia', { aff: -.03, tens: .08 }, 'radio');
       } },
       { id: 'procura', cond: w => this.procura(w) },
-      { id: 'dia_fim', hora: 1140, run: w => w.endDay() },
+      { id: 'dia_fim', hora: 1140, run: w => { if (!w.semFimDeDia) w.endDay(); } },
     ];
   }
   procura(w) {                                                                        // "alguém procura outro": quem ficou sente falta de quem já saiu
@@ -1795,7 +1796,7 @@ Sim.CasaWorld = class {
     for (const t of this.timers.slice()) { t.t -= dt; if (t.t <= 0) { this.timers.splice(this.timers.indexOf(t), 1); t.fn(); } }
     if (this.dialogosPausa > 0) this.dialogosPausa -= dt;
     this.tickRaimundo(dt); this.tickVisita(dt); this.interaction.tickCafe(dt);
-    if (this.clock.min >= 1140 && !this.fim) this.endDay();
+    if (this.clock.min >= 1140 && !this.fim && !this.semFimDeDia) this.endDay();
   }
   tickRaimundo(dt) {
     const n = this.npcs.raimundo; n.stateT += dt; n.at += dt;
@@ -2660,7 +2661,7 @@ Sim.Rua.D.virar94 = () => {
       this.mesa.update(dt);
       this.social.update(dt); this.updateViv(dt);
       this.updateBichos(dt); this.updateGreetings(dt);
-      if (this.clock.min >= RD.dia.fim && !this.clock.ended) { this.clock.ended = true; this.bus.emit('dia_fim', { resumo: this.resumo() }); }
+      if (this.clock.min >= RD.dia.fim && !this.clock.ended && !this.semFimDeDia) { this.clock.ended = true; this.bus.emit('dia_fim', { resumo: this.resumo() }); }
     }
     lugar(n, sp) { n.x = sp.x; n.y = sp.y; if (sp.face) n.face = sp.face; }
     proximaTarefa(n) {
@@ -6005,7 +6006,7 @@ function focusOn(id) {                              // leva a câmera a um objet
   S.zl = Math.max(0, Math.min(ZL.length - 1, o.zoom != null ? o.zoom : 2)); S.free = true;    // zoom = índice em ZL (0..2); valores fora da faixa davam tela preta
   S.vx = o.rect[0] + o.rect[2] / 2; S.vy = o.rect[1] + o.rect[3] / 2; syncUI(); return true;
 }
-window.BALCAO = { S, INSPECT, get SIM() { return SIM; }, get INTERACT() { return INTERACT; }, openDialog: id => openDialog(id), closeDialog: () => closeDialog(), toggleDiary: () => toggleDiary(), focusOn, setZoom, resetCamera, onInspect: null, onState: null, onUse: null, objects: ObjectSys };
+window.BALCAO = { ocupado: () => !!(D.open || (typeof diaryOpen === 'function' && diaryOpen())), S, INSPECT, get SIM() { return SIM; }, get INTERACT() { return INTERACT; }, openDialog: id => openDialog(id), closeDialog: () => closeDialog(), toggleDiary: () => toggleDiary(), focusOn, setZoom, resetCamera, onInspect: null, onState: null, onUse: null, objects: ObjectSys };
 
 const keys = {};
 addEventListener('keydown', e => {
@@ -6212,6 +6213,7 @@ function applyFx(o) {
   const tipo = o.tipo || 'usar'; let m = o.title;
   if (tipo === 'alternar') {
     const n = ObjectSys.toggle(o.id); const r = SIM.interaction.objeto(o, { estado: n });
+    if (o.id === 'porta_escada_1' && n === 1 && window.MUNDO_ATIVO && SIM.clock.min >= 900) setTimeout(() => { try { window.parent.MUNDO_DORMIR && window.parent.MUNDO_DORMIR(); } catch (e) { } }, 1200);
     m = (o.states ? o.title + ': ' + o.states[n] + '. ' : '') + (n === 1 || o.id !== 'gaveta_1' ? r.texto : '');
   } else {
     const r = SIM.interaction.objeto(o, {}); m = r.texto || o.desc || o.title;

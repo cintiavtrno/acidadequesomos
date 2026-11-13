@@ -398,8 +398,9 @@ Sim.EventSystem = class {
 // WorldClock — relógio do mundo em minutos de jogo. O mundo anda mesmo que a câmera esteja em outro lugar.
 // rate = minutos de jogo por segundo real (padrão 1). Horário de funcionamento e fim do dia vêm daqui.
 Sim.WorldClock = class {
-  constructor(o) { o = o || {}; this.min = o.start != null ? o.start : 420; this.rate = o.rate || 1; this.openAt = o.openAt || 420; this.closeAt = o.closeAt || 780; this.day = o.day || 1; this.paused = false; this.ended = false; this.tReal = 0; }
-  tick(dt) { if (this.paused || this.ended) return 0; this.tReal += dt; const d = dt * this.rate; this.min += d; return d; }
+  constructor(o) { o = o || {}; this.min = o.start != null ? o.start : 420; this.rate = o.rate || 1; this.openAt = o.openAt || 420; this.closeAt = o.closeAt || 780; this.day = o.day || 1; this.paused = false; this.ended = false; this.tReal = 0; this.hold = o.hold != null ? o.hold : null; this.mult = 1; }
+  // hold = minuto em que o relógio para (a noite permanece); mult = fator de ritmo (cai quando o jogador fica parado). O relógio não decide o fim do dia.
+  tick(dt) { if (this.paused || this.ended) return 0; if (this.hold != null && this.min >= this.hold) return 0; this.tReal += dt; let d = dt * this.rate * (this.mult == null ? 1 : this.mult); if (this.hold != null && this.min + d > this.hold) d = this.hold - this.min; this.min += d; return d; }
   get hh() { return Math.floor(this.min / 60); }
   get mm() { return Math.floor(this.min % 60); }
   label() { return String(this.hh).padStart(2, '0') + ':' + String(this.mm).padStart(2, '0'); }
@@ -1679,7 +1680,7 @@ function setTimeoutish(w, s, fn) { const sm = w.social; sm.timers = sm.timers ||
       this.mesa.update(dt);
       this.social.update(dt); this.updateViv(dt);
       this.updateBichos(dt); this.updateGreetings(dt);
-      if (this.clock.min >= RD.dia.fim && !this.clock.ended) { this.clock.ended = true; this.bus.emit('dia_fim', { resumo: this.resumo() }); }
+      if (this.clock.min >= RD.dia.fim && !this.clock.ended && !this.semFimDeDia) { this.clock.ended = true; this.bus.emit('dia_fim', { resumo: this.resumo() }); }
     }
     lugar(n, sp) { n.x = sp.x; n.y = sp.y; if (sp.face) n.face = sp.face; }
     proximaTarefa(n) {
@@ -2563,7 +2564,7 @@ function updateReport() {
 // Lia chega de um interior pela porta: aparece diante da porta, virada para a rua
 function liaChega(k) { const sp = SIM.spot(k), L = SIM.lia; L.x = sp.x; L.y = sp.y + 7; L.face = 'down'; L.sentada = false; L.seat = null; LS.mode = 'free'; LS.path = []; LS.goal = null; LS.anim = 'idle'; SIM.liaFora = false; closeDialog && D.open && closeDialog(); S.free = false; S.vx = L.x; S.vy = L.y - 18; S.hint = null; if (CTX.active) exitContext(true); computeView(); }
 function liaSaiu() { SIM.liaFora = true; LS.path = []; LS.goal = null; }
-window.BALCAO = { liaChega, liaSaiu, PORTAS, S, LS, D, CTX, enterContext, exitContext, mesaEscolha, get SIM() { return SIM; }, setZoom, resetCamera, focusOn, abrirConversa, abrirMesa, closeMesa, toggleNotes, pressAction, sentarEm, goTo, ffwd, examinar, render, computeView };
+window.BALCAO = { ocupado: () => !!(D.open || S.notesOpen || S.mesaOpen), liaChega, liaSaiu, PORTAS, S, LS, D, CTX, enterContext, exitContext, mesaEscolha, get SIM() { return SIM; }, setZoom, resetCamera, focusOn, abrirConversa, abrirMesa, closeMesa, toggleNotes, pressAction, sentarEm, goTo, ffwd, examinar, render, computeView };
 </script>
 </body>
 </html>

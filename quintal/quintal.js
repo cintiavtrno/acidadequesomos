@@ -148,7 +148,7 @@
     saindo() { const L = this.lia, s = this.D.OPEN.soleira; return L.y > this.D.D - 0.25 && L.x >= s.x0 && L.x <= s.x1; }
     chegar(p) { const L = this.lia, s = this.D.OPEN.soleira; L.x = (s.x0 + s.x1) / 2; L.y = 7.5; L.face = 'up'; L.state = 'livre'; L.path = []; L.anim = 'idle'; }
     update(dt) {
-      this.t += dt; if (!this.clock.paused) this.clock.min += dt * this.clock.rate; this.clock.hh = Math.floor(this.clock.min / 60) % 24; this.clock.mm = Math.floor(this.clock.min % 60);
+      this.t += dt; if (!this.clock.paused) { let d = dt * this.clock.rate * (this.clock.mult == null ? 1 : this.clock.mult); if (this.clock.hold != null && this.clock.min + d > this.clock.hold) d = Math.max(0, this.clock.hold - this.clock.min); this.clock.min += d; } this.clock.hh = Math.floor(this.clock.min / 60) % 24; this.clock.mm = Math.floor(this.clock.min % 60);
       if (!this.forcada) { const ph = this.faseDoRelogio(); if (ph !== this.fasen) this.fase(ph, !this.liaPresente); }
       const L = this.lia; L.t += dt; if (L.fala > 0) { L.fala -= dt; if (L.fala <= 0) { L.fala = 0; if (L.state !== 'sentada') L.anim = 'idle'; } }
       if (this.msg) { this.msg.t -= dt; if (this.msg.t <= 0) this.msg = null; }

@@ -605,7 +605,7 @@ function updateReport() {
 // Lia chega de um interior pela porta: aparece diante da porta, virada para a rua
 function liaChega(k) { const sp = SIM.spot(k), L = SIM.lia; L.x = sp.x; L.y = sp.y + 7; L.face = 'down'; L.sentada = false; L.seat = null; LS.mode = 'free'; LS.path = []; LS.goal = null; LS.anim = 'idle'; SIM.liaFora = false; closeDialog && D.open && closeDialog(); S.free = false; S.vx = L.x; S.vy = L.y - 18; S.hint = null; if (CTX.active) exitContext(true); computeView(); }
 function liaSaiu() { SIM.liaFora = true; LS.path = []; LS.goal = null; }
-window.BALCAO = { liaChega, liaSaiu, PORTAS, S, LS, D, CTX, enterContext, exitContext, mesaEscolha, get SIM() { return SIM; }, setZoom, resetCamera, focusOn, abrirConversa, abrirMesa, closeMesa, toggleNotes, pressAction, sentarEm, goTo, ffwd, examinar, render, computeView };
+window.BALCAO = { ocupado: () => !!(D.open || S.notesOpen || S.mesaOpen), liaChega, liaSaiu, PORTAS, S, LS, D, CTX, enterContext, exitContext, mesaEscolha, get SIM() { return SIM; }, setZoom, resetCamera, focusOn, abrirConversa, abrirMesa, closeMesa, toggleNotes, pressAction, sentarEm, goTo, ffwd, examinar, render, computeView };
 </script>
 </body>
 </html>

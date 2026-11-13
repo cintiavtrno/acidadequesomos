@@ -27,8 +27,9 @@ Sim.EventSystem = class {
 // WorldClock — relógio do mundo em minutos de jogo. O mundo anda mesmo que a câmera esteja em outro lugar.
 // rate = minutos de jogo por segundo real (padrão 1). Horário de funcionamento e fim do dia vêm daqui.
 Sim.WorldClock = class {
-  constructor(o) { o = o || {}; this.min = o.start != null ? o.start : 420; this.rate = o.rate || 1; this.openAt = o.openAt || 420; this.closeAt = o.closeAt || 780; this.day = o.day || 1; this.paused = false; this.ended = false; this.tReal = 0; }
-  tick(dt) { if (this.paused || this.ended) return 0; this.tReal += dt; const d = dt * this.rate; this.min += d; return d; }
+  constructor(o) { o = o || {}; this.min = o.start != null ? o.start : 420; this.rate = o.rate || 1; this.openAt = o.openAt || 420; this.closeAt = o.closeAt || 780; this.day = o.day || 1; this.paused = false; this.ended = false; this.tReal = 0; this.hold = o.hold != null ? o.hold : null; this.mult = 1; }
+  // hold = minuto em que o relógio para (a noite permanece); mult = fator de ritmo (cai quando o jogador fica parado). O relógio não decide o fim do dia.
+  tick(dt) { if (this.paused || this.ended) return 0; if (this.hold != null && this.min >= this.hold) return 0; this.tReal += dt; let d = dt * this.rate * (this.mult == null ? 1 : this.mult); if (this.hold != null && this.min + d > this.hold) d = this.hold - this.min; this.min += d; return d; }
   get hh() { return Math.floor(this.min / 60); }
   get mm() { return Math.floor(this.min % 60); }
   label() { return String(this.hh).padStart(2, '0') + ':' + String(this.mm).padStart(2, '0'); }
