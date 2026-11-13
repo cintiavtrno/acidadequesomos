@@ -118,9 +118,9 @@ Sim.SocialMind = class {
       for (const [info, tipo] of P.sabe) this.sabe(id, info, tipo, tipo === 'suposicao' ? 2 : tipo === 'boato' ? (info === 'i_fiado' ? 2 : 2) : tipo === 'recebida' ? 1 : 0, .85);
     }
     this.bus.on('dom_bate', d => this.noDomino('bate', d)); this.bus.on('dom_mao', () => this.noDomino('fim_mao'));
-    if (saved.rel) this.rel.import(saved.rel); if (saved.mem) this.mem.import(saved.mem); if (saved.infos) this.infos = saved.infos; if (saved.x) this.x = saved.x; if (saved.need) this.need = saved.need;
+    if (saved.rel) this.rel.import(saved.rel); if (saved.mem) this.mem.import(saved.mem); if (saved.dinamicas) this.dinamicas = saved.dinamicas; if (saved.seq) this.seq = saved.seq; if (saved.infos) { this.infos = saved.infos; for (const i of Object.keys(this.infos)) if (!S.INFOS[i] && !(this.dinamicas || {})[i]) delete this.infos[i]; } if (saved.x) this.x = saved.x; if (saved.need) this.need = saved.need;
   }
-  exportar() { return { rel: this.rel.export(), mem: this.mem.export(), infos: JSON.parse(JSON.stringify(this.infos)), x: this.x, need: this.need }; }
+  exportar() { return { rel: this.rel.export(), mem: this.mem.export(), infos: JSON.parse(JSON.stringify(this.infos)), dinamicas: JSON.parse(JSON.stringify(this.dinamicas || {})), seq: this.seq, x: this.x, need: this.need }; }   // as informações dinâmicas (discussões) vão junto: sem a definição, o dia seguinte quebrava
   P(id) { return S.PERSONAS[id]; } tr(id, k) { const p = S.PERSONAS[id]; return p ? p.tracos[k] : .5; }
   // ---------------------------------------------------------------- relações (seção 5/6)
   ex(a, b) { const k = a + '>' + b; return this.x[k] || (this.x[k] = { amizade: 0, intim: 0, conflito: 0, n: 0, ult: -999, dia: { aff: 0, trust: 0, tens: 0 } }); }

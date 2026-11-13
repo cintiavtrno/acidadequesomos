@@ -113,7 +113,8 @@ RD.tarde = {
     junior:   [A('11:51', 'ir', { spot: 'porta_b5' }), A('11:53', 'entrar', { porta: 'porta_b5' })],
   },
 };
-RD.agendaMundo = () => {
+RD.agendaMundo = dia => {
+  dia = dia || 99;
   const ag = JSON.parse(JSON.stringify(RD.agenda));
   const ano = (typeof window !== 'undefined' && window.MUNDO_ANO === 1994) ? 1994 : 1991;
   const sairPad = i => Object.assign({}, i, { aguarda: 'padaria' });
@@ -123,6 +124,14 @@ RD.agendaMundo = () => {
   ag.lucia.splice(k, 0, A('08:24', 'ir', { spot: 'porta_padaria' }), A('08:24', 'entrar', { porta: 'porta_padaria' }), A('08:25', 'sair', { porta: 'porta_padaria', aguarda: 'padaria' }));
   if (ano === 1994 && RD.virar94) RD.virar94();
   const tarde = RD.tarde[ano]; for (const id in tarde) ag[id] = ag[id].concat(tarde[id].map(t => Object.assign({}, t)));
+  // agenda por dia (camada sobre a agenda de cada pessoa, sem apagá-la): em 1991 Lúcia só mede a rua inteira a partir do dia 3. Nos dias 1 e 2 ela só mede a padaria.
+  if (ano === 1991 && dia < 3) {
+    const lu = [], l0 = ag.lucia;
+    for (let i = 0; i < l0.length; i++) { const t = l0[i];
+      if (t.tipo === 'ir' && (t.spot === 'fachada_azul' || t.spot === 'fachada_sobrado')) { if (l0[i + 1] && l0[i + 1].tipo === 'esperar') i++; continue; }
+      if (t.tipo === 'conversar' && t.com === 'raimundo') continue; lu.push(t); }
+    ag.lucia = lu;
+  }
   return ag;
 };
 
@@ -143,7 +152,7 @@ RD.falas = {
     saudar: ['Bom dia, menina! Vai ficar olhando ou vai aprender?', 'Olha a Lia! Fica aí, mas não sopra jogada, hein.'],
     ouvir: ['(Seu Zé ri sozinho, olhando as próprias pedras.)'],
     perguntar: {
-      jogo: [{ t: 'Dupla joga de frente: eu e Raimundo contra Nonato e Bela. Parceiro fala com a pedra, não com a boca.', kp: 'kp_dom_dupla' }, { t: 'Bate de carroça vale dois. De lá e lô, três. Cruzada, quatro, e aí a mesa treme.', conf: [1, 3], kp: 'kp_dom_batidas' }],
+      jogo: [{ t: 'Dupla joga de frente: eu e Raimundo contra Nonato e Bela. Parceiro fala com a pedra, não com a boca.', kp: 'kp_dom_dupla' }, { t: 'Bate de carroça vale dois. De lá e lô, três. Cruzada, quatro, e aí a mesa treme.', conf: [1, 3] }],
       barbearia: [{ t: 'A barbearia é a minha casa de dia. De noite, é a de Dona Marta, minha sombra.', kp: null }],
       lia_jogar: [{ t: 'Quer jogar? Quando um de nós levantar, a gente vê. Primeiro prova que sabe contar até seis.', kp: 'kp_dom_convite' }],
       lata: [{ t: 'Menina, a lata é assim. Cada um deixa o que pode, e quem está apertado leva o que precisa, sem ter que explicar. Fica na mesa; ninguém conta o que tem dentro.', kp: 'kp_lata', revisar: true }],
@@ -163,7 +172,7 @@ RD.falas = {
     perguntar: {
       jogo: [{ t: 'Não adianta gritar. Quem conta as pedras que já saíram sabe o que sobra.', kp: 'kp_dom_contar' }],
       costura: [{ t: 'Eu costuro na máquina da janela do alto. Daqui eu vejo o jogo e o movimento. O que passa na rua passa pela minha agulha.', kp: null }],
-      associacao: [{ t: 'Eu saio da porta da associação todo dia. Lá dentro tem um caderno de capa dura e uma mesa onde Dandara escreve o que ninguém escreve pra gente. A reunião é hoje à noite.', kp: 'kp_associacao', revisar: true }],
+      associacao: [{ t: 'Eu saio da porta da associação todo dia. Lá dentro tem um caderno de capa dura e uma mesa onde Dandara escreve o que ninguém escreve pra gente. A reunião é amanhã à noite.', kp: 'kp_associacao', revisar: true }],
       rua: [{ t: 'A rua tá sendo olhada por gente de fora. Tem uns que olham pra ajudar e uns que olham pra comprar. Eu ainda não sei qual é qual.', kp: 'kp_rua_olhar', revisar: true }],
     },
   },
@@ -173,7 +182,7 @@ RD.falas = {
     perguntar: {
       varal: [{ t: 'Lavo pra meia rua. Cada pano tem dono; eu conheço pelo cheiro.', kp: 'kp_varal' }],
       junior: [{ t: 'Júnior é meu neto e não para quieto. Se ele passar por aqui, manda ele voltar.', kp: null }],
-      jogo: [{ t: 'Às dez eu entro no lugar de Bela, que vai fazer o almoço. Dominó é a hora que eu sento sem culpa.', kp: 'kp_cicera_dom' }],
+      jogo: [{ t: 'Às dez eu entro no lugar de Bela, que vai fazer o almoço. Dominó é a hora que eu sento sem culpa.' }],
       rua: [{ t: 'Tem. Gente com prancheta, gente com máquina de retrato. Bela diz que uns olham pra ajudar e uns pra comprar. Eu lavo roupa; casa dos outros eu não sei olhar.', kp: 'kp_rua_olhar', revisar: true }],
     },
   },
@@ -194,7 +203,7 @@ RD.falas = {
     },
   },
   dandara: {
-    saudar: ['Lia, bom dia. Tem um minuto? A reunião é hoje à noite e preciso de mais assinaturas.', 'Lia. A associação tá aberta, entra quando quiser.'],
+    saudar: ['Lia, bom dia. Tem um minuto? Preciso de mais gente para a associação.', 'Lia. A associação tá aberta, entra quando quiser.'],
     ouvir: ['(Dandara folheia o caderno de capa dura, procurando um nome.)'],
     perguntar: {
       associacao: [{ t: 'É uma casa comum. Quem não tem advogado, tem a gente. O quadro de avisos é nosso jornal.', kp: 'kp_associacao' }],
@@ -212,7 +221,7 @@ RD.falas = {
 };
 // conversas espontâneas entre pessoas (pares, linhas alternadas)
 RD.papos = [
-  ['dandara>raimundo', ['Bom dia, Seu Raimundo. O senhor vai à reunião de hoje?', 'Se o Zé deixar eu sair da mesa, vou sim.']],
+  ['dandara>raimundo', ['Bom dia, Seu Raimundo. O senhor vai à reunião da associação?', 'Se o Zé deixar eu sair da mesa, vou sim.']],
   ['lucia>raimundo', ['Seu Raimundo, posso medir a calçada do sobrado?', 'Pode, minha filha. Só não leva a rua embora na prancheta.']],
   ['cicera>junior', ['Júnior! Vem cá, menino!', 'Já vou, vó! Só vou ver o gato!']],
   ['tonho>nonato', ['Cocada, Nonato?', 'Depois do jogo, que eu perco a concentração.']],
@@ -243,12 +252,10 @@ RD.kp = {
   kp_dom_pai: ['A mesa do pai', 'Seu Raimundo aprendeu dominó com o pai, na mesma calçada, no tempo do lampião a gás.'],
   kp_ray_sobrado: ['O sobrado e as medições', 'Seu Raimundo viu a casa do lado ser medida e ninguém perguntou nada a quem mora.'],
   kp_dom_dupla: ['Dupla de frente', 'No dominó da rua, os parceiros sentam de frente: Zé com Raimundo contra Nonato com Bela.'],
-  kp_dom_batidas: ['Tipos de batida', 'Batida simples vale 1; de carroça (com dobrada), 2; de lá e lô (a pedra serve nas duas pontas), 3; cruzada (dobrada nas duas pontas), 4.'],
   kp_dom_convite: ['Um lugar na mesa', 'Seu Zé deixa Lia jogar quando alguém levantar: precisa mostrar que sabe contar.'],
   kp_dom_contar: ['Contar as pedras', 'Dona Bela conta as pedras que já saíram para saber o que ainda pode vir.'],
   kp_rua_olhar: ['Olhares de fora', 'Dona Bela nota gente de fora olhando as casas e ainda não sabe se vem ajudar ou comprar.'],
-  kp_varal: ['O varal de Cícera', 'Cícera lava roupa para meia rua e reconhece cada pano pelo cheiro.'],
-  kp_cicera_dom: ['O dominó de Cícera', 'Por volta das dez, Cícera entra no lugar de Bela, que vai fazer o almoço.'],
+  kp_varal: ['O varal de Cícera', 'Cícera lava roupa para meia rua e reconhece cada pano pelo cheiro. Por volta das dez ela entra no lugar de Bela na mesa de dominó.'],
   kp_gato: ['O gato sem nome', 'Cada casa chama o gato de um jeito: ele não tem nome, tem vários.'],
   kp_cocada: ['A cocada de Tonho', 'A mãe de Tonho faz as cocadas de madrugada; ele só carrega e sorri.'],
   kp_pontos_venda: ['Pontos de venda', 'Na sombra do beiral antes das dez; junto ao dominó depois, quando alguém perde.'],
@@ -259,11 +266,7 @@ RD.kp = {
   kp_obj_mesa: ['As marcas da mesa', 'O tampo verde da mesa de dominó tem marcas de anos de partidas: cada riscado é uma batida.'],
   kp_obj_quadro: ['O quadro de avisos', 'Reunião da associação à noite, rifa de uma geladeira, aviso de falta d\'água, aluguel de cômodo e um papel do Programa de recuperação avisando que os imóveis da rua serão medidos.'],
   kp_obj_orelhao: ['O orelhão', 'O orelhão de ficha é o telefone de quase toda a rua; o número rabiscado na cúpula é de um sobrinho do bairro.'],
-  kp_obj_poste: ['O poste dos cartazes', 'O poste de concreto serve de jornal: festa, achado, perdido, show.'],
   kp_obj_cavalete: ['O cavalete da padaria', 'O cavalete da padaria tem letra da Vó e o preço do dia.'],
-  kp_obj_bike: ['A bicicleta de entrega', 'A bicicleta com cesto de vime é de um entregador da vizinhança.'],
-  kp_obj_lixeira: ['A lixeira de tela', 'A lixeira de tela guarda copo de café e saco de pão: a rua come da padaria.'],
-  kp_obj_caixote: ['Caixote de laranjas', 'O caixote de laranjas-bahia foi deixado ali pelo menino da banca.'],
 };
 RD.verbos = { jogo: 'O jogo de dominó', rua: 'A rua', sobrado: 'O sobrado', barbearia: 'A barbearia', lia_jogar: 'Jogar com eles', obra: 'O trabalho dele', costura: 'Costura', varal: 'O varal', junior: 'O menino', gato: 'O gato', cocada: 'A cocada', associacao: 'A associação', programa: 'O Programa', medir: 'Medir tudo' };
 })();
@@ -309,7 +312,7 @@ Sim.Rua.D.gates = {
     rua: { label: 'A rua', quando: ['apos:tonho:cocada'], ask: 'Você roda a rua todo dia. Onde vende melhor?' },
   },
   dandara: {
-    associacao: { label: 'A associação', quando: ['viu_aviso', 'ouviu_reuniao'], ask: 'Dandara, vi um aviso no quadro. É da associação?', ask2: 'Dandara, essa reunião de hoje à noite é da associação? Como ela funciona?' },
+    associacao: { label: 'A associação', quando: ['viu_aviso', 'ouviu_reuniao'], ask: 'Dandara, vi um aviso no quadro. É da associação?', ask2: 'Dandara, essa reunião é da associação? Como ela funciona?' },
     programa: { label: 'O Programa', quando: ['ouviu_programa'], ask: 'Dandara, ouvi falarem de um Programa. O que é isso?' },
   },
   lucia: {
@@ -340,17 +343,55 @@ Sim.Rua.D.kpMeta = {
   kp_varal: { cat: 'complementar', fio: 'rua', just: 'O trabalho de Cícera e a rede de quem depende dele.' },
   kp_cocada: { cat: 'complementar', fio: 'comercio', just: 'Quem faz e quem vende; o comércio miúdo da rua.' },
   kp_pontos_venda: { cat: 'complementar', fio: 'comercio', just: 'O comércio da rua depende de hora e lugar.' },
-  kp_dom_batidas: { cat: 'exploratoria', fio: 'mesa', just: 'Regra do jogo; também está no painel da mesa.' },
-  kp_cicera_dom: { cat: 'exploratoria', fio: 'mesa', just: 'Detalhe de agenda.' },
   kp_gato: { cat: 'exploratoria', fio: 'rua', just: 'Cor local.' },
   kp_obj_mesa: { cat: 'exploratoria', fio: 'mesa', just: 'Objeto.' },
   kp_obj_orelhao: { cat: 'exploratoria', fio: 'rua', just: 'Objeto.' },
-  kp_obj_poste: { cat: 'exploratoria', fio: 'rua', just: 'Objeto.' },
   kp_obj_cavalete: { cat: 'exploratoria', fio: 'comercio', just: 'Objeto.' },
-  kp_obj_bike: { cat: 'exploratoria', fio: 'comercio', just: 'Objeto.' },
-  kp_obj_lixeira: { cat: 'exploratoria', fio: 'rua', just: 'Objeto.' },
-  kp_obj_caixote: { cat: 'exploratoria', fio: 'comercio', just: 'Objeto.' },
 };
+// ---- convivência (dias 1 a 4): assunto "E hoje?" com uma resposta nova por dia e saudação do primeiro encontro de cada dia. Nenhum rende pista. Textos de proposta. ----
+Sim.Rua.D.hoje = {
+  raimundo: [[2, 'Dia de ficar sentado e ver a rua passar. O sol chega no meu pé lá pelas dez, e eu só saio da cadeira quando ele sai.'], [3, 'Hoje apareceu gente de gravata olhando o quadro, e eu não conheço nenhum. Fico quieto na cadeira e deixo eles passarem.'], [4, 'Dandara quer que eu vá à reunião à noite. Ainda não disse que vou nem que não vou.']],
+  ze: [[2, 'Hoje eu acordei com a mão afiada. Se o Nonato ganhar de novo, eu pago o café dele só para ele calar a boca.'], [3, 'Ouvi dizer que vão medir a rua toda. Se medirem a calçada onde eu sento, vão achar a cadeira torta. Ela é torta mesmo.'], [4, 'À noite tem reunião na associação. Eu vou, nem que seja pelo cafezinho que a Dandara serve.']],
+  nonato: [[1, 'Cheguei cedo hoje, que a cal da tia secou rápido. Estou com a tarde livre e a mão boa.'], [2, 'Hoje é revanche na mesa. Quem perder paga o café do outro.'], [3, 'Escutei que o Programa vai mexer em fachada. Pedreiro é sempre o primeiro a saber, porque é ele que leva a massa. Ainda não me chamaram.'], [4, 'Vou na reunião. Se tiver obra, quero saber quem vai fazer. Tem uns três pedreiros nessa rua.']],
+  bela: [[2, 'A máquina quebrou a agulha duas vezes hoje. Quando isso acontece, eu desço e jogo, que sai mais barato.'], [3, 'Tem papel novo no quadro. Li duas vezes. Papel que chega de fora costuma ter letra pequena no pé da página.'], [4, 'Hoje eu fecho a janela cedo. A reunião é à noite, e quando Dandara chama eu vou, mesmo reclamando.']],
+  cicera: [[2, 'Lençol seca rápido, mas o céu de tarde não está me agradando. Se escurecer, tu me ajuda a recolher, tá?'], [3, 'Júnior apareceu com uma notícia do poste e eu não entendi nada. Mandei repetir devagar, e ele já tinha ido embora.'], [4, 'Hoje eu lavo cedo, que à noite é reunião e eu não quero chegar com a mão de sabão.']],
+  junior: [[1, 'Hoje eu corri a rua toda três vezes. A última foi atrás do gato, e ele ganhou.'], [2, 'Vovó disse que vai chover. Eu não vi nuvem nenhuma, mas ela nunca erra.'], [3, 'Tinha uns homens de colete no poste. Um deles me deu um papel e eu perdi. Foi sem querer.'], [4, 'Hoje tem reunião e eu vou. Fico na porta, que lá dentro eu não aguento ficar parado.']],
+  tonho: [[2, 'A freguesia tá devagar. Quando chega gente de fora, compra sem perguntar o preço, e hoje eles não vieram.'], [3, 'Vi uma moça de prancheta contando as portas. Se ela contar freguês, me avisa. Eu tenho muito mais freguês que porta.'], [4, 'Minha mãe quer ir à reunião, então eu vendo até as três e corro para casa.']],
+  dandara: [[1, 'Se der, passa na associação depois. O quadro de avisos é nosso, e quem quiser pode ler.'], [2, 'Hoje atendi cinco pessoas. Quatro queriam saber do aluguel, e uma só queria conversar.'], [3, 'Hoje saí com a prancheta. Cada assinatura leva meia hora de conversa, e eu não quero pressa nisso.'], [4, 'A reunião é hoje à noite. Se você quiser ficar na porta e ouvir, ninguém vai te mandar embora.']],
+  lucia: [[1, 'Hoje só a padaria. Dona Áurea me deixou medir a vitrine, e eu agradeci duas vezes.'], [2, 'Fiquei na padaria mais do que devia. O café de Dona Áurea ajuda a ficar.'], [3, 'A partir de hoje meço a rua toda. Vou escrever um número a giz em cada porta, para eu não me perder na planilha. Quem não quiser, é só apagar.'], [4, 'Hoje fecho o primeiro relatório parcial. Estou tentando escrever só o que eu vi na rua.', true]],
+};
+Sim.Rua.D.saudarDia = {
+  raimundo: { 2: ['Bom dia, Lia. A cadeira me esperava do mesmo jeito.', ['Bom dia, Lia. O pão de ontem chegou quente, obrigado.', 'sacola']], 3: ['Bom dia, menina. Tem papel novo no quadro da associação, e eu ainda não fui ler.'], 4: ['Lia. Dandara me chamou para a reunião de hoje à noite. Estou pensando.'] },
+  ze: { 2: ['Voltou, menina! Hoje eu estou bom de pedra.'], 3: ['Bom dia, Lia. Dizem que vão medir a rua inteira. Cuidado para não medirem você.'], 4: ['Lia! Hoje tem reunião. Aposto o café que o Raimundo vai.'] },
+  nonato: { 2: ['Fala, Lia! Hoje tem revanche.'], 3: ['E aí, Lia. Vi um papel novo no quadro. Não gostei da letra.'], 4: ['Lia, hoje eu não demoro na mesa. Tem reunião.'] },
+  bela: { 2: ['Voltou, meu bem. Sentou direito hoje?'], 3: ['Bom dia, Lia. Leu o quadro? Leia com calma, que papel de fora tem pressa.'], 4: ['Oi, meu bem. Hoje a janela fecha mais cedo.'] },
+  cicera: { 2: ['Menina, tu voltou! Olha o céu, não confio nele.'], 3: ['Bom dia, Lia. Ouvi falar de medição. Se medirem meu varal, me avisem.'], 4: ['Lia, hoje eu lavo e corro, que tem reunião.'] },
+  junior: { 2: ['Lia! Vovó diz que vai chover!'], 3: ['Lia, viu os homens de colete?'], 4: ['Lia, hoje tem reunião! Eu vou!'] },
+  tonho: { 2: ['Bom dia, Lia! Cocada fresca, saiu agorinha.'], 3: ['Lia, tem moça de prancheta contando as portas. Já viu?'], 4: ['Hoje eu vendo cedo. À noite é reunião.'] },
+  dandara: { 2: ['Lia, bom dia. A associação abriu cedo hoje.'], 3: ['Lia. Tem um minuto? Estou recolhendo assinaturas, e a reunião é amanhã à noite.'], 4: ['Lia. A reunião é hoje à noite. Fica por perto?'] },
+  lucia: { 2: ['Bom dia. Hoje ainda estou na padaria.'], 3: ['Bom dia, Lia. A partir de hoje meço a rua inteira. Vou marcar os números a giz.'], 4: ['Oi, Lia. Hoje fecho o relatório parcial.'] },
+};
+for (const id in Sim.Rua.D.hoje) {
+  const F = Sim.Rua.D.falas[id]; if (!F) continue;
+  F.perguntar.hoje = Sim.Rua.D.hoje[id].map(([dia, t, rev]) => Object.assign({ t, dia }, rev ? { revisar: true } : {}));
+  (Sim.Rua.D.gates[id] = Sim.Rua.D.gates[id] || {}).hoje = { label: 'E hoje?', quando: [], ask: 'E hoje, como está o dia?' };
+}
+Sim.Rua.D.dicaOutroDia = 'Por hoje já ouvi o que dava. Amanhã a conversa pode ser outra.';
+// descrição de objetos que mudam de um dia para o outro (vale a do maior dia que já chegou)
+Sim.Rua.D.descDia = {
+  quadro_avisos: {
+    1: 'Quadro de cortiça da associação: rifa de uma geladeira, aviso sobre a água, anúncio de aluguel de cômodo. São papéis comuns, alguns já amarelados.',
+    3: 'Quadro de cortiça da associação: a rifa, o aviso sobre a água, o aluguel de cômodo. Por cima de tudo há um papel novo, timbrado, do Programa de recuperação do centro histórico, e a reunião de moradores marcada para a noite.',
+  },
+};
+// dia em que cada pista passa a existir (1991 tem quatro dias). Pista não expira: aberta, fica disponível até o fim do dia 4.
+Sim.Rua.D.kpDia = {
+  kp_obj_mesa: 1, kp_obj_orelhao: 1, kp_obj_cavalete: 1, kp_gato: 1, kp_dom_dupla: 1, kp_dom_paciencia: 1, kp_cocada: 1, kp_varal: 1,
+  kp_dom_convite: 2, kp_dom_contar: 2, kp_dom_pai: 2, kp_lata: 2, kp_pontos_venda: 2,
+  kp_obj_quadro: 3, kp_lucia_medir: 3, kp_lucia_programa: 3, kp_programa: 3, kp_associacao: 3,
+  kp_ray_sobrado: 4, kp_rua_olhar: 4,
+};
+for (const k in Sim.Rua.D.kpDia) if (Sim.Rua.D.kpMeta[k]) Sim.Rua.D.kpMeta[k].dia = Sim.Rua.D.kpDia[k];
 // revisão cultural: textos de 1991 que tocam em política urbana
 Sim.Rua.D.kpRev = Object.assign(Sim.Rua.D.kpRev || {}, { kp_obj_quadro: 1, kp_lata: 1, kp_associacao: 1, kp_lucia_medir: 1, kp_ray_sobrado: 1 });
 // o que o NPC diz quando não há resposta nova (nenhuma confiança é ganha por repetir)
@@ -385,7 +426,7 @@ Sim.Rua.D.vivDica = {
   viu_varal: 'Cada pano no varal parece ter dono. Dona Cícera deve saber de quem é cada um.',
   viu_tonho: 'Tonho passa pela rua toda com a caixa de cocada, sem parar muito em nenhum canto.',
   viu_gato: 'O gato parece ser de todo mundo e de ninguém.',
-  ouviu_reuniao: 'Dandara convocou uma reunião da associação para hoje à noite e está recolhendo assinaturas.',
+  ouviu_reuniao: 'Dandara convocou uma reunião da associação e está recolhendo assinaturas.',
   viu_aviso: 'Entre os avisos há um papel do Programa e a convocação de uma reunião. Dandara deve saber mais.',
   ouviu_programa: 'Falam de um Programa de recuperação. Ninguém explicou aos moradores o que ele muda.',
 };
@@ -393,7 +434,7 @@ Sim.Rua.D.vivDica = {
 Sim.Rua.D.curiosidades = [
   { id: 'c_medicao', viv: 'viu_medicao', ate: 'kp_lucia_medir', tipo: 'acontecimento', texto: 'Uma moça mede as fachadas com uma trena. Para quem ela mede, e por quê?' },
   { id: 'c_programa', viv: 'ouviu_programa', ate: 'kp_programa', tipo: 'acontecimento', texto: 'Fala-se de um Programa de recuperação que ainda ninguém explicou aos moradores.', revisar: true },
-  { id: 'c_reuniao', viv: 'ouviu_reuniao', ate: 'kp_associacao', tipo: 'acontecimento', texto: 'Há reunião da associação à noite. Quem organiza e o que se decide?' },
+  { id: 'c_reuniao', viv: 'ouviu_reuniao', ate: 'kp_associacao', tipo: 'acontecimento', texto: 'Há uma reunião da associação marcada. Quem organiza e o que se decide?' },
   { id: 'c_jogo', viv: 'viu_jogo', ate: 'kp_dom_dupla', tipo: 'assunto', texto: 'Os quatro jogam em duplas e quase não falam. Como funciona a mesa?' },
   { id: 'c_varal', viv: 'viu_varal', ate: 'kp_varal', tipo: 'assunto', texto: 'O varal da calçada está cheio de panos de donos diferentes.' },
   { id: 'c_cocada', viv: 'viu_tonho', ate: 'kp_cocada', tipo: 'assunto', texto: 'Tonho vende a cocada pela rua inteira. Ela é dele?' },

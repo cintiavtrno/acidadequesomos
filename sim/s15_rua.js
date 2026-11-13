@@ -21,7 +21,7 @@
       // rngVis: sorteio só visual (animação, pombos), separado do que decide o jogo e semeado: o dia fica reprodutível
       o = o || {}; this.scene = o.scene; this.seed = o.seed || 1991; this.rng = Sim.RNG(this.seed); this.rngVis = Sim.RNG((this.seed || 1991) + 77); this.bus = new Sim.EventSystem();
       this.clock = new Sim.WorldClock({ start: o.start != null ? o.start : RD.dia.inicio, rate: o.rate || 0.25, openAt: RD.dia.inicio, closeAt: RD.dia.fim });
-      this.integrado = !!o.integrado; this.lib = {}; this.liaFora = false; this.ag = this.integrado ? RD.agendaMundo() : JSON.parse(JSON.stringify(RD.agenda));
+      this.integrado = !!o.integrado; this.dia = o.dia != null ? o.dia : (typeof window !== 'undefined' && window.MUNDO_ANO !== 1994 && window.MUNDO_DIA) || 99; this.lib = {}; this.liaFora = false; this.ag = this.integrado ? RD.agendaMundo(this.dia) : JSON.parse(JSON.stringify(RD.agenda));
       this.W = RD.W; this.VH = RD.VH; this.persist = o.persist || {}; this.hooks = o.hooks || {};
       this.solids = (this.scene.solids || []).filter(s => !/^(cad_|banquinho_)/.test(s.id)).map(s => ({ id: s.id, x0: s.x0, x1: s.x1, sy0: s.sy0, sy1: s.sy1 }));
       this.trust = Object.assign({ raimundo: .45, dandara: .22, lucia: .06, ze: .2, nonato: .15, bela: .18, cicera: .2, junior: .3, tonho: .2 }, this.persist.trust || {});
@@ -284,9 +284,10 @@
     topicos(id) {
       const F = RD.falas[id], G = RD.gates[id] || {}, nv = this.nivel(id), out = [];
       for (const t of Object.keys(F.perguntar)) {
-        if (!F.perguntar[t].some(r => !r.conf || (nv >= r.conf[0] && nv <= r.conf[1]))) continue;
+        if (t === 'hoje' && RD._v94) continue;
+        if (!F.perguntar[t].some(r => this.dispo(r) && (!r.conf || (nv >= r.conf[0] && nv <= r.conf[1])))) continue;
         const g = G[t] || { label: t, quando: [], ask: 'Posso perguntar sobre isso?' }; if (!this.gateOk(id, t, g)) continue;
-        const vistos = F.perguntar[t].filter(r => (!r.conf || (nv >= r.conf[0] && nv <= r.conf[1])) && !(this.dados || {})[id + t + r.t]).length, fez = !!this.feitos[id + ':' + t];
+        const vistos = F.perguntar[t].filter(r => this.dispo(r) && (!r.conf || (nv >= r.conf[0] && nv <= r.conf[1])) && !(this.dados || {})[id + t + r.t]).length, fez = !!this.feitos[id + ':' + t];
         out.push({ id: t, label: g.label, ask: g.ask, feito: fez && !vistos, mais: fez && vistos > 0 });
       }
       if (this.social.comentarios(id).length && nv >= 1) out.push({ id: 'comentarios', label: 'O que andam comentando', ask: 'E aí, o que andam comentando por aqui?', feito: false });
@@ -294,7 +295,11 @@
     }
     abrirConversa(id) {
       const n = this.npcs[id], F = RD.falas[id]; if (!n || n.state === 'Away') return null;
-      const sa = this.social.saudacaoLia(id) || F.saudar[Math.floor(this.rng() * F.saudar.length)];
+      let sa = null; this.saudouHoje = this.saudouHoje || {};
+      if (!RD._v94 && this.dia > 1 && this.dia < 99 && !this.saudouHoje[id]) {   // primeira conversa do dia: a pessoa abre com o dia (e com o que a Lia fez por ela)
+        const lst = ((RD.saudarDia || {})[id] || {})[Math.min(this.dia, 4)] || []; const com = lst.find(x => Array.isArray(x) && x[1] === 'sacola' && Sim.Sacola && Sim.Sacola.S && Sim.Sacola.S.estado === 'entregue');
+        const livres = lst.filter(x => !Array.isArray(x)); const pick = com ? com[0] : livres.length ? livres[Math.floor(this.rng() * livres.length)] : null; if (pick) { sa = pick; this.saudouHoje[id] = 1; } }
+      sa = sa || this.social.saudacaoLia(id) || F.saudar[Math.floor(this.rng() * F.saudar.length)];
       if (!RD._v94) for (const [re, f] of (RD.saudarViv || {})[id] || []) if (re.test(sa)) this.marcar(f);   // o que a pessoa diz ao ver Lia também conta como ter ouvido ou visto
       return { id, saudacao: sa, topicos: this.topicos(id).map(t => t.id), semAssunto: !this.topicos(id).length ? (this.pendencia(id) || RD.dicaSemAssunto) : null, dica: this.pendencia(id), nivel: this.nivel(id) };
     }
@@ -302,7 +307,8 @@
     // dica de Lia (sem números) para o primeiro assunto que depende de ver ou fazer algo ainda não feito
     pendencia(id) {
       if (RD._v94) return null; const G = RD.gates[id] || {}, D = (RD.dicasTopico || {})[id] || {}, F = RD.falas[id]; if (!F) return null;
-      for (const t of Object.keys(F.perguntar)) { const g = G[t]; if (!g || !D[t] || this.gateOk(id, t, g)) continue; if (!F.perguntar[t].some(r => !r.conf || (this.nivel(id) >= r.conf[0] && this.nivel(id) <= r.conf[1]))) continue; return D[t]; }
+      for (const t of Object.keys(F.perguntar)) { const g = G[t]; if (!g || !D[t] || this.gateOk(id, t, g)) continue; if (!F.perguntar[t].some(r => this.dispo(r) && (!r.conf || (this.nivel(id) >= r.conf[0] && this.nivel(id) <= r.conf[1])))) continue; return D[t]; }
+      if (this.dia < 99 && Object.keys(F.perguntar).some(t => F.perguntar[t].some(r => !this.dispo(r) && (r.dia || (r.kp && !this.kpAberta(r.kp)))))) return RD.dicaOutroDia;
       return null;
     }
     diario() {
@@ -315,7 +321,7 @@
     perguntar(id, top) {
       const G0 = (RD.gates[id] || {})[top], ask = top === 'comentarios' ? 'E aí, o que andam comentando por aqui?' : G0 && G0.ask;
       if (top === 'comentarios') { const o = [{ quem: 'lia', texto: ask }].concat(this.social.perguntarComentarios(id)); if (o.some(l => l.quem === 'nota' && /programa|medindo|casas/i.test(l.texto))) this.marcar('ouviu_programa'); if (o.some(l => /reunião/i.test(l.texto))) this.marcar('ouviu_reuniao'); if (this.clock.min - (this.feitos[id + ':comentarios'] || -99) > 20) this.trust[id] = clamp((this.trust[id] || 0) + .02, 0, 1); this.feitos[id + ':comentarios'] = this.clock.min; this.salvar(); return o; }
-      const F = RD.falas[id], todas = F.perguntar[top] || [], lst = todas.filter(r => !r.conf || (this.nivel(id) >= r.conf[0] && this.nivel(id) <= r.conf[1]));
+      const F = RD.falas[id], todas = F.perguntar[top] || [], lst = todas.filter(r => this.dispo(r) && (!r.conf || (this.nivel(id) >= r.conf[0] && this.nivel(id) <= r.conf[1])));
       if (!lst.length) return [{ quem: id, texto: 'Hoje não, Lia.' }];
       this.dados = this.dados || {}; const r = lst.find(x => !this.dados[id + top + x.t]);
       const G0b = (RD.gates[id] || {})[top], ctx = !!(G0b && G0b.quando && G0b.quando.length);
@@ -338,12 +344,15 @@
       if (id === 'ze' && top === 'lia_jogar') this.liaConvidada = true;
       return out;
     }
-    ganhar(id, por) { if (this.kp[id]) return false; this.kp[id] = { t: this.clock.min }; if (por) this.kp[id].por = por; this.bus.emit('conhecimento', { id, kp: { titulo: RD.kp[id][0], texto: RD.kp[id][1] } }); this.salvar(); return true; }
+    kpAberta(id) { return (RD.kpDia && RD.kpDia[id] || 1) <= this.dia; }   // pista não expira: depois do dia de abertura fica disponível até o fim
+    dispo(r) { return (!r.dia || r.dia <= this.dia) && (!r.kp || this.kpAberta(r.kp)); }
+    ganhar(id, por) { if (this.kp[id] || !this.kpAberta(id)) return false; this.kp[id] = { t: this.clock.min }; if (por) this.kp[id].por = por; this.bus.emit('conhecimento', { id, kp: { titulo: RD.kp[id][0], texto: RD.kp[id][1] } }); this.salvar(); return true; }
     examinar(inst) {   // inst = instância da cena
-      const kpMap = { mesa_domino: 'kp_obj_mesa', quadro_avisos: 'kp_obj_quadro', orelhao_1: 'kp_obj_orelhao', poste_1: 'kp_obj_poste', poste_2: 'kp_obj_poste', poste_3: 'kp_obj_poste', cavalete_pao: 'kp_obj_cavalete', bike_1: 'kp_obj_bike', lixeira_1: 'kp_obj_lixeira', lixeira_2: 'kp_obj_lixeira', caixote_1: 'kp_obj_caixote' };
+      const kpMap = { mesa_domino: 'kp_obj_mesa', quadro_avisos: 'kp_obj_quadro', orelhao_1: 'kp_obj_orelhao', cavalete_pao: 'kp_obj_cavalete' };
       if (RD.kpObj94) Object.assign(kpMap, RD.kpObj94);
       const k = kpMap[inst.id]; let novo = false; if (k && RD.kp[k]) novo = this.ganhar(k, { tipo: 'obj', nome: inst.nome });
-      return { texto: (RD.desc94 && RD.desc94[inst.id]) || inst.desc || inst.nome, nome: inst.nome, novo, kp: k && RD.kp[k] ? RD.kp[k][0] : null };
+      const dd = RD._v94 ? null : (RD.descDia || {})[inst.id], dk = dd ? Object.keys(dd).map(Number).filter(n => n <= this.dia).sort((a, b) => b - a)[0] : null;
+      return { texto: (RD.desc94 && RD.desc94[inst.id]) || (dk != null && dd[dk]) || inst.desc || inst.nome, nome: inst.nome, novo, kp: k && RD.kp[k] ? RD.kp[k][0] : null };
     }
     afagar() { this.afagarGato('lia'); this.ganhar('kp_gato', { tipo: 'gato' }); return '(O gato ronrona e fecha o olho de novo.)'; }
     salvar() { if (this.hooks.save) this.hooks.save({ trust: this.trust, kp: this.kp, dia: this.persist.dia || 1, soc: this.social.exportar(), viv: this.viv, feitos: this.feitos, dados: this.dados }); }

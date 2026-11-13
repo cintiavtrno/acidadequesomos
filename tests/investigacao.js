@@ -12,16 +12,15 @@ const sec = x => x * RATE;   // segundos reais de jogador -> minutos de jogo
 const S0 = load(), RD0 = S0.Rua.D, KS = Object.keys(RD0.kp), META = RD0.kpMeta;
 const CENTRAIS = KS.filter(k => META[k].cat === 'central');
 const FIOS = { medicao: ['kp_lucia_medir', 'kp_ray_sobrado', 'kp_obj_quadro'], programa: ['kp_programa', 'kp_lucia_programa', 'kp_obj_quadro'], associacao: ['kp_associacao', 'kp_obj_quadro'], olhares: ['kp_rua_olhar'] };
-const OBJS = ['mesa_domino', 'quadro_avisos', 'orelhao_1', 'poste_1', 'cavalete_pao', 'bike_1', 'lixeira_1', 'caixote_1'];
+const OBJS = ['mesa_domino', 'quadro_avisos', 'orelhao_1', 'poste_1', 'cavalete_pao', 'bike_1'];
 const IDS = Object.keys(RD0.pessoas);
 
 function rngFn(seed) { let a = seed >>> 0 || 1; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 
-function jogar(perfil, seed) {
-  const S = load(), RD = S.Rua.D, w = new S.Rua.World({ scene, seed, rate: RATE, integrado: true }); w.initNav && w.initNav();   // integrado: agenda do dia todo (7h–19h), como no jogo
+function jogarDia(perfil, seed, dia, estado, log, R, mem, guardar) {
+  const S = load(), RD = S.Rua.D, w = new S.Rua.World({ scene, seed, rate: RATE, integrado: true, dia, persist: estado || {}, hooks: { save: guardar } }); w.initNav && w.initNav();   // integrado: agenda do dia todo (7h–19h), como no jogo
   const upd = w.update.bind(w); w.update = dt => { for (const k of ['raimundo:casa', 'raimundo:padaria', 'dandara:padaria', 'lucia:padaria']) w.lib[k] = true; upd(dt); };   // os outros ambientes liberam as pessoas na hora marcada
-  const R = rngFn(seed * 7919 + perfil.length), pick = a => a[Math.floor(R() * a.length)];
-  const log = { repetidas: 0, semAssunto: 0, semAssuntoSemDica: 0, reservas: 0, conversas: 0 };
+  const pick = a => a[Math.floor(R() * a.length)];
   const vis = id => { const n = w.npcs[id]; return n && n.state !== 'Away' && n.alpha > .6; };
   const visiveis = () => IDS.filter(vis);
   const passo = (alvo, minutos) => {   // fica ao lado do alvo enquanto o tempo corre
@@ -58,7 +57,7 @@ function jogar(perfil, seed) {
       passo(null, sec(2));
     }
   } else if (perfil === 'conversador') {   // vai à pessoa que está na rua e foi menos ouvida; uma pergunta por visita; não examina objetos nem afaga o gato
-    const visitas = {};
+    const visitas = mem.visitas;
     while (w.clock.min < TF) {
       const v = visiveis(); if (!v.length) { passo(null, sec(5)); continue; }
       v.sort((a, b) => (visitas[a] || 0) - (visitas[b] || 0) || (R() - .5));
@@ -67,7 +66,7 @@ function jogar(perfil, seed) {
   } else if (perfil === 'observador') {   // examina tudo, observa o que acontece, conversa só com três pessoas
     for (const o of OBJS) { passo(null, sec(8)); examinar(o); }
     gato();
-    const escolhidos = []; while (escolhidos.length < 3) { const x = pick(IDS); if (!escolhidos.includes(x)) escolhidos.push(x); }
+    const escolhidos = mem.escolhidos = mem.escolhidos || []; while (escolhidos.length < 3) { const x = pick(IDS); if (!escolhidos.includes(x)) escolhidos.push(x); }
     let k = 0;
     while (w.clock.min < TF) {
       const mesa = { x: RD.mesa.x + 14, y: S.Rua.D.yw(RD.mesa.x) + 15 };
@@ -76,7 +75,15 @@ function jogar(perfil, seed) {
       k++; passo(null, sec(15));
     }
   }
-  return { kp: Object.keys(w.kp), log, w, viv: Object.keys(w.viv), por: Object.fromEntries(Object.entries(w.kp).map(([k, v]) => [k, v.por])) };
+  return w;
+}
+// o capítulo inteiro: quatro dias seguidos, com o que foi anotado, a confiança e as vivências indo de um dia para o outro
+const DIAS = 4;
+function jogar(perfil, seed) {
+  const R = rngFn(seed * 7919 + perfil.length), log = { repetidas: 0, semAssunto: 0, semAssuntoSemDica: 0, reservas: 0, conversas: 0 }, mem = { visitas: {}, escolhidos: null };
+  let estado = null, w = null; const porDia = [];
+  for (let dia = 1; dia <= DIAS; dia++) { w = jogarDia(perfil, seed * 10 + dia, dia, estado, log, R, mem, p => { estado = p; }); porDia.push(Object.keys(w.kp).length); }
+  return { kp: Object.keys(w.kp), log, w, viv: Object.keys(w.viv), porDia, por: Object.fromEntries(Object.entries(w.kp).map(([k, v]) => [k, v.por])) };
 }
 
 const perfis = ['livre', 'conversador', 'observador'], res = {};

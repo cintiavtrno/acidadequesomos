@@ -301,7 +301,7 @@ function sentarEm(id) {
   if (A.dominio) { if (!SIM.mesa.liaSenta(id)) return false; } else { A.ocup = 'lia'; L.seat = id; }
   LS.seatId = id; LS.from = [L.x, L.y]; LS.to = [A.def.x, yw(A.def.x) + A.def.sy]; LS.mode = 'sitIn'; LS.sitT = 0; L.face = A.def.face; LS.path = []; LS.anim = 'sit'; return true;
 }
-function podeJogar() { return SIM.nivel('ze') >= 1 || !!SIM.liaConvidada; }
+function podeJogar() { return SIM.dia >= 2 && (SIM.nivel('ze') >= 1 || !!SIM.liaConvidada); }   // dia 1: o dominó é só para olhar
 function assentoLivreDom() { return RD.ordem.find(s => { const A = SIM.assentos[s]; return !A.ocup; }) || null; }
 
 // alvos de interação
@@ -410,7 +410,7 @@ function renderMesa() {
   } else {
     const livre = assentoLivreDom(); h += '<div class="btns">';
     h += '<button onclick="torcer(0)">Torcer por ' + dupNome(0) + '</button><button onclick="torcer(1)">Torcer por ' + dupNome(1) + '</button>';
-    if (livre) h += '<button ' + (podeJogar() ? '' : 'disabled') + ' onclick="closeMesa();entrarMesa(\'' + livre + '\')">Sentar na cadeira vaga' + (podeJogar() ? '' : ' (converse com Seu Zé primeiro)') + '</button>';
+    if (livre) h += '<button ' + (podeJogar() ? '' : 'disabled') + ' onclick="closeMesa();entrarMesa(\'' + livre + '\')">Sentar na cadeira vaga' + (podeJogar() ? '' : SIM.dia < 2 ? ' (hoje o dominó é só para olhar)' : ' (converse com Seu Zé primeiro)') + '</button>';
     h += '</div>';
   }
   h += '<details class="regras"><summary>Regras da mesa (proposta, a revisar com quem joga)</summary> duplas de frente; 6 pedras para cada um e 4 dormem; abre quem tem a maior carroça; batida simples 1 ponto, de carroça 2, de lá e lô 3, cruzada 4; trancado: ganha 1 ponto quem tem menos pontos na mão; partida até 6.</details>';
@@ -424,7 +424,7 @@ function liaJoga(a, b) { const t = SIM.mesa.minhaMao().find(x => x[0] === a && x
 function liaPassa() { if (SIM.mesa.liaPassa()) { LS.playT = .6; renderMesa(); } }
 
 // ---------------------------------------------------------------- anotações e fim do dia
-const GRUPOS = [['Dominó e a mesa', /^kp_dom|kp_cicera_dom/], ['Moradores', /^kp_(ray|obra|varal|gato|cocada|pontos|c_)/], ['O Programa e a rua', /^kp_(rua|prog|assoc|lucia)/], ['Objetos da rua', /^kp_obj/]];
+const GRUPOS = [['Dominó e a mesa', /^kp_dom/], ['Moradores', /^kp_(ray|obra|varal|gato|cocada|pontos|c_)/], ['O Programa e a rua', /^kp_(rua|prog|assoc|lucia)/], ['Objetos da rua', /^kp_obj/]];
 GRUPOS.unshift(['1994 · o Programa na rua', /^kp_94/]);
 function quemDisse(k, n) {
   const p = n.por; if (!p) return '';
