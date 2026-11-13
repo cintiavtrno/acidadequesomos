@@ -19,7 +19,7 @@ for who in whos:
     assets[who + '_side'] = uri(A + 'chars/%s_side.png' % who); atlas[who + '_side'] = json.load(open(A + 'chars/%s_side.json' % who))
 assets['lia_side6'] = uri(A + 'chars/lia_side6.png'); atlas['lia_side6'] = json.load(open(A + 'chars/lia_side6.json'))
 scene = json.load(open(S + 'scene_rua96.json')); props = json.load(open(S + 'props.json'))
-sim = '\n'.join(open(B + 'sim/' + f).read() for f in ['s1_core.js', 's2_nav.js', 's96_rua.js', 's96_elenco.js'])
+sim = '\n'.join(open(B + 'sim/' + f).read() for f in ['s1_core.js', 's2_nav.js', 's96_rua.js', 's96_elenco.js', 's96_trama.js'])
 def put(k, v):
     global T
     assert k in T, k

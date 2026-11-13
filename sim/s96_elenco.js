@@ -1,5 +1,5 @@
 // ===== s96_elenco.js — elenco e marcações da rua de 1996 (dados; troca-se sem mexer no motor) =====
-// PROVISÓRIO: os moradores com nome são figurantes. A trama de 1996 define quem ficou, quem saiu e o que cada um diz.
+// Os moradores com nome falam (sim/s96_trama.js liga o id do ator a quem fala); os demais são figurantes e só têm a descrição.
 // Coordenadas: x do mundo; sy = distância dos pés abaixo do encosto da parede (calçada 0–21, meio-fio 22–27, rua 28+). y real = yw(x) + sy.
 // Sprites: <who>_side. Camadas: 'sorted' (profundidade por y), 'wall' (na parede, atrás do guarda-corpo, recortado em clip px acima da laje).
 Sim96.Elenco = (function () {
@@ -66,7 +66,7 @@ Sim96.Elenco = (function () {
   // ---------------- público atrás das barreiras (calçada, x 722–1124) ----------------
   const pub = (id, who, nome, x, sy, faces, obs, extra) => add(Object.assign({ id, who, nome, papel: 'público', x, sy, face: 'down', anim: 'idle', obs,
     plano: [{ fica: R(4, 9), anim: 'idle', faces }, { fica: R(2, 4), anim: 'talk', faces }, { fica: R(2, 3.5), anim: 'react', face: 'down' }, { fica: R(4, 8), anim: 'idle', faces }, { fica: R(2, 3), anim: 'wave', face: 'down' }] }, extra || {}));
-  pub('pub1', 'zefa', 'Moradora', 738, 13, ['down', 'right'], 'De touca azul, atrás da barreira, olhando o palco.');
+  pub('pub1', 'zefa', 'Dona Zefa', 738, 13, ['down', 'right'], 'De touca azul, atrás da barreira, olhando o palco.');
   pub('pub2', 'nena', 'Moradora', 758, 15, ['down', 'left'], 'Vestido branco. Conversa com quem está ao lado.');
   pub('pub3', 'rita', 'Moradora', 814, 16, ['down'], 'Cabelo branco e blusa lilás. Chegou cedo para pegar lugar.');
   pub('pub4', 'caio', 'Morador', 1008, 16, ['down', 'right'], 'Camisa branca, mãos no bolso, olhando o palco.');
@@ -97,7 +97,7 @@ Sim96.Elenco = (function () {
   sac('sac6', 'caio', 'Morador', 'creme', 944, 'Do alto vê o grupo dos tambores inteiro.');
   add({ id: 'porta1', who: 'nena', nome: 'Moradora', papel: 'moradora na porta', x: 1370, sy: 5, face: 'down', anim: 'idle', fixo: true, obs: 'Na porta do sobrado lilás, olhando a rua.',
     plano: [{ fica: R(5, 9), anim: 'idle', face: 'down' }, { fica: R(2, 4), anim: 'talk', faces: ['down', 'left'] }, { fica: R(2, 3), anim: 'hang', face: 'up' }] });
-  add({ id: 'porta2', who: 'rita', nome: 'Moradora', papel: 'moradora na porta', x: 1036, sy: 5, face: 'down', anim: 'idle', fixo: true, obs: 'Na porta do prédio de tijolo aparente, o único sem pintura nova nesse trecho.',
+  add({ id: 'porta2', who: 'rita', nome: 'Dona Rita', papel: 'moradora na porta', x: 1036, sy: 5, face: 'down', anim: 'idle', fixo: true, obs: 'Na porta do prédio de tijolo aparente, o único sem pintura nova nesse trecho.',
     plano: [{ fica: R(6, 10), anim: 'idle', face: 'down' }, { fica: R(2, 4), anim: 'talk', faces: ['down', 'right'] }] });
 
   // ---------------- objetos descritivos da parede (placas e letreiros) ----------------
@@ -105,6 +105,7 @@ Sim96.Elenco = (function () {
     { id: 'placa_bread', nome: 'plaqueta bilíngue', rect: [604, 164, 26, 22], x: 617, sy: 16, desc: 'Plaqueta esmaltada ao lado do arco da padaria: BREAD e PAO, sem til. Em 1994 era uma plaquinha azul pendurada. Agora está presa no meio da parede.' },
     { id: 'letreiro_assoc', nome: 'letreiro da associação', rect: [760, 135, 72, 11], x: 796, sy: 15, desc: 'ASSOCIACAO, pintado de novo na fachada azul, na mesma altura dos outros letreiros da rua. A associação ainda funciona no mesmo sobrado.' },
     { id: 'placa_paz', nome: 'placa de rua em azulejo', rect: [696, 134, 38, 14], x: 714, sy: 15, desc: 'Placa de azulejo: R. DA PAZ. É a placa mais nova da rua.' },
+    { id: 'porta_sobrado', nome: 'porta do sobrado', rect: [206, 172, 18, 40], x: 214, sy: 10, fala: 'raimundo', desc: 'A porta do sobrado está fechada. Pela fresta se ouve um rádio baixo.' },
     { id: 'letreiro_barbearia', nome: 'letreiro da barbearia', rect: [89, 128, 58, 11], x: 118, sy: 15, desc: 'BARBEARIA, pintado em letras claras sobre fundo verde. A porta está aberta e ninguém espera na calçada.' },
   ];
   return { atores: A, objetos };

@@ -1,6 +1,7 @@
 // ===== s96_rua.js — a rua de 1996, dia da gravação (Etapa D) =====
 // DOM-free. Mundo mínimo: Lia, atores com plano repetido (andar, ficar, tocar, filmar), colisão e navegação da rua.
-// Os atores e suas marcações ficam em s96_elenco.js (dados). A trama de 1996 ainda não existe: não há diálogo, missão nem relógio de cena.
+// Os atores e suas marcações ficam em s96_elenco.js (dados); falas, anotações e missões ficam em s96_trama.js. Não há relógio de cena.
+// congelado: id do ator que está em conversa (fica parado no lugar, sem seguir o plano).
 const Sim96 = {};
 (function () {
   const clamp = Sim.clamp;
@@ -51,7 +52,7 @@ const Sim96 = {};
       this.grade(); const self = this;
       Sim.Nav.init({ X0: 0, X1: W, YB: 205, YF: 264, EXIT_X: 0, blocked: (x, y) => self.blocked(x, y) });
       this.lia = { x: 110, y: yw(110) + 22, face: 'right' };
-      this.atores = {}; this.lista = [];
+      this.atores = {}; this.lista = []; this.congelado = null;
       for (let d of (o.elenco.atores || [])) { if (d.predio) d = Object.assign({}, d, { y: this.scene.buildings[d.predio].base - 97 }); const a = new Ator(this, d); this.atores[a.id] = a; this.lista.push(a); }
     }
     vel(who) { const a = this.atlas[who + '_side']; return a ? a.speed_mps * 24 : 22; }
@@ -67,6 +68,6 @@ const Sim96 = {};
     blocked(x, y) { x = Math.round(x); y = Math.round(y); if (x < 0 || x >= W || y < 0 || y > VH) return true; return this.G1[y * W + x] === 1; }
     livre(x, y) { if (Sim.Nav.free(x, y)) return [x, y]; const n = Sim.Nav.nearestFree(x, y); return n || [x, y]; }
     caminho(x0, y0, x1, y1) { const p = Sim.Nav.path(x0, y0, x1, y1); return p ? p.slice() : null; }
-    update(dt) { this.t += dt; for (const a of this.lista) a.update(dt); }
+    update(dt) { this.t += dt; for (const a of this.lista) { if (a.id === this.congelado) a.at += dt; else a.update(dt); } }
   };
 })();

@@ -12,6 +12,15 @@
   #hud:hover, #hud:focus-within { opacity: 1; }
   #hud #zoombar, #hud details { display: none !important; }
   #hud:hover #zoombar, #hud:focus-within #zoombar { display: flex !important; } #hud:hover details, #hud:focus-within details { display: block !important; }
+  #notes.modal { inset: 5% 8%; background: var(--paper); color: var(--ink); border: 0; border-radius: 10px; font-family: var(--hand); font-size: 1.35em; line-height: 1.25em; }
+  #notes h2, #fimcard h2 { font: 700 1.4em var(--hand); color: var(--ink); } #notes h4, #fimcard h4 { font: 700 1em var(--hand); color: var(--pen); margin: .8em 0 .1em; } #notes .kp, #fimcard .kp { background: none; border: 0; border-radius: 0; padding: 0; margin: .45em 0; } #notes .kp b, #fimcard .kp b { color: var(--ink); } #notes .sub, #fimcard .sub { color: var(--ink-soft); } #notes .x, #fimcard .x { background: none; border: 0; color: var(--pen); font: 700 .8em var(--hand); cursor: pointer; }
+  #notes .rev, #fimcard .rev { color: var(--pencil); font-size: .8em; } #notes .hip, #fimcard .hip { background: none; border: 0; padding: 0; font-style: italic; color: var(--ink-soft); }
+  #fimcard.modal { inset: 6% 9%; background: var(--paper); color: var(--ink); border: 0; border-radius: 10px; font-family: var(--hand); font-size: 1.3em; line-height: 1.25em; }
+  #fimcard .btns { display: flex; gap: .6em; flex-wrap: wrap; margin-top: 1em; } #fimcard .btns button { font: 700 .85em var(--hand); color: var(--ink); background: var(--paper-d); border: 1px solid #8c7a55; border-radius: 6px; padding: .2em .9em; cursor: pointer; }
+  #mis { right: .8em; top: .7em; max-width: 34%; font-size: .9em; line-height: 1.3; pointer-events: none; }
+  body.modalAberto #mis, body.modalAberto #hint, body.modalAberto #note { display: none !important; }
+  #mis b { color: #f0c98c; } #mis .m { margin-top: .25em; } #mis .m.ok { color: #9fd3a8; } #mis .m small { display: block; color: #cdbfae; }
+  body.modalAberto #hud { display: none; }
 </style>
 <script>/*FITJS*/</script>
 </head>
@@ -25,11 +34,16 @@
       <div id="toasts"></div>
       <div id="note" class="pill" style="display:none"></div>
       <div id="hint" class="pill" style="display:none"></div>
+      <div id="mis" class="pill"></div>
+      <div id="dbtn" class="pill"><span class="k">B</span> Caderninho</div>
+      <div id="dlg"></div>
+      <div id="notes" class="modal"></div>
+      <div id="fimcard" class="modal"></div>
     </div>
   </div>
   <div id="hud">
     <div><b>Rua · 1996</b> · câmera lateral ortográfica · <span id="msg" aria-live="polite" style="color:#f0c98c"></span></div>
-    <div><span class="k">←→↑↓</span> / <span class="k">WASD</span> andar &nbsp; <span class="k">E</span> observar &nbsp; clique para ir até o ponto &nbsp; <span class="k">+</span>/<span class="k">−</span> zoom &nbsp; <span class="k">0</span> enquadramento</div>
+    <div><span class="k">←→↑↓</span> / <span class="k">WASD</span> andar &nbsp; <span class="k">E</span> falar ou examinar &nbsp; <span class="k">B</span> caderninho &nbsp; clique para ir até o ponto &nbsp; <span class="k">+</span>/<span class="k">−</span> zoom &nbsp; <span class="k">0</span> enquadramento</div>
     <div id="zoombar" style="width:100%;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
       <b>Zoom</b>
       <button id="bZm" title="Afastar ( − )" aria-label="Afastar">−</button>
@@ -40,7 +54,7 @@
     <details style="width:100%"><summary>Ferramentas de verificação</summary>
       <button id="bR" aria-pressed="false" title="R">Régua (m)</button>
       <button id="bC" aria-pressed="false" title="C">Colisões e marcações</button>
-      <div style="color:#8f8173;margin-top:4px">1 m = 24 px · elenco e descrições provisórios, à espera da trama de 1996 · sem diálogos nem missões</div>
+      <div style="color:#8f8173;margin-top:4px">1 m = 24 px · texto de 1996 é proposta e passa por revisão cultural e histórica · ?mem=tudo simula quem jogou 1991 e 1994 · ?novo=1 recomeça</div>
     </details>
   </div>
 </div>
@@ -70,15 +84,19 @@ const ZL = [1, 2, 3], ZN = ['Visão geral', 'Visão intermediária', 'Visão apr
 const LS = { anim: 'idle', at: 0, path: [], goal: null, vel: 40, tAnim: 0, replan: 0 };
 let V = null, keys = {}, last = 0, drag = null;
 const OBJ = Sim96.Elenco.objetos;
+const TR_ = Sim96.Trama; let TR = null;
+const D = { open: false, id: null, ator: null, prev: null, mode: 'root', lines: [], tops: [] };
+const bloqueado = () => D.open || S.notesOpen || S.fim;
 
 function start() {
   SIM = new Sim96.World({ scene: SCENE, atlas: CHARATLAS, elenco: Sim96.Elenco, seed: +(Q.get('seed') || 1996) });
-  const sx = Q.has('x') ? +Q.get('x') : 110; SIM.lia.x = sx; SIM.lia.y = Q.has('sy') ? yw(sx) + +Q.get('sy') : yw(sx) + 22;
+  TR = TR_.criar({ mem: Q.get('mem'), novo: Q.get('novo') === '1' }); if (Q.get('novo') === '1') TR.zerar();
+  const sx = Q.has('x') ? +Q.get('x') : 430; SIM.lia.x = sx; SIM.lia.y = Q.has('sy') ? yw(sx) + +Q.get('sy') : yw(sx) + 22;
   if (Q.has('ff')) for (let i = 0, n = +Q.get('ff') * 20; i < n; i++) SIM.update(1 / 20);
   S.vx = SIM.lia.x; S.vy = SIM.lia.y - 18;
   if (Q.has('vx')) { S.vx = +Q.get('vx'); S.free = true; } if (Q.has('vy')) { S.vy = +Q.get('vy'); S.free = true; }
   syncUI(); fit(); started = true; last = performance.now(); requestAnimationFrame(loop);
-  setTimeout(() => toast('<b>Rua</b> · 1996, dia da gravação. Ande, aperte <b>E</b> perto de pessoas e objetos.', 'ev', 5500), 400);
+  updateMis(); if (!Q.has('semintro') && !Object.keys(TR.s.kp).length && !Object.keys(TR.s.visitas).length) abrirIntro();
 }
 
 // ---------------------------------------------------------------- câmera com zoom (3 níveis inteiros)
@@ -108,7 +126,7 @@ function say(txt, s) { S.note = { text: txt, ttl: s || 6 }; }
 function syncUI() { $('zlabel').textContent = ZN[S.zl] + ' (' + ZL[S.zl] + '×)' + (S.free ? ' · câmera solta' : ''); $('bR').setAttribute('aria-pressed', S.ruler); $('bC').setAttribute('aria-pressed', S.coll); }
 function updateHud() {
   const nt = S.note, nel = $('note'); if (nt) { nel.style.display = 'block'; nel.textContent = nt.text; } else nel.style.display = 'none';
-  const h = S.hint, hel = $('hint'); if (h) { hel.style.display = 'block'; hel.innerHTML = '<span class="k" style="border:1px solid #7a5c3c;border-radius:3px;padding:0 4px">E</span> ' + esc(h.label); } else hel.style.display = 'none';
+  const h = bloqueado() ? null : S.hint, hel = $('hint'); if (h) { hel.style.display = 'block'; hel.innerHTML = '<span class="k" style="border:1px solid #7a5c3c;border-radius:3px;padding:0 4px">E</span> ' + esc(h.label); } else hel.style.display = 'none';
 }
 function fit() {
   const nv = Math.max(480, Math.min(640, Math.round(VH * innerWidth / Math.max(1, innerHeight))));
@@ -119,14 +137,14 @@ addEventListener('resize', fit);
 
 // ---------------------------------------------------------------- Lia
 function liaStep(dt) {
-  const L = SIM.lia;
+  const L = SIM.lia; if (bloqueado()) { LS.path = []; LS.goal = null; return; }
   const kx = (keys.arrowright || keys.d ? 1 : 0) - (keys.arrowleft || keys.a ? 1 : 0), ky = (keys.arrowdown || keys.s ? 1 : 0) - (keys.arrowup || keys.w ? 1 : 0);
   let dx = kx, dy = ky;
   if (dx || dy) { LS.goal = null; LS.path = []; }
   else if (LS.path.length) { const k = LS.path[0], ddx = k[0] - L.x, ddy = k[1] - L.y, d = Math.hypot(ddx, ddy); if (d < 1.5) LS.path.shift(); else { dx = ddx / d; dy = ddy / d; } }
   if (dx || dy) {
     const m = Math.hypot(dx, dy) || 1, st = LS.vel * dt, nx = L.x + dx / m * st, ny = L.y + dy / m * st; let moved = false;
-    if (Sim.Nav.free(nx, L.y)) { L.x = nx; moved = true; } if (Sim.Nav.free(L.x, ny)) { L.y = ny; moved = true; }
+    if (nx !== L.x && Sim.Nav.free(nx, L.y)) { L.x = nx; moved = true; } if (ny !== L.y && Sim.Nav.free(L.x, ny)) { L.y = ny; moved = true; }
     if (!moved && LS.path.length) LS.path.shift();
     LS.anim = 'walk'; L.face = Math.abs(dx) >= Math.abs(dy) * .55 ? (dx < 0 ? 'left' : 'right') : (dy < 0 ? 'up' : 'down');
   } else if (LS.anim === 'walk') LS.anim = 'idle';
@@ -137,13 +155,108 @@ function goTo(x, y, goal) { const L = SIM.lia; LS.goal = goal || null; const p =
 // ---------------------------------------------------------------- interação (descrições provisórias; sem diálogo)
 function candidatos() {
   const L = SIM.lia, out = [];
-  for (const a of SIM.lista) { const d = Math.hypot(a.x - L.x, (a.y - L.y) * 1.4); const lim = a.camada === 'wall' ? 0 : 38; if (a.camada === 'wall') { const dd = Math.abs(a.x - L.x) < 36 && L.y > a.y + 20; if (dd) out.push({ k: 'ator', id: a.id, d: Math.abs(a.x - L.x) + 30, label: 'Observar: ' + a.nome, run: () => observar(a) }); continue; } if (d < lim) out.push({ k: 'ator', id: a.id, d, label: 'Observar: ' + a.nome, run: () => observar(a) }); }
-  for (const it of SCENE.inst) { if (!it.stand || !it.desc || it.tipo === 'nenhum') continue; const sx = it.x + it.stand[0], sy = yw(it.x) + it.sy + it.stand[1] - 14, dd = Math.hypot(sx - L.x, (sy - L.y) * 1.2); if (dd < 26) out.push({ k: 'obj', id: it.id, d: dd + 8, label: 'Examinar: ' + it.nome, run: () => say(it.desc, 8) }); }
-  for (const o of OBJ) { const sx = o.x, sy = yw(o.x) + o.sy, dd = Math.hypot(sx - L.x, (sy - L.y) * 1.2); if (dd < 30) out.push({ k: 'obj', id: o.id, d: dd + 6, label: 'Examinar: ' + o.nome, run: () => say(o.desc, 8) }); }
+  for (const a of SIM.lista) { const d = Math.hypot(a.x - L.x, (a.y - L.y) * 1.4); const lim = a.camada === 'wall' ? 0 : 38; if (a.camada === 'wall') { const dd = Math.abs(a.x - L.x) < 36 && L.y > a.y + 20; if (dd) out.push({ k: 'ator', id: a.id, d: Math.abs(a.x - L.x) + 30, label: rotuloAtor(a), run: () => observar(a) }); continue; } if (d < lim) out.push({ k: 'ator', id: a.id, d: TR.falante(a.id) ? d - 10 : d, label: rotuloAtor(a), run: () => observar(a) }); }
+  for (const it of SCENE.inst) { if (!it.stand || !it.desc || it.tipo === 'nenhum') continue; const sx = it.x + it.stand[0], sy = yw(it.x) + it.sy + it.stand[1] - 14, dd = Math.hypot(sx - L.x, (sy - L.y) * 1.2); if (dd < 26) out.push({ k: 'obj', id: it.id, d: dd + 8, label: 'Examinar: ' + it.nome, run: () => examinar(it.id, it.desc) }); }
+  for (const o of OBJ) { const sx = o.x, sy = yw(o.x) + o.sy, dd = Math.hypot(sx - L.x, (sy - L.y) * 1.2); if (dd < 30) out.push({ k: 'obj', id: o.id, d: dd + 6, label: (o.fala ? 'Falar pela porta: ' : 'Examinar: ') + o.nome, run: () => examinarObj(o) }); }
   return out.sort((a, b) => a.d - b.d);
 }
-function observar(a) { say(a.obs || a.papel, 7); LS.anim = 'interact'; LS.tAnim = 1.0; SIM.lia.face = a.x < SIM.lia.x ? 'left' : 'right'; }
-function pressAction() { const c = candidatos(); if (c.length) c[0].run(); else say('Nada por perto.', 2.2); }
+const rotuloAtor = a => TR.falante(a.id) ? 'Falar com ' + a.nome : 'Observar: ' + a.nome;
+function observar(a) {
+  const q = TR.falante(a.id); if (q) { abrirConversa(q, a); return; }
+  say(a.obs || a.papel, 7); LS.anim = 'interact'; LS.tAnim = 1.0; SIM.lia.face = a.x < SIM.lia.x ? 'left' : 'right';
+}
+function examinar(id, padrao) {
+  LS.anim = 'interact'; LS.tAnim = 1; const x = TR.exam(id);
+  if (!x) { say(padrao, 8); return; }
+  say(x.texto, 9); if (x.nova) toast('<b>Anotação nova</b> · ' + esc(x.titulo), 'kp', 4200); updateMis();
+}
+function examinarObj(o) { if (o.fala) { SIM.lia.face = 'up'; abrirConversa(o.fala, null); } else examinar(o.id, o.desc); }
+function pressAction() { if (bloqueado()) return; const c = candidatos(); if (c.length) c[0].run(); else say('Nada por perto.', 2.2); }
+
+// ---------------------------------------------------------------- conversa, caderninho, missões e fim
+function abrirIntro() {
+  D.open = true; D.id = '__intro'; D.ator = null; D.mode = 'root'; D.tops = [];
+  D.lines = [{ quem: 'nota', texto: 'Pelourinho, 1996. A rua está fechada para a gravação de um clipe. A produção veio de fora, a polícia segura as esquinas e a Vó pediu que você passe pela padaria.', nota: true },
+    { quem: 'nota', texto: 'Aperte E perto de pessoas e objetos para falar ou examinar. O que descobrir vai para o caderninho (B).', nota: true }]; renderDialog();
+}
+function abrirConversa(q, a) {
+  const c = TR.abrir(q); if (!c) return;
+  D.open = true; D.id = q; D.ator = a || null; D.mode = 'root'; D.tops = []; D.lines = [{ quem: q, texto: c.saudacao }];
+  const L = SIM.lia; LS.path = []; LS.goal = null; LS.anim = 'talk';
+  if (a) { SIM.congelado = a.id; D.prev = a.anim; a.face = a.x < L.x ? 'right' : 'left'; a.setAnim('talk'); L.face = a.x < L.x ? 'left' : 'right'; }
+  renderDialog();
+}
+function closeDialog() {
+  const a = D.ator; if (a) { a.setAnim(D.prev || 'idle'); }
+  SIM.congelado = null; D.open = false; D.ator = null; D.id = null; $('dlg').style.display = 'none'; if (LS.anim === 'talk') LS.anim = 'idle'; updateMis();
+}
+function dlgAct(a, arg) {
+  if (!D.open) return;
+  if (D.id === '__intro') { closeDialog(); return; }
+  const q = D.id;
+  if (a === 'sair') { closeDialog(); return; }
+  if (a === 'topicos') D.mode = 'topics';
+  else if (a === 'voltar') D.mode = 'root';
+  else if (a === 'saudar') { const c = TR.abrir(q); D.lines = [{ quem: 'lia', texto: 'Oi!' }, { quem: q, texto: c.saudacao }]; D.mode = 'root'; }
+  else if (a === 'perguntar') {
+    const r = TR.perguntar(q, arg); D.lines = r.linhas; D.mode = 'root';
+    r.novas.forEach(k => toast('<b>Anotação nova</b> · ' + esc(TR_.KP[k][0]), 'kp', 4200));
+    updateMis(); if (TR.fim()) { closeDialog(); showFim(); return; }
+  }
+  renderDialog();
+}
+function renderDialog() {
+  const el = $('dlg'), q = D.id; let h = '';
+  if (q === '__intro') {
+    h += '<h3><span style="color:#f0c98c">1996</span><small>dia da gravação</small></h3>' + D.lines.map(l => '<div class="line nota">' + esc(l.texto) + '</div>').join('');
+    h += '<div class="opts"><button onclick="dlgAct(\'sair\')">1 · Começar</button></div>'; el.innerHTML = h; el.style.display = 'block'; return;
+  }
+  h += '<h3><span style="color:' + (TR_.COR[q] || '#fff') + '">' + esc(TR.nome(q)) + '</span></h3>';
+  h += D.lines.map(l => l.nota ? '<div class="line nota">' + esc(l.texto) + '</div>' : '<div class="line"><span class="q" style="color:' + (TR_.COR[l.quem] || '#fff') + '">' + esc(TR.nome(l.quem)) + ':</span> ' + esc(l.texto) + '</div>').join('');
+  h += '<div class="opts">';
+  if (D.mode === 'root') h += '<button onclick="dlgAct(\'saudar\')">1 · Cumprimentar</button><button onclick="dlgAct(\'topicos\')">2 · Perguntar</button><button onclick="dlgAct(\'sair\')">0 · Sair</button>';
+  else {
+    const tp = TR.topicos(q); D.tops = tp.map(t => t.id);
+    if (!tp.length) h += '<div class="line nota">Por enquanto não há o que perguntar.</div>';
+    h += tp.map((t, i) => '<button onclick="dlgAct(\'perguntar\',\'' + t.id + '\')">' + (i + 1) + ' · ' + esc(t.label) + (t.feito ? ' ✓' : '') + '</button>').join('') + '<button onclick="dlgAct(\'voltar\')">0 · Voltar</button>';
+  }
+  h += '</div>'; el.innerHTML = h; el.style.display = 'block';
+}
+function dlgKey(n) {
+  if (D.id === '__intro') { if (n === 1 || n === 0) dlgAct('sair'); return; }
+  if (D.mode === 'root') { if (n === 1) dlgAct('saudar'); else if (n === 2) dlgAct('topicos'); else if (n === 0) dlgAct('sair'); }
+  else if (n === 0) dlgAct('voltar'); else if (D.tops[n - 1]) dlgAct('perguntar', D.tops[n - 1]);
+}
+function updateMis() {
+  const ms = TR.missoes(); let h = '<b>Hoje na rua</b>';
+  for (const m of ms) h += '<div class="m' + (m.feito ? ' ok' : '') + '">' + (m.feito ? '✓ ' : '') + esc(m.titulo) + (m.atual ? '<small>' + esc(m.atual) + '</small>' : '') + '</div>';
+  if (TR.fim()) h += '<div class="m ok">✓ O dia na rua terminou. Dá para continuar andando.</div>'; else if (TR.podeFechar()) h += '<div class="m"><b>Fale com Dona Áurea para fechar o dia.</b></div>';
+  $('mis').innerHTML = h;
+}
+function renderNotes() {
+  const el = $('notes'), d = TR.diario();
+  let h = '<h2><span>Anotações da rua, 1996</span><span class="x" onclick="toggleNotes(false)">fechar (Esc)</span></h2><div class="sub">' + (d.notas.length >= d.total ? 'A rua já contou o que sabia' : 'A rua ainda tem o que contar') + ' · tudo aqui é proposta e precisa de revisão cultural e histórica antes de valer como texto final</div>';
+  for (const [f, tit] of TR_.FIOS) { const ns = d.notas.filter(n => n.fio === f); if (!ns.length) continue; h += '<h4>' + tit + '</h4>' + ns.map(n => '<div class="kp"><b>' + esc(n.titulo) + '</b> — ' + esc(n.texto) + (n.rev ? ' <span class="rev">revisar</span>' : '') + '</div>').join(''); }
+  const ant = d.ligacoes.filter(l => l.antiga), novas = d.ligacoes.filter(l => !l.antiga);
+  if (ant.length) h += '<h4>Ligações com 1991 e 1994</h4>' + ant.map(l => '<div class="kp hip">' + esc(l.texto) + (l.rev ? ' <span class="rev">revisar</span>' : '') + '</div>').join('');
+  if (novas.length) h += '<h4>Hipóteses de Lia</h4>' + novas.map(l => '<div class="kp hip">' + esc(l.texto) + (l.rev ? ' <span class="rev">revisar</span>' : '') + '</div>').join('');
+  if (!d.notas.length) h += '<div class="sub" style="margin-top:1em">Ainda não há anotações. Converse com as pessoas e examine os objetos da rua.</div>';
+  el.innerHTML = h;
+}
+function toggleNotes(on) { if (D.open || S.fim) return; S.notesOpen = on == null ? !S.notesOpen : on; document.body.classList.toggle('modalAberto', S.notesOpen); $('notes').style.display = S.notesOpen ? 'block' : 'none'; if (S.notesOpen) renderNotes(); }
+function showFim() {
+  const d = TR.diario(); S.fim = true; document.body.classList.add('modalAberto');
+  let h = '<h2><span>1996 · o dia do clipe</span></h2><div class="sub">O que a Lia escreveu no caderno antes de fechar a padaria</div>';
+  h += '<p>Hoje a rua apareceu numa gravação que o mundo inteiro vai ver. O clipe não é do Programa, mas mostra a rua que ele quer mostrar: pintada, policiada e desejada. Quem mora aqui apareceu pouco, ou atrás da grade.</p>';
+  h += '<p>O Programa entrou na segunda fase, de 1996 a 1999. Tem menos obra pesada e mais procura por dinheiro de fora, e a aposta agora é o evento para gente de Salvador. A aposta de 1994, só no turista, não bastou. <span class="rev">revisar</span></p>';
+  h += '<p>Um dia de evento enche o caixa de quem vende e não muda o mês. Muitos vizinhos já saíram. Ficaram a associação, a padaria, a mesa de dominó e o sobrado de Seu Raimundo.</p>';
+  const ant = d.ligacoes.filter(l => l.antiga);
+  h += '<div class="sub">Anotações de hoje: ' + d.notas.length + ' de ' + d.total + (ant.length ? ' · ligações com 1991 e 1994: ' + ant.length : (TR.E.antigas() ? '' : ' · jogue 1991 e 1994 antes para abrir as ligações')) + '</div>';
+  if (ant.length) h += '<h4>Ligações com 1991 e 1994</h4>' + ant.map(l => '<div class="kp hip">' + esc(l.texto) + '</div>').join('');
+  h += '<div class="btns"><button onclick="fecharFim()">Continuar na rua</button><button onclick="TR.zerar();location.search=\'?novo=1\'">Recomeçar 1996</button></div>';
+  $('fimcard').innerHTML = h; $('fimcard').style.display = 'block';
+}
+function fecharFim() { S.fim = false; $('fimcard').style.display = 'none'; document.body.classList.remove('modalAberto'); updateMis(); }
 
 // ---------------------------------------------------------------- entrada
 function canvasXY(e) { const r = cvs.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * VW, (e.clientY - r.top) / r.height * VH]; }
@@ -157,8 +270,9 @@ function hitAt(sx, sy) {
   return null;
 }
 function commandMove(cx, cy) {
+  if (bloqueado()) return;
   const [sx, sy] = sceneXY(cx, cy); const L = SIM.lia; const h = hitAt(sx, sy);
-  if (h && h.k === 'ator') { const a = h.a; if (a.camada === 'wall') { goTo(a.x, yw(a.x) + 18, { k: 'ator', a }); return; } goTo(a.x + (L.x < a.x ? -22 : 22), a.y + 2, { k: 'ator', a }); return; }
+  if (h && h.k === 'ator') { const a = h.a; if (a.camada === 'wall') { goTo(a.x, yw(a.x) + 18, { k: 'ator', a }); return; } const ax = a.x + (L.x < a.x ? -22 : 22); goTo(ax, Math.max(a.y + 2, yw(ax) + 9), { k: 'ator', a }); return; }
   if (h && h.k === 'obj') { goTo(h.o.x, yw(h.o.x) + h.o.sy, { k: 'obj', o: h.o }); return; }
   if (h && h.k === 'prop') { const it = h.it, st = it.stand || [0, 14]; goTo(it.x + st[0], yw(it.x) + it.sy + st[1] - 14, { k: 'prop', it }); return; }
   const ty = Math.max(yw(sx) + 9, Math.min(VH - 4, sy));
@@ -166,7 +280,7 @@ function commandMove(cx, cy) {
 }
 function chegou(g) {
   if (!g) return; const L = SIM.lia;
-  if (g.k === 'ator') { observar(g.a); } else if (g.k === 'obj') { L.face = 'up'; say(g.o.desc, 8); LS.anim = 'interact'; LS.tAnim = 1; } else if (g.k === 'prop') { L.face = 'up'; say(g.it.desc, 8); LS.anim = 'interact'; LS.tAnim = 1; }
+  if (g.k === 'ator') { observar(g.a); } else if (g.k === 'obj') { L.face = 'up'; examinarObj(g.o); } else if (g.k === 'prop') { L.face = 'up'; examinar(g.it.id, g.it.desc); }
 }
 cvs.addEventListener('pointerdown', e => { window.focus(); cvs.setPointerCapture(e.pointerId); const [cx, cy] = canvasXY(e); computeView(); drag = { cx, cy, vx: V.left + V.w / 2, vy: V.top + V.h / 2, moved: false }; });
 cvs.addEventListener('pointermove', e => { if (!drag) return; const [cx, cy] = canvasXY(e), dx = cx - drag.cx, dy = cy - drag.cy; if (!drag.moved && Math.hypot(dx, dy) > 5) { drag.moved = true; cvs.style.cursor = 'grabbing'; } if (drag.moved) { S.free = true; S.vx = drag.vx - dx / V.z; S.vy = drag.vy - dy / V.z; } });
@@ -176,6 +290,10 @@ cvs.addEventListener('dblclick', e => { const [cx, cy] = canvasXY(e); LS.path = 
 let wheelAt = 0; cvs.addEventListener('wheel', e => { e.preventDefault(); const now = performance.now(); if (now - wheelAt < 130 || !e.deltaY) return; wheelAt = now; const [cx, cy] = canvasXY(e); setZoom(S.zl + (e.deltaY < 0 ? 1 : -1), cx, cy); }, { passive: false });
 addEventListener('keydown', e => {
   const k = e.key.toLowerCase(); if (!started) return;
+  if (D.open) { e.preventDefault(); if (/^[0-9]$/.test(k)) dlgKey(+k); else if (k === 'escape') closeDialog(); return; }
+  if (S.notesOpen) { if (k === 'escape' || k === 'b') { e.preventDefault(); toggleNotes(false); } return; }
+  if (S.fim) { if (k === 'escape') fecharFim(); return; }
+  if (k === 'b') { e.preventDefault(); toggleNotes(); return; }
   if (['arrowleft', 'arrowright', 'arrowup', 'arrowdown', ' ', 'a', 'd', 'w', 's', 'e', 'enter', 'r', 'c', '+', '=', '-', '_', '0', 'escape'].includes(k)) e.preventDefault();
   keys[k] = true;
   if (k === 'r') { S.ruler = !S.ruler; syncUI(); } if (k === 'c') { S.coll = !S.coll; syncUI(); }
@@ -184,7 +302,7 @@ addEventListener('keydown', e => {
 });
 addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
 addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
-$('bR').onclick = () => { S.ruler = !S.ruler; syncUI(); }; $('bC').onclick = () => { S.coll = !S.coll; syncUI(); };
+$('dbtn').onclick = () => toggleNotes(); $('bR').onclick = () => { S.ruler = !S.ruler; syncUI(); }; $('bC').onclick = () => { S.coll = !S.coll; syncUI(); };
 $('bZm').onclick = () => setZoom(S.zl - 1); $('bZp').onclick = () => setZoom(S.zl + 1); $('bZr').onclick = resetCamera;
 
 // ---------------------------------------------------------------- desenho (mesma ordem de profundidade da rua de 1991)
@@ -231,7 +349,7 @@ function update(dt) {
   LS.at += dt; SIM.update(dt); liaStep(dt); updateCamera(dt);
   if (S.note) { S.note.ttl -= dt; if (S.note.ttl <= 0) S.note = null; }
   if (LS.goal && !LS.path.length) { const g = LS.goal; LS.goal = null; chegou(g); }
-  else if (LS.goal && LS.goal.k === 'ator' && LS.path.length) { LS.replan -= dt; if (LS.replan <= 0) { const a = LS.goal.a, L = SIM.lia; LS.replan = 1.2; if (a.camada !== 'wall') { const p = Sim.Nav.path(L.x, L.y, a.x + (L.x < a.x ? -22 : 22), a.y + 2); LS.path = p ? p.slice() : LS.path; } } }
+  else if (LS.goal && LS.goal.k === 'ator' && LS.path.length) { LS.replan -= dt; if (LS.replan <= 0) { const a = LS.goal.a, L = SIM.lia; LS.replan = 1.2; if (a.camada !== 'wall') { const ax = a.x + (L.x < a.x ? -22 : 22), p = Sim.Nav.path(L.x, L.y, ax, Math.max(a.y + 2, yw(ax) + 9)); LS.path = p ? p.slice() : LS.path; } } }
   const c = candidatos(); S.hint = c.length ? { label: c[0].label } : null; updateHud();
 }
 </script>

@@ -55,4 +55,11 @@ Investigação de 1991 (hoje 26 pistas, eram 29). Em 1991 o relógio andava a 1,
 - Classificação das 29 (central, complementar, exploratória) e o fio de cada uma ficam em `RD.kpMeta`. Texto político novo vem marcado `revisar`.
 - Testes: `node tests/investigacao.js [sementes] [--relatorio]` roda três perfis (explorador livre, conversador, observador) no dia inteiro com a agenda da tarde e confere que quase toda partida entende ao menos 3 dos 4 fios da história, que nenhuma fica abaixo de 2 e que nenhum perfil chega a um assunto sem dica.
 
+1996 (parte jogável, `rua96.html`): o dia da gravação do clipe, sem relógio. Abre pela própria página (`rua96.html`), com os dados em `sim/s96_trama.js` (falas, 20 anotações, 3 missões, 12 ligações) e o elenco em `sim/s96_elenco.js`. Texto proposto, marcado `revisar` onde toca política ou história.
+- O que 1996 ensina e 1991/1994 não ensinaram: a rua como imagem (o clipe não é do Programa, mas mostra a rua que ele quer mostrar); a segunda fase do Programa (1996–1999: menos obra pesada, dinheiro de fora, eventos para a classe média de Salvador); quem ficou e quem saiu; o que um dia de evento rende. Não aparece pessoa real nem o ano 2000.
+- Missões (qualquer ordem): A encomenda da produção (Dona Áurea → assistente → Dona Áurea), O que a câmera vê (Dandara, monitor da produção, Dona Rita), A rua e os eventos (Dandara e três vizinhos). Com as três feitas, Dona Áurea fecha o dia e aparece a tela final com as ligações.
+- Ligação com 1991 e 1994: a página lê as anotações guardadas em `balcao_rua_v1` (rua) e `balcao_quintal_kp` (quintal). Isso abre assuntos (por exemplo, "O Programa agora" com `kp_94_lucia_evento`), acrescenta falas e escreve as "Ligações com 1991 e 1994" no caderno (B). `?mem=tudo` simula quem jogou tudo; `?novo=1` recomeça; `?semintro=1` pula a abertura.
+- Controles: E fala ou examina (o morador mais perto, com preferência para quem fala), clique anda até o ponto, B caderninho, 1/2/0 escolhem na conversa. O progresso fica em `balcao_rua96_v1`.
+- Reconstruir: `python3 tools/build_rua96_html.py`. Testes: `node tests/rua96_sim.js` e `node tests/rua96_trama.js`.
+
 Testes: `node tests/<suite>.js` com `suite`, `casa_suite`, `rua_suite`, `social_suite`, `mundo_suite`, `quintal_suite`, `lia_atende`, `vizinhanca`, `sacola`, `ano94` e `investigacao`. Todas rodam sem falhas e de forma reprodutível.
