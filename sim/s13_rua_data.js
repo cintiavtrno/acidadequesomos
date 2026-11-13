@@ -99,7 +99,7 @@ RD.tarde = {
     raimundo: [A('15:00', 'sair', { porta: 'porta_sobrado', aguarda: 'casa' }), A('15:01', 'sentar', { assento: 'E' }), A('17:30', 'levantar'), A('17:30', 'ir', { spot: 'porta_sobrado' }), A('17:32', 'entrar', { porta: 'porta_sobrado' })],
     ze:       [A('17:40', 'levantar'), A('17:41', 'ir', { spot: 'porta_b0' }), A('17:43', 'entrar', { porta: 'porta_b0' })],
     nonato:   [A('14:30', 'sair', { porta: 'porta_verde' }), A('14:31', 'sentar', { assento: 'F' }), A('17:20', 'levantar'), A('17:20', 'ir', { spot: 'porta_verde' }), A('17:22', 'entrar', { porta: 'porta_verde' })],
-    cicera:   [A('14:40', 'sair', { porta: 'porta_b5' }), A('14:41', 'ir', { spot: 'obs_2' }), A('14:43', 'sentar', { assento: 'T' }), A('17:00', 'levantar'), A('17:01', 'ir', { spot: 'porta_b5' }), A('17:03', 'entrar', { porta: 'porta_b5' })],
+    cicera:   [A('14:30', 'sair', { porta: 'porta_b5' }), A('14:31', 'ir', { spot: 'varal' }), A('14:32', 'esperar', { dur: 9, anim: 'hang' }), A('14:42', 'ir', { spot: 'obs_2' }), A('14:43', 'sentar', { assento: 'T' }), A('17:00', 'levantar'), A('17:01', 'ir', { spot: 'porta_b5' }), A('17:03', 'entrar', { porta: 'porta_b5' })],
     junior:   [A('14:00', 'patrulha', { spots: SPOTS_J, ate: T('18:30') }), A('18:31', 'ir', { spot: 'porta_b5' }), A('18:33', 'entrar', { porta: 'porta_b5' })],
     tonho:    [A('14:10', 'sair', { porta: 'borda_D' }), A('14:11', 'patrulha', { spots: SPOTS_TONHO, ate: T('18:00'), vende: true }), A('18:01', 'ir', { spot: 'borda_E' }), A('18:03', 'entrar', { porta: 'borda_E' })],
     dandara:  [A('14:20', 'sair', { porta: 'borda_E' }), A('14:21', 'ir', { spot: 'obs_2' }), A('14:22', 'olhar_mesa', { dur: 8 }), A('14:35', 'ir', { spot: 'porta_padaria' }), A('14:36', 'entrar', { porta: 'porta_padaria', dur: 34 }),
@@ -135,6 +135,7 @@ RD.falas = {
       jogo: [{ t: 'Dominó é conta e é paciência. Quem tem pressa joga a pedra errada.', kp: 'kp_dom_paciencia' }, { t: 'Aprendi com meu pai, nessa mesma calçada, quando aqui ainda tinha lampião a gás.', conf: [2, 3], kp: 'kp_dom_pai' }],
       rua: [{ t: 'A rua mudou de pintura, mas as pessoas são as mesmas.', kp: null }],
       sobrado: [{ t: 'O sobrado é o que a gente tem. Mexeram na casa do lado e eu fiquei olhando, quieto. Eles medem tudo, mas não perguntam nada.', kp: 'kp_ray_sobrado' }],
+      programa: [{ t: 'Dandara anda dizendo que o Programa tem que deixar a gente morar aqui. Eu concordo, mas isso não está escrito em papel nenhum, e o que não está escrito some.', kp: 'kp_programa', revisar: true }],
     },
     ajudar: [],
   },
@@ -145,6 +146,7 @@ RD.falas = {
       jogo: [{ t: 'Dupla joga de frente: eu e Raimundo contra Nonato e Bela. Parceiro fala com a pedra, não com a boca.', kp: 'kp_dom_dupla' }, { t: 'Bate de carroça vale dois. De lá e lô, três. Cruzada, quatro, e aí a mesa treme.', conf: [1, 3], kp: 'kp_dom_batidas' }],
       barbearia: [{ t: 'A barbearia é a minha casa de dia. De noite, é a de Dona Marta, minha sombra.', kp: null }],
       lia_jogar: [{ t: 'Quer jogar? Quando um de nós levantar, a gente vê. Primeiro prova que sabe contar até seis.', kp: 'kp_dom_convite' }],
+      lata: [{ t: 'Menina, a lata é assim. Cada um deixa o que pode, e quem está apertado leva o que precisa, sem ter que explicar. Fica na mesa; ninguém conta o que tem dentro.', kp: 'kp_lata', revisar: true }],
     },
   },
   nonato: {
@@ -161,6 +163,7 @@ RD.falas = {
     perguntar: {
       jogo: [{ t: 'Não adianta gritar. Quem conta as pedras que já saíram sabe o que sobra.', kp: 'kp_dom_contar' }],
       costura: [{ t: 'Eu costuro na máquina da janela do alto. Daqui eu vejo o jogo e o movimento. O que passa na rua passa pela minha agulha.', kp: null }],
+      associacao: [{ t: 'Eu saio da porta da associação todo dia. Lá dentro tem um caderno de capa dura e uma mesa onde Dandara escreve o que ninguém escreve pra gente. A reunião é hoje à noite.', kp: 'kp_associacao', revisar: true }],
       rua: [{ t: 'A rua tá sendo olhada por gente de fora. Tem uns que olham pra ajudar e uns que olham pra comprar. Eu ainda não sei qual é qual.', kp: 'kp_rua_olhar', revisar: true }],
     },
   },
@@ -171,6 +174,7 @@ RD.falas = {
       varal: [{ t: 'Lavo pra meia rua. Cada pano tem dono; eu conheço pelo cheiro.', kp: 'kp_varal' }],
       junior: [{ t: 'Júnior é meu neto e não para quieto. Se ele passar por aqui, manda ele voltar.', kp: null }],
       jogo: [{ t: 'Às dez eu entro no lugar de Bela, que vai fazer o almoço. Dominó é a hora que eu sento sem culpa.', kp: 'kp_cicera_dom' }],
+      rua: [{ t: 'Tem. Gente com prancheta, gente com máquina de retrato. Bela diz que uns olham pra ajudar e uns pra comprar. Eu lavo roupa; casa dos outros eu não sei olhar.', kp: 'kp_rua_olhar', revisar: true }],
     },
   },
   junior: {
@@ -254,7 +258,7 @@ RD.kp = {
   kp_lucia_medir: ['Lúcia mede tudo', 'Lúcia mede portas, janelas e telhados para que ninguém seja surpreendido pelo relatório.'],
   kp_lucia_programa: ['Um relatório honesto', 'Lúcia sabe que o relatório pode decidir uma obra e quer que ele seja honesto.'],
   kp_obj_mesa: ['As marcas da mesa', 'O tampo verde da mesa de dominó tem marcas de anos de partidas: cada riscado é uma batida.'],
-  kp_obj_quadro: ['O quadro de avisos', 'Reunião da associação à noite, rifa de uma geladeira, aviso de falta d\'água, aluguel de cômodo.'],
+  kp_obj_quadro: ['O quadro de avisos', 'Reunião da associação à noite, rifa de uma geladeira, aviso de falta d\'água, aluguel de cômodo e um papel do Programa de recuperação avisando que os imóveis da rua serão medidos.'],
   kp_obj_orelhao: ['O orelhão', 'O orelhão de ficha é o telefone de quase toda a rua; o número rabiscado na cúpula é de um sobrinho do bairro.'],
   kp_obj_poste: ['O poste dos cartazes', 'O poste de concreto serve de jornal: festa, achado, perdido, show.'],
   kp_obj_gaiola: ['A gaiola do sobrado', 'A gaiola na sacada do sobrado tem um canário que canta antes de Seu Raimundo acordar.'],
@@ -274,24 +278,28 @@ Sim.Rua.D.gates = {
   raimundo: {
     rua: { label: 'A rua', quando: [], ask: 'Seu Raimundo, como o senhor vê a rua hoje?' },
     jogo: { label: 'O jogo', quando: ['viu_jogo'], ask: 'Fiquei olhando a mesa. O senhor joga há muito tempo?' },
-    sobrado: { label: 'O sobrado', quando: ['viu_medicao'], ask: 'Vi uma moça medindo as casas aqui perto. O senhor mora no sobrado ao lado, né? Como é isso pra o senhor?' },
+    programa: { label: 'O Programa', quando: ['ouviu_programa'], ask: 'Seu Raimundo, ouvi falar de um Programa. O senhor sabe o que é?' },
+    sobrado: { label: 'O sobrado', quando: ['viu_medicao', 'ouviu_programa', 'nivel:1'], ask: 'Vi uma moça medindo as casas aqui perto. O senhor mora no sobrado ao lado, né? Como é isso pra o senhor?', ask2: 'Seu Raimundo, ouvi dizer que estão medindo as casas da rua. O senhor mora no sobrado ao lado, né? Sabe de alguma coisa?', ask3: 'Seu Raimundo, o senhor mora no sobrado há muito tempo, né? Como anda a rua aqui do lado?' },
   },
   ze: {
     jogo: { label: 'O jogo', quando: ['viu_jogo'], ask: 'Seu Zé, como é essa história de dupla? Fiquei olhando e não entendi.' },
     barbearia: { label: 'A barbearia', quando: ['apos:ze:jogo', 'nivel:1'], ask: 'O senhor falou em barbearia... é sua?' },
+    lata: { label: 'A lata', quando: ['apos:ze:jogo', 'nivel:1'], ask: 'Seu Zé, ouvi falar de uma lata aqui da mesa. O que é?' },
     lia_jogar: { label: 'Posso jogar?', quando: ['apos:ze:jogo'], ask: 'Seu Zé, se faltar um na mesa, eu posso jogar?' },
   },
   nonato: {
     jogo: { label: 'O jogo', quando: ['viu_jogo'], ask: 'Nonato, você comemorou tão alto... dá pra explicar essa batida?' },
-    obra: { label: 'A obra', quando: ['viu_obra'], ask: 'Vi uma obra aqui na calçada. É sua?' },
+    obra: { label: 'A obra', quando: ['viu_obra', 'nivel:1'], ask: 'Vi uma obra aqui na calçada. É sua?', ask2: 'Nonato, você é pedreiro, não é? O que faz quando não está na mesa?' },
   },
   bela: {
     jogo: { label: 'O jogo', quando: ['viu_jogo'], ask: 'Dona Bela, a senhora conta as pedras de cabeça?' },
+    associacao: { label: 'A associação', quando: ['viu_aviso', 'ouviu_reuniao'], ask: 'Dona Bela, a senhora sai da porta da associação. Como é lá dentro?' },
     costura: { label: 'A costura', quando: ['apos:bela:jogo', 'nivel:1'], ask: 'A senhora costura, não é? Dá pra ver pela mão que não para.' },
-    rua: { label: 'A rua', quando: ['viu_medicao', 'apos:bela:costura'], ask: 'A senhora falou em quem olha a rua de fora. Quem é?' },
+    rua: { label: 'A rua', quando: ['viu_medicao', 'ouviu_programa', 'apos:bela:costura'], ask: 'Dona Bela, tem gente de fora olhando a rua? Eu vi uma moça medindo as casas.', ask2: 'Dona Bela, a senhora que vê tudo da janela: tem gente de fora olhando a rua?', ask3: 'Dona Bela, a senhora que vê tudo da janela: tem gente de fora olhando a rua?' },
   },
   cicera: {
-    varal: { label: 'O varal', quando: ['viu_varal'], ask: 'Dona Cícera, vi a senhora no varal. Sempre foi aqui na calçada?' },
+    varal: { label: 'O varal', quando: ['viu_varal', 'apos:cicera:jogo'], ask: 'Dona Cícera, vi a senhora no varal. Sempre foi aqui na calçada?', ask2: 'Dona Cícera, a senhora lava roupa pra muita gente aqui da rua?' },
+    rua: { label: 'Quem olha a rua', quando: ['viu_medicao', 'ouviu_programa'], ask: 'Dona Cícera, tem gente de fora andando pela rua olhando as casas?' },
     junior: { label: 'O Júnior', quando: ['viu_junior'], ask: 'Aquele menino que corre pela rua é seu neto?' },
     jogo: { label: 'O jogo', quando: ['viu_jogo'], ask: 'A senhora também joga, Dona Cícera?' },
   },
@@ -304,15 +312,108 @@ Sim.Rua.D.gates = {
     rua: { label: 'A rua', quando: ['apos:tonho:cocada'], ask: 'Você roda a rua todo dia. Onde vende melhor?' },
   },
   dandara: {
-    associacao: { label: 'A associação', quando: ['viu_aviso', 'ouviu_reuniao'], ask: 'Dandara, vi um aviso no quadro. É da associação?' },
+    associacao: { label: 'A associação', quando: ['viu_aviso', 'ouviu_reuniao'], ask: 'Dandara, vi um aviso no quadro. É da associação?', ask2: 'Dandara, essa reunião de hoje à noite é da associação? Como ela funciona?' },
     programa: { label: 'O Programa', quando: ['ouviu_programa'], ask: 'Dandara, ouvi falarem de um Programa. O que é isso?' },
   },
   lucia: {
-    medir: { label: 'As medições', quando: ['viu_medicao'], ask: 'Eu vi a senhora medindo as fachadas. Pode me explicar o que está fazendo?' },
+    medir: { label: 'As medições', quando: ['viu_medicao', 'ouviu_programa'], ask: 'Eu vi a senhora medindo as fachadas. Pode me explicar o que está fazendo?', ask2: 'Ouvi dizer que a senhora anda medindo as casas da rua. Pode me explicar o que está fazendo?' },
     programa: { label: 'O Programa', quando: ['ouviu_programa', 'apos:lucia:medir'], ask: 'Ouvi falar do Programa. É por causa dele que a senhora mede tudo?' },
   },
 };
 Sim.Rua.D.dicaSemAssunto = 'Você ainda não tem um motivo para puxar esse assunto. Observe a rua, examine o que há por perto, e volte.';
+
+// ---- investigação 1991 (revisão de gameplay) --------------------------------------------------------------
+// Categoria de cada pista. central = necessária para entender a história principal (o Programa chega, as casas são medidas,
+// a associação se mexe, quem mora não foi consultado). complementar = aprofunda pessoas e hábitos. exploratoria = opcional para quem presta atenção.
+// fio = qual linha da história a pista sustenta (medicao | programa | associacao | olhares | mesa | comercio | rua). Usado nos testes e no diário; o jogador não vê.
+Sim.Rua.D.kpMeta = {
+  kp_obj_quadro: { cat: 'central', fio: 'programa', just: 'Traz o aviso do Programa e a reunião. Sozinha já conta o essencial a quem só examina objetos.' },
+  kp_lucia_medir: { cat: 'central', fio: 'medicao', just: 'Mostra o que as medições são e quem as faz.' },
+  kp_lucia_programa: { cat: 'central', fio: 'programa', just: 'Voz do Programa sobre o que o relatório decide.' },
+  kp_programa: { cat: 'central', fio: 'programa', just: 'Voz de quem mora: o medo de sair do bairro.' },
+  kp_associacao: { cat: 'central', fio: 'associacao', just: 'Mostra onde os moradores se organizam.' },
+  kp_ray_sobrado: { cat: 'central', fio: 'medicao', just: 'O morador que viu a casa vizinha ser medida e não foi consultado.' },
+  kp_rua_olhar: { cat: 'central', fio: 'olhares', just: 'O olhar de fora sobre as casas, que a história de 1994 vai cobrar.' },
+  kp_lata: { cat: 'complementar', fio: 'mesa', just: 'A ajuda sem papel entre vizinhos; contrasta com o relatório.' },
+  kp_dom_paciencia: { cat: 'complementar', fio: 'mesa', just: 'Jeito de Seu Raimundo.' },
+  kp_dom_pai: { cat: 'complementar', fio: 'mesa', just: 'A rua como herança de família.' },
+  kp_dom_dupla: { cat: 'complementar', fio: 'mesa', just: 'Quem joga com quem; base para entender a mesa.' },
+  kp_dom_convite: { cat: 'complementar', fio: 'mesa', just: 'Como Lia entra na mesa.' },
+  kp_dom_contar: { cat: 'complementar', fio: 'mesa', just: 'Jeito de Dona Bela.' },
+  kp_obra_tijolo: { cat: 'complementar', fio: 'rua', just: 'Reforma feita pelos próprios moradores, em troca de café.' },
+  kp_varal: { cat: 'complementar', fio: 'rua', just: 'O trabalho de Cícera e a rede de quem depende dele.' },
+  kp_cocada: { cat: 'complementar', fio: 'comercio', just: 'Quem faz e quem vende; o comércio miúdo da rua.' },
+  kp_pontos_venda: { cat: 'complementar', fio: 'comercio', just: 'O comércio da rua depende de hora e lugar.' },
+  kp_dom_batidas: { cat: 'exploratoria', fio: 'mesa', just: 'Regra do jogo; também está no painel da mesa.' },
+  kp_cicera_dom: { cat: 'exploratoria', fio: 'mesa', just: 'Detalhe de agenda.' },
+  kp_gato: { cat: 'exploratoria', fio: 'rua', just: 'Cor local.' },
+  kp_obj_mesa: { cat: 'exploratoria', fio: 'mesa', just: 'Objeto.' },
+  kp_obj_orelhao: { cat: 'exploratoria', fio: 'rua', just: 'Objeto.' },
+  kp_obj_poste: { cat: 'exploratoria', fio: 'rua', just: 'Objeto.' },
+  kp_obj_gaiola: { cat: 'exploratoria', fio: 'rua', just: 'Objeto.' },
+  kp_obj_cavalete: { cat: 'exploratoria', fio: 'comercio', just: 'Objeto.' },
+  kp_obj_bike: { cat: 'exploratoria', fio: 'comercio', just: 'Objeto.' },
+  kp_obj_lixeira: { cat: 'exploratoria', fio: 'rua', just: 'Objeto.' },
+  kp_obj_obra: { cat: 'exploratoria', fio: 'rua', just: 'Objeto; abre a conversa com Nonato.' },
+  kp_obj_caixote: { cat: 'exploratoria', fio: 'comercio', just: 'Objeto.' },
+};
+// revisão cultural: textos de 1991 que tocam em política urbana
+Sim.Rua.D.kpRev = Object.assign(Sim.Rua.D.kpRev || {}, { kp_obj_quadro: 1, kp_lata: 1, kp_associacao: 1, kp_lucia_medir: 1, kp_ray_sobrado: 1 });
+// o que o NPC diz quando não há resposta nova (nenhuma confiança é ganha por repetir)
+Sim.Rua.D.repete = ['Isso eu já te contei, Lia.', 'Já falei, menina. Se lembrar de mais alguma coisa, eu aviso.', 'Já te disse. Pergunta de outra coisa.'];
+// o que o NPC diz quando ainda tem mais a contar sobre o assunto, mas não está à vontade
+Sim.Rua.D.reserva = {
+  raimundo: { jogo: 'Esse jogo tem história, Lia. Mas história a gente conta no tempo certo.' },
+  ze: { jogo: 'Tem mais regra nessa mesa do que você viu. Fica por perto que eu mostro.' },
+};
+// o que a pessoa diz ao ver Lia (saudação) e que já vale como ter ouvido ou visto algo
+Sim.Rua.D.saudarViv = {
+  dandara: [[/reunião/i, 'ouviu_reuniao']], lucia: [[/medir/i, 'viu_medicao']], junior: [[/gato/i, 'viu_gato']],
+  tonho: [[/cocada|queijadinha/i, 'viu_tonho']], cicera: [[/lençol|roupa/i, 'viu_varal']],
+};
+Sim.Rua.D.reservaGen = 'Ele pensa um pouco e muda de assunto. Parece que há mais coisa, mas não agora.';
+// pensamento de Lia mostrado no menu "Perguntar" quando ainda há assunto que depende de ver ou fazer alguma coisa (um por vez, sem números)
+Sim.Rua.D.dicasTopico = {
+  raimundo: { programa: 'Falam de um Programa, mas ninguém me explicou. Um aviso no quadro ou a moça da trena podem ajudar a puxar o assunto.', jogo: 'Seu Raimundo só olha para a mesa. Talvez valha ver uma partida de perto antes de perguntar.', sobrado: 'Ele mora no sobrado. Se alguém mexeu na casa do lado, foi ele quem viu.' },
+  ze: { lata: 'Alguém falou de uma lata na mesa. Depois de conversar sobre o jogo, dá para perguntar.', jogo: 'Antes de puxar assunto com ele, eu devia ver uma partida de perto.', lia_jogar: 'Só dá para pedir um lugar na mesa depois de conversar com ele sobre o jogo.' },
+  nonato: { jogo: 'Ele comemora cada batida. Vale ver uma partida antes de perguntar.', obra: 'Tem uma pilha de tijolos na calçada. De quem será?' },
+  bela: { associacao: 'Ela sai da porta da associação todo dia. Depois de ler o quadro de avisos eu teria o que perguntar.', jogo: 'Ela confere cada pedra duas vezes. Dá para perguntar depois de ver uma partida.', rua: 'Ela vê tudo da janela. Algo na rua deve ter chamado a atenção dela.' },
+  cicera: { varal: 'Ela estende roupa cedo e de novo à tarde. Dá para puxar assunto quando eu a vir no varal.', junior: 'O menino que corre pela rua parece ser parente dela. Eu podia ficar perto dele.', jogo: 'Ela senta à mesa quando alguém sai. Eu devia ver uma partida primeiro.' },
+  junior: { gato: 'Ele vive atrás de um gato. Ficar perto do bichano pode render assunto.', jogo: 'Eu podia ver uma partida para ter o que perguntar.' },
+  tonho: { cocada: 'Tonho passa a rua inteira com a caixa. Dá para perguntar quando eu ficar um tempo perto dele.', rua: 'Primeiro eu pergunto da cocada, depois de onde ele vende.' },
+  dandara: { associacao: 'Tem um quadro de avisos na rua. Vale ler antes de falar com ela.', programa: 'Falam de um Programa, mas ninguém me explicou. O quadro de avisos ou a moça da trena podem ajudar.' },
+  lucia: { medir: 'Ela mede as fachadas com uma trena. Dá para perguntar quando eu a vir trabalhando, ou depois de ouvir falar disso.', programa: 'Primeiro eu pergunto o que ela mede.' },
+};
+// observações de Lia no instante em que uma vivência é reconhecida (toast; só em 1991)
+Sim.Rua.D.vivDica = {
+  viu_jogo: 'Quatro jogadores, duas duplas, quase nenhuma palavra. Dá para puxar assunto com cada um.',
+  viu_medicao: 'A moça mede porta, janela e telhado com uma trena. Quem mora aqui parece não ter sido avisado. Seu Raimundo mora ao lado.',
+  viu_varal: 'Cada pano no varal parece ter dono. Dona Cícera deve saber de quem é cada um.',
+  viu_tonho: 'Tonho passa pela rua toda com a caixa de cocada, sem parar muito em nenhum canto.',
+  viu_gato: 'O gato parece ser de todo mundo e de ninguém.',
+  viu_obra: 'Alguém está refazendo reboco de uma casa. A pilha de tijolos deve ter dono.',
+  ouviu_reuniao: 'Dandara convocou uma reunião da associação para hoje à noite e está recolhendo assinaturas.',
+  viu_aviso: 'Entre os avisos há um papel do Programa e a convocação de uma reunião. Dandara deve saber mais.',
+  ouviu_programa: 'Falam de um Programa de recuperação. Ninguém explicou aos moradores o que ele muda.',
+};
+// diário: o que ainda desperta curiosidade (aparece depois da vivência e some quando a anotação correspondente é feita)
+Sim.Rua.D.curiosidades = [
+  { id: 'c_medicao', viv: 'viu_medicao', ate: 'kp_lucia_medir', tipo: 'acontecimento', texto: 'Uma moça mede as fachadas com uma trena. Para quem ela mede, e por quê?' },
+  { id: 'c_programa', viv: 'ouviu_programa', ate: 'kp_programa', tipo: 'acontecimento', texto: 'Fala-se de um Programa de recuperação que ainda ninguém explicou aos moradores.', revisar: true },
+  { id: 'c_reuniao', viv: 'ouviu_reuniao', ate: 'kp_associacao', tipo: 'acontecimento', texto: 'Há reunião da associação à noite. Quem organiza e o que se decide?' },
+  { id: 'c_jogo', viv: 'viu_jogo', ate: 'kp_dom_dupla', tipo: 'assunto', texto: 'Os quatro jogam em duplas e quase não falam. Como funciona a mesa?' },
+  { id: 'c_varal', viv: 'viu_varal', ate: 'kp_varal', tipo: 'assunto', texto: 'O varal da calçada está cheio de panos de donos diferentes.' },
+  { id: 'c_cocada', viv: 'viu_tonho', ate: 'kp_cocada', tipo: 'assunto', texto: 'Tonho vende a cocada pela rua inteira. Ela é dele?' },
+  { id: 'c_gato', viv: 'viu_gato', ate: 'kp_gato', tipo: 'assunto', texto: 'O gato da rua parece não ter dono.' },
+  { id: 'c_obra', viv: 'viu_obra', ate: 'kp_obra_tijolo', tipo: 'assunto', texto: 'A pilha de tijolos na calçada tem dono, mas ninguém está por perto.' },
+];
+// diário: hipóteses de Lia; aparecem quando as anotações de que dependem foram feitas
+Sim.Rua.D.hipoteses = [
+  { se: ['kp_lucia_medir', 'kp_rua_olhar'], texto: 'Os olhares de fora que Dona Bela notou e as medições de Lúcia talvez sejam a mesma história: alguém conta a rua antes de decidir sobre ela.', revisar: true },
+  { se: ['kp_ray_sobrado', 'kp_associacao'], texto: 'Seu Raimundo viu a casa do lado ser medida sem que ninguém perguntasse nada. A reunião da associação pode ser o lugar onde essa pergunta vira voz.', revisar: true },
+  { se: ['kp_lata', 'kp_dom_dupla'], texto: 'Na mesa e na lata, vizinho ajuda vizinho sem papel e sem explicar. Nada disso entra no relatório.', revisar: true },
+  { se: ['kp_cocada', 'kp_pontos_venda'], texto: 'O comércio da rua tem hora e lugar. Se o movimento mudar de lugar, quem vende precisa de outro ponto.' },
+];
 
 // ================================================================ 1994
 // 1992–1995: o Programa acelera (obra pesada, casa interditada, moradores saindo). Em 1991 a rua só recebe a notícia; em 1994 ela já mostra o efeito.

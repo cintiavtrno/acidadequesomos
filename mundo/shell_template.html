@@ -45,8 +45,8 @@ function zerarJogo() { try { const ks = []; for (let i = 0; i < localStorage.len
 if (Q.get('new') === '1') zerarJogo();
 const ANO = (Q.get('ano') || (function () { try { return localStorage.getItem('balcao_ano'); } catch (e) { return null; } })()) == '1994' && Q.get('new') !== '1' ? 1994 : 1991;
 window.MUNDO_ANO = ANO;   // as simulações leem o ano (agenda da tarde, caruru)
-// ritmo: 1991 = dia de 07h às 19h em 8 minutos reais (1,5 min de jogo por segundo). 1994 começa às 11h30 e anda mais devagar (0,5) para dar tempo de descobrir as coisas no caruru.
-const RATE_ANO = ANO === 1994 ? 0.5 : 1.5, INICIO_94 = 690, HOLD_94 = 1080;
+// ritmo: 1991 = dia de 07h às 19h em 24 minutos reais (0,5 min de jogo por segundo, como em 1994; era 1,5, e as janelas dos moradores passavam em poucos segundos: a medição da Lúcia, de 9 min de jogo, durava 6 s). 1994 começa às 11h30 e anda mais devagar (0,5) para dar tempo de descobrir as coisas no caruru.
+const RATE_ANO = ANO === 1994 ? 0.5 : 0.5, INICIO_94 = 690, HOLD_94 = 1080;
 let DIA = 1; try { DIA = +localStorage.getItem('balcao_dia') || 1; } catch (e) { }
 window.MUNDO_RATE = RATE_ANO; window.MUNDO_DIA = DIA;
 const FR = {}; let mundo = null, ready = 0; const NOMES = { rua: 'Rua', padaria: 'Padaria de Vó Aurea', casa: 'Casa de Seu Raimundo', quintal: 'Quintal de Dona Zefa' };

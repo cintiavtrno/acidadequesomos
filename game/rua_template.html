@@ -23,6 +23,7 @@
   #notes.modal { inset: 5% 8%; background: var(--paper); color: var(--ink); border: 0; border-radius: 10px; font-family: var(--hand); font-size: 1.35em; line-height: 1.25em; }
   #notes h2 { font: 700 1.4em var(--hand); color: var(--ink); } #notes h4 { font: 700 1em var(--hand); color: var(--pen); } #notes .kp { background: rgba(60,40,20,.07); border-radius: 6px; padding: .3em .6em; margin: .3em 0; } #notes .kp b { color: var(--ink); } #notes .sub { color: var(--ink-soft); } #notes .x { background: none; border: 0; color: var(--pen); font: 700 .8em var(--hand); }
   #notes .rev { color: var(--pencil); font-size: .8em; }
+  #notes .por { display: block; color: var(--ink-soft); font-size: .8em; margin-top: .15em; } #notes .hip { background: none; border-left: 2px solid var(--pen); border-radius: 0; font-style: italic; color: var(--ink-soft); }
 
   /* tela cheia: o cenário ocupa a janela inteira; a barra de ajuda vira uma pílula discreta no canto */
   #app { padding: 0 !important; gap: 0 !important; height: 100% !important; min-height: 0 !important; }
@@ -342,9 +343,9 @@ function dlgAct(a, arg) {
   if (a === 'sair') { closeDialog(); return; }
   if (a === 'topicos') { D.mode = 'topics'; }
   else if (a === 'voltar') { D.mode = 'root'; }
-  else if (a === 'ouvir') { D.lines = [{ quem: 'nota', texto: SIM.ouvir(id)[0].texto, nota: true }]; SIM.trust[id] = Math.min(1, (SIM.trust[id] || 0) + .02); D.mode = 'root'; }
+  else if (a === 'ouvir') { D.lines = [{ quem: 'nota', texto: SIM.escutar(id)[0].texto, nota: true }]; D.mode = 'root'; }
   else if (a === 'saudar') { const c = SIM.abrirConversa(id); D.lines = [{ quem: 'lia', texto: 'Bom dia!' }, { quem: id, texto: c.saudacao }]; D.mode = 'root'; }
-  else if (a === 'perguntar') { const r = SIM.perguntar(id, arg); D.lines = r.map(l => ({ quem: l.quem, texto: l.texto, rev: l.revisar })); D.mode = 'root'; r.forEach(l => { if (l.quem === 'nota') toast('<b>Anotação nova</b> · ' + esc(l.texto.replace('Anotado: ', '')), 'kp', 4200); }); }
+  else if (a === 'perguntar') { const r = SIM.perguntar(id, arg); D.lines = r.map(l => ({ quem: l.quem, texto: l.texto, rev: l.revisar, nota: l.quem === 'nota' || l.nota })); D.mode = 'root'; r.forEach(l => { if (l.quem === 'nota') toast('<b>Anotação nova</b> · ' + esc(l.texto.replace('Anotado: ', '')), 'kp', 4200); }); }
   renderDialog();
 }
 function renderDialog() {
@@ -356,8 +357,8 @@ function renderDialog() {
   if (D.mode === 'root') {
     h += '<button onclick="dlgAct(\'saudar\')">1 · Cumprimentar</button><button onclick="dlgAct(\'topicos\')">2 · Perguntar</button><button onclick="dlgAct(\'ouvir\')">3 · Ficar ouvindo</button><button onclick="dlgAct(\'sair\')">0 · Sair</button>';
   } else {
-    const TP = SIM.topicos(id), tops = TP.map(t => t.id); const rotulo = t => { const x = TP.find(q => q.id === t); return (x ? x.label : (TOP[t] || t)) + (x && x.feito ? ' ✓' : ''); };
-    if (!tops.length) h += '<div class="line nota">' + esc(RD.dicaSemAssunto) + '</div>';
+    const TP = SIM.topicos(id), tops = TP.map(t => t.id); const rotulo = t => { const x = TP.find(q => q.id === t); return (x ? x.label : (TOP[t] || t)) + (x && x.feito ? ' ✓' : x && x.mais ? ' · tem mais' : ''); };
+    const pend = SIM.pendencia(id); if (!tops.length) h += '<div class="line nota">' + esc(pend || RD.dicaSemAssunto) + '</div>'; else if (pend) h += '<div class="line nota">Lia pensa: ' + esc(pend) + '</div>';
     h += tops.map((t, i) => '<button onclick="dlgAct(\'perguntar\',\'' + t + '\')">' + (i + 1) + ' · ' + esc(rotulo(t)) + '</button>').join('') + '<button onclick="dlgAct(\'voltar\')">0 · Voltar</button>';
     D.tops = tops;
   }
@@ -417,7 +418,7 @@ function renderMesa() {
 }
 function dupNome(d) { const o = RD.ordem.filter(s => RD.dupla[s] === d).map(s => { const P = SIM.mesa.painel(); return P.nomes[s]; }); return o.join(' e '); }
 function nomeSeat(s) { return SIM.mesa.painel().nomes[s]; }
-function torcer(d) { const ids = RD.ordem.filter(s => RD.dupla[s] === d).map(s => SIM.mesa.ocupante(s)).filter(x => x && x !== 'lia'); ids.forEach(i => { SIM.trust[i] = Math.min(1, (SIM.trust[i] || 0) + .03); const n = SIM.npcs[i]; if (n && n.state === 'Sitting') n.falar(['Obrigado, menina!', 'Isso, torce mesmo.', 'Boa torcida!'][Math.floor(Math.random() * 3)], 2.4); }); LS.say = { text: 'Vai, ' + dupNome(d) + '!', ttl: 2.4 }; }
+function torcer(d) { const gan = SIM.clock.min - (LS.ultTorcer == null ? -99 : LS.ultTorcer) > 6; if (gan) LS.ultTorcer = SIM.clock.min; const ids = RD.ordem.filter(s => RD.dupla[s] === d).map(s => SIM.mesa.ocupante(s)).filter(x => x && x !== 'lia'); ids.forEach(i => { if (gan) SIM.trust[i] = Math.min(1, (SIM.trust[i] || 0) + .03); const n = SIM.npcs[i]; if (n && n.state === 'Sitting') n.falar(['Obrigado, menina!', 'Isso, torce mesmo.', 'Boa torcida!'][Math.floor(Math.random() * 3)], 2.4); }); LS.say = { text: 'Vai, ' + dupNome(d) + '!', ttl: 2.4 }; }
 function entrarMesa(id) { if (LS.mode !== 'free') return; const A = SIM.assentos[id]; if (!A || A.ocup) return; const ap = A.def.aprox; goTo(ap[0], yw(ap[0]) + ap[1], { k: 'sentar', id }); }
 function liaJoga(a, b) { const t = SIM.mesa.minhaMao().find(x => x[0] === a && x[1] === b); const ops = SIM.mesa.legaisLia().filter(o => o.t === t); if (!ops.length) return; const lado = ops.length > 1 ? (confirm('Jogar na ponta esquerda (' + SIM.mesa.game.pontas[0] + ')? OK = esquerda · Cancelar = direita (' + SIM.mesa.game.pontas[1] + ')') ? 'L' : 'R') : ops[0].lado; if (SIM.mesa.liaJoga(t, lado)) { LS.playT = .8; LS.anim = 'play'; renderMesa(); } }
 function liaPassa() { if (SIM.mesa.liaPassa()) { LS.playT = .6; renderMesa(); } }
@@ -425,13 +426,22 @@ function liaPassa() { if (SIM.mesa.liaPassa()) { LS.playT = .6; renderMesa(); } 
 // ---------------------------------------------------------------- anotações e fim do dia
 const GRUPOS = [['Dominó e a mesa', /^kp_dom|kp_cicera_dom/], ['Moradores', /^kp_(ray|obra|varal|gato|cocada|pontos|c_)/], ['O Programa e a rua', /^kp_(rua|prog|assoc|lucia)/], ['Objetos da rua', /^kp_obj/]];
 GRUPOS.unshift(['1994 · o Programa na rua', /^kp_94/]);
+function quemDisse(k, n) {
+  const p = n.por; if (!p) return '';
+  const hh = m => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(Math.floor(m % 60)).padStart(2, '0');
+  const onde = p.tipo === 'fala' ? 'Ouvido de ' + nome(p.quem) + (p.conf ? ', depois de ganhar a confiança dele' : '') : p.tipo === 'obj' ? 'Visto em: ' + (p.nome || 'um objeto da rua') : p.tipo === 'mesa' ? 'Visto na mesa de dominó' : p.tipo === 'gato' ? 'Observado: o gato' : '';
+  return onde ? ' <span class="por">' + esc(onde) + ' · ' + hh(n.t) + '</span>' : '';
+}
 function renderNotes() {
-  const el = $('notes'), got = SIM.kp, tot = Object.keys(RD.kp);
-  let h = '<h2><span>Anotações da rua</span><span class="x" onclick="toggleNotes(false)">fechar (Esc)</span></h2><div class="sub">' + Object.keys(got).length + ' de ' + tot.length + ' · tudo aqui é proposta e precisa de revisão cultural antes de valer como texto final</div>';
+  const el = $('notes'), d = SIM.diario(), got = d.notas;
+  let h = '<h2><span>Anotações da rua</span><span class="x" onclick="toggleNotes(false)">fechar (Esc)</span></h2><div class="sub">' + got.length + ' de ' + d.total + ' · tudo aqui é proposta e precisa de revisão cultural antes de valer como texto final</div>';
   const usados = new Set();
-  for (const [t, re] of GRUPOS) { const ids = tot.filter(k => re.test(k) && got[k]); ids.forEach(k => usados.add(k)); if (!ids.length) continue; h += '<h4>' + t + '</h4>' + ids.map(k => '<div class="kp"><b>' + esc(RD.kp[k][0]) + '</b> — ' + esc(RD.kp[k][1]) + (/programa|olhar/.test(k) || (RD.kpRev && RD.kpRev[k]) ? ' <span class="rev">revisar</span>' : '') + '</div>').join(''); }
-  const resto = tot.filter(k => got[k] && !usados.has(k)); if (resto.length) h += '<h4>Outras</h4>' + resto.map(k => '<div class="kp"><b>' + esc(RD.kp[k][0]) + '</b> — ' + esc(RD.kp[k][1]) + '</div>').join('');
-  if (!Object.keys(got).length) h += '<div class="vazio sub" style="margin-top:1em">Ainda não há anotações. Converse com as pessoas e examine os objetos da rua.</div>';
+  for (const [t, re] of GRUPOS) { const ids = got.filter(n => re.test(n.id)); ids.forEach(n => usados.add(n.id)); if (!ids.length) continue; h += '<h4>' + t + '</h4>' + ids.map(n => '<div class="kp"><b>' + esc(n.titulo) + '</b> — ' + esc(n.texto) + (/programa|olhar/.test(n.id) || n.rev ? ' <span class="rev">revisar</span>' : '') + quemDisse(n.id, n) + '</div>').join(''); }
+  const resto = got.filter(n => !usados.has(n.id)); if (resto.length) h += '<h4>Outras</h4>' + resto.map(n => '<div class="kp"><b>' + esc(n.titulo) + '</b> — ' + esc(n.texto) + quemDisse(n.id, n) + '</div>').join('');
+  if (d.acontecimentos.length) h += '<h4>Para entender</h4>' + d.acontecimentos.map(c => '<div class="kp hip">' + esc(c.texto) + (c.revisar ? ' <span class="rev">revisar</span>' : '') + '</div>').join('');
+  if (d.assuntos.length) h += '<h4>Despertou curiosidade</h4>' + d.assuntos.map(c => '<div class="kp hip">' + esc(c.texto) + '</div>').join('');
+  if (d.hipoteses.length) h += '<h4>Hipóteses de Lia</h4>' + d.hipoteses.map(x => '<div class="kp hip">' + esc(x.texto) + (x.revisar ? ' <span class="rev">revisar</span>' : '') + '</div>').join('');
+  if (!got.length) h += '<div class="vazio sub" style="margin-top:1em">Ainda não há anotações. Converse com as pessoas e examine os objetos da rua.</div>';
   el.innerHTML = h;
 }
 function toggleNotes(on) { S.notesOpen = on == null ? !S.notesOpen : on; $('notes').style.display = S.notesOpen ? 'block' : 'none'; if (S.notesOpen) renderNotes(); }
@@ -443,6 +453,7 @@ function showDay(r) {
 }
 function bindBus() {
   const b = SIM.bus;
+  b.on('vivencia', e => { const d = RD.vivDica && RD.vivDica[e.f]; if (!d || RD._v94) return; if (e.f === 'ouviu_programa' && (SIM.tem('viu_aviso') || SIM.tem('viu_medicao'))) return; if (e.f === 'ouviu_reuniao' && SIM.tem('viu_aviso')) return; toast('<b>Lia</b> · ' + esc(d), 'ev', 5600); });
   b.on('conhecimento', e => toast('<b>Anotação nova</b> · ' + esc(e.kp.titulo), 'kp', 4200));
   b.on('dia_fim', e => { if (!window.MUNDO_ATIVO) showDay(e.resumo); });
   b.on('lia_fala', e => { LS.say = { text: e.texto, ttl: 2.6 }; });

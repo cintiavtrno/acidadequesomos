@@ -60,11 +60,11 @@ const mk = (seed, o) => { const S = load(); return { S, w: new S.Rua.World(Objec
   const { w } = mk(21); w.update(1);
   const c = w.abrirConversa('raimundo'); ok('conversa só com quem está na rua', c === null || c.id === 'raimundo'); while (w.clock.min < 450) w.update(1 / 20);
   const c2 = w.abrirConversa('raimundo'); ok('abre conversa com Raimundo às 07:30', c2 && c2.topicos.includes('rua'));
-  ok('assuntos sem motivo ficam escondidos (jogo/sobrado só depois de ver a mesa ou a medição)', !c2.topicos.includes('jogo') && !c2.topicos.includes('sobrado'), c2.topicos.join());
+  ok('assuntos sem motivo ficam escondidos (o jogo só depois de ver a mesa; o sobrado também fica aberto a quem já tem familiaridade com Seu Raimundo)', !c2.topicos.includes('jogo') && c2.topicos.includes('sobrado'), c2.topicos.join());
   w.marcar('viu_jogo'); ok('depois de ver o jogo, o assunto aparece com a frase da Lia que explica o motivo', w.abrirConversa('raimundo').topicos.includes('jogo') && /Fiquei olhando a mesa/.test(w.topicos('raimundo').find(t => t.id === 'jogo').ask));
   ok('assunto encadeado só aparece depois do anterior (Zé: barbearia/jogar só após o jogo)', !w.topicos('ze').some(t => t.id === 'lia_jogar') && (w.feitos['ze:jogo'] = 1, w.topicos('ze').some(t => t.id === 'lia_jogar')));
   ok('sem nenhum motivo, a pessoa oferece dica em vez de assunto', (() => { const x = mk(22).w; x.update(1); while (x.clock.min < 460) x.update(1 / 20); const q = x.abrirConversa('lucia'); return !q || q.topicos.length === 0 && !!q.semAssunto || !x.npcs.lucia.alpha; })());
-  const r1 = w.perguntar('raimundo', 'jogo'); ok('1ª pergunta rende anotação', r1.some(l => l.quem === 'nota') && w.kp.kp_dom_paciencia);
+  w.trust.raimundo = .3; const r1 = w.perguntar('raimundo', 'jogo'); ok('1ª pergunta rende anotação', r1.some(l => l.quem === 'nota') && w.kp.kp_dom_paciencia);
   const r2 = w.perguntar('raimundo', 'jogo'); ok('resposta de nível alto bloqueada no nível 0/1', !r2.some(l => l.texto.includes('lampião')) || w.nivel('raimundo') >= 2, 'nível ' + w.nivel('raimundo'));
   w.trust.raimundo = .6; const r3 = w.perguntar('raimundo', 'jogo'); ok('com confiança, conta do pai', r3.some(l => l.texto.includes('lampião')));
   const n0 = Object.keys(w.kp).length; w.perguntar('raimundo', 'jogo'); ok('anotação não duplica', Object.keys(w.kp).length === n0);

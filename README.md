@@ -4,7 +4,7 @@ Jogo de simulação social em pixel art (HTML/canvas, sem dependências), ambien
 Câmera lateral na rua e três-quartos nos interiores.
 
 **Jogar:** abra `index.html` (o mundo conectado: rua, padaria, casa de Seu Raimundo e quintal de Dona Zefa, no dia do caruru, 1994).
-Setas/WASD andam · E interage (no balcão da padaria, E atende o próximo da fila) · B caderninho · clique anda até o ponto · 1991 dura 8 min reais (07h→19h); o quintal só vira caruru em 1994.
+Setas/WASD andam · E interage (no balcão da padaria, E atende o próximo da fila) · B caderninho · clique anda até o ponto · 1991 dura 24 min reais (07h→19h); o quintal só vira caruru em 1994.
 
 O jogo ocupa 100% da janela mantendo 16:9: resolução lógica 480×270, ampliação inteira por vizinho mais próximo e redução suave final só quando a escala não é inteira (`game/fit.js`).
 
@@ -18,7 +18,7 @@ O jogo ocupa 100% da janela mantendo 16:9: resolução lógica 480×270, amplia�
 
 Reconstruir: `sh tools/build_all.sh`. Ele monta padaria, casa, rua, quintal e o mundo, e grava o resultado em `game/balcao_etapa7_mundo.html` **e em `index.html`**. O `index.html` é o jogável, então depois de mexer em qualquer arquivo de `sim/`, `mundo/`, `quintal/`, `game/*template*` ou `assets/`, rode o build antes de subir.
 
-Ritmo: 1991 roda a 1,5 min de jogo por segundo (07h→19h em 8 min). 1994 abre às 11h30, roda a 0,5 (o caruru, 12h→18h, dura cerca de 12 min) e o relógio fica parado às 18h enquanto faltarem as 6 anotações: ninguém sai do quintal e o dia não acaba. As taxas estão no shell (`RATE_ANO`); o build só lê `window.MUNDO_RATE`.
+Ritmo: 1991 roda a 0,5 min de jogo por segundo (07h→19h em 24 min; constante `RATE_ANO` no shell). 1994 abre às 11h30, roda a 0,5 (o caruru, 12h→18h, dura cerca de 12 min) e o relógio fica parado às 18h enquanto faltarem as 6 anotações: ninguém sai do quintal e o dia não acaba. As taxas estão no shell (`RATE_ANO`); o build só lê `window.MUNDO_RATE`.
 
 Dias: o shell conta os dias da fase em `localStorage` (`balcao_dia`, mostrado no chip e no relógio de cada ambiente). Em 1991, às 19:00 o shell encerra o dia. Com a meta da fase cumprida, o jogo segue para a próxima. Sem ela, "Recomeçar o dia" volta para a manhã e mantém as anotações.
 
@@ -44,4 +44,14 @@ Quintal em 1994: conversa igual à da rua (Cumprimentar · Perguntar · Ficar ou
 - Entrada rápida: a Lia abre 1994 na rua, ao lado do arco da padaria, às 11h30. A padaria, a rua e o sobrado ficam abertos antes do caruru.
 - Todo texto de 1994 é proposta; o que toca política, história ou ritual vem marcado `revisar` e passa por leitura cultural e histórica antes de valer como final.
 
-Testes: `node tests/<suite>.js` com `suite`, `casa_suite`, `rua_suite`, `social_suite`, `mundo_suite`, `quintal_suite`, `lia_atende`, `vizinhanca`, `sacola` e `ano94`. Todas rodam sem falhas e de forma reprodutível.
+Investigação de 1991 (as 29 pistas). Em 1991 o relógio andava a 1,5 min de jogo por segundo, então a janela de cada pessoa durava segundos reais, e as comportas escondidas (vivência, confiança) faziam o jogador parar em 12 pistas. O que mudou:
+- Ritmo: 0,5 (24 min no dia). As pessoas e o horário seguem os mesmos.
+- Caminhos alternativos: cada comporta aceita mais de uma origem (ver a cena, ouvir a conversa, ler o quadro de avisos, ouvir de outra pessoa, ter perguntado antes outro assunto, ou um primeiro nível de confiança). Lista em `RD.gates` (`quando`). Cícera ganhou uma segunda janela no varal às 14h30.
+- Confiança: sobe só com assunto novo (+0,06; +0,03 se o assunto tinha comporta), por ajudar a mesa de dominó (+0,08) e por conversas relevantes; repetir a pergunta devolve uma fala de repetição (`RD.repete`) e não rende nada. "Ficar ouvindo" rende só nas três primeiras vezes por pessoa.
+- Retorno ao jogador: assunto bloqueado mostra um pensamento da Lia (`RD.dicasTopico`), assunto esgotado leva ` ✓`, assunto com resposta ainda não ouvida leva ` · tem mais`, e uma vivência nova vira um aviso curto "Lia · …" (`RD.vivDica`). Nunca aparecem números nem condições.
+- Testemunhas: `kp_rua_olhar` (Cícera), `kp_programa` (Raimundo), `kp_associacao` (Bela), `kp_lata` (Zé) podem ser descobertas por outra pessoa, para nenhuma central depender de uma janela só.
+- Diário (B): cada anotação mostra quem disse e a hora ("Ouvido de X · hh:mm") ou onde foi vista, e há as seções "Para entender", "Despertou curiosidade" e "Hipóteses de Lia" (`SIM.diario()`).
+- Classificação das 29 (central, complementar, exploratória) e o fio de cada uma ficam em `RD.kpMeta`. Texto político novo vem marcado `revisar`.
+- Testes: `node tests/investigacao.js [sementes] [--relatorio]` roda três perfis (explorador livre, conversador, observador) no dia inteiro com a agenda da tarde e confere que quase toda partida entende ao menos 3 dos 4 fios da história, que nenhuma fica abaixo de 2 e que nenhum perfil chega a um assunto sem dica.
+
+Testes: `node tests/<suite>.js` com `suite`, `casa_suite`, `rua_suite`, `social_suite`, `mundo_suite`, `quintal_suite`, `lia_atende`, `vizinhanca`, `sacola`, `ano94` e `investigacao`. Todas rodam sem falhas e de forma reprodutível.

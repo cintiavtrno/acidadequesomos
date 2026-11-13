@@ -24,8 +24,8 @@
       this.integrado = !!o.integrado; this.lib = {}; this.liaFora = false; this.ag = this.integrado ? RD.agendaMundo() : JSON.parse(JSON.stringify(RD.agenda));
       this.W = RD.W; this.VH = RD.VH; this.persist = o.persist || {}; this.hooks = o.hooks || {};
       this.solids = (this.scene.solids || []).filter(s => !/^(cad_|banquinho_)/.test(s.id)).map(s => ({ id: s.id, x0: s.x0, x1: s.x1, sy0: s.sy0, sy1: s.sy1 }));
-      this.trust = Object.assign({ raimundo: .34, dandara: .22, lucia: .06, ze: .2, nonato: .15, bela: .18, cicera: .2, junior: .3, tonho: .2 }, this.persist.trust || {});
-      this.kp = Object.assign({}, this.persist.kp || {}); this.viv = Object.assign({}, this.persist.viv || {}); this.vivT = {}; this.feitos = Object.assign({}, this.persist.feitos || {}); this.lia = { x: 430, y: yw(430) + 12, face: 'right', seat: null, sentada: false };
+      this.trust = Object.assign({ raimundo: .45, dandara: .22, lucia: .06, ze: .2, nonato: .15, bela: .18, cicera: .2, junior: .3, tonho: .2 }, this.persist.trust || {});
+      this.kp = Object.assign({}, this.persist.kp || {}); this.viv = Object.assign({}, this.persist.viv || {}); this.vivT = {}; this.feitos = Object.assign({}, this.persist.feitos || {}); this.dados = Object.assign({}, this.persist.dados || {}); this.ouviu = {}; this.lia = { x: 430, y: yw(430) + 12, face: 'right', seat: null, sentada: false };
       this.t = 0; this.ev = [];
       this.grade();
       this.initNav();
@@ -199,7 +199,7 @@
       P.tt += 1 / 60;
       if (P.fase === 1) { n.face = alvo.x < n.x ? 'left' : 'right'; n.setAnim('talk'); n.falar(par[1][0], 3.6); P.fase = 2; P.tt = 0; }
       else if (P.fase === 2 && P.tt > 3.8) { alvo.falar(par[1][1], 3.6); P.fase = 3; P.tt = 0; n.setAnim('idle'); }
-      else if (P.fase === 3 && P.tt > 3.8) { n.estado.papo = null; n.task = null; n.setAnim('idle'); this.bus.emit('papo', { a: n.id, b: t.com }); }
+      else if (P.fase === 3 && P.tt > 3.8) { n.estado.papo = null; n.task = null; n.setAnim('idle'); this.bus.emit('papo', { a: n.id, b: t.com }); if (!this.liaFora && Math.hypot(n.x - this.lia.x, (n.y - this.lia.y) * 1.3) < 170) { if (n.id === 'dandara') this.marcar('ouviu_reuniao'); else if (n.id === 'lucia') this.marcar('viu_medicao'); } }   // quem escuta de perto uma conversa também ficou sabendo
     }
     // ---------------- patrulha ----------------
     patrulha(n, t, dt) {
@@ -286,7 +286,8 @@
       for (const t of Object.keys(F.perguntar)) {
         if (!F.perguntar[t].some(r => !r.conf || (nv >= r.conf[0] && nv <= r.conf[1]))) continue;
         const g = G[t] || { label: t, quando: [], ask: 'Posso perguntar sobre isso?' }; if (!this.gateOk(id, t, g)) continue;
-        out.push({ id: t, label: g.label, ask: g.ask, feito: !!this.feitos[id + ':' + t] });
+        const vistos = F.perguntar[t].filter(r => (!r.conf || (nv >= r.conf[0] && nv <= r.conf[1])) && !(this.dados || {})[id + t + r.t]).length, fez = !!this.feitos[id + ':' + t];
+        out.push({ id: t, label: g.label, ask: g.ask, feito: fez && !vistos, mais: fez && vistos > 0 });
       }
       if (this.social.comentarios(id).length && nv >= 1) out.push({ id: 'comentarios', label: 'O que andam comentando', ask: 'E aí, o que andam comentando por aqui?', feito: false });
       return out;
@@ -294,32 +295,58 @@
     abrirConversa(id) {
       const n = this.npcs[id], F = RD.falas[id]; if (!n || n.state === 'Away') return null;
       const sa = this.social.saudacaoLia(id) || F.saudar[Math.floor(this.rng() * F.saudar.length)];
-      return { id, saudacao: sa, topicos: this.topicos(id).map(t => t.id), semAssunto: !this.topicos(id).length ? RD.dicaSemAssunto : null, nivel: this.nivel(id) };
+      if (!RD._v94) for (const [re, f] of (RD.saudarViv || {})[id] || []) if (re.test(sa)) this.marcar(f);   // o que a pessoa diz ao ver Lia também conta como ter ouvido ou visto
+      return { id, saudacao: sa, topicos: this.topicos(id).map(t => t.id), semAssunto: !this.topicos(id).length ? (this.pendencia(id) || RD.dicaSemAssunto) : null, dica: this.pendencia(id), nivel: this.nivel(id) };
+    }
+    escutar(id) { const n = this.ouviu[id] = (this.ouviu[id] || 0) + 1; if (n <= 3) this.trust[id] = clamp((this.trust[id] || 0) + .02, 0, 1); return this.ouvir(id); }
+    // dica de Lia (sem números) para o primeiro assunto que depende de ver ou fazer algo ainda não feito
+    pendencia(id) {
+      if (RD._v94) return null; const G = RD.gates[id] || {}, D = (RD.dicasTopico || {})[id] || {}, F = RD.falas[id]; if (!F) return null;
+      for (const t of Object.keys(F.perguntar)) { const g = G[t]; if (!g || !D[t] || this.gateOk(id, t, g)) continue; if (!F.perguntar[t].some(r => !r.conf || (this.nivel(id) >= r.conf[0] && this.nivel(id) <= r.conf[1]))) continue; return D[t]; }
+      return null;
+    }
+    diario() {
+      const meta = RD.kpMeta || {}, notas = Object.keys(RD.kp).filter(k => this.kp[k]).map(k => ({ id: k, titulo: RD.kp[k][0], texto: RD.kp[k][1], por: this.kp[k].por || null, t: this.kp[k].t, rev: !!(RD.kpRev && RD.kpRev[k]) }));
+      const cur = (RD.curiosidades || []).filter(c => this.viv[c.viv] && !this.kp[c.ate] && RD.kp[c.ate]);
+      const hip = (RD.hipoteses || []).filter(h => h.se.every(k => this.kp[k]));
+      return { notas, acontecimentos: cur.filter(c => c.tipo === 'acontecimento'), assuntos: cur.filter(c => c.tipo === 'assunto'), hipoteses: hip, total: Object.keys(RD.kp).length };
     }
     ouvir(id) { const F = RD.falas[id]; return [{ quem: id, texto: F.ouvir[Math.floor(this.rng() * F.ouvir.length)], nota: true }]; }
     perguntar(id, top) {
       const G0 = (RD.gates[id] || {})[top], ask = top === 'comentarios' ? 'E aí, o que andam comentando por aqui?' : G0 && G0.ask;
-      if (top === 'comentarios') { const o = [{ quem: 'lia', texto: ask }].concat(this.social.perguntarComentarios(id)); if (o.some(l => l.quem === 'nota' && /programa|medindo|casas/i.test(l.texto))) this.marcar('ouviu_programa'); if (o.some(l => /reunião/i.test(l.texto))) this.marcar('ouviu_reuniao'); this.trust[id] = clamp((this.trust[id] || 0) + .02, 0, 1); this.salvar(); return o; }
-      const F = RD.falas[id], lst = (F.perguntar[top] || []).filter(r => !r.conf || (this.nivel(id) >= r.conf[0] && this.nivel(id) <= r.conf[1]));
+      if (top === 'comentarios') { const o = [{ quem: 'lia', texto: ask }].concat(this.social.perguntarComentarios(id)); if (o.some(l => l.quem === 'nota' && /programa|medindo|casas/i.test(l.texto))) this.marcar('ouviu_programa'); if (o.some(l => /reunião/i.test(l.texto))) this.marcar('ouviu_reuniao'); if (this.clock.min - (this.feitos[id + ':comentarios'] || -99) > 20) this.trust[id] = clamp((this.trust[id] || 0) + .02, 0, 1); this.feitos[id + ':comentarios'] = this.clock.min; this.salvar(); return o; }
+      const F = RD.falas[id], todas = F.perguntar[top] || [], lst = todas.filter(r => !r.conf || (this.nivel(id) >= r.conf[0] && this.nivel(id) <= r.conf[1]));
       if (!lst.length) return [{ quem: id, texto: 'Hoje não, Lia.' }];
-      // prefere resposta ainda não dada
-      this.dados = this.dados || {}; let r = lst.find(x => !this.dados[id + top + x.t]) || lst[lst.length - 1]; this.dados[id + top + r.t] = 1;
+      this.dados = this.dados || {}; const r = lst.find(x => !this.dados[id + top + x.t]);
+      const G0b = (RD.gates[id] || {})[top], ctx = !!(G0b && G0b.quando && G0b.quando.length);
+      const cond = q => q.startsWith('apos:') ? !!this.feitos[q.slice(5)] : q.startsWith('nivel:') ? this.nivel(id) >= +q.slice(6) : this.tem(q);
+      // a pergunta de Lia muda conforme o que a levou ao assunto: a 1ª condição usa `ask`, a 2ª `ask2`, a 3ª `ask3`
+      const via = G0b && ctx ? G0b.quando.findIndex(cond) : -1, ask2 = via > 0 ? ([null, G0b.ask2, G0b.ask3 || G0b.ask2][via] || null) : null;
+      const pergunta = ask2 || ask;
       this.feitos[id + ':' + top] = this.clock.min; if (top === 'programa' || top === 'medir') this.marcar('ouviu_programa');
-      const out = (ask ? [{ quem: 'lia', texto: ask }] : []).concat([{ quem: id, texto: r.t, revisar: !!r.revisar }]);
-      if (r.kp) { const nv = this.ganhar(r.kp); if (nv) out.push({ quem: 'nota', texto: 'Anotado: ' + RD.kp[r.kp][0] }); }
-      this.trust[id] = clamp((this.trust[id] || 0) + .06, 0, 1); this.bus.emit('conversa', { id, top }); this.social.liaConversou(id);
+      if (!r) {   // nada novo a dizer: a repetição não rende confiança
+        const trancada = todas.some(x => x.conf && !lst.includes(x) && this.nivel(id) < x.conf[0]);
+        const fala = trancada ? ((RD.reserva[id] || {})[top] || null) : RD.repete[Math.floor(this.rng() * RD.repete.length)];
+        const out0 = (pergunta ? [{ quem: 'lia', texto: pergunta }] : []);
+        if (fala) out0.push({ quem: id, texto: fala }); else out0.push({ quem: 'nota', texto: RD.reservaGen, nota: true });
+        return out0;
+      }
+      this.dados[id + top + r.t] = 1;
+      const out = (pergunta ? [{ quem: 'lia', texto: pergunta }] : []).concat([{ quem: id, texto: r.t, revisar: !!r.revisar }]);
+      if (r.kp) { const nv = this.ganhar(r.kp, { tipo: 'fala', quem: id, conf: !!r.conf }); if (nv) out.push({ quem: 'nota', texto: 'Anotado: ' + RD.kp[r.kp][0] }); }
+      this.trust[id] = clamp((this.trust[id] || 0) + .06 + (ctx ? .03 : 0), 0, 1); this.bus.emit('conversa', { id, top }); this.social.liaConversou(id);
       if (id === 'ze' && top === 'lia_jogar') this.liaConvidada = true;
       return out;
     }
-    ganhar(id) { if (this.kp[id]) return false; this.kp[id] = { t: this.clock.min }; this.bus.emit('conhecimento', { id, kp: { titulo: RD.kp[id][0], texto: RD.kp[id][1] } }); this.salvar(); return true; }
+    ganhar(id, por) { if (this.kp[id]) return false; this.kp[id] = { t: this.clock.min }; if (por) this.kp[id].por = por; this.bus.emit('conhecimento', { id, kp: { titulo: RD.kp[id][0], texto: RD.kp[id][1] } }); this.salvar(); return true; }
     examinar(inst) {   // inst = instância da cena
       const kpMap = { mesa_domino: 'kp_obj_mesa', quadro_avisos: 'kp_obj_quadro', orelhao_1: 'kp_obj_orelhao', poste_1: 'kp_obj_poste', poste_2: 'kp_obj_poste', poste_3: 'kp_obj_poste', cavalete_pao: 'kp_obj_cavalete', bike_1: 'kp_obj_bike', lixeira_1: 'kp_obj_lixeira', lixeira_2: 'kp_obj_lixeira', obra_1: 'kp_obj_obra', caixote_1: 'kp_obj_caixote', gaiola_1: 'kp_obj_gaiola' };
       if (RD.kpObj94) Object.assign(kpMap, RD.kpObj94);
-      const k = kpMap[inst.id]; let novo = false; if (k && RD.kp[k]) novo = this.ganhar(k);
+      const k = kpMap[inst.id]; let novo = false; if (k && RD.kp[k]) novo = this.ganhar(k, { tipo: 'obj', nome: inst.nome });
       return { texto: (RD.desc94 && RD.desc94[inst.id]) || inst.desc || inst.nome, nome: inst.nome, novo, kp: k && RD.kp[k] ? RD.kp[k][0] : null };
     }
-    afagar() { this.afagarGato('lia'); this.ganhar('kp_gato') ; return '(O gato ronrona e fecha o olho de novo.)'; }
-    salvar() { if (this.hooks.save) this.hooks.save({ trust: this.trust, kp: this.kp, dia: this.persist.dia || 1, soc: this.social.exportar(), viv: this.viv, feitos: this.feitos }); }
+    afagar() { this.afagarGato('lia'); this.ganhar('kp_gato', { tipo: 'gato' }); return '(O gato ronrona e fecha o olho de novo.)'; }
+    salvar() { if (this.hooks.save) this.hooks.save({ trust: this.trust, kp: this.kp, dia: this.persist.dia || 1, soc: this.social.exportar(), viv: this.viv, feitos: this.feitos, dados: this.dados }); }
     resumo() {
       return { jogos: this.mesa.stats, placar: this.mesa.game.placar.slice(), partidas: this.mesa.game.partidas.slice(), kp: Object.keys(this.kp).length, papos: this.bus.count('papo'), portas: this.bus.count('porta') };
     }
@@ -356,7 +383,7 @@
         const L = this.lata = this.lata || { i: 0, t: 2 }; L.t -= dt;
         if (L.t <= 0) {
           const e = RD.lata[L.i++];
-          if (!e) { this.lataFeita = true; if (RD.ordem.some(s => this.ocupante(s) === 'lia')) this.w.ganhar('kp_lata'); }
+          if (!e) { this.lataFeita = true; if (RD.ordem.some(s => this.ocupante(s) === 'lia')) this.w.ganhar('kp_lata', { tipo: 'mesa' }); }
           else { const s = RD.ordem.find(q => this.ocupante(q) === e[0]); if (s) { this.falaSeat(s, e[1], 3.6); L.t = 3.9; } }
         }
         return;
@@ -420,7 +447,7 @@
         fase: this.fase, nomes: Object.fromEntries(RD.ordem.map(s => { const o = this.ocupante(s); return [s, o ? (o === 'lia' ? 'Lia' : RD.pessoas[o].curto) : '—']; })), ultima: this.ultimaBatida };
     }
     // Lia ocupa uma cadeira vaga (com a mão do ocupante anterior)
-    liaSenta(s) { const A = this.w.assentos[s]; if (A.ocup) return false; if (this.lataFeita && !this.w.kp.kp_lata) { this.lataFeita = false; this.lata = null; } const outros = RD.ordem.map(q => this.w.assentos[q].ocup).filter(x => x && x !== 'lia'); const faltava = this.fase === 'pausado' || outros.length < 3; A.ocup = 'lia'; this.w.lia.seat = s; if (faltava && outros.length) this.w.social.liaAjudouMesa(outros); return true; }
+    liaSenta(s) { const A = this.w.assentos[s]; if (A.ocup) return false; if (this.lataFeita && !this.w.kp.kp_lata) { this.lataFeita = false; this.lata = null; } const outros = RD.ordem.map(q => this.w.assentos[q].ocup).filter(x => x && x !== 'lia'); const faltava = this.fase === 'pausado' || outros.length < 3; A.ocup = 'lia'; this.w.lia.seat = s; if (faltava && outros.length) { this.w.social.liaAjudouMesa(outros); for (const o of outros) this.w.trust[o] = Math.min(1, (this.w.trust[o] || 0) + .08); } return true; }
     liaLevanta() { const s = this.w.lia.seat; if (!s) return; const A = this.w.assentos[s]; A.ocup = null; this.w.lia.seat = null; this.w.lia.sentada = false; if (this.pensando && this.pensando.liaEsperando) this.pensando = null; }
     minhaMao() { const s = this.w.lia.seat; return s ? this.game.maos[s] : null; }
     legaisLia() { const s = this.w.lia.seat; return s ? this.game.legais(s) : []; }
