@@ -6,8 +6,8 @@
   "ay": 24,
   "frames": [
    [
-    590,
-    2
+    384,
+    200
    ]
   ],
   "nome": "mesa de dominó",
@@ -38,7 +38,7 @@
   "ay": 28,
   "frames": [
    [
-    340,
+    528,
     2
    ]
   ],
@@ -64,7 +64,7 @@
   "ay": 28,
   "frames": [
    [
-    368,
+    556,
     2
    ]
   ],
@@ -90,7 +90,7 @@
   "ay": 28,
   "frames": [
    [
-    396,
+    584,
     2
    ]
   ],
@@ -116,7 +116,7 @@
   "ay": 20,
   "frames": [
    [
-    86,
+    510,
     200
    ]
   ],
@@ -137,8 +137,8 @@
   "ay": 27,
   "frames": [
    [
-    420,
-    2
+    78,
+    200
    ]
   ],
   "nome": "cadeira de fio",
@@ -163,7 +163,7 @@
   "ay": 16,
   "frames": [
    [
-    138,
+    562,
     200
    ]
   ],
@@ -221,7 +221,7 @@
   "ay": 46,
   "frames": [
    [
-    162,
+    206,
     2
    ]
   ],
@@ -253,7 +253,7 @@
   "ay": 44,
   "frames": [
    [
-    248,
+    384,
     2
    ]
   ],
@@ -285,8 +285,8 @@
   "ay": 28,
   "frames": [
    [
-    444,
-    2
+    102,
+    200
    ]
   ],
   "nome": "plantas em latas",
@@ -381,7 +381,7 @@
   "ay": 42,
   "frames": [
    [
-    272,
+    424,
     2
    ]
   ],
@@ -413,8 +413,8 @@
   "ay": 26,
   "frames": [
    [
-    518,
-    2
+    214,
+    200
    ]
   ],
   "nome": "lixeira de tela",
@@ -445,8 +445,8 @@
   "ay": 25,
   "frames": [
    [
-    536,
-    2
+    232,
+    200
    ]
   ],
   "nome": "banco de madeira",
@@ -476,7 +476,7 @@
   "ay": 24,
   "frames": [
    [
-    2,
+    426,
     200
    ]
   ],
@@ -508,7 +508,7 @@
   "ay": 38,
   "frames": [
    [
-    298,
+    450,
     2
    ]
   ],
@@ -540,7 +540,7 @@
   "ay": 18,
   "frames": [
    [
-    110,
+    534,
     200
    ]
   ],
@@ -572,7 +572,7 @@
   "ay": 24,
   "frames": [
    [
-    44,
+    468,
     200
    ]
   ],
@@ -604,8 +604,8 @@
   "ay": 28,
   "frames": [
    [
-    482,
-    2
+    140,
+    200
    ]
   ],
   "nome": "quadro de avisos",
@@ -633,12 +633,12 @@
   "ay": 12,
   "frames": [
    [
-    156,
-    200
+    38,
+    234
    ],
    [
-    176,
-    200
+    58,
+    234
    ]
   ],
   "nome": "gato",
@@ -664,16 +664,16 @@
   "ay": 10,
   "frames": [
    [
-    196,
-    200
+    78,
+    234
    ],
    [
-    210,
-    200
+    92,
+    234
    ],
    [
-    224,
-    200
+    106,
+    234
    ]
   ],
   "nome": "pombo",
@@ -683,6 +683,409 @@
    0.3,
    0.25,
    0.15
+  ],
+  "collide": null
+ },
+ "tripe_cam_d": {
+  "w": 44,
+  "h": 48,
+  "ax": 22,
+  "ay": 46,
+  "frames": [
+   [
+    292,
+    2
+   ]
+  ],
+  "nome": "câmera em tripé (lente para a direita)",
+  "tipo": "examinar",
+  "classe": "DECORATIVO",
+  "size_m": [
+   0.9,
+   1.9,
+   0.9
+  ],
+  "collide": [
+   -3,
+   -3,
+   3,
+   2
+  ],
+  "stand": [
+   0,
+   13
+  ],
+  "zoom": 2,
+  "desc": "Câmera profissional de vídeo sobre um tripé alto de alumínio. O cabo desce pelo chão em direção ao monitor da produção."
+ },
+ "tripe_cam_e": {
+  "w": 44,
+  "h": 48,
+  "ax": 22,
+  "ay": 46,
+  "frames": [
+   [
+    338,
+    2
+   ]
+  ],
+  "nome": "câmera em tripé (lente para a esquerda)",
+  "tipo": "examinar",
+  "classe": "DECORATIVO",
+  "size_m": [
+   0.9,
+   1.9,
+   0.9
+  ],
+  "collide": [
+   -3,
+   -3,
+   3,
+   2
+  ],
+  "stand": [
+   0,
+   13
+  ],
+  "zoom": 2,
+  "desc": "Câmera profissional de vídeo sobre tripé, virada para o palco. O cabo segue pela sarjeta até a base de produção."
+ },
+ "monitor_case": {
+  "w": 34,
+  "h": 36,
+  "ax": 17,
+  "ay": 34,
+  "frames": [
+   [
+    492,
+    2
+   ]
+  ],
+  "nome": "monitor de referência sobre case",
+  "tipo": "examinar",
+  "classe": "UTILIZÁVEL",
+  "size_m": [
+   0.9,
+   1.2,
+   0.6
+  ],
+  "collide": [
+   -13,
+   -3,
+   13,
+   2
+  ],
+  "stand": [
+   0,
+   13
+  ],
+  "zoom": 3,
+  "desc": "Monitor de tubo apoiado num case de transporte, ligado por cabo à câmera. Mostra em preto e branco o que a câmera enquadra."
+ },
+ "case_pilha": {
+  "w": 32,
+  "h": 32,
+  "ax": 16,
+  "ay": 30,
+  "frames": [
+   [
+    2,
+    200
+   ]
+  ],
+  "nome": "cases de equipamento",
+  "tipo": "examinar",
+  "classe": "DECORATIVO",
+  "size_m": [
+   1.1,
+   1.1,
+   0.6
+  ],
+  "collide": [
+   -13,
+   -3,
+   13,
+   2
+  ],
+  "stand": [
+   0,
+   13
+  ],
+  "zoom": 3,
+  "desc": "Cases rígidos de transporte, empilhados junto à parede, com as cantoneiras de alumínio e etiquetas de rotas de turnê."
+ },
+ "case_camera": {
+  "w": 36,
+  "h": 30,
+  "ax": 18,
+  "ay": 28,
+  "frames": [
+   [
+    176,
+    200
+   ]
+  ],
+  "nome": "câmera de ombro sobre case",
+  "tipo": "examinar",
+  "classe": "DECORATIVO",
+  "size_m": [
+   1.2,
+   0.9,
+   0.6
+  ],
+  "collide": [
+   -14,
+   -3,
+   14,
+   2
+  ],
+  "stand": [
+   0,
+   13
+  ],
+  "zoom": 3,
+  "desc": "Uma câmera de ombro de reserva, deitada sobre um case aberto, com a bateria encaixada e a alça solta."
+ },
+ "cad_dobravel_d": {
+  "w": 20,
+  "h": 28,
+  "ax": 10,
+  "ay": 26,
+  "frames": [
+   [
+    286,
+    200
+   ]
+  ],
+  "nome": "cadeira dobrável (frente para a direita)",
+  "tipo": "nenhum",
+  "classe": "UTILIZÁVEL",
+  "size_m": [
+   0.5,
+   1.0,
+   0.5
+  ],
+  "collide": [
+   -6,
+   -3,
+   6,
+   2
+  ]
+ },
+ "cad_dobravel_e": {
+  "w": 20,
+  "h": 28,
+  "ax": 10,
+  "ay": 26,
+  "frames": [
+   [
+    308,
+    200
+   ]
+  ],
+  "nome": "cadeira dobrável (frente para a esquerda)",
+  "tipo": "nenhum",
+  "classe": "UTILIZÁVEL",
+  "size_m": [
+   0.5,
+   1.0,
+   0.5
+  ],
+  "collide": [
+   -6,
+   -3,
+   6,
+   2
+  ]
+ },
+ "mic_pedestal": {
+  "w": 14,
+  "h": 46,
+  "ax": 7,
+  "ay": 44,
+  "frames": [
+   [
+    408,
+    2
+   ]
+  ],
+  "nome": "microfone em pedestal",
+  "tipo": "examinar",
+  "classe": "DECORATIVO",
+  "size_m": [
+   0.4,
+   1.8,
+   0.4
+  ],
+  "collide": [
+   -2,
+   -2,
+   2,
+   1
+  ],
+  "stand": [
+   0,
+   13
+  ],
+  "zoom": 3,
+  "desc": "Pedestal de microfone com tripé de base, apontado para o grupo. O cabo corre pela sarjeta."
+ },
+ "mic_boom": {
+  "w": 42,
+  "h": 54,
+  "ax": 12,
+  "ay": 52,
+  "frames": [
+   [
+    162,
+    2
+   ]
+  ],
+  "nome": "microfone em girafa",
+  "tipo": "examinar",
+  "classe": "DECORATIVO",
+  "size_m": [
+   1.4,
+   2.1,
+   0.5
+  ],
+  "collide": [
+   -3,
+   -2,
+   3,
+   1
+  ],
+  "stand": [
+   0,
+   13
+  ],
+  "zoom": 3,
+  "desc": "Girafa de microfone com protetor de pelo, estendida por cima do grupo para captar os tambores."
+ },
+ "barreira": {
+  "w": 52,
+  "h": 28,
+  "ax": 26,
+  "ay": 26,
+  "frames": [
+   [
+    330,
+    200
+   ]
+  ],
+  "nome": "barreira de organização do público",
+  "tipo": "examinar",
+  "classe": "DECORATIVO",
+  "size_m": [
+   2.0,
+   1.1,
+   0.5
+  ],
+  "collide": [
+   -24,
+   -2,
+   24,
+   1
+  ],
+  "stand": [
+   0,
+   13
+  ],
+  "zoom": 2,
+  "desc": "Grade metálica de contenção, com pés em T. Marca o limite entre o público e a área de gravação, com passagem aberta."
+ },
+ "cabo_seg": {
+  "w": 100,
+  "h": 6,
+  "ax": 50,
+  "ay": 3,
+  "frames": [
+   [
+    120,
+    234
+   ]
+  ],
+  "nome": "cabo de produção",
+  "tipo": "nenhum",
+  "classe": "DECORATIVO",
+  "size_m": [
+   4.2,
+   0.05,
+   0.05
+  ],
+  "collide": null
+ },
+ "cabo_desce": {
+  "w": 34,
+  "h": 18,
+  "ax": 4,
+  "ay": 16,
+  "frames": [
+   [
+    580,
+    200
+   ]
+  ],
+  "nome": "cabo com protetor de passagem",
+  "tipo": "nenhum",
+  "classe": "DECORATIVO",
+  "size_m": [
+   1.4,
+   0.7,
+   0.2
+  ],
+  "collide": null
+ },
+ "banca_tabuleiro": {
+  "w": 40,
+  "h": 32,
+  "ax": 20,
+  "ay": 30,
+  "frames": [
+   [
+    36,
+    200
+   ]
+  ],
+  "nome": "banca de vendedor com tabuleiro",
+  "tipo": "examinar",
+  "classe": "UTILIZÁVEL",
+  "size_m": [
+   1.3,
+   1.0,
+   0.7
+  ],
+  "collide": [
+   -15,
+   -3,
+   15,
+   2
+  ],
+  "stand": [
+   0,
+   13
+  ],
+  "zoom": 3,
+  "desc": "Tabuleiro de madeira forrado de pano sobre cavaletes, com cocadas e doces embalados em papel. Um guarda-sol pequeno protege do sol da tarde."
+ },
+ "cabo_desce_e": {
+  "w": 34,
+  "h": 18,
+  "ax": 29,
+  "ay": 16,
+  "frames": [
+   [
+    2,
+    234
+   ]
+  ],
+  "nome": "cabo com protetor de passagem (espelhado)",
+  "tipo": "nenhum",
+  "classe": "DECORATIVO",
+  "size_m": [
+   1.4,
+   0.7,
+   0.2
   ],
   "collide": null
  }

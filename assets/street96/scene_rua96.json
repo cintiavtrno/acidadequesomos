@@ -10,9 +10,966 @@
   "top": 8,
   "bot": 267
  },
- "inst": [],
- "solids": [],
+ "inst": [
+  {
+   "id": "poste_1",
+   "sprite": "poste",
+   "x": 168,
+   "sy": 24,
+   "nome": "poste de concreto",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -3,
+    -3,
+    3,
+    2
+   ],
+   "stand": [
+    0,
+    14
+   ],
+   "zoom": 1,
+   "desc": "Poste de concreto com transformador e fios que seguem para as casas. Já foi usado como quadro de avisos por toda a vizinhança.",
+   "layer": "sorted"
+  },
+  {
+   "id": "poste_2",
+   "sprite": "poste",
+   "x": 678,
+   "sy": 24,
+   "nome": "poste de concreto",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -3,
+    -3,
+    3,
+    2
+   ],
+   "stand": [
+    0,
+    14
+   ],
+   "zoom": 1,
+   "desc": "Poste de concreto com transformador e fios que seguem para as casas. Já foi usado como quadro de avisos por toda a vizinhança.",
+   "layer": "sorted"
+  },
+  {
+   "id": "poste_3",
+   "sprite": "poste",
+   "x": 1166,
+   "sy": 24,
+   "nome": "poste de concreto",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -3,
+    -3,
+    3,
+    2
+   ],
+   "stand": [
+    0,
+    14
+   ],
+   "zoom": 1,
+   "desc": "Poste de concreto com transformador e fios que seguem para as casas. Já foi usado como quadro de avisos por toda a vizinhança.",
+   "layer": "sorted"
+  },
+  {
+   "id": "orelhao_1",
+   "sprite": "orelhao",
+   "x": 412,
+   "sy": 12,
+   "nome": "orelhão",
+   "tipo": "examinar",
+   "classe": "UTILIZÁVEL",
+   "collide": [
+    -4,
+    -3,
+    4,
+    2
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 3,
+   "desc": "Orelhão de fibra azul, daqueles de ficha. Alguém rabiscou um número de telefone na cúpula.",
+   "layer": "sorted"
+  },
+  {
+   "id": "lixeira_1",
+   "sprite": "lixeira",
+   "x": 612,
+   "sy": 19,
+   "nome": "lixeira de tela",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -4,
+    -3,
+    4,
+    2
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 3,
+   "desc": "Cesto de tela de aço preso num pé de ferro. Sacos de pão vazios, copo de café, papel de bala.",
+   "layer": "sorted"
+  },
+  {
+   "id": "lixeira_2",
+   "sprite": "lixeira",
+   "x": 1334,
+   "sy": 19,
+   "nome": "lixeira de tela",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -4,
+    -3,
+    4,
+    2
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 3,
+   "desc": "Cesto de tela de aço preso num pé de ferro. Sacos de pão vazios, copo de café, papel de bala.",
+   "layer": "sorted"
+  },
+  {
+   "id": "banco_1",
+   "sprite": "banco",
+   "x": 72,
+   "sy": 14,
+   "nome": "banco de madeira",
+   "tipo": "nenhum",
+   "classe": "UTILIZÁVEL",
+   "collide": [
+    -23,
+    -3,
+    23,
+    2
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "desc": "Banco de ripas sobre pés de concreto, de frente para a rua.",
+   "layer": "sorted"
+  },
+  {
+   "id": "cad_calcada_1",
+   "sprite": "cad_calcada",
+   "x": 1470,
+   "sy": 10,
+   "nome": "cadeira de fio",
+   "tipo": "nenhum",
+   "classe": "UTILIZÁVEL",
+   "collide": [
+    -7,
+    -3,
+    7,
+    3
+   ],
+   "layer": "sorted"
+  },
+  {
+   "id": "gato_1",
+   "sprite": "gato",
+   "x": 150,
+   "sy": 10,
+   "anim": "gato",
+   "nome": "gato",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": null,
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 3,
+   "desc": "Gato malhado dormindo no calor da pedra. Abre um olho quando você passa.",
+   "layer": "sorted"
+  },
+  {
+   "id": "cavalete_pao",
+   "sprite": "cavalete_pao",
+   "x": 556,
+   "sy": 14,
+   "nome": "cavalete da padaria",
+   "tipo": "examinar",
+   "classe": "UTILIZÁVEL",
+   "collide": [
+    -12,
+    -3,
+    12,
+    2
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 3,
+   "desc": "Cavalete de lousa na porta da padaria. A letra é da Vó; o preço é do dia.",
+   "layer": "sorted"
+  },
+  {
+   "id": "vaso_palmeira_1",
+   "sprite": "vaso_palmeira",
+   "x": 12,
+   "sy": 13,
+   "nome": "palmeira-ráfia em vaso",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -6,
+    -3,
+    6,
+    2
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 2,
+   "desc": "Palmeira-ráfia num vaso de cimento. Vive à sombra da varanda e nunca morreu, o que é quase um milagre.",
+   "layer": "sorted"
+  },
+  {
+   "id": "vaso_latas_1",
+   "sprite": "vaso_latas",
+   "x": 1308,
+   "sy": 13,
+   "nome": "plantas em latas",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -14,
+    -3,
+    14,
+    2
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 3,
+   "desc": "Latas de tinta e de óleo servindo de vaso: samambaia, pimenta, manjericão. Cada uma com o resto da cor que já foi parede.",
+   "layer": "sorted"
+  },
+  {
+   "id": "vaso_espada_1",
+   "sprite": "vaso_espada",
+   "x": 1402,
+   "sy": 14,
+   "nome": "vaso de espada-de-são-jorge",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -5,
+    -3,
+    5,
+    2
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 3,
+   "desc": "Espada-de-são-jorge num vaso de barro grande, ao lado da porta. Quase toda casa daqui tem uma.",
+   "layer": "sorted"
+  },
+  {
+   "id": "caixote_1",
+   "sprite": "caixote_laranja",
+   "x": 384,
+   "sy": 16,
+   "nome": "caixote de laranjas",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -9,
+    -2,
+    9,
+    2
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 3,
+   "desc": "Caixote de feira com laranjas-bahia que o menino da banca deixou. Ninguém mexe.",
+   "layer": "sorted"
+  },
+  {
+   "id": "banca_1",
+   "sprite": "banca_tabuleiro",
+   "x": 344,
+   "sy": 14,
+   "nome": "banca de vendedor com tabuleiro",
+   "tipo": "examinar",
+   "classe": "UTILIZÁVEL",
+   "collide": [
+    -15,
+    -3,
+    15,
+    2
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 3,
+   "desc": "Tabuleiro de madeira forrado de pano sobre cavaletes, com cocadas e doces embalados em papel. Um guarda-sol pequeno protege do sol da tarde.",
+   "layer": "sorted"
+  },
+  {
+   "id": "mesa_domino",
+   "sprite": "mesa_domino",
+   "x": 278,
+   "sy": 15,
+   "nome": "mesa de dominó",
+   "tipo": "examinar",
+   "classe": "UTILIZÁVEL",
+   "stand": [
+    0,
+    14
+   ],
+   "collide": [
+    -14,
+    -4,
+    14,
+    4
+   ],
+   "zoom": 2,
+   "desc": "Mesa quadrada de madeira, pintada de verde há muito tempo; o tampo tem as marcas de cada partida. Garrafa térmica de café e copinhos num canto.",
+   "layer": "sorted"
+  },
+  {
+   "id": "cad_dom_E",
+   "sprite": "cad_dir",
+   "x": 252,
+   "sy": 15,
+   "nome": "cadeira (frente para a direita)",
+   "tipo": "nenhum",
+   "classe": "UTILIZÁVEL",
+   "collide": [
+    -8,
+    -3,
+    8,
+    3
+   ],
+   "layer": "sorted"
+  },
+  {
+   "id": "cad_dom_D",
+   "sprite": "cad_esq",
+   "x": 306,
+   "sy": 15,
+   "nome": "cadeira (frente para a esquerda)",
+   "tipo": "nenhum",
+   "classe": "UTILIZÁVEL",
+   "collide": [
+    -8,
+    -3,
+    8,
+    3
+   ],
+   "layer": "sorted"
+  },
+  {
+   "id": "cad_dom_F",
+   "sprite": "cad_fundo",
+   "x": 278,
+   "sy": 8,
+   "nome": "cadeira (de frente para a câmera)",
+   "tipo": "nenhum",
+   "classe": "UTILIZÁVEL",
+   "collide": [
+    -7,
+    -3,
+    7,
+    3
+   ],
+   "layer": "sorted"
+  },
+  {
+   "id": "cad_dom_T",
+   "sprite": "cad_fundo",
+   "x": 278,
+   "sy": 22,
+   "nome": "cadeira (de frente para a câmera)",
+   "tipo": "nenhum",
+   "classe": "UTILIZÁVEL",
+   "collide": [
+    -7,
+    -3,
+    7,
+    3
+   ],
+   "layer": "sorted"
+  },
+  {
+   "id": "cad_dom_T_enc",
+   "sprite": "cad_costas",
+   "x": 278,
+   "sy": 22,
+   "layer": "over",
+   "nome": "encosto (cadeira de costas para a câmera)",
+   "tipo": "nenhum",
+   "classe": "UTILIZÁVEL"
+  },
+  {
+   "id": "quadro_avisos",
+   "sprite": "quadro_avisos",
+   "x": 759,
+   "sy": 0,
+   "layer": "wall",
+   "nome": "quadro de avisos",
+   "tipo": "examinar",
+   "classe": "EXAMINÁVEL",
+   "collide": null,
+   "stand": [
+    0,
+    14
+   ],
+   "zoom": 3,
+   "desc": "Quadro de cortiça da associação: reunião de moradores, rifa de uma geladeira, aviso sobre a água, anúncio de aluguel de cômodo."
+  },
+  {
+   "id": "cam_A",
+   "sprite": "tripe_cam_d",
+   "x": 702,
+   "sy": 40,
+   "nome": "câmera em tripé (lente para a direita)",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -3,
+    -3,
+    3,
+    2
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 2,
+   "desc": "Câmera profissional de vídeo sobre um tripé alto de alumínio. O cabo desce pelo chão em direção ao monitor da produção.",
+   "layer": "sorted"
+  },
+  {
+   "id": "cam_B",
+   "sprite": "tripe_cam_e",
+   "x": 1144,
+   "sy": 40,
+   "nome": "câmera em tripé (lente para a esquerda)",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -3,
+    -3,
+    3,
+    2
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 2,
+   "desc": "Câmera profissional de vídeo sobre tripé, virada para o palco. O cabo segue pela sarjeta até a base de produção.",
+   "layer": "sorted"
+  },
+  {
+   "id": "mic_boom_1",
+   "sprite": "mic_boom",
+   "x": 800,
+   "sy": 26,
+   "nome": "microfone em girafa",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -3,
+    -2,
+    3,
+    1
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 3,
+   "desc": "Girafa de microfone com protetor de pelo, estendida por cima do grupo para captar os tambores.",
+   "layer": "sorted"
+  },
+  {
+   "id": "mic_ped_1",
+   "sprite": "mic_pedestal",
+   "x": 990,
+   "sy": 26,
+   "nome": "microfone em pedestal",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -2,
+    -2,
+    2,
+    1
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 3,
+   "desc": "Pedestal de microfone com tripé de base, apontado para o grupo. O cabo corre pela sarjeta.",
+   "layer": "sorted"
+  },
+  {
+   "id": "base_cad_d",
+   "sprite": "cad_dobravel_d",
+   "x": 834,
+   "sy": 13,
+   "nome": "cadeira dobrável (frente para a direita)",
+   "tipo": "nenhum",
+   "classe": "UTILIZÁVEL",
+   "collide": [
+    -6,
+    -3,
+    6,
+    2
+   ],
+   "layer": "sorted"
+  },
+  {
+   "id": "base_monitor",
+   "sprite": "monitor_case",
+   "x": 872,
+   "sy": 12,
+   "nome": "monitor de referência sobre case",
+   "tipo": "examinar",
+   "classe": "UTILIZÁVEL",
+   "collide": [
+    -13,
+    -3,
+    13,
+    2
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 3,
+   "desc": "Monitor de tubo apoiado num case de transporte, ligado por cabo à câmera. Mostra em preto e branco o que a câmera enquadra.",
+   "layer": "sorted"
+  },
+  {
+   "id": "base_cad_e",
+   "sprite": "cad_dobravel_e",
+   "x": 906,
+   "sy": 13,
+   "nome": "cadeira dobrável (frente para a esquerda)",
+   "tipo": "nenhum",
+   "classe": "UTILIZÁVEL",
+   "collide": [
+    -6,
+    -3,
+    6,
+    2
+   ],
+   "layer": "sorted"
+  },
+  {
+   "id": "cases_B1",
+   "sprite": "case_pilha",
+   "x": 1200,
+   "sy": 14,
+   "nome": "cases de equipamento",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -13,
+    -3,
+    13,
+    2
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 3,
+   "desc": "Cases rígidos de transporte, empilhados junto à parede, com as cantoneiras de alumínio e etiquetas de rotas de turnê.",
+   "layer": "sorted"
+  },
+  {
+   "id": "cases_B2",
+   "sprite": "case_camera",
+   "x": 1234,
+   "sy": 14,
+   "nome": "câmera de ombro sobre case",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -14,
+    -3,
+    14,
+    2
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 3,
+   "desc": "Uma câmera de ombro de reserva, deitada sobre um case aberto, com a bateria encaixada e a alça solta.",
+   "layer": "sorted"
+  },
+  {
+   "id": "barr_A1",
+   "sprite": "barreira",
+   "x": 746,
+   "sy": 20,
+   "nome": "barreira de organização do público",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -24,
+    -2,
+    24,
+    1
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 2,
+   "desc": "Grade metálica de contenção, com pés em T. Marca o limite entre o público e a área de gravação, com passagem aberta.",
+   "layer": "sorted"
+  },
+  {
+   "id": "barr_B1",
+   "sprite": "barreira",
+   "x": 1104,
+   "sy": 20,
+   "nome": "barreira de organização do público",
+   "tipo": "examinar",
+   "classe": "DECORATIVO",
+   "collide": [
+    -24,
+    -2,
+    24,
+    1
+   ],
+   "stand": [
+    0,
+    13
+   ],
+   "zoom": 2,
+   "desc": "Grade metálica de contenção, com pés em T. Marca o limite entre o público e a área de gravação, com passagem aberta.",
+   "layer": "sorted"
+  },
+  {
+   "id": "cabo_E0",
+   "sprite": "cabo_desce",
+   "x": 886,
+   "sy": 28,
+   "nome": "cabo com protetor de passagem",
+   "tipo": "nenhum",
+   "classe": "DECORATIVO",
+   "collide": null,
+   "layer": "sorted"
+  },
+  {
+   "id": "cabo_E1",
+   "sprite": "cabo_seg",
+   "x": 965,
+   "sy": 27,
+   "nome": "cabo de produção",
+   "tipo": "nenhum",
+   "classe": "DECORATIVO",
+   "collide": null,
+   "layer": "sorted"
+  },
+  {
+   "id": "cabo_E2",
+   "sprite": "cabo_seg",
+   "x": 1065,
+   "sy": 27,
+   "nome": "cabo de produção",
+   "tipo": "nenhum",
+   "classe": "DECORATIVO",
+   "collide": null,
+   "layer": "sorted"
+  },
+  {
+   "id": "cabo_E3",
+   "sprite": "cabo_desce",
+   "x": 1115,
+   "sy": 41,
+   "nome": "cabo com protetor de passagem",
+   "tipo": "nenhum",
+   "classe": "DECORATIVO",
+   "collide": null,
+   "layer": "sorted"
+  },
+  {
+   "id": "cabo_O0",
+   "sprite": "cabo_desce_e",
+   "x": 860,
+   "sy": 28,
+   "nome": "cabo com protetor de passagem (espelhado)",
+   "tipo": "nenhum",
+   "classe": "DECORATIVO",
+   "collide": null,
+   "layer": "sorted"
+  },
+  {
+   "id": "cabo_O1",
+   "sprite": "cabo_seg",
+   "x": 781,
+   "sy": 27,
+   "nome": "cabo de produção",
+   "tipo": "nenhum",
+   "classe": "DECORATIVO",
+   "collide": null,
+   "layer": "sorted"
+  },
+  {
+   "id": "cabo_O3",
+   "sprite": "cabo_desce_e",
+   "x": 731,
+   "sy": 41,
+   "nome": "cabo com protetor de passagem (espelhado)",
+   "tipo": "nenhum",
+   "classe": "DECORATIVO",
+   "collide": null,
+   "layer": "sorted"
+  }
+ ],
+ "solids": [
+  {
+   "id": "poste_1",
+   "x0": 165,
+   "x1": 171,
+   "sy0": 21,
+   "sy1": 26
+  },
+  {
+   "id": "poste_2",
+   "x0": 675,
+   "x1": 681,
+   "sy0": 21,
+   "sy1": 26
+  },
+  {
+   "id": "poste_3",
+   "x0": 1163,
+   "x1": 1169,
+   "sy0": 21,
+   "sy1": 26
+  },
+  {
+   "id": "orelhao_1",
+   "x0": 408,
+   "x1": 416,
+   "sy0": 9,
+   "sy1": 14
+  },
+  {
+   "id": "lixeira_1",
+   "x0": 608,
+   "x1": 616,
+   "sy0": 16,
+   "sy1": 21
+  },
+  {
+   "id": "lixeira_2",
+   "x0": 1330,
+   "x1": 1338,
+   "sy0": 16,
+   "sy1": 21
+  },
+  {
+   "id": "banco_1",
+   "x0": 49,
+   "x1": 95,
+   "sy0": 11,
+   "sy1": 16
+  },
+  {
+   "id": "cad_calcada_1",
+   "x0": 1463,
+   "x1": 1477,
+   "sy0": 7,
+   "sy1": 13
+  },
+  {
+   "id": "cavalete_pao",
+   "x0": 544,
+   "x1": 568,
+   "sy0": 11,
+   "sy1": 16
+  },
+  {
+   "id": "vaso_palmeira_1",
+   "x0": 6,
+   "x1": 18,
+   "sy0": 10,
+   "sy1": 15
+  },
+  {
+   "id": "vaso_latas_1",
+   "x0": 1294,
+   "x1": 1322,
+   "sy0": 10,
+   "sy1": 15
+  },
+  {
+   "id": "vaso_espada_1",
+   "x0": 1397,
+   "x1": 1407,
+   "sy0": 11,
+   "sy1": 16
+  },
+  {
+   "id": "caixote_1",
+   "x0": 375,
+   "x1": 393,
+   "sy0": 14,
+   "sy1": 18
+  },
+  {
+   "id": "banca_1",
+   "x0": 329,
+   "x1": 359,
+   "sy0": 11,
+   "sy1": 16
+  },
+  {
+   "id": "mesa_domino",
+   "x0": 264,
+   "x1": 292,
+   "sy0": 11,
+   "sy1": 19
+  },
+  {
+   "id": "cad_dom_E",
+   "x0": 244,
+   "x1": 260,
+   "sy0": 12,
+   "sy1": 18
+  },
+  {
+   "id": "cad_dom_D",
+   "x0": 298,
+   "x1": 314,
+   "sy0": 12,
+   "sy1": 18
+  },
+  {
+   "id": "cad_dom_F",
+   "x0": 271,
+   "x1": 285,
+   "sy0": 5,
+   "sy1": 11
+  },
+  {
+   "id": "cad_dom_T",
+   "x0": 271,
+   "x1": 285,
+   "sy0": 19,
+   "sy1": 25
+  },
+  {
+   "id": "cam_A",
+   "x0": 699,
+   "x1": 705,
+   "sy0": 37,
+   "sy1": 42
+  },
+  {
+   "id": "cam_B",
+   "x0": 1141,
+   "x1": 1147,
+   "sy0": 37,
+   "sy1": 42
+  },
+  {
+   "id": "mic_boom_1",
+   "x0": 797,
+   "x1": 803,
+   "sy0": 24,
+   "sy1": 27
+  },
+  {
+   "id": "mic_ped_1",
+   "x0": 988,
+   "x1": 992,
+   "sy0": 24,
+   "sy1": 27
+  },
+  {
+   "id": "base_cad_d",
+   "x0": 828,
+   "x1": 840,
+   "sy0": 10,
+   "sy1": 15
+  },
+  {
+   "id": "base_monitor",
+   "x0": 859,
+   "x1": 885,
+   "sy0": 9,
+   "sy1": 14
+  },
+  {
+   "id": "base_cad_e",
+   "x0": 900,
+   "x1": 912,
+   "sy0": 10,
+   "sy1": 15
+  },
+  {
+   "id": "cases_B1",
+   "x0": 1187,
+   "x1": 1213,
+   "sy0": 11,
+   "sy1": 16
+  },
+  {
+   "id": "cases_B2",
+   "x0": 1220,
+   "x1": 1248,
+   "sy0": 11,
+   "sy1": 16
+  },
+  {
+   "id": "barr_A1",
+   "x0": 722,
+   "x1": 770,
+   "sy0": 18,
+   "sy1": 21
+  },
+  {
+   "id": "barr_B1",
+   "x0": 1080,
+   "x1": 1128,
+   "sy0": 18,
+   "sy1": 21
+  }
+ ],
  "ano": 1996,
+ "palco": {
+  "x0": 720,
+  "x1": 1124,
+  "sy0": 28,
+  "sy1": 45
+ },
  "buildings": {
   "casa_salvia": {
    "x0": 0,
