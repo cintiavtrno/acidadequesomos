@@ -89,23 +89,23 @@ RD.agenda = {
 // ---- agenda do MUNDO INTEGRADO (Etapa 7): quem entra na padaria só sai quando a simulação da padaria liberar; Raimundo só sai de casa quando a casa liberar ----
 // `aguarda` = chave de liberação (casa | padaria). O resto é a agenda aprovada da Etapa 6. Lúcia ganha uma visita à padaria (08:24) depois de medir a fachada.
 RD.visitas = { raimundo: [14, 20], dandara: [30, 40], lucia: [9, 13] };
-// Tarde (12h–19h). Em 1991 a rua segue viva: quem foi para casa volta, a mesa de dominó reabre e Dandara e Lúcia passam na padaria.
+// Tarde (a partir de 12h; o almoço não deixa a rua vazia por mais de uma hora). Em 1991 a rua segue viva: quem foi para casa volta, a mesa de dominó reabre e Dandara e Lúcia passam na padaria.
 // Em 1994 o elenco está no caruru da Dona Zefa (quintal), então sai da rua a tempo de chegar lá e não volta: ninguém aparece em dois ambientes.
 // `aguarda` = só sai quando o outro ambiente liberar (padaria ou casa).
 const SPOTS_J = ['gato', 'v2', 'obs_2', 'rua_2', 'poste_1', 'v4', 'sombra_oiti', 'rua_3', 'obs_3'];
 const SPOTS_TONHO = ['v6', 'v5', 'v4', 'v3', 'obs_2', 'v2', 'v1', 'obs_1', 'sombra_oiti', 'v6'];
 RD.tarde = {
   1991: {
-    raimundo: [A('15:00', 'sair', { porta: 'porta_sobrado', aguarda: 'casa' }), A('15:01', 'sentar', { assento: 'E' }), A('17:30', 'levantar'), A('17:30', 'ir', { spot: 'porta_sobrado' }), A('17:32', 'entrar', { porta: 'porta_sobrado' })],
+    raimundo: [A('13:00', 'sair', { porta: 'porta_sobrado', aguarda: 'casa' }), A('13:01', 'sentar', { assento: 'E' }), A('17:30', 'levantar'), A('17:30', 'ir', { spot: 'porta_sobrado' }), A('17:32', 'entrar', { porta: 'porta_sobrado' })],
     ze:       [A('17:40', 'levantar'), A('17:41', 'ir', { spot: 'porta_b0' }), A('17:43', 'entrar', { porta: 'porta_b0' })],
-    nonato:   [A('14:30', 'sair', { porta: 'porta_verde' }), A('14:31', 'sentar', { assento: 'F' }), A('17:20', 'levantar'), A('17:20', 'ir', { spot: 'porta_verde' }), A('17:22', 'entrar', { porta: 'porta_verde' })],
-    cicera:   [A('14:30', 'sair', { porta: 'porta_b5' }), A('14:31', 'ir', { spot: 'varal' }), A('14:32', 'esperar', { dur: 9, anim: 'hang' }), A('14:42', 'ir', { spot: 'obs_2' }), A('14:43', 'sentar', { assento: 'T' }), A('17:00', 'levantar'), A('17:01', 'ir', { spot: 'porta_b5' }), A('17:03', 'entrar', { porta: 'porta_b5' })],
-    junior:   [A('14:00', 'patrulha', { spots: SPOTS_J, ate: T('18:30') }), A('18:31', 'ir', { spot: 'porta_b5' }), A('18:33', 'entrar', { porta: 'porta_b5' })],
-    tonho:    [A('14:10', 'sair', { porta: 'borda_D' }), A('14:11', 'patrulha', { spots: SPOTS_TONHO, ate: T('18:00'), vende: true }), A('18:01', 'ir', { spot: 'borda_E' }), A('18:03', 'entrar', { porta: 'borda_E' })],
-    dandara:  [A('14:20', 'sair', { porta: 'borda_E' }), A('14:21', 'ir', { spot: 'obs_2' }), A('14:22', 'olhar_mesa', { dur: 8 }), A('14:35', 'ir', { spot: 'porta_padaria' }), A('14:36', 'entrar', { porta: 'porta_padaria', dur: 34 }),
-               A('15:15', 'sair', { porta: 'porta_padaria', aguarda: 'padaria' }), A('15:16', 'ir', { spot: 'quadro' }), A('15:17', 'esperar', { dur: 4, anim: 'interact' }), A('15:25', 'ir', { spot: 'borda_E' }), A('15:40', 'entrar', { porta: 'borda_E' })],
-    lucia:    [A('15:30', 'sair', { porta: 'borda_D' }), A('15:31', 'ir', { spot: 'fachada_azul' }), A('15:32', 'esperar', { dur: 9, anim: 'interact' }), A('15:45', 'ir', { spot: 'porta_padaria' }), A('15:46', 'entrar', { porta: 'porta_padaria' }),
-               A('16:05', 'sair', { porta: 'porta_padaria', aguarda: 'padaria' }), A('16:06', 'sentar', { assento: 'banco_a' }), A('17:10', 'levantar'), A('17:11', 'ir', { spot: 'orelhao' }), A('17:12', 'esperar', { dur: 4, anim: 'talk' }), A('17:20', 'ir', { spot: 'borda_D' }), A('17:40', 'entrar', { porta: 'borda_D' })],
+    nonato:   [A('12:30', 'sair', { porta: 'porta_verde' }), A('12:31', 'sentar', { assento: 'F' }), A('17:20', 'levantar'), A('17:20', 'ir', { spot: 'porta_verde' }), A('17:22', 'entrar', { porta: 'porta_verde' })],
+    cicera:   [A('12:30', 'sair', { porta: 'porta_b5' }), A('12:31', 'ir', { spot: 'varal' }), A('12:32', 'esperar', { dur: 9, anim: 'hang' }), A('12:42', 'ir', { spot: 'obs_2' }), A('12:43', 'sentar', { assento: 'T' }), A('17:00', 'levantar'), A('17:01', 'ir', { spot: 'porta_b5' }), A('17:03', 'entrar', { porta: 'porta_b5' })],
+    junior:   [A('12:00', 'patrulha', { spots: SPOTS_J, ate: T('18:30') }), A('18:31', 'ir', { spot: 'porta_b5' }), A('18:33', 'entrar', { porta: 'porta_b5' })],
+    tonho:    [A('12:10', 'sair', { porta: 'borda_D' }), A('12:11', 'patrulha', { spots: SPOTS_TONHO, ate: T('18:00'), vende: true }), A('18:01', 'ir', { spot: 'borda_E' }), A('18:03', 'entrar', { porta: 'borda_E' })],
+    dandara:  [A('12:20', 'sair', { porta: 'borda_E' }), A('12:21', 'ir', { spot: 'obs_2' }), A('12:22', 'olhar_mesa', { dur: 8 }), A('12:35', 'ir', { spot: 'porta_padaria' }), A('12:36', 'entrar', { porta: 'porta_padaria', dur: 34 }),
+               A('13:15', 'sair', { porta: 'porta_padaria', aguarda: 'padaria' }), A('13:16', 'ir', { spot: 'quadro' }), A('13:17', 'esperar', { dur: 4, anim: 'interact' }), A('13:25', 'ir', { spot: 'borda_E' }), A('13:40', 'entrar', { porta: 'borda_E' })],
+    lucia:    [A('13:30', 'sair', { porta: 'borda_D' }), A('13:31', 'ir', { spot: 'fachada_azul' }), A('13:32', 'esperar', { dur: 9, anim: 'interact' }), A('13:45', 'ir', { spot: 'porta_padaria' }), A('13:46', 'entrar', { porta: 'porta_padaria' }),
+               A('14:05', 'sair', { porta: 'porta_padaria', aguarda: 'padaria' }), A('14:06', 'sentar', { assento: 'banco_a' }), A('17:10', 'levantar'), A('17:11', 'ir', { spot: 'orelhao' }), A('17:12', 'esperar', { dur: 4, anim: 'talk' }), A('17:20', 'ir', { spot: 'borda_D' }), A('17:40', 'entrar', { porta: 'borda_D' })],
   },
   1994: {
     raimundo: [A('12:45', 'sair', { porta: 'porta_sobrado', aguarda: 'casa' }), A('12:46', 'ir', { spot: 'porta_lateral' }), A('12:50', 'entrar', { porta: 'porta_lateral' })],
@@ -143,7 +143,7 @@ RD.falas = {
     perguntar: {
       jogo: [{ t: 'Dominó é conta e é paciência. Quem tem pressa joga a pedra errada.', kp: 'kp_dom_paciencia' }, { t: 'Aprendi com meu pai, nessa mesma calçada, quando aqui ainda tinha lampião a gás.', conf: [2, 3], kp: 'kp_dom_pai' }],
       rua: [{ t: 'A rua mudou de pintura, mas as pessoas são as mesmas.', kp: null }],
-      sobrado: [{ t: 'O sobrado é o que a gente tem. Mexeram na casa do lado e eu fiquei olhando, quieto. Eles medem tudo, mas não perguntam nada.', kp: 'kp_ray_sobrado' }],
+      sobrado: [{ t: 'O sobrado é o que a gente tem. Mexeram na casa do lado e eu fiquei olhando, quieto. Eles medem tudo e não perguntam nada.', kp: 'kp_ray_sobrado' }],
       programa: [{ t: 'Dandara anda dizendo que o Programa tem que deixar a gente morar aqui. Eu concordo, mas isso não está escrito em papel nenhum, e o que não está escrito some.', kp: 'kp_programa', revisar: true }],
     },
     ajudar: [],
@@ -152,7 +152,7 @@ RD.falas = {
     saudar: ['Bom dia, menina! Vai ficar olhando ou vai aprender?', 'Olha a Lia! Fica aí, mas não sopra jogada, hein.'],
     ouvir: ['(Seu Zé ri sozinho, olhando as próprias pedras.)'],
     perguntar: {
-      jogo: [{ t: 'Dupla joga de frente: eu e Raimundo contra Nonato e Bela. Parceiro fala com a pedra, não com a boca.', kp: 'kp_dom_dupla' }, { t: 'Bate de carroça vale dois. De lá e lô, três. Cruzada, quatro, e aí a mesa treme.', conf: [1, 3] }],
+      jogo: [{ t: 'Dupla joga de frente: eu e Raimundo contra Nonato e Bela. Entre parceiros, quem fala é a pedra.', kp: 'kp_dom_dupla' }, { t: 'Bate de carroça vale dois. De lá e lô, três. Cruzada, quatro, e aí a mesa treme.', conf: [1, 3] }],
       barbearia: [{ t: 'A barbearia é a minha casa de dia. De noite, é a de Dona Marta, minha sombra.', kp: null }],
       lia_jogar: [{ t: 'Quer jogar? Quando um de nós levantar, a gente vê. Primeiro prova que sabe contar até seis.', kp: 'kp_dom_convite' }],
       lata: [{ t: 'Menina, a lata é assim. Cada um deixa o que pode, e quem está apertado leva o que precisa, sem ter que explicar. Fica na mesa; ninguém conta o que tem dentro.', kp: 'kp_lata', revisar: true }],
@@ -163,7 +163,7 @@ RD.falas = {
     ouvir: ['(Nonato bate a pedra com força e olha em volta, esperando aplauso.)'],
     perguntar: {
       jogo: [{ t: 'Bato de carroça toda vez que posso. Dá mais ponto e dá mais vergonha nos outros.', kp: null }],
-      obra: [{ t: 'Sou pedreiro. Tô refazendo o reboco da casa de uma tia, aos poucos. Pago com café, não com dinheiro.', kp: null }],
+      obra: [{ t: 'Sou pedreiro. Tô refazendo o reboco da casa de uma tia, aos poucos. Ela me paga em almoço e café, que dinheiro sobra pouco na casa dela.', kp: null }],
     },
   },
   bela: {
@@ -215,7 +215,7 @@ RD.falas = {
     ouvir: ['(Lúcia anota algo, mede de novo, anota de novo.)'],
     perguntar: {
       medir: [{ t: 'Eu meço para ninguém ser surpreendido: tamanho da porta, da janela, do telhado. Depois tudo vira número no relatório.', kp: 'kp_lucia_medir' }],
-      programa: [{ t: 'O Programa não decide a vida de ninguém. Mas o relatório pode decidir uma obra. Eu quero que ele seja honesto.', kp: 'kp_lucia_programa', revisar: true }],
+      programa: [{ t: 'O relatório pode decidir uma obra. Eu quero que ele seja honesto.', kp: 'kp_lucia_programa', revisar: true }],
     },
   },
 };

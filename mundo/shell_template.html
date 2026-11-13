@@ -45,8 +45,8 @@ function zerarJogo() { try { const ks = []; for (let i = 0; i < localStorage.len
 if (Q.get('new') === '1') zerarJogo();
 const ANO = (Q.get('ano') || (function () { try { return localStorage.getItem('balcao_ano'); } catch (e) { return null; } })()) == '1994' && Q.get('new') !== '1' ? 1994 : 1991;
 window.MUNDO_ANO = ANO;   // as simulações leem o ano (agenda da tarde, caruru)
-// tempo diegético: o relógio existe dentro do mundo e não é cronômetro de desempenho. Ele avança com a exploração (0,5 min de jogo por segundo), pausa em conversa, caderninho, mesa de dominó e telas, desacelera quando o jogador fica parado e para na noite (20h). O dia não termina sozinho: quem decide subir para dormir é o jogador. 1994 começa às 11h30, sem prazo.
-const RATE_ANO = 0.5, INICIO_94 = 690;
+// tempo diegético: o relógio existe dentro do mundo e não é cronômetro de desempenho. Ele avança com a exploração (0,8 min de jogo por segundo em 1991, 0,5 em 1994), pausa em conversa, caderninho, mesa de dominó e telas, desacelera quando o jogador fica parado e para na noite (20h). O dia não termina sozinho: quem decide subir para dormir é o jogador. 1994 começa às 11h30, sem prazo.
+const RATE_ANO = ANO === 1994 ? 0.5 : 0.8, INICIO_94 = 690;
 let DIA = 1; try { DIA = +localStorage.getItem('balcao_dia') || 1; } catch (e) { }
 window.MUNDO_RATE = RATE_ANO; window.MUNDO_DIA = DIA;
 const FR = {}; let mundo = null, ready = 0; const NOMES = { rua: 'Rua', padaria: 'Padaria de Vó Aurea', casa: 'Casa de Seu Raimundo', quintal: 'Quintal de Dona Zefa' };

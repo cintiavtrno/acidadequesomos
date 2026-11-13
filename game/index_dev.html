@@ -105,7 +105,7 @@
   /* tela cheia: o cenário ocupa a janela inteira; a barra de ajuda vira uma pílula discreta no canto */
   #app { padding: 0 !important; gap: 0 !important; height: 100% !important; min-height: 0 !important; }
   #frame { box-shadow: none !important; }
-  #hud { position: fixed; left: 6px; bottom: 6px; z-index: 20; width: auto !important; max-width: min(46vw, 640px) !important; background: rgba(20,14,16,.66); border-radius: 6px; padding: 3px 8px; font-size: 11px; opacity: .5; transition: opacity .2s; gap: 2px 12px !important; }
+  #hud { position: fixed; left: 50%; top: 54px; transform: translateX(-50%); z-index: 20; text-align: center; width: auto !important; max-width: min(46vw, 640px) !important; background: rgba(20,14,16,.66); border-radius: 6px; padding: 3px 8px; font-size: 11px; opacity: .5; transition: opacity .2s; gap: 2px 12px !important; }
   #hud:hover, #hud:focus-within { opacity: 1; }
   #hud #zoombar, #hud details { display: none !important; }
   #hud:hover #zoombar, #hud:focus-within #zoombar { display: flex !important; } #hud:hover details, #hud:focus-within details { display: block !important; }
@@ -571,7 +571,7 @@ Sim.Data.falas = {
     ],
     ouvir: [
       F('a_o0', '(A vó cantarola baixinho enquanto embrulha o pão.)', { estado: 'servindo' }),
-      F('a_o1', '(Ela olha o forno, depois o nicho, como quem confere se tudo ficou no lugar.)'),
+      F('a_o1', '(Ela olha o forno, depois o nicho, e confere se tudo ficou no lugar.)'),
       F('a_o2', '(A vó fecha o rádio com a ponta do dedo.)', { flag: 'radio_tocou' }),
     ],
     perguntar: {
@@ -602,7 +602,7 @@ Sim.Data.falas = {
       F('r_s7', 'Dandara tá ali. Fala com ela, que ela entende dessas coisas de papel.', { presente: 'dandara' }),
     ],
     ouvir: [
-      F('r_o0', '(Seu Raimundo confere os bolsos devagar, como quem já sabe o que vai achar.)', { loc: 'fila' }),
+      F('r_o0', '(Seu Raimundo confere os bolsos devagar. Já sabe o que vai achar.)', { loc: 'fila' }),
       F('r_o1', 'Minha mãe tomava café aqui, nesse mesmo canto. Dizia que o dela era o mais forte da rua.', { loc: 'mesa' }),
       F('r_o2', '(Ele murmura uma reza baixinho, de olhos fechados. Você espera.)', { loc: 'altar' }, { revisar: true }),
       F('r_o3', 'Dizem que vão medir tudo. Medir pra quê? A casa tá de pé.', { humor: ['preocupado'] }),
@@ -639,7 +639,7 @@ Sim.Data.falas = {
       programa: [F('d_pp0', 'O Programa? Prometem restaurar tudo. Só não dizem quem fica.'), F('d_pp1', 'Fizeram levantamento de casa por casa sem avisar. Eu quero a lista com os nomes dos moradores.', { conf: [1, 3] })],
       caderno: [F('d_pd0', 'É a ata. Quem não escreve, esquecem.'), F('d_pd1', 'Aprendi a escrever com uma freira. Era pra rezar, mas deu pra anotar muita coisa.', { conf: [1, 3] })],
       mae: [F('d_pm0', 'Minha mãe tá doente. Por isso eu não posso me demorar.'), F('d_pm1', 'Ela gosta de bolo de aipim. Quando sobra, eu levo.', { conf: [1, 3] })],
-      lucia: [F('d_pl0', 'A moça da prancheta? Educada. E é isso que me dá mais medo.'), F('d_pl1', 'Ela não é má. Mas faz a conta que mandam, e a conta não conhece ninguém.', { conf: [2, 3] })],
+      lucia: [F('d_pl0', 'A moça da prancheta? Educada. E é isso que me dá mais medo.'), F('d_pl1', 'Ela faz a conta que mandam, e a conta não conhece ninguém.', { conf: [2, 3] })],
     },
     ajudar: { vez: [F('d_aj0', 'Obrigada, Lia. Tenho pressa mesmo. Vou anotar a gentileza.')] },
     pedido: [F('d_pd2', 'Seis pães pra levar e um cafezinho. Rápido, Dona Áurea, se der.')],
@@ -709,11 +709,11 @@ Sim.Data.conhecimentos = [
   // fiado de Seu Raimundo
   K('kp_caderneta', 'A caderneta da vó', 'A linha de Seu Raimundo é a mais comprida. Tem risco de sexta em sexta, e nunca um "devendo".', 'raimundo', { obj: 'fiado' }),
   K('kp_lousa', 'A lousa do fiado', 'A lousa diz "fiado até sexta". A vó nunca apagou a linha dele.', 'aurea', { obj: 'fiado' }),
-  K('kp_raimundo_fiado', 'Anota na caderneta', 'Ouvi Seu Raimundo pedir pra anotar. Ele fala "sexta eu acerto" como quem faz promessa, não pedido.', 'raimundo', { obj: 'fiado' }),
+  K('kp_raimundo_fiado', 'Anota na caderneta', 'Ouvi Seu Raimundo pedir pra anotar. Ele diz "sexta eu acerto" e o nome dele fica na caderneta até lá.', 'raimundo', { obj: 'fiado' }),
   K('kp_raimundo_sexta', 'Sexta, o dia dele', 'Pagar na sexta era o costume da mãe dele. Ele guardou o costume junto com a casa.', 'raimundo', { obj: 'fiado' }),
   K('kp_raimundo_agua', 'A água do filtro', 'Levei água do filtro pra Seu Raimundo. Ele falou da mãe: "a água de barro ensina paciência".', 'raimundo', { obj: 'fiado' }),
   K('kp_raimundo_reza', 'Diante do nicho', 'Seu Raimundo reza baixinho diante do nicho de São Jorge antes de sair. Esperei sem atrapalhar.', 'raimundo', { obj: 'fiado', revisar: true }),
-  K('kp_vo_fiado', 'O que a vó pensa do fiado', 'A vó disse que quem cobra é a caderneta, não ela. Pra ela, fiado é confiança.', 'aurea', { obj: 'fiado' }),
+  K('kp_vo_fiado', 'O que a vó pensa do fiado', 'A vó disse que quem cobra é a caderneta. Pra ela, fiado é confiança.', 'aurea', { obj: 'fiado' }),
   // o que vem aí
   K('kp_radio', 'O rádio da vó', 'O rádio anunciou um Programa de recuperação do centro histórico. A vó baixou o volume.', 'aurea', { obj: 'programa' }),
   K('kp_calendario', 'Sexta circulada', 'No calendário, uma sexta está circulada de vermelho. Todo mundo parece contar os dias até ela.', 'aurea', { obj: 'programa' }),
@@ -786,7 +786,7 @@ Sim.Data.virar94 = () => {
   P.raimundo.perguntar.programa = [F('r_pp0', 'Colaram um aviso na minha porta. Diz que a casa está em risco. Eu ainda não assinei nada.'), F('r_pp1', 'Eles apostam que turista sustenta o comércio sozinho. Eu nunca vi turista pedir fiado.', { conf: [2, 3] }, { revisar: true })];
   P.raimundo.perguntar.papel = [F('r_pa0', 'Papel, tenho dois: o da caderneta e o do aviso. Só o primeiro eu entendo.')];
   P.dandara.perguntar.programa = [F('d_pp0', 'O Programa saiu da pintura e entrou na obra pesada. Já tem casa interditada e família indo embora.'), F('d_pp1', 'Eu quero a lista de quem recebeu aviso, com nome. A associação lê tudo no sábado.', { conf: [1, 3] })];
-  P.dandara.perguntar.lucia = [F('d_pl0', 'A moça da prancheta agora assina ficha de saída. Educada como sempre, e é isso que me dá medo.'), F('d_pl1', 'Ela não é má. Mas a ficha vira valor de indenização, e a conta não conhece ninguém.', { conf: [2, 3] })];
+  P.dandara.perguntar.lucia = [F('d_pl0', 'A moça da prancheta agora assina ficha de saída. Educada como sempre, e é isso que me dá medo.'), F('d_pl1', 'A ficha dela vira valor de indenização, e a conta não conhece ninguém.', { conf: [2, 3] })];
   P.lucia.perguntar.programa = [F('l_pp0', 'O levantamento acabou e agora vem a fase de obra. Eu confiro as fichas das casas que já têm aviso.'), F('l_pp1', 'O Programa apostou que o turista de fora sustenta o comércio da rua. Eu escrevi que ainda é cedo para saber.', { conf: [1, 3] }, { revisar: true }), F('l_pp2', 'No órgão já se fala em programar festa e show, para trazer gente de Salvador. Ainda é conversa de corredor.', { conf: [2, 3] }, { revisar: true })];
   P.lucia.perguntar.prancheta = [F('l_pn0', 'Hoje é ficha de casa: nome de quem mora, quantos são, valor oferecido.'), F('l_pn1', 'Eu escrevo o menos que posso. Mesmo assim é o que decide.', { conf: [1, 3] })];
   P.dandara.perguntar.programa.push(F('d_pp2', 'Agora tem o Dia & Noite: show de graça todo dia nos largos, para a rua não esvaziar. Eu vou. Só pergunto quem mora nos casarões que viram bar.', { conf: [2, 3] }, { revisar: true }));
@@ -1499,7 +1499,7 @@ Sim.Data.casa = {
           ? { quem: 'raimundo', texto: 'Foi. Ela deixava o pão de sexta na porta de cada vizinho. Quem podia pagava na hora, quem não podia pagava depois. Dali eu aprendi que dívida se paga olhando nos olhos, e que isso é coisa de gente honrada.' }
           : { quem: 'raimundo', texto: 'Foi. Mas hoje não é dia de contar tudo, filha. Volta outro dia e a gente conversa.' }], kpSe: ['kp_c_mae', 2], trust: .03 },
       programa: { t: 'O que o senhor acha do que andam fazendo na rua?', quando: (w) => !!w.viv.ouviu_programa,
-        linhas: [{ quem: 'lia', texto: 'Vi gente medindo as casas. O que o senhor acha disso?' }, { quem: 'raimundo', texto: 'Medir, medem. Perguntar, não perguntam. Eu não assino o que não sei ler, e o que sei ler eu mostro pra Áurea antes.' }], kp: 'kp_c_assinar', trust: .03, marca: 'p_programa' },
+        linhas: [{ quem: 'lia', texto: 'Vi gente medindo as casas. O que o senhor acha disso?' }, { quem: 'raimundo', texto: 'Eles medem e não perguntam nada. Eu não assino o que não sei ler, e o que sei ler eu mostro pra Áurea antes.' }], kp: 'kp_c_assinar', trust: .03, marca: 'p_programa' },
       calar: { t: '(Tomar o café em silêncio.)', quando: () => true,
         linhas: [{ quem: 'nota', texto: 'Vocês bebem sem falar. Lá fora a rua faz barulho; aqui dentro ninguém precisa encher o tempo.' }, { quem: 'raimundo', texto: 'Gosto de quem sabe calar. É raro.' }], trust: .05, silencio: true },
     },
@@ -1537,7 +1537,7 @@ Sim.Data.casa = {
       F('rc_o3', '(Seu Raimundo olha a rua em silêncio, balançando bem devagar.)', { loc: 'janela' }),
       F('rc_o4', '(O rádio fala do Programa. Ele abaixa o volume e fica olhando o aparelho.)', { loc: 'radio' }),
       F('rc_o5', '(O pó é medido com a colher, duas vezes, sem pressa.)', { loc: 'fogao', estado: 'coando' }),
-      F('rc_o6', '(Ele passa o polegar nas pedras da caixa, uma a uma, como quem conta.)', { loc: 'mesa' }),
+      F('rc_o6', '(Ele passa o polegar nas pedras da caixa, uma a uma, contando.)', { loc: 'mesa' }),
       F('rc_o7', 'Em casa o dia é comprido. Por isso eu saio cedo.'),
     ],
     perguntar: {
@@ -1574,7 +1574,7 @@ Sim.Data.casa = {
     fogao_1: { kp: 'kp_c_fogao', texto: w => w.obj('fogao_1') ? 'Fogão de quatro bocas, uma delas acesa. A cafeteira esquenta; o cheiro de pó chega até a porta.' : 'Fogão de quatro bocas. Só duas têm uso; as outras estão limpas demais pra quem cozinha todo dia.' },
     talha_1: { kp: 'kp_c_talha', texto: () => 'Um filtro de barro com tampa de madeira e torneira, sobre o suporte encostado na parede, e uma caneca esmaltada embaixo. Você enche a caneca; a água é fresca.' },
     foto_forno_1: { kp: 'kp_c_foto', texto: () => 'Uma mulher de avental na porta de um forno de lenha. Na borda, a lápis, uma data: uma sexta-feira.' },
-    sacola_1: { kp: 'kp_c_sacola', texto: () => 'Uma sacola de pano remendada, as alças gastas. Está no prego, ao lado do chapéu de palha, como quem deixa tudo pronto pra sair.' },
+    sacola_1: { kp: 'kp_c_sacola', texto: () => 'Uma sacola de pano remendada, as alças gastas. Está no prego, ao lado do chapéu de palha, pronta pra ele sair.' },
     balanco_1: { kp: null, texto: () => 'Cadeira de balanço de madeira escura, com encosto de palhinha e uma almofada de retalho. Fica ao lado da janela, virada para dentro de casa.' },
     oratorio_1: { kp: 'kp_c_oratorio', texto: w => 'Oratório de madeira de porta aberta: uma estampa do Senhor do Bonfim, fitas penduradas e uma vela' + (w.obj('oratorio_1') ? ' acesa.' : ' pequena.') },
     retrato_1: { kp: 'kp_c_retrato', texto: () => 'Retrato oval em sépia: uma senhora de lenço branco na cabeça, séria. É o mesmo lenço da moça de uma das fotografias da padaria.' },
@@ -1625,7 +1625,7 @@ Sim.Casa.virar94 = function () {
   if (Sim.Casa._v94) return; Sim.Casa._v94 = true;
   const C = Sim.Data.casa, P = C.falas.perguntar;
   P.rua = [F('rc_pr0', 'Daqui de cima a rua parece parada. Por baixo tem porta fechando toda semana.'), F('rc_pr1', 'Todo mês alguém sai e não volta. Uns vão para longe com o dinheiro da indenização, outros vão para o papel.', { conf: [2, 3] })];
-  P.programa = [F('rc_pp0', 'Já passou da medida. Agora tem aviso, tem marca na parede e homem de prancheta me olhando como quem já sabe a resposta.', {}, { revisar: true }), F('rc_pp1', 'Dizem que o turista vai encher a rua e pagar a conta de todo mundo. Nunca vi turista pedir fiado.', { conf: [2, 3] }, { revisar: true })];
+  P.programa = [F('rc_pp0', 'Já passou da medida. Agora tem aviso, tem marca na parede e homem de prancheta me olhando com a resposta pronta.', {}, { revisar: true }), F('rc_pp1', 'Dizem que o turista vai encher a rua e pagar a conta de todo mundo. Nunca vi turista pedir fiado.', { conf: [2, 3] }, { revisar: true })];
   P.papel = [F('rc_pa0', 'Papel? É o aviso que está na mesa, dobrado. Diz que a casa corre risco. Corre desde que não me deixaram mexer no telhado.', {}, { revisar: true })];
   P.assinar = [F('rc_pg0', 'Assinar a saída? Ainda não. Me deram prazo e eu estou usando o prazo inteiro.')];
   C.asks.programa = 'Seu Raimundo, vi uma marca na parede da frente. O Programa passou por aqui?';
@@ -2052,23 +2052,23 @@ RD.agenda = {
 // ---- agenda do MUNDO INTEGRADO (Etapa 7): quem entra na padaria só sai quando a simulação da padaria liberar; Raimundo só sai de casa quando a casa liberar ----
 // `aguarda` = chave de liberação (casa | padaria). O resto é a agenda aprovada da Etapa 6. Lúcia ganha uma visita à padaria (08:24) depois de medir a fachada.
 RD.visitas = { raimundo: [14, 20], dandara: [30, 40], lucia: [9, 13] };
-// Tarde (12h–19h). Em 1991 a rua segue viva: quem foi para casa volta, a mesa de dominó reabre e Dandara e Lúcia passam na padaria.
+// Tarde (a partir de 12h; o almoço não deixa a rua vazia por mais de uma hora). Em 1991 a rua segue viva: quem foi para casa volta, a mesa de dominó reabre e Dandara e Lúcia passam na padaria.
 // Em 1994 o elenco está no caruru da Dona Zefa (quintal), então sai da rua a tempo de chegar lá e não volta: ninguém aparece em dois ambientes.
 // `aguarda` = só sai quando o outro ambiente liberar (padaria ou casa).
 const SPOTS_J = ['gato', 'v2', 'obs_2', 'rua_2', 'poste_1', 'v4', 'sombra_oiti', 'rua_3', 'obs_3'];
 const SPOTS_TONHO = ['v6', 'v5', 'v4', 'v3', 'obs_2', 'v2', 'v1', 'obs_1', 'sombra_oiti', 'v6'];
 RD.tarde = {
   1991: {
-    raimundo: [A('15:00', 'sair', { porta: 'porta_sobrado', aguarda: 'casa' }), A('15:01', 'sentar', { assento: 'E' }), A('17:30', 'levantar'), A('17:30', 'ir', { spot: 'porta_sobrado' }), A('17:32', 'entrar', { porta: 'porta_sobrado' })],
+    raimundo: [A('13:00', 'sair', { porta: 'porta_sobrado', aguarda: 'casa' }), A('13:01', 'sentar', { assento: 'E' }), A('17:30', 'levantar'), A('17:30', 'ir', { spot: 'porta_sobrado' }), A('17:32', 'entrar', { porta: 'porta_sobrado' })],
     ze:       [A('17:40', 'levantar'), A('17:41', 'ir', { spot: 'porta_b0' }), A('17:43', 'entrar', { porta: 'porta_b0' })],
-    nonato:   [A('14:30', 'sair', { porta: 'porta_verde' }), A('14:31', 'sentar', { assento: 'F' }), A('17:20', 'levantar'), A('17:20', 'ir', { spot: 'porta_verde' }), A('17:22', 'entrar', { porta: 'porta_verde' })],
-    cicera:   [A('14:30', 'sair', { porta: 'porta_b5' }), A('14:31', 'ir', { spot: 'varal' }), A('14:32', 'esperar', { dur: 9, anim: 'hang' }), A('14:42', 'ir', { spot: 'obs_2' }), A('14:43', 'sentar', { assento: 'T' }), A('17:00', 'levantar'), A('17:01', 'ir', { spot: 'porta_b5' }), A('17:03', 'entrar', { porta: 'porta_b5' })],
-    junior:   [A('14:00', 'patrulha', { spots: SPOTS_J, ate: T('18:30') }), A('18:31', 'ir', { spot: 'porta_b5' }), A('18:33', 'entrar', { porta: 'porta_b5' })],
-    tonho:    [A('14:10', 'sair', { porta: 'borda_D' }), A('14:11', 'patrulha', { spots: SPOTS_TONHO, ate: T('18:00'), vende: true }), A('18:01', 'ir', { spot: 'borda_E' }), A('18:03', 'entrar', { porta: 'borda_E' })],
-    dandara:  [A('14:20', 'sair', { porta: 'borda_E' }), A('14:21', 'ir', { spot: 'obs_2' }), A('14:22', 'olhar_mesa', { dur: 8 }), A('14:35', 'ir', { spot: 'porta_padaria' }), A('14:36', 'entrar', { porta: 'porta_padaria', dur: 34 }),
-               A('15:15', 'sair', { porta: 'porta_padaria', aguarda: 'padaria' }), A('15:16', 'ir', { spot: 'quadro' }), A('15:17', 'esperar', { dur: 4, anim: 'interact' }), A('15:25', 'ir', { spot: 'borda_E' }), A('15:40', 'entrar', { porta: 'borda_E' })],
-    lucia:    [A('15:30', 'sair', { porta: 'borda_D' }), A('15:31', 'ir', { spot: 'fachada_azul' }), A('15:32', 'esperar', { dur: 9, anim: 'interact' }), A('15:45', 'ir', { spot: 'porta_padaria' }), A('15:46', 'entrar', { porta: 'porta_padaria' }),
-               A('16:05', 'sair', { porta: 'porta_padaria', aguarda: 'padaria' }), A('16:06', 'sentar', { assento: 'banco_a' }), A('17:10', 'levantar'), A('17:11', 'ir', { spot: 'orelhao' }), A('17:12', 'esperar', { dur: 4, anim: 'talk' }), A('17:20', 'ir', { spot: 'borda_D' }), A('17:40', 'entrar', { porta: 'borda_D' })],
+    nonato:   [A('12:30', 'sair', { porta: 'porta_verde' }), A('12:31', 'sentar', { assento: 'F' }), A('17:20', 'levantar'), A('17:20', 'ir', { spot: 'porta_verde' }), A('17:22', 'entrar', { porta: 'porta_verde' })],
+    cicera:   [A('12:30', 'sair', { porta: 'porta_b5' }), A('12:31', 'ir', { spot: 'varal' }), A('12:32', 'esperar', { dur: 9, anim: 'hang' }), A('12:42', 'ir', { spot: 'obs_2' }), A('12:43', 'sentar', { assento: 'T' }), A('17:00', 'levantar'), A('17:01', 'ir', { spot: 'porta_b5' }), A('17:03', 'entrar', { porta: 'porta_b5' })],
+    junior:   [A('12:00', 'patrulha', { spots: SPOTS_J, ate: T('18:30') }), A('18:31', 'ir', { spot: 'porta_b5' }), A('18:33', 'entrar', { porta: 'porta_b5' })],
+    tonho:    [A('12:10', 'sair', { porta: 'borda_D' }), A('12:11', 'patrulha', { spots: SPOTS_TONHO, ate: T('18:00'), vende: true }), A('18:01', 'ir', { spot: 'borda_E' }), A('18:03', 'entrar', { porta: 'borda_E' })],
+    dandara:  [A('12:20', 'sair', { porta: 'borda_E' }), A('12:21', 'ir', { spot: 'obs_2' }), A('12:22', 'olhar_mesa', { dur: 8 }), A('12:35', 'ir', { spot: 'porta_padaria' }), A('12:36', 'entrar', { porta: 'porta_padaria', dur: 34 }),
+               A('13:15', 'sair', { porta: 'porta_padaria', aguarda: 'padaria' }), A('13:16', 'ir', { spot: 'quadro' }), A('13:17', 'esperar', { dur: 4, anim: 'interact' }), A('13:25', 'ir', { spot: 'borda_E' }), A('13:40', 'entrar', { porta: 'borda_E' })],
+    lucia:    [A('13:30', 'sair', { porta: 'borda_D' }), A('13:31', 'ir', { spot: 'fachada_azul' }), A('13:32', 'esperar', { dur: 9, anim: 'interact' }), A('13:45', 'ir', { spot: 'porta_padaria' }), A('13:46', 'entrar', { porta: 'porta_padaria' }),
+               A('14:05', 'sair', { porta: 'porta_padaria', aguarda: 'padaria' }), A('14:06', 'sentar', { assento: 'banco_a' }), A('17:10', 'levantar'), A('17:11', 'ir', { spot: 'orelhao' }), A('17:12', 'esperar', { dur: 4, anim: 'talk' }), A('17:20', 'ir', { spot: 'borda_D' }), A('17:40', 'entrar', { porta: 'borda_D' })],
   },
   1994: {
     raimundo: [A('12:45', 'sair', { porta: 'porta_sobrado', aguarda: 'casa' }), A('12:46', 'ir', { spot: 'porta_lateral' }), A('12:50', 'entrar', { porta: 'porta_lateral' })],
@@ -2106,7 +2106,7 @@ RD.falas = {
     perguntar: {
       jogo: [{ t: 'Dominó é conta e é paciência. Quem tem pressa joga a pedra errada.', kp: 'kp_dom_paciencia' }, { t: 'Aprendi com meu pai, nessa mesma calçada, quando aqui ainda tinha lampião a gás.', conf: [2, 3], kp: 'kp_dom_pai' }],
       rua: [{ t: 'A rua mudou de pintura, mas as pessoas são as mesmas.', kp: null }],
-      sobrado: [{ t: 'O sobrado é o que a gente tem. Mexeram na casa do lado e eu fiquei olhando, quieto. Eles medem tudo, mas não perguntam nada.', kp: 'kp_ray_sobrado' }],
+      sobrado: [{ t: 'O sobrado é o que a gente tem. Mexeram na casa do lado e eu fiquei olhando, quieto. Eles medem tudo e não perguntam nada.', kp: 'kp_ray_sobrado' }],
       programa: [{ t: 'Dandara anda dizendo que o Programa tem que deixar a gente morar aqui. Eu concordo, mas isso não está escrito em papel nenhum, e o que não está escrito some.', kp: 'kp_programa', revisar: true }],
     },
     ajudar: [],
@@ -2115,7 +2115,7 @@ RD.falas = {
     saudar: ['Bom dia, menina! Vai ficar olhando ou vai aprender?', 'Olha a Lia! Fica aí, mas não sopra jogada, hein.'],
     ouvir: ['(Seu Zé ri sozinho, olhando as próprias pedras.)'],
     perguntar: {
-      jogo: [{ t: 'Dupla joga de frente: eu e Raimundo contra Nonato e Bela. Parceiro fala com a pedra, não com a boca.', kp: 'kp_dom_dupla' }, { t: 'Bate de carroça vale dois. De lá e lô, três. Cruzada, quatro, e aí a mesa treme.', conf: [1, 3] }],
+      jogo: [{ t: 'Dupla joga de frente: eu e Raimundo contra Nonato e Bela. Entre parceiros, quem fala é a pedra.', kp: 'kp_dom_dupla' }, { t: 'Bate de carroça vale dois. De lá e lô, três. Cruzada, quatro, e aí a mesa treme.', conf: [1, 3] }],
       barbearia: [{ t: 'A barbearia é a minha casa de dia. De noite, é a de Dona Marta, minha sombra.', kp: null }],
       lia_jogar: [{ t: 'Quer jogar? Quando um de nós levantar, a gente vê. Primeiro prova que sabe contar até seis.', kp: 'kp_dom_convite' }],
       lata: [{ t: 'Menina, a lata é assim. Cada um deixa o que pode, e quem está apertado leva o que precisa, sem ter que explicar. Fica na mesa; ninguém conta o que tem dentro.', kp: 'kp_lata', revisar: true }],
@@ -2126,7 +2126,7 @@ RD.falas = {
     ouvir: ['(Nonato bate a pedra com força e olha em volta, esperando aplauso.)'],
     perguntar: {
       jogo: [{ t: 'Bato de carroça toda vez que posso. Dá mais ponto e dá mais vergonha nos outros.', kp: null }],
-      obra: [{ t: 'Sou pedreiro. Tô refazendo o reboco da casa de uma tia, aos poucos. Pago com café, não com dinheiro.', kp: null }],
+      obra: [{ t: 'Sou pedreiro. Tô refazendo o reboco da casa de uma tia, aos poucos. Ela me paga em almoço e café, que dinheiro sobra pouco na casa dela.', kp: null }],
     },
   },
   bela: {
@@ -2178,7 +2178,7 @@ RD.falas = {
     ouvir: ['(Lúcia anota algo, mede de novo, anota de novo.)'],
     perguntar: {
       medir: [{ t: 'Eu meço para ninguém ser surpreendido: tamanho da porta, da janela, do telhado. Depois tudo vira número no relatório.', kp: 'kp_lucia_medir' }],
-      programa: [{ t: 'O Programa não decide a vida de ninguém. Mas o relatório pode decidir uma obra. Eu quero que ele seja honesto.', kp: 'kp_lucia_programa', revisar: true }],
+      programa: [{ t: 'O relatório pode decidir uma obra. Eu quero que ele seja honesto.', kp: 'kp_lucia_programa', revisar: true }],
     },
   },
 };
@@ -3233,7 +3233,7 @@ S.INFOS = {
   i_programa: { tema: 'programa', sigilo: .5, revisar: true, versoes: ['O Programa vai pintar e consertar as fachadas, e quem mora continua morando.', 'O Programa vai mexer nas casas, mas tem letra miúda que ninguém leu.', 'O Programa quer comprar os imóveis e tirar os moradores.'], corretas: [0] },
   i_reuniao: { tema: 'associacao', sigilo: 0, versoes: ['Dandara marcou reunião da associação pra sábado, depois do almoço.', 'Vai ter reunião da associação, mas ninguém sabe o dia.', 'A reunião da associação foi cancelada.'], corretas: [0, 1], eu: { id: 'dandara', versoes: ["Marquei a reunião da associação pra sábado, depois do almoço.", "Vai ter reunião da associação, só não fechei o dia.", "A reunião da associação foi cancelada."] } },
   i_fiado: { tema: 'padaria', sigilo: .85, revisar: true, versoes: ['Seu Raimundo leva o pão no fiado e paga na sexta; nunca deixou de pagar.', 'Seu Raimundo anda devendo na padaria.', 'Vó Áurea perde dinheiro com fiado e pode fechar a padaria.'], corretas: [0] },
-  i_obra: { tema: 'obra', sigilo: 0, versoes: ['Nonato vai refazer o reboco da casa da tia e paga a obra com café.', 'Nonato pegou uma obra.', 'Nonato anda sem dinheiro e trabalhando de graça.'], corretas: [0, 1], eu: { id: 'nonato', versoes: ["Vou refazer o reboco da casa da minha tia. Ela paga com café.", "Peguei uma obra.", "Estou sem dinheiro e trabalhando de graça."] } },
+  i_obra: { tema: 'obra', sigilo: 0, versoes: ['Nonato vai refazer o reboco da casa da tia, que paga em almoço e café.', 'Nonato pegou uma obra.', 'Nonato anda sem dinheiro e trabalhando de graça.'], corretas: [0, 1], eu: { id: 'nonato', versoes: ["Vou refazer o reboco da casa da minha tia. Ela me paga em almoço e café.", "Peguei uma obra.", "Estou sem dinheiro e trabalhando de graça."] } },
   i_gato: { tema: 'rua', sigilo: 0, versoes: ['O gato da rua anda dormindo no sobrado; Júnior leva resto de pão pra ele.', 'Júnior anda dando comida pro gato.', 'O gato é de Júnior.'], corretas: [0, 1], eu: { id: 'junior', versoes: ["O gato dorme no sobrado e eu levo resto de pão pra ele.", "Eu dou comida pro gato.", "O gato é meu."] } },
 };
 // 1994: o que circula na rua já é efeito do Programa (aviso, risco, saída de moradores). Mesmo formato de 1991; só troca o conteúdo.
@@ -3353,10 +3353,16 @@ Sim.SocialMind = class {
   // fala de repasse (bolha): enquadra pelo tipo; incorreta/boato ganham ressalva
   fala(de, info) { const h = this.infos[info][de]; const I0 = S.INFOS[info], r = this.R(); if (I0 && I0.eu && I0.eu.id === de) return I0.eu.versoes[Math.min(h.versao, I0.eu.versoes.length - 1)]; const tp = h.tipo, fr = S.FRAME[tp] || S.FRAME.boato; const txt = this.texto(info, h); return fr[Math.floor(r * fr.length)] + (/^(Uma|Um|O|A|Os|As|Tem|Vai|Estão|Foi|Teve)\b/.test(txt) ? txt.charAt(0).toLowerCase() + txt.slice(1) : txt); }
   // Lia pergunta "o que andam comentando?"
+  sobreMim(id, I) {
+    if (I.eu && I.eu.id === id) return false; if ((I.sobre || []).includes(id)) return true;
+    const n = nomeCurto(id); if (!n) return false; const re = new RegExp('(^|[^A-Za-zÀ-ú])' + n + '([^A-Za-zÀ-ú]|$)');
+    return (I.versoes || []).some(v => re.test(v));
+  }
   comentarios(id) {
     const lia = this.w.trust[id] || 0; const out = [];
     for (const info of this.conhecidas(id)) {
       if (id === 'lia') continue; const h = this.infos[info][id]; const I = S.INFOS[info] || (this.dinamicas || {})[info]; if (!I) continue;
+      if (this.sobreMim(id, I)) continue;   // ninguém comenta a própria vida como se fosse fofoca de outro: a conversa direta (tópicos) é o lugar disso
       const tr = lia, P = S.PERSONAS[id];
       if ((P.segredos || []).includes(info) && tr < .72) { out.push({ info, retido: true }); continue; }
       if (I.sigilo * (1 - tr) * this.tr(id, 'reservado') > .25) { out.push({ info, retido: true }); continue; }
@@ -3588,6 +3594,7 @@ Object.assign(Sim.SocialMind.prototype, {
   perguntarComentarios(id) {
     const out = [], L = this.comentarios(id); const dizivel = L.filter(c => !c.retido);
     if (!dizivel.length) return [{ quem: id, texto: L.length ? S.VOZ.resposta.evita[Math.floor(this.R() * 3 % S.VOZ.resposta.evita.length)] : 'Nada de novo, Lia.' }];
+    this.feitas = this.feitas || {}; if (dizivel.every(c => this.feitas[id + c.info])) return [{ quem: id, texto: 'Já contei o que sei, Lia.' }];
     const c = dizivel.sort((a, b) => (this.feitas && this.feitas[id + a.info] ? 1 : 0) - (this.feitas && this.feitas[id + b.info] ? 1 : 0) || a.versao - b.versao)[0];
     this.feitas = this.feitas || {}; this.feitas[id + c.info] = 1;
     out.push({ quem: id, texto: c.texto, revisar: c.revisar });

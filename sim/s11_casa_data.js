@@ -38,7 +38,7 @@ Sim.Data.casa = {
           ? { quem: 'raimundo', texto: 'Foi. Ela deixava o pão de sexta na porta de cada vizinho. Quem podia pagava na hora, quem não podia pagava depois. Dali eu aprendi que dívida se paga olhando nos olhos, e que isso é coisa de gente honrada.' }
           : { quem: 'raimundo', texto: 'Foi. Mas hoje não é dia de contar tudo, filha. Volta outro dia e a gente conversa.' }], kpSe: ['kp_c_mae', 2], trust: .03 },
       programa: { t: 'O que o senhor acha do que andam fazendo na rua?', quando: (w) => !!w.viv.ouviu_programa,
-        linhas: [{ quem: 'lia', texto: 'Vi gente medindo as casas. O que o senhor acha disso?' }, { quem: 'raimundo', texto: 'Medir, medem. Perguntar, não perguntam. Eu não assino o que não sei ler, e o que sei ler eu mostro pra Áurea antes.' }], kp: 'kp_c_assinar', trust: .03, marca: 'p_programa' },
+        linhas: [{ quem: 'lia', texto: 'Vi gente medindo as casas. O que o senhor acha disso?' }, { quem: 'raimundo', texto: 'Eles medem e não perguntam nada. Eu não assino o que não sei ler, e o que sei ler eu mostro pra Áurea antes.' }], kp: 'kp_c_assinar', trust: .03, marca: 'p_programa' },
       calar: { t: '(Tomar o café em silêncio.)', quando: () => true,
         linhas: [{ quem: 'nota', texto: 'Vocês bebem sem falar. Lá fora a rua faz barulho; aqui dentro ninguém precisa encher o tempo.' }, { quem: 'raimundo', texto: 'Gosto de quem sabe calar. É raro.' }], trust: .05, silencio: true },
     },
@@ -76,7 +76,7 @@ Sim.Data.casa = {
       F('rc_o3', '(Seu Raimundo olha a rua em silêncio, balançando bem devagar.)', { loc: 'janela' }),
       F('rc_o4', '(O rádio fala do Programa. Ele abaixa o volume e fica olhando o aparelho.)', { loc: 'radio' }),
       F('rc_o5', '(O pó é medido com a colher, duas vezes, sem pressa.)', { loc: 'fogao', estado: 'coando' }),
-      F('rc_o6', '(Ele passa o polegar nas pedras da caixa, uma a uma, como quem conta.)', { loc: 'mesa' }),
+      F('rc_o6', '(Ele passa o polegar nas pedras da caixa, uma a uma, contando.)', { loc: 'mesa' }),
       F('rc_o7', 'Em casa o dia é comprido. Por isso eu saio cedo.'),
     ],
     perguntar: {
@@ -113,7 +113,7 @@ Sim.Data.casa = {
     fogao_1: { kp: 'kp_c_fogao', texto: w => w.obj('fogao_1') ? 'Fogão de quatro bocas, uma delas acesa. A cafeteira esquenta; o cheiro de pó chega até a porta.' : 'Fogão de quatro bocas. Só duas têm uso; as outras estão limpas demais pra quem cozinha todo dia.' },
     talha_1: { kp: 'kp_c_talha', texto: () => 'Um filtro de barro com tampa de madeira e torneira, sobre o suporte encostado na parede, e uma caneca esmaltada embaixo. Você enche a caneca; a água é fresca.' },
     foto_forno_1: { kp: 'kp_c_foto', texto: () => 'Uma mulher de avental na porta de um forno de lenha. Na borda, a lápis, uma data: uma sexta-feira.' },
-    sacola_1: { kp: 'kp_c_sacola', texto: () => 'Uma sacola de pano remendada, as alças gastas. Está no prego, ao lado do chapéu de palha, como quem deixa tudo pronto pra sair.' },
+    sacola_1: { kp: 'kp_c_sacola', texto: () => 'Uma sacola de pano remendada, as alças gastas. Está no prego, ao lado do chapéu de palha, pronta pra ele sair.' },
     balanco_1: { kp: null, texto: () => 'Cadeira de balanço de madeira escura, com encosto de palhinha e uma almofada de retalho. Fica ao lado da janela, virada para dentro de casa.' },
     oratorio_1: { kp: 'kp_c_oratorio', texto: w => 'Oratório de madeira de porta aberta: uma estampa do Senhor do Bonfim, fitas penduradas e uma vela' + (w.obj('oratorio_1') ? ' acesa.' : ' pequena.') },
     retrato_1: { kp: 'kp_c_retrato', texto: () => 'Retrato oval em sépia: uma senhora de lenço branco na cabeça, séria. É o mesmo lenço da moça de uma das fotografias da padaria.' },
@@ -164,7 +164,7 @@ Sim.Casa.virar94 = function () {
   if (Sim.Casa._v94) return; Sim.Casa._v94 = true;
   const C = Sim.Data.casa, P = C.falas.perguntar;
   P.rua = [F('rc_pr0', 'Daqui de cima a rua parece parada. Por baixo tem porta fechando toda semana.'), F('rc_pr1', 'Todo mês alguém sai e não volta. Uns vão para longe com o dinheiro da indenização, outros vão para o papel.', { conf: [2, 3] })];
-  P.programa = [F('rc_pp0', 'Já passou da medida. Agora tem aviso, tem marca na parede e homem de prancheta me olhando como quem já sabe a resposta.', {}, { revisar: true }), F('rc_pp1', 'Dizem que o turista vai encher a rua e pagar a conta de todo mundo. Nunca vi turista pedir fiado.', { conf: [2, 3] }, { revisar: true })];
+  P.programa = [F('rc_pp0', 'Já passou da medida. Agora tem aviso, tem marca na parede e homem de prancheta me olhando com a resposta pronta.', {}, { revisar: true }), F('rc_pp1', 'Dizem que o turista vai encher a rua e pagar a conta de todo mundo. Nunca vi turista pedir fiado.', { conf: [2, 3] }, { revisar: true })];
   P.papel = [F('rc_pa0', 'Papel? É o aviso que está na mesa, dobrado. Diz que a casa corre risco. Corre desde que não me deixaram mexer no telhado.', {}, { revisar: true })];
   P.assinar = [F('rc_pg0', 'Assinar a saída? Ainda não. Me deram prazo e eu estou usando o prazo inteiro.')];
   C.asks.programa = 'Seu Raimundo, vi uma marca na parede da frente. O Programa passou por aqui?';

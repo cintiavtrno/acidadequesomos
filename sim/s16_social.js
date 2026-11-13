@@ -68,7 +68,7 @@ S.INFOS = {
   i_programa: { tema: 'programa', sigilo: .5, revisar: true, versoes: ['O Programa vai pintar e consertar as fachadas, e quem mora continua morando.', 'O Programa vai mexer nas casas, mas tem letra miúda que ninguém leu.', 'O Programa quer comprar os imóveis e tirar os moradores.'], corretas: [0] },
   i_reuniao: { tema: 'associacao', sigilo: 0, versoes: ['Dandara marcou reunião da associação pra sábado, depois do almoço.', 'Vai ter reunião da associação, mas ninguém sabe o dia.', 'A reunião da associação foi cancelada.'], corretas: [0, 1], eu: { id: 'dandara', versoes: ["Marquei a reunião da associação pra sábado, depois do almoço.", "Vai ter reunião da associação, só não fechei o dia.", "A reunião da associação foi cancelada."] } },
   i_fiado: { tema: 'padaria', sigilo: .85, revisar: true, versoes: ['Seu Raimundo leva o pão no fiado e paga na sexta; nunca deixou de pagar.', 'Seu Raimundo anda devendo na padaria.', 'Vó Áurea perde dinheiro com fiado e pode fechar a padaria.'], corretas: [0] },
-  i_obra: { tema: 'obra', sigilo: 0, versoes: ['Nonato vai refazer o reboco da casa da tia e paga a obra com café.', 'Nonato pegou uma obra.', 'Nonato anda sem dinheiro e trabalhando de graça.'], corretas: [0, 1], eu: { id: 'nonato', versoes: ["Vou refazer o reboco da casa da minha tia. Ela paga com café.", "Peguei uma obra.", "Estou sem dinheiro e trabalhando de graça."] } },
+  i_obra: { tema: 'obra', sigilo: 0, versoes: ['Nonato vai refazer o reboco da casa da tia, que paga em almoço e café.', 'Nonato pegou uma obra.', 'Nonato anda sem dinheiro e trabalhando de graça.'], corretas: [0, 1], eu: { id: 'nonato', versoes: ["Vou refazer o reboco da casa da minha tia. Ela me paga em almoço e café.", "Peguei uma obra.", "Estou sem dinheiro e trabalhando de graça."] } },
   i_gato: { tema: 'rua', sigilo: 0, versoes: ['O gato da rua anda dormindo no sobrado; Júnior leva resto de pão pra ele.', 'Júnior anda dando comida pro gato.', 'O gato é de Júnior.'], corretas: [0, 1], eu: { id: 'junior', versoes: ["O gato dorme no sobrado e eu levo resto de pão pra ele.", "Eu dou comida pro gato.", "O gato é meu."] } },
 };
 // 1994: o que circula na rua já é efeito do Programa (aviso, risco, saída de moradores). Mesmo formato de 1991; só troca o conteúdo.
@@ -188,10 +188,16 @@ Sim.SocialMind = class {
   // fala de repasse (bolha): enquadra pelo tipo; incorreta/boato ganham ressalva
   fala(de, info) { const h = this.infos[info][de]; const I0 = S.INFOS[info], r = this.R(); if (I0 && I0.eu && I0.eu.id === de) return I0.eu.versoes[Math.min(h.versao, I0.eu.versoes.length - 1)]; const tp = h.tipo, fr = S.FRAME[tp] || S.FRAME.boato; const txt = this.texto(info, h); return fr[Math.floor(r * fr.length)] + (/^(Uma|Um|O|A|Os|As|Tem|Vai|Estão|Foi|Teve)\b/.test(txt) ? txt.charAt(0).toLowerCase() + txt.slice(1) : txt); }
   // Lia pergunta "o que andam comentando?"
+  sobreMim(id, I) {
+    if (I.eu && I.eu.id === id) return false; if ((I.sobre || []).includes(id)) return true;
+    const n = nomeCurto(id); if (!n) return false; const re = new RegExp('(^|[^A-Za-zÀ-ú])' + n + '([^A-Za-zÀ-ú]|$)');
+    return (I.versoes || []).some(v => re.test(v));
+  }
   comentarios(id) {
     const lia = this.w.trust[id] || 0; const out = [];
     for (const info of this.conhecidas(id)) {
       if (id === 'lia') continue; const h = this.infos[info][id]; const I = S.INFOS[info] || (this.dinamicas || {})[info]; if (!I) continue;
+      if (this.sobreMim(id, I)) continue;   // ninguém comenta a própria vida como se fosse fofoca de outro: a conversa direta (tópicos) é o lugar disso
       const tr = lia, P = S.PERSONAS[id];
       if ((P.segredos || []).includes(info) && tr < .72) { out.push({ info, retido: true }); continue; }
       if (I.sigilo * (1 - tr) * this.tr(id, 'reservado') > .25) { out.push({ info, retido: true }); continue; }
@@ -423,6 +429,7 @@ Object.assign(Sim.SocialMind.prototype, {
   perguntarComentarios(id) {
     const out = [], L = this.comentarios(id); const dizivel = L.filter(c => !c.retido);
     if (!dizivel.length) return [{ quem: id, texto: L.length ? S.VOZ.resposta.evita[Math.floor(this.R() * 3 % S.VOZ.resposta.evita.length)] : 'Nada de novo, Lia.' }];
+    this.feitas = this.feitas || {}; if (dizivel.every(c => this.feitas[id + c.info])) return [{ quem: id, texto: 'Já contei o que sei, Lia.' }];
     const c = dizivel.sort((a, b) => (this.feitas && this.feitas[id + a.info] ? 1 : 0) - (this.feitas && this.feitas[id + b.info] ? 1 : 0) || a.versao - b.versao)[0];
     this.feitas = this.feitas || {}; this.feitas[id + c.info] = 1;
     out.push({ quem: id, texto: c.texto, revisar: c.revisar });

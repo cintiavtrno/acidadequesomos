@@ -66,7 +66,7 @@ Sim.Data.falas = {
     ],
     ouvir: [
       F('a_o0', '(A vó cantarola baixinho enquanto embrulha o pão.)', { estado: 'servindo' }),
-      F('a_o1', '(Ela olha o forno, depois o nicho, como quem confere se tudo ficou no lugar.)'),
+      F('a_o1', '(Ela olha o forno, depois o nicho, e confere se tudo ficou no lugar.)'),
       F('a_o2', '(A vó fecha o rádio com a ponta do dedo.)', { flag: 'radio_tocou' }),
     ],
     perguntar: {
@@ -97,7 +97,7 @@ Sim.Data.falas = {
       F('r_s7', 'Dandara tá ali. Fala com ela, que ela entende dessas coisas de papel.', { presente: 'dandara' }),
     ],
     ouvir: [
-      F('r_o0', '(Seu Raimundo confere os bolsos devagar, como quem já sabe o que vai achar.)', { loc: 'fila' }),
+      F('r_o0', '(Seu Raimundo confere os bolsos devagar. Já sabe o que vai achar.)', { loc: 'fila' }),
       F('r_o1', 'Minha mãe tomava café aqui, nesse mesmo canto. Dizia que o dela era o mais forte da rua.', { loc: 'mesa' }),
       F('r_o2', '(Ele murmura uma reza baixinho, de olhos fechados. Você espera.)', { loc: 'altar' }, { revisar: true }),
       F('r_o3', 'Dizem que vão medir tudo. Medir pra quê? A casa tá de pé.', { humor: ['preocupado'] }),
@@ -134,7 +134,7 @@ Sim.Data.falas = {
       programa: [F('d_pp0', 'O Programa? Prometem restaurar tudo. Só não dizem quem fica.'), F('d_pp1', 'Fizeram levantamento de casa por casa sem avisar. Eu quero a lista com os nomes dos moradores.', { conf: [1, 3] })],
       caderno: [F('d_pd0', 'É a ata. Quem não escreve, esquecem.'), F('d_pd1', 'Aprendi a escrever com uma freira. Era pra rezar, mas deu pra anotar muita coisa.', { conf: [1, 3] })],
       mae: [F('d_pm0', 'Minha mãe tá doente. Por isso eu não posso me demorar.'), F('d_pm1', 'Ela gosta de bolo de aipim. Quando sobra, eu levo.', { conf: [1, 3] })],
-      lucia: [F('d_pl0', 'A moça da prancheta? Educada. E é isso que me dá mais medo.'), F('d_pl1', 'Ela não é má. Mas faz a conta que mandam, e a conta não conhece ninguém.', { conf: [2, 3] })],
+      lucia: [F('d_pl0', 'A moça da prancheta? Educada. E é isso que me dá mais medo.'), F('d_pl1', 'Ela faz a conta que mandam, e a conta não conhece ninguém.', { conf: [2, 3] })],
     },
     ajudar: { vez: [F('d_aj0', 'Obrigada, Lia. Tenho pressa mesmo. Vou anotar a gentileza.')] },
     pedido: [F('d_pd2', 'Seis pães pra levar e um cafezinho. Rápido, Dona Áurea, se der.')],
@@ -204,11 +204,11 @@ Sim.Data.conhecimentos = [
   // fiado de Seu Raimundo
   K('kp_caderneta', 'A caderneta da vó', 'A linha de Seu Raimundo é a mais comprida. Tem risco de sexta em sexta, e nunca um "devendo".', 'raimundo', { obj: 'fiado' }),
   K('kp_lousa', 'A lousa do fiado', 'A lousa diz "fiado até sexta". A vó nunca apagou a linha dele.', 'aurea', { obj: 'fiado' }),
-  K('kp_raimundo_fiado', 'Anota na caderneta', 'Ouvi Seu Raimundo pedir pra anotar. Ele fala "sexta eu acerto" como quem faz promessa, não pedido.', 'raimundo', { obj: 'fiado' }),
+  K('kp_raimundo_fiado', 'Anota na caderneta', 'Ouvi Seu Raimundo pedir pra anotar. Ele diz "sexta eu acerto" e o nome dele fica na caderneta até lá.', 'raimundo', { obj: 'fiado' }),
   K('kp_raimundo_sexta', 'Sexta, o dia dele', 'Pagar na sexta era o costume da mãe dele. Ele guardou o costume junto com a casa.', 'raimundo', { obj: 'fiado' }),
   K('kp_raimundo_agua', 'A água do filtro', 'Levei água do filtro pra Seu Raimundo. Ele falou da mãe: "a água de barro ensina paciência".', 'raimundo', { obj: 'fiado' }),
   K('kp_raimundo_reza', 'Diante do nicho', 'Seu Raimundo reza baixinho diante do nicho de São Jorge antes de sair. Esperei sem atrapalhar.', 'raimundo', { obj: 'fiado', revisar: true }),
-  K('kp_vo_fiado', 'O que a vó pensa do fiado', 'A vó disse que quem cobra é a caderneta, não ela. Pra ela, fiado é confiança.', 'aurea', { obj: 'fiado' }),
+  K('kp_vo_fiado', 'O que a vó pensa do fiado', 'A vó disse que quem cobra é a caderneta. Pra ela, fiado é confiança.', 'aurea', { obj: 'fiado' }),
   // o que vem aí
   K('kp_radio', 'O rádio da vó', 'O rádio anunciou um Programa de recuperação do centro histórico. A vó baixou o volume.', 'aurea', { obj: 'programa' }),
   K('kp_calendario', 'Sexta circulada', 'No calendário, uma sexta está circulada de vermelho. Todo mundo parece contar os dias até ela.', 'aurea', { obj: 'programa' }),
@@ -281,7 +281,7 @@ Sim.Data.virar94 = () => {
   P.raimundo.perguntar.programa = [F('r_pp0', 'Colaram um aviso na minha porta. Diz que a casa está em risco. Eu ainda não assinei nada.'), F('r_pp1', 'Eles apostam que turista sustenta o comércio sozinho. Eu nunca vi turista pedir fiado.', { conf: [2, 3] }, { revisar: true })];
   P.raimundo.perguntar.papel = [F('r_pa0', 'Papel, tenho dois: o da caderneta e o do aviso. Só o primeiro eu entendo.')];
   P.dandara.perguntar.programa = [F('d_pp0', 'O Programa saiu da pintura e entrou na obra pesada. Já tem casa interditada e família indo embora.'), F('d_pp1', 'Eu quero a lista de quem recebeu aviso, com nome. A associação lê tudo no sábado.', { conf: [1, 3] })];
-  P.dandara.perguntar.lucia = [F('d_pl0', 'A moça da prancheta agora assina ficha de saída. Educada como sempre, e é isso que me dá medo.'), F('d_pl1', 'Ela não é má. Mas a ficha vira valor de indenização, e a conta não conhece ninguém.', { conf: [2, 3] })];
+  P.dandara.perguntar.lucia = [F('d_pl0', 'A moça da prancheta agora assina ficha de saída. Educada como sempre, e é isso que me dá medo.'), F('d_pl1', 'A ficha dela vira valor de indenização, e a conta não conhece ninguém.', { conf: [2, 3] })];
   P.lucia.perguntar.programa = [F('l_pp0', 'O levantamento acabou e agora vem a fase de obra. Eu confiro as fichas das casas que já têm aviso.'), F('l_pp1', 'O Programa apostou que o turista de fora sustenta o comércio da rua. Eu escrevi que ainda é cedo para saber.', { conf: [1, 3] }, { revisar: true }), F('l_pp2', 'No órgão já se fala em programar festa e show, para trazer gente de Salvador. Ainda é conversa de corredor.', { conf: [2, 3] }, { revisar: true })];
   P.lucia.perguntar.prancheta = [F('l_pn0', 'Hoje é ficha de casa: nome de quem mora, quantos são, valor oferecido.'), F('l_pn1', 'Eu escrevo o menos que posso. Mesmo assim é o que decide.', { conf: [1, 3] })];
   P.dandara.perguntar.programa.push(F('d_pp2', 'Agora tem o Dia & Noite: show de graça todo dia nos largos, para a rua não esvaziar. Eu vou. Só pergunto quem mora nos casarões que viram bar.', { conf: [2, 3] }, { revisar: true }));
