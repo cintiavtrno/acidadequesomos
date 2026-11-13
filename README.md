@@ -1,4 +1,4 @@
-# O balcão da vó — Pelourinho (protótipo jogável)
+# A cidade que somos — Pelourinho (protótipo jogável)
 
 Jogo de simulação social em pixel art (HTML/canvas, sem dependências), ambientado no Pelourinho, Salvador.
 Câmera lateral na rua e três-quartos nos interiores.

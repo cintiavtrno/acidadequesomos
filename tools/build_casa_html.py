@@ -15,7 +15,7 @@ sub('IMG.bakery_interior_base', 'IMG.casa_interior_base')
 sub('C94.padaria(ctx)', 'C94.casa(ctx)')
 sub('C94.EXTRA', 'C94.EXTRA_CASA', 0)
 sub("for (const k of ['lia', 'aurea', 'raimundo', 'dandara', 'lucia'])", "for (const k of ['lia', 'raimundo'])")
-T = T.replace('<title>O balcão da vó — Etapa 4: simulação social</title>', '<title>O balcão da vó — Etapa 5 · casa de Seu Raimundo</title>')
+T = T.replace('<title>A cidade que somos — Etapa 4: simulação social</title>', '<title>A cidade que somos — Etapa 5 · casa de Seu Raimundo</title>')
 T, n = re.subn(r"loc (!==|===) 'padaria'", r"loc \1 'casa'", T); assert n >= 6, n
 sub("if (p.y > YF - 1 && Math.abs(p.x - EXIT_X) <= 24) startFade('street');",
     "if (p.y > YF - 1 && Math.abs(p.x - EXIT_X) <= 24) { p.y = YF - 14; p.tx = null; p.ty = null; p.path = []; p.goal = null; say('A escada desce para a rua, no sobrado ao lado da padaria. A passagem entre a casa e a rua entra na Etapa 6.', 5); }")

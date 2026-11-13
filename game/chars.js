@@ -1,4 +1,4 @@
-// ===== chars.js — sistema de personagens reutilizável (O balcão da vó · Etapa 2) =====
+// ===== chars.js — sistema de personagens reutilizável (A cidade que somos · Etapa 2) =====
 // Cada personagem × câmera tem uma folha (PNG) + atlas (JSON). Células 40×52, âncora = pés (20,46).
 // Folhas: <quem>_side (rua, 4 direções) e <quem>_tq (interior 3/4, 8 direções). Nunca se misturam perspectivas.
 const CharLib = {

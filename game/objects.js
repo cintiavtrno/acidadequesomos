@@ -1,4 +1,4 @@
-// ===== objects.js — sistema de objetos reutilizável (O balcão da vó · Etapa 3) =====
+// ===== objects.js — sistema de objetos reutilizável (A cidade que somos · Etapa 3) =====
 // Catálogo (assets/objects/catalog.json) + cena (scene_padaria.json). Cada objeto: categoria, classe, dimensão, apoio (âncora), colisão, interação, camada.
 // Camadas: wall (parede, antes de tudo) · floor (ordenado pelos pés) · on (apoiado em outro objeto) · front (sobreposto à frente de um móvel).
 const ObjectSys = {

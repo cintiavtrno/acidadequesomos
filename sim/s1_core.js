@@ -1,4 +1,4 @@
-// ===== s1_core.js — base da simulação (O balcão da vó · Etapa 4) =====
+// ===== s1_core.js — base da simulação (A cidade que somos · Etapa 4) =====
 // DOM-free: roda no navegador e em Node (testes). Tudo vive no objeto global Sim.
 // Módulos: core (RNG, EventSystem, WorldClock) · nav · data · social (relações + memória) · dialogue · npc (estados, decisão, rotina) · service · events · objectives · world.
 const Sim = { v: '4.0', cfg: { speedPx: { lia: 30, aurea: 20, raimundo: 15.7, dandara: 26, lucia: 29 } } };

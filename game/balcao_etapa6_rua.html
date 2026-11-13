@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>O balcão da vó — Etapa 6 · a rua</title>
+<title>A cidade que somos — Etapa 6 · a rua</title>
 <style>
 
   :root { color-scheme: dark; }
@@ -276,7 +276,7 @@
   </div>
 </div>
 <script>
-// ===== chars.js — sistema de personagens reutilizável (O balcão da vó · Etapa 2) =====
+// ===== chars.js — sistema de personagens reutilizável (A cidade que somos · Etapa 2) =====
 // Cada personagem × câmera tem uma folha (PNG) + atlas (JSON). Células 40×52, âncora = pés (20,46).
 // Folhas: <quem>_side (rua, 4 direções) e <quem>_tq (interior 3/4, 8 direções). Nunca se misturam perspectivas.
 const CharLib = {
@@ -432,7 +432,7 @@ const C94 = (() => {
   return { px, txt, largura, rua, padaria, casa, gaiola, EXTRA: null, EXTRA_CASA: { y: 178, draw: mala } };
 })();
 
-// ===== s1_core.js — base da simulação (O balcão da vó · Etapa 4) =====
+// ===== s1_core.js — base da simulação (A cidade que somos · Etapa 4) =====
 // DOM-free: roda no navegador e em Node (testes). Tudo vive no objeto global Sim.
 // Módulos: core (RNG, EventSystem, WorldClock) · nav · data · social (relações + memória) · dialogue · npc (estados, decisão, rotina) · service · events · objectives · world.
 const Sim = { v: '4.0', cfg: { speedPx: { lia: 30, aurea: 20, raimundo: 15.7, dandara: 26, lucia: 29 } } };
