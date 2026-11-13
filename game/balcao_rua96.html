@@ -656,7 +656,7 @@ Sim96.Trama = (function () {
         ['dandara', 'Mas olha o que ela filma: fachada pintada, calçada limpa, polícia na esquina. Vai olhar o monitor da produção, ali na base, e conversa com Dona Rita, na porta do prédio de tijolo. Depois volta aqui.']] },
       { id: 'camera', label: 'O que a câmera vê', ver: E => E.tem('kp_96_monitor') && E.tem('kp_96_tijolo'), faz: 'm2fim', da: ['kp_96_vitrine'], lin: [
         ['lia', 'No monitor só entra a parede pintada. O prédio de Dona Rita ficou de fora.'],
-        ['dandara', 'Isso. O Programa queria mostrar uma rua limpa, segura e desejada, e agora o mundo inteiro vai ver. Ele não pagou por isso.'],
+        ['dandara', 'Isso. O Programa queria mostrar uma rua limpa, segura e desejada, e agora o mundo inteiro vai ver.'],
         ['dandara', 'Quem mora aqui não aparece na imagem, ou aparece atrás da grade.'],
         ['dandara', 'Dona Bela já te falou de gente olhando as casas. Antes olhavam com os olhos. Hoje é com câmera.', ['kp_rua_olhar', 'kp_94_rua_olhar']]] },
       { id: 'fase2', label: 'O Programa agora', ver: E => E.tem('kp_96_vitrine') || E.mem(['kp_94_programa', 'kp_94_lucia_evento', 'q_lucia_evento', 'kp_94_dandara_dn', 'q_dandara_dn']), faz: 'm3inicio', da: ['kp_96_fase2'], lin: [
