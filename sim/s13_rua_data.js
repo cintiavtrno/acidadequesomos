@@ -351,7 +351,7 @@ Sim.Rua.D.kpMeta = {
 // ---- convivência (dias 1 a 4): assunto "E hoje?" com uma resposta nova por dia e saudação do primeiro encontro de cada dia. Nenhum rende pista. Textos de proposta. ----
 Sim.Rua.D.hoje = {
   raimundo: [[2, 'Dia de ficar sentado e ver a rua passar. O sol chega no meu pé lá pelas dez, e eu só saio da cadeira quando ele sai.'], [3, 'Hoje apareceu gente de gravata olhando o quadro, e eu não conheço nenhum. Fico quieto na cadeira e deixo eles passarem.'], [4, 'Dandara quer que eu vá à reunião à noite. Ainda não disse que vou nem que não vou.']],
-  ze: [[2, 'Hoje eu acordei com a mão afiada. Se o Nonato ganhar de novo, eu pago o café dele só para ele calar a boca.'], [3, 'Ouvi dizer que vão medir a rua toda. Se medirem a calçada onde eu sento, vão achar a cadeira torta. Ela é torta mesmo.'], [4, 'À noite tem reunião na associação. Eu vou, nem que seja pelo cafezinho que a Dandara serve.']],
+  ze: [[1, 'Está vendo o portão ao lado da padaria? Ali mora Dona Zefa. O quintal é dela, e ela só abre para quem convida. Dizem que o caruru dela dá fila.'], [2, 'Hoje eu acordei com a mão afiada. Se o Nonato ganhar de novo, eu pago o café dele só para ele calar a boca.'], [3, 'Ouvi dizer que vão medir a rua toda. Se medirem a calçada onde eu sento, vão achar a cadeira torta. Ela é torta mesmo.'], [4, 'À noite tem reunião na associação. Eu vou, nem que seja pelo cafezinho que a Dandara serve.']],
   nonato: [[1, 'Cheguei cedo hoje, que a cal da tia secou rápido. Estou com a tarde livre e a mão boa.'], [2, 'Hoje é revanche na mesa. Quem perder paga o café do outro.'], [3, 'Escutei que o Programa vai mexer em fachada. Pedreiro é sempre o primeiro a saber, porque é ele que leva a massa. Ainda não me chamaram.'], [4, 'Vou na reunião. Se tiver obra, quero saber quem vai fazer. Tem uns três pedreiros nessa rua.']],
   bela: [[2, 'A máquina quebrou a agulha duas vezes hoje. Quando isso acontece, eu desço e jogo, que sai mais barato.'], [3, 'Tem papel novo no quadro. Li duas vezes. Papel que chega de fora costuma ter letra pequena no pé da página.'], [4, 'Hoje eu fecho a janela cedo. A reunião é à noite, e quando Dandara chama eu vou, mesmo reclamando.']],
   cicera: [[2, 'Lençol seca rápido, mas o céu de tarde não está me agradando. Se escurecer, tu me ajuda a recolher, tá?'], [3, 'Júnior apareceu com uma notícia do poste e eu não entendi nada. Mandei repetir devagar, e ele já tinha ido embora.'], [4, 'Hoje eu lavo cedo, que à noite é reunião e eu não quero chegar com a mão de sabão.']],
@@ -375,6 +375,14 @@ for (const id in Sim.Rua.D.hoje) {
   const F = Sim.Rua.D.falas[id]; if (!F) continue;
   F.perguntar.hoje = Sim.Rua.D.hoje[id].map(([dia, t, rev]) => Object.assign({ t, dia }, rev ? { revisar: true } : {}));
   (Sim.Rua.D.gates[id] = Sim.Rua.D.gates[id] || {}).hoje = { label: 'E hoje?', quando: [], ask: 'E hoje, como está o dia?' };
+}
+// atividades que nascem do dia: ficam disponíveis só enquanto o acontecimento dura
+{
+  const F = Sim.Rua.D.falas, G = Sim.Rua.D.gates;
+  F.cicera.perguntar.roupa = [{ t: 'Pega aquele lençol ali e dobra no meio, menina. Isso, assim. Chuva em roupa lavada é o pior que tem. Obrigada, viu. Hoje eu seco dentro de casa e amanhã o sol que decida.', viv: 'ajudou_roupa' }];
+  G.cicera = G.cicera || {}; G.cicera.roupa = { label: 'Ajudar com a roupa', quando: ['ev:varal'], ask: 'Dona Cícera, deixa que eu ajudo a recolher.' };
+  F.lucia.perguntar.trena = [{ t: 'Segura a ponta aqui, no canto da porta. Dois e dez de altura. Anota? Eu anoto também, mas duas anotações valem mais que uma. O relatório sai com esses números e ninguém conferiu de perto.', viv: 'segurou_trena' }];
+  G.lucia = G.lucia || {}; G.lucia.trena = { label: 'Segurar a trena', quando: ['ev:medindo'], ask: 'Posso segurar a ponta da trena pra senhora?' };
 }
 Sim.Rua.D.dicaOutroDia = 'Por hoje já ouvi o que dava. Amanhã a conversa pode ser outra.';
 // descrição de objetos que mudam de um dia para o outro (vale a do maior dia que já chegou)

@@ -548,6 +548,21 @@ function drawMesaTopo(cam) {
 }
 // quem senta em banco/cadeira solta fica NA FRENTE do móvel (o pé do móvel e o da pessoa estão na mesma linha, mas yw() muda a cada 70 px)
 function seatBias(id) { return /^(banco_|cad_calcada)/.test(id || '') ? 3 : .1; }
+// marcas dos acontecimentos de 1991: papel dos técnicos no quadro, números a giz nas portas, cartaz da reunião e chuva
+function drawMarcas(cam) {
+  if (!SIM.marcas || !window.MUNDO_ATIVO || window.MUNDO_ANO === 1994) return;
+  const M = SIM.marcas(), px = (x, y, w, h, c) => { ctx.fillStyle = c; ctx.fillRect(Math.round(x - cam), Math.round(y), w, h); };
+  if (M.papel) { const y = yw(718) - 20; px(709, y, 11, 13, '#f1e9d2'); px(709, y, 11, 1, '#d8cdb0'); px(711, y + 3, 7, 1, '#6b5f4a'); px(711, y + 5, 6, 1, '#6b5f4a'); px(711, y + 7, 7, 1, '#6b5f4a'); px(711, y + 9, 4, 1, '#b4452f'); }
+  if (M.cartaz) { const x = 114, y = yw(x) - 6; px(x - 5, y, 10, 13, '#e8d9a8'); px(x - 5, y, 10, 1, '#c9b87e'); px(x - 3, y + 3, 6, 1, '#4a3d2a'); px(x - 3, y + 5, 5, 1, '#4a3d2a'); px(x - 3, y + 8, 4, 2, '#b4452f'); }
+  const DIG = ['111101101101111', '010110010010111', '111001111100111', '111001111001111', '101101111001001', '111100111001111', '111100111101111', '111001001001001'];
+  const ord = Object.keys(M.giz).map(Number).sort((a, b) => a - b);
+  ord.forEach((x, n) => { const y = Math.round(yw(x)) - 46, g = DIG[(n + 1) % 8]; for (let k = 0; k < 15; k++) if (g[k] === '1') px(x + 14 + (k % 3) * 2, y + Math.floor(k / 3) * 2, 2, 2, 'rgba(244,240,224,.92)'); });
+  if (M.chuva) {
+    ctx.fillStyle = 'rgba(46,58,86,.18)'; ctx.fillRect(0, 0, VW, VH);
+    ctx.fillStyle = 'rgba(190,210,235,.55)'; const t = SIM.t * 90;
+    for (let i = 0; i < 70; i++) { const x = (i * 53 + t * .6) % (VW + 20) - 10, y = ((i * 97 + t * 3.1) % (VH + 20)) - 10; ctx.fillRect(Math.round(x), Math.round(y), 1, 5); ctx.fillRect(Math.round(x - 1), Math.round(y + 5), 1, 1); }
+  }
+}
 function render() {
   computeView(); const cam = S.cam;
   ctx.drawImage(IMG.far, Math.floor(cam * 0.35), 0, VW, VH, 0, 0, VW, VH);
@@ -569,6 +584,7 @@ function render() {
   ents.sort((a, b) => a.y - b.y).forEach(e => e.draw());
   for (const it of over) drawProp(it.sprite, it.x - cam, yw(it.x) + it.sy + .5, 0);
   ctx.drawImage(IMG.front, cam, 0, VW, VH, 0, 0, VW, VH);
+  drawMarcas(cam);
   if (S.ruler) drawRuler(cam);
   if (S.coll) drawColl(cam);
   vctx.drawImage(off, V.sx, V.sy, V.w, V.h, 0, 0, VW, VH);

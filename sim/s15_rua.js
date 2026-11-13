@@ -21,7 +21,7 @@
       // rngVis: sorteio só visual (animação, pombos), separado do que decide o jogo e semeado: o dia fica reprodutível
       o = o || {}; this.scene = o.scene; this.seed = o.seed || 1991; this.rng = Sim.RNG(this.seed); this.rngVis = Sim.RNG((this.seed || 1991) + 77); this.bus = new Sim.EventSystem();
       this.clock = new Sim.WorldClock({ start: o.start != null ? o.start : RD.dia.inicio, rate: o.rate || 0.25, openAt: RD.dia.inicio, closeAt: RD.dia.fim });
-      this.integrado = !!o.integrado; this.dia = o.dia != null ? o.dia : (typeof window !== 'undefined' && window.MUNDO_ANO !== 1994 && window.MUNDO_DIA) || 99; this.lib = {}; this.liaFora = false; this.ag = this.integrado ? RD.agendaMundo(this.dia) : JSON.parse(JSON.stringify(RD.agenda));
+      this.aco = { papel: false, chuva: null, giz: {}, cartaz: false, reuniao: null }; this.evFeito = {}; this.integrado = !!o.integrado; this.dia = o.dia != null ? o.dia : (typeof window !== 'undefined' && window.MUNDO_ANO !== 1994 && window.MUNDO_DIA) || 99; this.lib = {}; this.liaFora = false; this.ag = this.integrado ? RD.agendaMundo(this.dia) : JSON.parse(JSON.stringify(RD.agenda));
       this.W = RD.W; this.VH = RD.VH; this.persist = o.persist || {}; this.hooks = o.hooks || {};
       this.solids = (this.scene.solids || []).filter(s => !/^(cad_|banquinho_)/.test(s.id)).map(s => ({ id: s.id, x0: s.x0, x1: s.x1, sy0: s.sy0, sy1: s.sy1 }));
       this.trust = Object.assign({ raimundo: .45, dandara: .22, lucia: .06, ze: .2, nonato: .15, bela: .18, cicera: .2, junior: .3, tonho: .2 }, this.persist.trust || {});
@@ -62,10 +62,11 @@
     // ---------------- NPC ----------------
     update(dt) {
       this.t += dt; const d = this.clock.tick(dt); this.dmin = d;
+      if (this.timersEv) for (const x of this.timersEv.slice()) { x.t -= dt; if (x.t <= 0) { this.timersEv.splice(this.timersEv.indexOf(x), 1); x.fn(); } }
       for (const id in this.npcs) this.updateNpc(this.npcs[id], dt);
       this.mesa.update(dt);
       this.social.update(dt); this.updateViv(dt);
-      this.updateBichos(dt); this.updateGreetings(dt);
+      this.updateBichos(dt); this.updateGreetings(dt); this.acontecimentos();
       if (this.clock.min >= RD.dia.fim && !this.clock.ended && !this.semFimDeDia) { this.clock.ended = true; this.bus.emit('dia_fim', { resumo: this.resumo() }); }
     }
     lugar(n, sp) { n.x = sp.x; n.y = sp.y; if (sp.face) n.face = sp.face; }
@@ -110,12 +111,14 @@
           break;
         }
         case 'entrar': {
+          if (n.state === 'Away') { n.task = null; break; }
           const sp = this.spot(t.porta); const perto = Math.hypot(n.x - sp.x, n.y - sp.y) < 4;
           if (!perto) { this.vaiPara(n, sp.x, sp.y, () => { }); break; }
           n.face = sp.face; if (t.porta.startsWith('borda')) { n.state = 'Away'; n.alpha = 0; n.task = null; }
           else { n.state = 'Entering'; n.fadeT = 0; this.bus.emit('porta', { id: n.id, porta: t.porta, saiu: false }); }
           break;
         }
+        case 'dentro': if (n.state !== 'Away') { n.task = null; break; } if (this.clock.min >= t.ate) n.task = null; break;   // espera dentro de casa até a hora marcada
         case 'sentar': this.sentar(n, t); break;
         case 'levantar': if (n.state === 'Sitting') this.levantarAgora(n); n.task = null; break;
         case 'esperar': {
@@ -279,7 +282,7 @@
       if (this.viv.viu_medicao) this.marcar('ouviu_programa');
     }
     gateOk(id, t, g) {
-      const nv = this.nivel(id); return g.quando.length === 0 || g.quando.some(q => q.startsWith('apos:') ? !!this.feitos[q.slice(5)] : q.startsWith('nivel:') ? nv >= +q.slice(6) : this.tem(q));
+      const nv = this.nivel(id); return g.quando.length === 0 || g.quando.some(q => q.startsWith('apos:') ? !!this.feitos[q.slice(5)] : q.startsWith('nivel:') ? nv >= +q.slice(6) : q.startsWith('ev:') ? this.evAtivo(q.slice(3)) : this.tem(q));
     }
     topicos(id) {
       const F = RD.falas[id], G = RD.gates[id] || {}, nv = this.nivel(id), out = [];
@@ -297,7 +300,7 @@
       const n = this.npcs[id], F = RD.falas[id]; if (!n || n.state === 'Away') return null;
       let sa = null; this.saudouHoje = this.saudouHoje || {};
       if (!RD._v94 && this.dia > 1 && this.dia < 99 && !this.saudouHoje[id]) {   // primeira conversa do dia: a pessoa abre com o dia (e com o que a Lia fez por ela)
-        const lst = ((RD.saudarDia || {})[id] || {})[Math.min(this.dia, 4)] || []; const com = lst.find(x => Array.isArray(x) && x[1] === 'sacola' && Sim.Sacola && Sim.Sacola.S && Sim.Sacola.S.estado === 'entregue');
+        const lst = ((RD.saudarDia || {})[id] || {})[Math.min(this.dia, 4)] || []; const com = lst.find(x => Array.isArray(x) && (x[1] === 'sacola' ? (Sim.Sacola && Sim.Sacola.S && Sim.Sacola.S.estado === 'entregue') : this.tem(x[1])));
         const livres = lst.filter(x => !Array.isArray(x)); const pick = com ? com[0] : livres.length ? livres[Math.floor(this.rng() * livres.length)] : null; if (pick) { sa = pick; this.saudouHoje[id] = 1; } }
       sa = sa || this.social.saudacaoLia(id) || F.saudar[Math.floor(this.rng() * F.saudar.length)];
       if (!RD._v94) for (const [re, f] of (RD.saudarViv || {})[id] || []) if (re.test(sa)) this.marcar(f);   // o que a pessoa diz ao ver Lia também conta como ter ouvido ou visto
@@ -314,7 +317,7 @@
     diario() {
       const meta = RD.kpMeta || {}, notas = Object.keys(RD.kp).filter(k => this.kp[k]).map(k => ({ id: k, titulo: RD.kp[k][0], texto: RD.kp[k][1], por: this.kp[k].por || null, t: this.kp[k].t, rev: !!(RD.kpRev && RD.kpRev[k]) }));
       const cur = (RD.curiosidades || []).filter(c => this.viv[c.viv] && !this.kp[c.ate] && RD.kp[c.ate]);
-      const hip = (RD.hipoteses || []).filter(h => h.se.every(k => this.kp[k]));
+      const hip = (RD.hipoteses || []).filter(h => h.se.every(k => this.kp[k]) && (!h.viv || h.viv.every(v => this.viv[v])));
       return { notas, acontecimentos: cur.filter(c => c.tipo === 'acontecimento'), assuntos: cur.filter(c => c.tipo === 'assunto'), hipoteses: hip, total: Object.keys(RD.kp).length };
     }
     ouvir(id) { const F = RD.falas[id]; return [{ quem: id, texto: F.ouvir[Math.floor(this.rng() * F.ouvir.length)], nota: true }]; }
@@ -323,9 +326,9 @@
       if (top === 'comentarios') { const o = [{ quem: 'lia', texto: ask }].concat(this.social.perguntarComentarios(id)); if (o.some(l => l.quem === 'nota' && /programa|medindo|casas/i.test(l.texto))) this.marcar('ouviu_programa'); if (o.some(l => /reunião/i.test(l.texto))) this.marcar('ouviu_reuniao'); if (this.clock.min - (this.feitos[id + ':comentarios'] || -99) > 20) this.trust[id] = clamp((this.trust[id] || 0) + .02, 0, 1); this.feitos[id + ':comentarios'] = this.clock.min; this.salvar(); return o; }
       const F = RD.falas[id], todas = F.perguntar[top] || [], lst = todas.filter(r => this.dispo(r) && (!r.conf || (this.nivel(id) >= r.conf[0] && this.nivel(id) <= r.conf[1])));
       if (!lst.length) return [{ quem: id, texto: 'Hoje não, Lia.' }];
-      this.dados = this.dados || {}; const r = lst.find(x => !this.dados[id + top + x.t]);
+      this.dados = this.dados || {}; const dk = x => id + top + x.t + (x.viv ? ':' + this.dia : ''), r = lst.find(x => !this.dados[dk(x)]);
       const G0b = (RD.gates[id] || {})[top], ctx = !!(G0b && G0b.quando && G0b.quando.length);
-      const cond = q => q.startsWith('apos:') ? !!this.feitos[q.slice(5)] : q.startsWith('nivel:') ? this.nivel(id) >= +q.slice(6) : this.tem(q);
+      const cond = q => q.startsWith('apos:') ? !!this.feitos[q.slice(5)] : q.startsWith('nivel:') ? this.nivel(id) >= +q.slice(6) : q.startsWith('ev:') ? this.evAtivo(q.slice(3)) : this.tem(q);
       // a pergunta de Lia muda conforme o que a levou ao assunto: a 1ª condição usa `ask`, a 2ª `ask2`, a 3ª `ask3`
       const via = G0b && ctx ? G0b.quando.findIndex(cond) : -1, ask2 = via > 0 ? ([null, G0b.ask2, G0b.ask3 || G0b.ask2][via] || null) : null;
       const pergunta = ask2 || ask;
@@ -337,10 +340,10 @@
         if (fala) out0.push({ quem: id, texto: fala }); else out0.push({ quem: 'nota', texto: RD.reservaGen, nota: true });
         return out0;
       }
-      this.dados[id + top + r.t] = 1;
+      this.dados[dk(r)] = 1;
       const out = (pergunta ? [{ quem: 'lia', texto: pergunta }] : []).concat([{ quem: id, texto: r.t, revisar: !!r.revisar }]);
       if (r.kp) { const nv = this.ganhar(r.kp, { tipo: 'fala', quem: id, conf: !!r.conf }); if (nv) out.push({ quem: 'nota', texto: 'Anotado: ' + RD.kp[r.kp][0] }); }
-      this.trust[id] = clamp((this.trust[id] || 0) + .06 + (ctx ? .03 : 0), 0, 1); this.bus.emit('conversa', { id, top }); this.social.liaConversou(id);
+      this.trust[id] = clamp((this.trust[id] || 0) + .06 + (ctx ? .03 : 0) + (r.viv ? .06 : 0), 0, 1); if (r.viv) this.marcar(r.viv); this.bus.emit('conversa', { id, top }); this.social.liaConversou(id);
       if (id === 'ze' && top === 'lia_jogar') this.liaConvidada = true;
       return out;
     }
@@ -355,6 +358,58 @@
       return { texto: (RD.desc94 && RD.desc94[inst.id]) || (dk != null && dd[dk]) || inst.desc || inst.nome, nome: inst.nome, novo, kp: k && RD.kp[k] ? RD.kp[k][0] : null };
     }
     afagar() { this.afagarGato('lia'); this.ganhar('kp_gato', { tipo: 'gato' }); return '(O gato ronrona e fecha o olho de novo.)'; }
+    // ---------------- acontecimentos da rua (rodam com ou sem a Lia por perto; o registro de que já ocorreram vale por dia) ----------------
+    evAtivo(id) {
+      if (id === 'chuva') return !!(this.aco.chuva && !this.aco.chuva.acabou);
+      if (id === 'medindo') { const n = this.npcs.lucia; return this.dia >= 3 && this.dia < 99 && !!n && n.state === 'Acting' && n.anim === 'interact'; }
+      if (id === 'varal') { const n = this.npcs.cicera; return this.evAtivo('chuva') && !!n && n.state !== 'Away'; }
+      if (id === 'reuniao') return !!(this.aco.reuniao && this.aco.reuniao.porta);
+      return false;
+    }
+    // desvia a agenda de alguém por alguns minutos e devolve a pessoa ao que fazia (assento ou tarefa em curso)
+    desviar(id, tarefas, retomar) {
+      const n = this.npcs[id]; if (!n) return false; const ag = this.ag[id] = this.ag[id] || [], m = this.clock.min;
+      const volta = []; if (retomar !== false) { if (n.seat) volta.push({ tipo: 'sentar', assento: n.seat }); else if (n.task && ['patrulha', 'sentar'].includes(n.task.tipo)) volta.push(Object.assign({}, n.task, { fase: 0, tt: 0 })); }
+      if (n.state === 'Sitting') this.levantarAgora(n); else if (n.state === 'Walking') { n.path = []; n.state = 'Idle'; n.setAnim('idle'); } else if (n.state === 'Acting') { n.state = 'Idle'; n.setAnim('idle'); }
+      n.task = null; ag.splice(n.idx, 0, ...tarefas.concat(volta).map(t => Object.assign({}, t, { t: m }))); return true;
+    }
+    aguardar(secs, fn) { (this.timersEv = this.timersEv || []).push({ t: secs, fn }); }
+    visivel(id) { const n = this.npcs[id]; return !!n && n.state !== 'Away' && n.alpha > .6; }
+    acontecimentos() {
+      if (!this.integrado || this.dia >= 99 || RD._v94) return;
+      const m = this.clock.min, d = this.dia, F = this.evFeito, ev = this.aco, A = (tipo, o) => Object.assign({ tipo }, o || {});
+      // marcas no cenário que ficam até o fim do capítulo
+      ev.papel = d > 3 || (d === 3 && m >= 540); ev.cartaz = d >= 4 && m >= 480;
+      if (d >= 3) { const L = this.npcs.lucia; if (L && L.state === 'Acting' && L.anim === 'interact') { const c = { fachada_azul: [614, 756], fachada_padaria: [470], fachada_sobrado: [164, 72] }; let sp = null; for (const k in c) if (Math.abs(L.x - this.spot(k).x) < 40) sp = k; if (sp && L.at > 3) for (const x of c[sp]) ev.giz[x] = ev.giz[x] || 1 + Object.keys(ev.giz).length; } if (d >= 4) for (const x of [72, 164, 470, 614, 756, 846, 990]) ev.giz[x] = ev.giz[x] || 1 + Object.keys(ev.giz).length; }
+      // dia 3, 09h: os técnicos pregam o papel do Programa no quadro
+      if (d === 3 && !F.tecnicos && m >= 540) { F.tecnicos = true; this.bus.emit('tecnicos', {});
+        if (this.visivel('dandara')) { this.npcs.dandara.falar('Papel novo no quadro. Agora está no papel.', 4); this.desviar('dandara', [A('ir', { spot: 'quadro' }), A('esperar', { dur: 5, anim: 'interact' })]); }
+        if (this.visivel('bela')) this.npcs.bela.falar('Lá vem papel de fora.', 3.6);
+        if (this.visivel('raimundo')) this.npcs.raimundo.falar('Hum.', 2.4); }
+      if (d === 3) for (const h of [10, 12, 14, 16]) if (!F['dq' + h] && m >= h * 60) { F['dq' + h] = true; if (this.visivel('dandara') && !this.npcs.dandara.seat) this.desviar('dandara', [A('ir', { spot: 'quadro' }), A('esperar', { dur: 4, anim: 'interact' })]); }
+      // dias 2 e 4, fim de tarde: chuva
+      const ini = 960 + ((this.seed * 7 + d * 13) % 40);
+      if ((d === 2 || d === 4) && !F.chuva && m >= ini) { F.chuva = true; ev.chuva = { ini: m, fim: m + 22 }; this.bus.emit('chuva', {}); this.chuvaIni(); }
+      if (ev.chuva && !ev.chuva.acabou && m >= ev.chuva.fim) { ev.chuva.acabou = true; this.bus.emit('chuva_fim', {}); }
+      // dia 4, 18h: reunião da associação
+      if (d === 4 && !F.reuniao && m >= 1080) { F.reuniao = true; ev.reuniao = { ini: m, porta: false }; this.reuniaoIni(); }
+      if (ev.reuniao && ev.reuniao.porta && m >= ev.reuniao.ini + 12) ev.reuniao.porta = false;
+    }
+    chuvaIni() {
+      const A = (tipo, o) => Object.assign({ tipo }, o || {}), fim = this.aco.chuva.fim;
+      if (this.visivel('cicera')) { this.npcs.cicera.falar('Chuva! Recolhe, recolhe!', 3.6); this.desviar('cicera', [A('ir', { spot: 'varal' }), A('esperar', { dur: 7, anim: 'hang' }), A('entrar', { porta: 'porta_b5' }), A('dentro', { ate: fim }), A('sair', { porta: 'porta_b5' })]); }
+      for (const id of ['ze', 'nonato', 'bela']) if (this.visivel(id) && this.npcs[id].seat) this.desviar(id, [A('ir', { spot: 'porta_padaria' }), A('visita', { dur: 18 })]);
+      if (this.visivel('junior')) { this.npcs.junior.falar('Vou levar o gato pra padaria!', 3.4); this.desviar('junior', [A('ir', { spot: 'porta_padaria' }), A('visita', { dur: 18 })]); }
+      if (this.visivel('raimundo') && this.npcs.raimundo.seat) this.npcs.raimundo.falar('Eu não derreto.', 3.4);
+    }
+    reuniaoIni() {
+      const A = (tipo, o) => Object.assign({ tipo }, o || {}), R_ = this.aco.reuniao;
+      const D = this.npcs.dandara;
+      if (D) { const t0 = D.state === 'Away' ? [A('sair', { porta: 'borda_E' })] : []; this.desviar('dandara', t0.concat([A('ir', { spot: 'porta_assoc' }), A('esperar', { dur: 12, anim: 'interact' }), A('entrar', { porta: 'porta_assoc' })]), false); R_.porta = true; }
+      const quem = { bela: ['porta_lateral', 'Eu entro. Reclamo lá dentro.'], ze: ['porta_b0', 'Eu entro. O café da Dandara é bom.'], nonato: ['porta_verde', 'Vou ficar na porta, só ouvindo.'] };
+      for (const id in quem) { const n = this.npcs[id]; if (!n) continue; const t0 = n.state === 'Away' ? [A('sair', { porta: quem[id][0] })] : []; this.desviar(id, t0.concat([A('ir', { spot: 'porta_assoc' }), A('esperar', { dur: id === 'nonato' ? 14 : 4, anim: 'talk' })]).concat(id === 'nonato' ? [A('ir', { spot: quem[id][0] }), A('entrar', { porta: quem[id][0] })] : [A('entrar', { porta: 'porta_assoc' })]), false); this.aguardar(2 + Object.keys(quem).indexOf(id) * 1.6, () => { if (this.visivel(id)) n.falar(quem[id][1], 3.6); }); }
+    }
+    marcas() { return { papel: this.aco.papel, giz: this.aco.giz, cartaz: this.aco.cartaz, chuva: this.evAtivo('chuva'), reuniao: this.evAtivo('reuniao') }; }
     salvar() { if (this.hooks.save) this.hooks.save({ trust: this.trust, kp: this.kp, dia: this.persist.dia || 1, soc: this.social.exportar(), viv: this.viv, feitos: this.feitos, dados: this.dados }); }
     resumo() {
       return { jogos: this.mesa.stats, placar: this.mesa.game.placar.slice(), partidas: this.mesa.game.partidas.slice(), kp: Object.keys(this.kp).length, papos: this.bus.count('papo'), portas: this.bus.count('porta') };
