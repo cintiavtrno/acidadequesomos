@@ -1,0 +1,2641 @@
+{
+ "padaria": [
+  {
+   "id": "kp_caderneta",
+   "t": "A caderneta da vó",
+   "x": "A linha de Seu Raimundo é a mais comprida. Tem risco de sexta em sexta, e nunca um \"devendo\".",
+   "q": "raimundo",
+   "rev": false
+  },
+  {
+   "id": "kp_lousa",
+   "t": "A lousa do fiado",
+   "x": "A lousa diz \"fiado até sexta\". A vó nunca apagou a linha dele.",
+   "q": "aurea",
+   "rev": false
+  },
+  {
+   "id": "kp_raimundo_fiado",
+   "t": "Anota na caderneta",
+   "x": "Ouvi Seu Raimundo pedir pra anotar. Ele diz \"sexta eu acerto\" e o nome dele fica na caderneta até lá.",
+   "q": "raimundo",
+   "rev": false
+  },
+  {
+   "id": "kp_raimundo_sexta",
+   "t": "Sexta, o dia dele",
+   "x": "Pagar na sexta era o costume da mãe dele. Ele guardou o costume junto com a casa.",
+   "q": "raimundo",
+   "rev": false
+  },
+  {
+   "id": "kp_raimundo_agua",
+   "t": "A água do filtro",
+   "x": "Levei água do filtro pra Seu Raimundo. Ele falou da mãe: \"a água de barro ensina paciência\".",
+   "q": "raimundo",
+   "rev": false
+  },
+  {
+   "id": "kp_raimundo_reza",
+   "t": "Diante do nicho",
+   "x": "Seu Raimundo reza baixinho diante do nicho de São Jorge antes de sair. Esperei sem atrapalhar.",
+   "q": "raimundo",
+   "rev": true
+  },
+  {
+   "id": "kp_vo_fiado",
+   "t": "O que a vó pensa do fiado",
+   "x": "A vó disse que quem cobra é a caderneta. Pra ela, fiado é confiança.",
+   "q": "aurea",
+   "rev": false
+  },
+  {
+   "id": "kp_radio",
+   "t": "O rádio da vó",
+   "x": "O rádio anunciou um Programa de recuperação do centro histórico. A vó baixou o volume.",
+   "q": "aurea",
+   "rev": false
+  },
+  {
+   "id": "kp_calendario",
+   "t": "Sexta circulada",
+   "x": "No calendário, uma sexta está circulada de vermelho. Todo mundo parece contar os dias até ela.",
+   "q": "aurea",
+   "rev": false
+  },
+  {
+   "id": "kp_lucia_ouvir",
+   "t": "Lúcia mede tudo",
+   "x": "Lúcia anota medidas da padaria: pé-direito, balcão, janela. Diz que só mede.",
+   "q": "lucia",
+   "rev": false
+  },
+  {
+   "id": "kp_lucia_programa",
+   "t": "O levantamento",
+   "x": "O Programa faz um levantamento casa por casa. Algumas casas já têm lista; outras não.",
+   "q": "lucia",
+   "rev": false
+  },
+  {
+   "id": "kp_dandara_programa",
+   "t": "Quem fica?",
+   "x": "Dandara diz que prometem restaurar tudo e não dizem quem fica. Quer a lista com os nomes.",
+   "q": "dandara",
+   "rev": false
+  },
+  {
+   "id": "kp_conversa_dl",
+   "t": "Dandara e a prancheta",
+   "x": "Ouvi Dandara perguntar em qual coluna a gente entra. Lúcia respondeu que não escolhe as colunas.",
+   "q": "dandara",
+   "rev": false
+  },
+  {
+   "id": "kp_lucia_trena",
+   "t": "Segurar a trena",
+   "x": "Segurei a trena de Lúcia. Ela escreve o mínimo na coluna de observações e deixa sobrar \"sem nome do morador\".",
+   "q": "lucia",
+   "rev": false
+  },
+  {
+   "id": "kp_raimundo_casa",
+   "t": "A casa amarela",
+   "x": "A casa amarela foi da mãe de Seu Raimundo. Ele fala dela com carinho e preocupação.",
+   "q": "raimundo",
+   "rev": false
+  },
+  {
+   "id": "kp_conversa_rd",
+   "t": "Dandara e Seu Raimundo",
+   "x": "Ouvi os dois falarem do cadastro: \"quem assina sem ler vira número\".",
+   "q": "raimundo",
+   "rev": false
+  },
+  {
+   "id": "kp_dandara_ata",
+   "t": "A ata",
+   "x": "Dandara guarda a ata num caderno de capa dura. \"Quem não escreve, esquecem.\"",
+   "q": "dandara",
+   "rev": false
+  },
+  {
+   "id": "kp_dandara_freira",
+   "t": "A freira",
+   "x": "Dandara aprendeu a escrever com uma freira, e usa isso pra anotar tudo da rua.",
+   "q": "dandara",
+   "rev": false
+  },
+  {
+   "id": "kp_dandara_mae",
+   "t": "A mãe de Dandara",
+   "x": "A mãe de Dandara está doente. Por isso ela vive com pressa.",
+   "q": "dandara",
+   "rev": false
+  },
+  {
+   "id": "kp_dandara_vez",
+   "t": "A vez dela",
+   "x": "Pedi a vez para Dandara. Ela disse que vai anotar a gentileza.",
+   "q": "dandara",
+   "rev": false
+  },
+  {
+   "id": "kp_lucia_prancheta",
+   "t": "A coluna de observações",
+   "x": "As pessoas entram na coluna de observações. Lúcia escreve o menos que pode.",
+   "q": "lucia",
+   "rev": false
+  },
+  {
+   "id": "kp_lucia_fiado",
+   "t": "Lúcia viu o fiado",
+   "x": "Lúcia viu Seu Raimundo pedir fiado. Disse que dá vontade de não anotar.",
+   "q": "lucia",
+   "rev": false
+  },
+  {
+   "id": "kp_vo_proposta",
+   "t": "A proposta da gaveta",
+   "x": "Insisti, e a vó contou: querem alugar o ponto para um café, pagando o dobro. Ela ainda não respondeu.",
+   "q": "aurea",
+   "rev": false
+  },
+  {
+   "id": "kp_vo_altar",
+   "t": "São Jorge e o outro nome",
+   "x": "A vó disse que é São Jorge e é também o nome que a avó dela não dizia alto. É os dois.",
+   "q": "aurea",
+   "rev": true
+  },
+  {
+   "id": "kp_vo_ajuda",
+   "t": "Sovar com a vó",
+   "x": "Sovei a massa com a vó. Ela disse que a massa sente a pressa de quem mexe.",
+   "q": "aurea",
+   "rev": false
+  },
+  {
+   "id": "kp_altar",
+   "t": "O nicho de São Jorge",
+   "x": "Nicho com a imagem do santo, vela, copo d'água e flores. A vó acende a vela todo dia de manhã.",
+   "q": "lugar",
+   "rev": true
+  },
+  {
+   "id": "kp_quadro",
+   "t": "Quadro do Bonfim",
+   "x": "Um quadro da colina do Bonfim, com fitinhas coloridas. Cada fitinha é um pedido de alguém da rua.",
+   "q": "lugar",
+   "rev": false
+  },
+  {
+   "id": "kp_fotos",
+   "t": "Retratos na parede",
+   "x": "Três retratos antigos. Reconheci o balcão atrás de uma moça de lenço: a mãe de alguém desta rua.",
+   "q": "lugar",
+   "rev": false
+  },
+  {
+   "id": "kp_filtro",
+   "t": "O filtro de barro",
+   "x": "Os vizinhos enchem garrafa no filtro e ninguém paga. Faz parte da casa.",
+   "q": "lugar",
+   "rev": false
+  },
+  {
+   "id": "kp_gaveta",
+   "t": "A gaveta do balcão",
+   "x": "Papéis, lápis, um caderno. Uma folha dobrada com números e a palavra \"dobro\".",
+   "q": "lugar",
+   "rev": false
+  },
+  {
+   "id": "kp_estante",
+   "t": "Estante de potes",
+   "x": "Rádio, potes, latas e cestos. Cada pote tem nome escrito na tampa, com a letra da vó.",
+   "q": "lugar",
+   "rev": false
+  },
+  {
+   "id": "kp_janela",
+   "t": "Janela do quintal",
+   "x": "A janela dá para o quintal de folhagens. A vó diz que a mangueira é \"de ninguém e de todo mundo\".",
+   "q": "lugar",
+   "rev": false
+  },
+  {
+   "id": "kp_forno",
+   "t": "O forno de lenha",
+   "x": "O forno é aceso antes do sol. A vó diz que ele só funciona direito se alguém conversa com ele.",
+   "q": "lugar",
+   "rev": false
+  },
+  {
+   "id": "kp_caixa",
+   "t": "A caixa registradora",
+   "x": "O caixa só guarda o que é pago na hora. O fiado é contado à parte, na caderneta.",
+   "q": "lugar",
+   "rev": false
+  },
+  {
+   "id": "kp_vitrine",
+   "t": "A vitrine",
+   "x": "Pães e bolos do dia. A vitrine é o primeiro lugar onde todo cliente para e pensa.",
+   "q": "lugar",
+   "rev": false
+  },
+  {
+   "id": "kp_banco",
+   "t": "O banco do nicho",
+   "x": "Um banco comprido encostado na parede, de frente pro nicho. Parece feito pra esperar rezando.",
+   "q": "lugar",
+   "rev": false
+  },
+  {
+   "id": "kp_bancada",
+   "t": "A bancada da massa",
+   "x": "Aqui a vó abre a massa. Tem marcas de dedos na madeira, de muitos anos.",
+   "q": "lugar",
+   "rev": false
+  },
+  {
+   "id": "kp_escada",
+   "t": "A porta da escada",
+   "x": "A porta que sobe pra nossa casa. Quando entardecer, dá para subir e dormir quando a Lia quiser.",
+   "q": "lugar",
+   "rev": false
+  }
+ ],
+ "casa": [
+  {
+   "id": "kp_c_visita",
+   "t": "Receber visita",
+   "x": "Seu Raimundo me recebeu na porta de casa e falou em café antes de perguntar o que eu queria.",
+   "q": "raimundo",
+   "rev": false
+  },
+  {
+   "id": "kp_c_cafe",
+   "t": "O café dele",
+   "x": "Coei o café com Seu Raimundo. Ele mede o pó com a colher do jeito que a mãe media: duas, nem mais, nem menos.",
+   "q": "raimundo",
+   "rev": false
+  },
+  {
+   "id": "kp_c_sacola_pao",
+   "t": "O pão esquecido",
+   "x": "Levei o pão que Seu Raimundo deixou no balcão. Ele agradeceu duas vezes e disse que a cabeça anda cheia de lembrança e vazia de sacola.",
+   "q": "raimundo",
+   "rev": false
+  },
+  {
+   "id": "kp_c_rotina",
+   "t": "A manhã dele",
+   "x": "Ele arruma a cama, rega a planta, reza e só depois sai pra padaria. Não pula nenhuma etapa.",
+   "q": "raimundo",
+   "rev": false
+  },
+  {
+   "id": "kp_c_mae",
+   "t": "O pão de sexta",
+   "x": "A mãe dele deixava o pão na porta de cada vizinho. Quem podia pagava na hora; quem não podia, na sexta. O fiado dele vem de casa; a mãe já anotava assim.",
+   "q": "raimundo",
+   "rev": false
+  },
+  {
+   "id": "kp_c_convite",
+   "t": "O convite do dominó",
+   "x": "Seu Raimundo me chamou pra ver o dominó na calçada. Disse que dominó se aprende olhando.",
+   "q": "raimundo",
+   "rev": false
+  },
+  {
+   "id": "kp_c_assinar",
+   "t": "O que ele não assina",
+   "x": "Seu Raimundo só assina o que sabe ler, e mostra pra vó antes. Isso também é um jeito de se proteger do Programa.",
+   "q": "raimundo",
+   "rev": false
+  },
+  {
+   "id": "kp_c_fogao",
+   "t": "O fogão",
+   "x": "Quatro bocas, duas em uso. O resto está limpo demais pra quem cozinha todo dia.",
+   "q": "lugar",
+   "rev": false
+  },
+  {
+   "id": "kp_c_talha",
+   "t": "O filtro de barro",
+   "x": "Um filtro de barro com tampa de madeira, num suporte encostado na parede, e uma caneca esmaltada embaixo. Combina com o filtro da padaria: a mesma água de barro.",
+   "q": "lugar",
+   "rev": false
+  },
+  {
+   "id": "kp_c_foto",
+   "t": "O forno da mãe",
+   "x": "Foto do forno de lenha com uma mulher de avental na porta. A data, a lápis, é de uma sexta.",
+   "q": "lugar",
+   "rev": false
+  },
+  {
+   "id": "kp_c_sacola",
+   "t": "A sacola do prego",
+   "x": "Sacola de pano remendada, alças gastas, pendurada ao lado do chapéu. Parece sempre pronta pra sair.",
+   "q": "lugar",
+   "rev": false
+  },
+  {
+   "id": "kp_c_oratorio",
+   "t": "O oratório dele",
+   "x": "Uma estampa do Senhor do Bonfim, fitas e uma vela. Na padaria ele reza diante do nicho da vó; aqui, sozinho.",
+   "q": "lugar",
+   "rev": true
+  },
+  {
+   "id": "kp_c_retrato",
+   "t": "A mãe, de lenço",
+   "x": "Retrato oval de uma senhora de lenço branco. O mesmo lenço da moça da fotografia da padaria.",
+   "q": "lugar",
+   "rev": false
+  },
+  {
+   "id": "kp_c_armario",
+   "t": "O paletó de domingo",
+   "x": "Um paletó bem passado e camisas remendadas com linha da mesma cor. Cuida do que tem.",
+   "q": "lugar",
+   "rev": false
+  },
+  {
+   "id": "kp_c_radio",
+   "t": "O rádio de cabeceira",
+   "x": "Está na mesma estação do rádio da vó. Óculos com a haste colada com esparadrapo ao lado.",
+   "q": "lugar",
+   "rev": false
+  },
+  {
+   "id": "kp_c_colcha",
+   "t": "A colcha de retalhos",
+   "x": "Grande demais para uma cama só. Alguém a fez pensando numa casa mais cheia do que esta hoje.",
+   "q": "lugar",
+   "rev": false
+  },
+  {
+   "id": "kp_c_mesa",
+   "t": "A mesa posta para um",
+   "x": "A toalha branca, a segunda cadeira puxada. Como se alguém pudesse chegar.",
+   "q": "lugar",
+   "rev": false
+  },
+  {
+   "id": "kp_c_domino",
+   "t": "A caixa de dominó",
+   "x": "Faltava o seis-seis; ele fez outra pedra de madeira e pintou os pontos. Joga assim mesmo.",
+   "q": "lugar",
+   "rev": false
+  },
+  {
+   "id": "kp_c_cafe_juntos",
+   "t": "Café na mesa dele",
+   "x": "Tomei café sentada na mesa de Seu Raimundo. Ele serve devagar, fala pouco e conta mais quando ninguém pergunta tudo de uma vez.",
+   "q": "raimundo",
+   "rev": false
+  },
+  {
+   "id": "kp_c_janela",
+   "t": "A janela da sacada",
+   "x": "Sentado ali ao lado, ele escuta a rua inteira passar. Ele reconhece quem passa, quem entra e quem deixou de vir.",
+   "q": "lugar",
+   "rev": false
+  }
+ ],
+ "rua91": [
+  {
+   "id": "kp_lata",
+   "t": "A lata do bairro",
+   "x": "Na mesa do dominó se explica a lata: quem pode põe um trocado, quem aperta tira, sem perguntar. Nonato queria caderno; Raimundo e Bela preferem a confiança.",
+   "meta": {
+    "cat": "complementar",
+    "fio": "mesa",
+    "just": "A ajuda sem papel entre vizinhos; contrasta com o relatório.",
+    "dia": 2
+   },
+   "rev": true
+  },
+  {
+   "id": "kp_dom_paciencia",
+   "t": "Dominó pede paciência",
+   "x": "Seu Raimundo joga devagar de propósito: quem tem pressa joga a pedra errada.",
+   "meta": {
+    "cat": "complementar",
+    "fio": "mesa",
+    "just": "Jeito de Seu Raimundo.",
+    "dia": 1
+   },
+   "rev": false
+  },
+  {
+   "id": "kp_dom_pai",
+   "t": "A mesa do pai",
+   "x": "Seu Raimundo aprendeu dominó com o pai, na mesma calçada, no tempo do lampião a gás.",
+   "meta": {
+    "cat": "complementar",
+    "fio": "mesa",
+    "just": "A rua como herança de família.",
+    "dia": 2
+   },
+   "rev": false
+  },
+  {
+   "id": "kp_ray_sobrado",
+   "t": "O sobrado e as medições",
+   "x": "Seu Raimundo viu a casa do lado ser medida e ninguém perguntou nada a quem mora.",
+   "meta": {
+    "cat": "central",
+    "fio": "medicao",
+    "just": "O morador que viu a casa vizinha ser medida e não foi consultado.",
+    "dia": 4
+   },
+   "rev": true
+  },
+  {
+   "id": "kp_dom_dupla",
+   "t": "Dupla de frente",
+   "x": "No dominó da rua, os parceiros sentam de frente: Zé com Raimundo contra Nonato com Bela.",
+   "meta": {
+    "cat": "complementar",
+    "fio": "mesa",
+    "just": "Quem joga com quem; base para entender a mesa.",
+    "dia": 1
+   },
+   "rev": false
+  },
+  {
+   "id": "kp_dom_convite",
+   "t": "Um lugar na mesa",
+   "x": "Seu Zé deixa Lia jogar quando alguém levantar: precisa mostrar que sabe contar.",
+   "meta": {
+    "cat": "complementar",
+    "fio": "mesa",
+    "just": "Como Lia entra na mesa.",
+    "dia": 2
+   },
+   "rev": false
+  },
+  {
+   "id": "kp_dom_contar",
+   "t": "Contar as pedras",
+   "x": "Dona Bela conta as pedras que já saíram para saber o que ainda pode vir.",
+   "meta": {
+    "cat": "complementar",
+    "fio": "mesa",
+    "just": "Jeito de Dona Bela.",
+    "dia": 2
+   },
+   "rev": false
+  },
+  {
+   "id": "kp_rua_olhar",
+   "t": "Olhares de fora",
+   "x": "Dona Bela nota gente de fora olhando as casas e ainda não sabe se vem ajudar ou comprar.",
+   "meta": {
+    "cat": "central",
+    "fio": "olhares",
+    "just": "O olhar de fora sobre as casas, que a história de 1994 vai cobrar.",
+    "dia": 4
+   },
+   "rev": false
+  },
+  {
+   "id": "kp_varal",
+   "t": "O varal de Cícera",
+   "x": "Cícera lava roupa para meia rua e reconhece cada pano pelo cheiro. Por volta das dez ela entra no lugar de Bela na mesa de dominó.",
+   "meta": {
+    "cat": "complementar",
+    "fio": "rua",
+    "just": "O trabalho de Cícera e a rede de quem depende dele.",
+    "dia": 1
+   },
+   "rev": false
+  },
+  {
+   "id": "kp_gato",
+   "t": "O gato sem nome",
+   "x": "Cada casa chama o gato de um jeito: ele não tem nome, tem vários.",
+   "meta": {
+    "cat": "exploratoria",
+    "fio": "rua",
+    "just": "Cor local.",
+    "dia": 1
+   },
+   "rev": false
+  },
+  {
+   "id": "kp_cocada",
+   "t": "A cocada de Tonho",
+   "x": "A mãe de Tonho faz as cocadas de madrugada; ele só carrega e sorri.",
+   "meta": {
+    "cat": "complementar",
+    "fio": "comercio",
+    "just": "Quem faz e quem vende; o comércio miúdo da rua.",
+    "dia": 1
+   },
+   "rev": false
+  },
+  {
+   "id": "kp_pontos_venda",
+   "t": "Pontos de venda",
+   "x": "Na sombra do beiral antes das dez; junto ao dominó depois, quando alguém perde.",
+   "meta": {
+    "cat": "complementar",
+    "fio": "comercio",
+    "just": "O comércio da rua depende de hora e lugar.",
+    "dia": 2
+   },
+   "rev": false
+  },
+  {
+   "id": "kp_associacao",
+   "t": "A associação",
+   "x": "A associação é a casa de quem não tem advogado; o quadro de avisos é o jornal da rua.",
+   "meta": {
+    "cat": "central",
+    "fio": "associacao",
+    "just": "Mostra onde os moradores se organizam.",
+    "dia": 3
+   },
+   "rev": true
+  },
+  {
+   "id": "kp_programa",
+   "t": "O Programa e quem mora",
+   "x": "Dandara quer que quem mora continue morando; isso não está escrito em nenhum papel.",
+   "meta": {
+    "cat": "central",
+    "fio": "programa",
+    "just": "Voz de quem mora: o medo de sair do bairro.",
+    "dia": 3
+   },
+   "rev": false
+  },
+  {
+   "id": "kp_lucia_medir",
+   "t": "Lúcia mede tudo",
+   "x": "Lúcia mede portas, janelas e telhados para que ninguém seja surpreendido pelo relatório.",
+   "meta": {
+    "cat": "central",
+    "fio": "medicao",
+    "just": "Mostra o que as medições são e quem as faz.",
+    "dia": 3
+   },
+   "rev": true
+  },
+  {
+   "id": "kp_lucia_programa",
+   "t": "Um relatório honesto",
+   "x": "Lúcia sabe que o relatório pode decidir uma obra e quer que ele seja honesto.",
+   "meta": {
+    "cat": "central",
+    "fio": "programa",
+    "just": "Voz do Programa sobre o que o relatório decide.",
+    "dia": 3
+   },
+   "rev": false
+  },
+  {
+   "id": "kp_obj_mesa",
+   "t": "As marcas da mesa",
+   "x": "O tampo verde da mesa de dominó tem marcas de anos de partidas: cada riscado é uma batida.",
+   "meta": {
+    "cat": "exploratoria",
+    "fio": "mesa",
+    "just": "Objeto.",
+    "dia": 1
+   },
+   "rev": false
+  },
+  {
+   "id": "kp_obj_quadro",
+   "t": "O quadro de avisos",
+   "x": "Reunião da associação à noite, rifa de uma geladeira, aviso de falta d'água, aluguel de cômodo e um papel do Programa de recuperação avisando que os imóveis da rua serão medidos.",
+   "meta": {
+    "cat": "central",
+    "fio": "programa",
+    "just": "Traz o aviso do Programa e a reunião. Sozinha já conta o essencial a quem só examina objetos.",
+    "dia": 3
+   },
+   "rev": true
+  },
+  {
+   "id": "kp_obj_orelhao",
+   "t": "O orelhão",
+   "x": "O orelhão de ficha é o telefone de quase toda a rua; o número rabiscado na cúpula é de um sobrinho do bairro.",
+   "meta": {
+    "cat": "exploratoria",
+    "fio": "rua",
+    "just": "Objeto.",
+    "dia": 1
+   },
+   "rev": false
+  },
+  {
+   "id": "kp_obj_cavalete",
+   "t": "O cavalete da padaria",
+   "x": "O cavalete da padaria tem letra da Vó e o preço do dia.",
+   "meta": {
+    "cat": "exploratoria",
+    "fio": "comercio",
+    "just": "Objeto.",
+    "dia": 1
+   },
+   "rev": false
+  }
+ ],
+ "rua94": [
+  {
+   "id": "kp_associacao",
+   "t": "A associação",
+   "x": "A associação confere quem recebeu aviso, quem aceitou indenização e quem ainda mora na casa.",
+   "rev": false
+  },
+  {
+   "id": "kp_obj_quadro",
+   "t": "O quadro de avisos",
+   "x": "O quadro tem a convocação da reunião de sábado e uma lista das casas que receberam aviso.",
+   "rev": false
+  },
+  {
+   "id": "kp_94_ray_aviso",
+   "t": "O aviso na porta",
+   "x": "Colaram um aviso na porta do sobrado de Seu Raimundo: a casa está em risco. Ele recebeu oferta de indenização e de uma casa longe do centro, e ainda não assinou.",
+   "rev": true
+  },
+  {
+   "id": "kp_94_ray_vazias",
+   "t": "As casas da rua de cima",
+   "x": "Quem aceitou a indenização foi para o subúrbio. A rua de cima está quase toda fechada e quase ninguém volta para jogar dominó.",
+   "rev": true
+  },
+  {
+   "id": "kp_94_ray_marca",
+   "t": "A marca de tinta",
+   "x": "O sobrado de Seu Raimundo foi marcado com um X de tinta laranja pelos técnicos da obra.",
+   "rev": true
+  },
+  {
+   "id": "kp_94_ze_foto",
+   "t": "A cadeira que vira foto",
+   "x": "Na barbearia entra turista para fotografar a cadeira. Corte mesmo, só os de sempre, e esses estão saindo da rua.",
+   "rev": true
+  },
+  {
+   "id": "kp_94_nonato_obra",
+   "t": "Obra por empreita",
+   "x": "Nonato trabalha por empreita nas obras do Programa. Levanta a parede de uma casa cujos donos já saíram. Recebe por semana e o contrato acaba com a fachada.",
+   "rev": true
+  },
+  {
+   "id": "kp_94_bela_freguesas",
+   "t": "As freguesas que saíram",
+   "x": "Dona Bela perdeu metade da freguesia de costura com as mudanças. Entrega de ônibus e a passagem come o ganho.",
+   "rev": true
+  },
+  {
+   "id": "kp_94_rua_olhar",
+   "t": "Câmera na janela",
+   "x": "Turistas fotografam as janelas das casas onde as pessoas moram. Dona Bela ainda não decidiu se sorri ou fecha a janela.",
+   "rev": true
+  },
+  {
+   "id": "kp_94_cicera_varal",
+   "t": "O varal mais curto",
+   "x": "Dona Cícera lava para a metade da rua que lavava antes. Duas casas vizinhas ficaram vazias.",
+   "rev": false
+  },
+  {
+   "id": "kp_94_junior_casa",
+   "t": "A casa fechada",
+   "x": "Júnior entra pela janela de uma casa fechada da esquina. Ficaram uma cadeira, um prato na pia e um calendário na parede.",
+   "rev": false
+  },
+  {
+   "id": "kp_94_junior_foto",
+   "t": "A foto com o gato",
+   "x": "Um turista deu uma moeda a Júnior para ele aparecer em uma foto ao lado do gato.",
+   "rev": false
+  },
+  {
+   "id": "kp_94_tonho_turista",
+   "t": "Turista só no fim de semana",
+   "x": "Tonho vende o dobro no sábado e no domingo, quando chegam os ônibus de turistas. De terça a quinta, quase nada.",
+   "rev": true
+  },
+  {
+   "id": "kp_94_programa",
+   "t": "Da pintura à remoção",
+   "x": "Dandara conta que o Programa começou com pintura e conserto e agora tem obra pesada, casa interditada e gente indo embora.",
+   "rev": true
+  },
+  {
+   "id": "kp_94_lucia_ficha",
+   "t": "A ficha vira valor",
+   "x": "Lúcia agora faz a ficha de cada casa. A ficha alimenta o cadastro, e o cadastro define o valor da indenização.",
+   "rev": true
+  },
+  {
+   "id": "kp_94_lucia_aposta",
+   "t": "A aposta no turista",
+   "x": "O Programa apostava que turistas do Brasil e de fora sustentariam o comércio da rua sozinhos. Lúcia escreveu no relatório que ainda é cedo para saber.",
+   "rev": true
+  },
+  {
+   "id": "kp_94_lucia_evento",
+   "t": "Conversa de corredor",
+   "x": "No órgão do Programa já se fala em um evento maior, para trazer moradores de Salvador para a região. Ainda não há plano escrito.",
+   "rev": true
+  },
+  {
+   "id": "kp_94_dandara_dn",
+   "t": "Pelourinho Dia & Noite",
+   "x": "O Dia & Noite nasceu logo depois da entrega das primeiras etapas da reforma. O governo contrata artistas, grupos, companhias de teatro, dança e mestres de capoeira para show de graça todo dia nos largos. A ideia é rua cheia de dia e de noite para os bares, restaurantes e lojas de artesanato dos casarões girarem.",
+   "rev": true
+  },
+  {
+   "id": "kp_94_tonho_show",
+   "t": "Quando o show acaba",
+   "x": "Tonho vende antes e depois da roda de capoeira no Terreiro. Quando o grupo termina, a rua esvazia em dez minutos.",
+   "rev": true
+  },
+  {
+   "id": "kp_94_obj_dn",
+   "t": "O cartaz do Dia & Noite",
+   "x": "O cartaz do Pelourinho Dia & Noite lista a semana: roda de capoeira, banda, teatro e dança, de graça, no Terreiro de Jesus e nos largos Pedro Archanjo, Tereza Batista e Quincas Berro D'Água.",
+   "rev": true
+  },
+  {
+   "id": "kp_94_obj_aviso",
+   "t": "O papel da vistoria",
+   "x": "O aviso colado no sobrado fala em vistoria, risco e prazo para desocupar. Tem carimbo e data.",
+   "rev": true
+  },
+  {
+   "id": "kp_94_obj_tapume",
+   "t": "A casa tapada",
+   "x": "A casa verde está com a porta e a janela baixa tapadas com tábua. O andaime sobe pela fachada inteira.",
+   "rev": false
+  },
+  {
+   "id": "kp_94_obj_placa",
+   "t": "A placa da obra",
+   "x": "A placa no andaime anuncia obra do Programa de Recuperação, com a data de 1994.",
+   "rev": false
+  },
+  {
+   "id": "kp_94_obj_faixa",
+   "t": "Aqui mora gente",
+   "x": "A associação pendurou na fachada uma faixa com a frase AQUI MORA GENTE.",
+   "rev": false
+  },
+  {
+   "id": "kp_94_obj_turista",
+   "t": "A placa em inglês",
+   "x": "A padaria ganhou uma placa pequena em português e em inglês, para quem vem de fora.",
+   "rev": false
+  }
+ ],
+ "quintal": [
+  {
+   "id": "q_banner",
+   "t": "A bandeira dos santos",
+   "x": "Bandeira de Cosme e Damião na parede da casa. Embaixo, um prato servido, uma vela e flores brancas. A primeira porção é dos santos.",
+   "rev": true
+  },
+  {
+   "id": "q_oferenda",
+   "t": "A mesa baixa",
+   "x": "Só Dona Zefa e Dona Nena chegam perto da mesa da oferenda. Eu olhei de longe.",
+   "rev": true
+  },
+  {
+   "id": "q_mesa",
+   "t": "A mesa dos adultos",
+   "x": "Dez lugares com toalha. Os adultos só comem depois das crianças.",
+   "rev": false
+  },
+  {
+   "id": "q_portao",
+   "t": "O portão da Rita",
+   "x": "O portão do fundo dá na casa da Rita. De lá se vê o telhado dela, com a lona e o balde no canto.",
+   "rev": false
+  },
+  {
+   "id": "q_mangueira",
+   "t": "A mangueira",
+   "x": "A mangueira é mais velha que o quintal. A sombra cobre o fundo e passa do muro.",
+   "rev": false
+  },
+  {
+   "id": "q_quiabo",
+   "t": "O quiabo fino",
+   "x": "Dona Zefa corta o quiabo fino e molha a faca antes de cada corte, para não babar. O dendê entra depois.",
+   "rev": true
+  },
+  {
+   "id": "q_zefa_pai",
+   "t": "Por que a Zefa faz o caruru",
+   "x": "O pai de Dona Zefa fazia o caruru todo ano. Quando ele parou, o quintal ficou anos sem festa. Ela voltou a fazer quando a rua pediu.",
+   "rev": true
+  },
+  {
+   "id": "q_zefa_reforma",
+   "t": "Zefa a favor do Programa",
+   "x": "Dona Zefa defende o Programa: calçada nova, luz, polícia na esquina e o bairro no jornal. Para ela a rua passou vinte anos esquecida e agora tem quem olhe.",
+   "rev": true
+  },
+  {
+   "id": "q_zefa_turista",
+   "t": "A aposta no turista",
+   "x": "Dona Zefa acredita que o turista de outros estados e de fora do país sustenta sozinho o comércio da rua. Quer vender caruru para ele.",
+   "rev": true
+  },
+  {
+   "id": "q_zefa_casa",
+   "t": "A casa que fica",
+   "x": "A casa de Dona Zefa entrou entre as que o Programa restaura e devolve ao dono. Ela reconhece que nem todo mundo na rua teve a mesma sorte.",
+   "rev": true
+  },
+  {
+   "id": "q_aurea_balcao",
+   "t": "A padaria sem balcão",
+   "x": "Vó Áurea deixou o balcão sem ninguém. Disse que o pão espera um dia e o convite da Zefa não esperava.",
+   "rev": false
+  },
+  {
+   "id": "q_aurea_freguesia",
+   "t": "Quem compra o pão",
+   "x": "Vó Áurea diz que o turista entra, tira foto do forno e leva uma água. O pão de todo dia era de quem mora, e com casa vazia ela faz a mesma fornada e sobra pão.",
+   "rev": true
+  },
+  {
+   "id": "q_aurea_papel",
+   "t": "O aluguel novo",
+   "x": "Junto com a fachada nova veio um papel com o aluguel novo da padaria, num valor de loja para turista. Vó Áurea leu três vezes e deixou na gaveta.",
+   "rev": true
+  },
+  {
+   "id": "q_raimundo_sobrado",
+   "t": "O aviso do sobrado",
+   "x": "Colaram um aviso na porta do sobrado: a casa está em risco e precisa ser desocupada. Seu Raimundo recebeu oferta de indenização e de uma casa longe do centro. Ainda não assinou.",
+   "rev": true
+  },
+  {
+   "id": "q_raimundo_vazias",
+   "t": "As casas da rua de cima",
+   "x": "Quem aceitou a indenização foi para o subúrbio. A rua de cima está quase toda fechada, e quase ninguém volta para visitar.",
+   "rev": true
+  },
+  {
+   "id": "q_lista",
+   "t": "A lista de avisos",
+   "x": "A lista do Programa tem nome de morador, nome de dono e casas sem nome nenhum. Dandara vai ler tudo na reunião de sábado.",
+   "rev": true
+  },
+  {
+   "id": "q_comodos",
+   "t": "Quem aluga cômodo",
+   "x": "Quem aluga cômodo não aparece em papel nenhum, então a indenização não passa por ele. A associação vai de porta em porta conferir quem mora onde.",
+   "rev": true
+  },
+  {
+   "id": "q_lucia_convite",
+   "t": "Lúcia no caruru",
+   "x": "Dona Zefa convidou Lúcia pessoalmente. Disse que quem mede a rua também come nela. Lúcia veio sabendo que muita gente aqui não queria vê-la.",
+   "rev": false
+  },
+  {
+   "id": "q_lucia_ficha",
+   "t": "A ficha vira valor",
+   "x": "Lúcia agora faz a ficha de cada casa que sai: quem mora, quantos são e o valor oferecido. Ela assina embaixo e não sabe para onde essas pessoas vão.",
+   "rev": true
+  },
+  {
+   "id": "q_lucia_evento",
+   "t": "Conversa de corredor",
+   "x": "Lúcia conta que o turista enche a rua no fim de semana e em dia de show, e que na terça a conta do comércio não fecha. No órgão do Programa já se fala em um evento maior, para trazer gente de Salvador. Ainda não há plano escrito.",
+   "rev": true
+  },
+  {
+   "id": "q_zefa_dn",
+   "t": "Pelourinho Dia & Noite",
+   "x": "Dona Zefa gosta do Dia & Noite: show de graça todo dia nos largos reformados, com banda, teatro, dança e capoeira. Para ela, rua cheia de dia e de noite é o Programa funcionando.",
+   "rev": true
+  },
+  {
+   "id": "q_tonho_show",
+   "t": "Quando o show acaba",
+   "x": "Tonho vende bem na roda de capoeira e na banda do Terreiro, mas a rua esvazia assim que o grupo termina. Show de graça traz gente que não gasta.",
+   "rev": true
+  },
+  {
+   "id": "q_dandara_dn",
+   "t": "Quem toca e quem mora",
+   "x": "Dandara vai aos shows, mas lembra que o governo paga cachê a quem toca no largo e não paga nada a quem morava no casarão ao lado e foi embora.",
+   "rev": true
+  },
+  {
+   "id": "q_rita_telhado",
+   "t": "O telhado da Rita",
+   "x": "O laudo diz que o telhado da Rita não vale conserto, mas ela não pode consertar por conta própria. A lona é o que sobrou.",
+   "rev": true
+  },
+  {
+   "id": "q_rita_sombra",
+   "t": "A sombra da mangueira",
+   "x": "A mangueira é de Dona Zefa e a sombra cai na casa da Rita. Se a Rita for embora, a sombra fica sem quem use.",
+   "rev": false
+  },
+  {
+   "id": "q_nonato_empreita",
+   "t": "Obra que acaba",
+   "x": "Nonato trabalha por empreita nas obras do Programa e levanta a parede de uma casa cujos donos já saíram. Recebe por semana, e o contrato acaba com a fachada.",
+   "rev": true
+  },
+  {
+   "id": "q_ze_turista",
+   "t": "A cadeira que vira foto",
+   "x": "Na barbearia entra turista para fotografar a cadeira. Corte mesmo, só dos clientes de sempre, e eles estão saindo da rua.",
+   "rev": true
+  },
+  {
+   "id": "q_bela_panos",
+   "t": "Os panos dos meninos",
+   "x": "Dona Bela costurou um pano para cada menino. No fim, cada um leva o seu para casa.",
+   "rev": false
+  },
+  {
+   "id": "q_bela_freguesas",
+   "t": "As freguesas que saíram",
+   "x": "Dona Bela perdeu metade da freguesia de costura com as mudanças. Entrega de ônibus e a passagem come o ganho.",
+   "rev": true
+  },
+  {
+   "id": "q_cicera_junior",
+   "t": "Júnior e o varal",
+   "x": "Dona Cícera sabia do bairro pelo varal. Agora sabe pelo Júnior, que conta tudo.",
+   "rev": false
+  },
+  {
+   "id": "q_cicera_varal",
+   "t": "O varal mais curto",
+   "x": "Dona Cícera lava para a metade da rua que lavava antes. Duas casas vizinhas ficaram vazias.",
+   "rev": false
+  },
+  {
+   "id": "q_junior_mangueira",
+   "t": "Júnior na mangueira",
+   "x": "Júnior subiu na mangueira antes de todo mundo chegar. De lá se vê o telhado da Rita e a fila do portão.",
+   "rev": false
+  },
+  {
+   "id": "q_junior_casa",
+   "t": "A casa fechada",
+   "x": "Júnior entra pela janela de uma casa fechada da esquina. Ficaram uma cadeira, um prato na pia e um calendário na parede.",
+   "rev": false
+  },
+  {
+   "id": "q_tonho_cocada",
+   "t": "A cocada de presente",
+   "x": "A mãe do Tonho fez cinquenta cocadas para o caruru. Hoje ele não vende, só dá.",
+   "rev": false
+  },
+  {
+   "id": "q_tonho_turista",
+   "t": "Turista só no fim de semana",
+   "x": "Tonho vende o dobro no sábado e no domingo, quando chegam os ônibus de turistas. De terça a quinta, quase nada.",
+   "rev": true
+  },
+  {
+   "id": "q_nena_caruru",
+   "t": "A ordem do caruru",
+   "x": "Dona Nena explica que a promessa é das crianças: elas comem primeiro, na toalha, com a mão, e os adultos só depois. Ela cuida da vela e do azeite.",
+   "rev": true
+  },
+  {
+   "id": "q_nena_noite",
+   "t": "O acarajé depois dos shows",
+   "x": "Dona Nena vende mais agora que há show até tarde nos largos, mas o ponto depende do fiscal, que muda de ideia.",
+   "rev": true
+  },
+  {
+   "id": "q_nena_tabuleiro",
+   "t": "O tabuleiro de Dona Nena",
+   "x": "Dona Nena cuida da oferenda com Dona Zefa. O acarajé dela só sai quando o sol baixa.",
+   "rev": true
+  },
+  {
+   "id": "q_davi_cantiga",
+   "t": "A música do fim de tarde",
+   "x": "Davi toca baixinho. Dona Zefa pediu cantiga de roda para os meninos.",
+   "rev": false
+  },
+  {
+   "id": "q_caio_bia",
+   "t": "Caio e Bia na padaria",
+   "x": "Caio e Bia ajudam Vó Áurea no balcão, e sempre sobra um pão para eles.",
+   "rev": false
+  },
+  {
+   "id": "q_bia_massa",
+   "t": "Bia e a massa",
+   "x": "Bia aprendeu a sovar com Vó Áurea, sem relógio, só pelo ponto da massa.",
+   "rev": false
+  },
+  {
+   "id": "q_prazo",
+   "t": "O prazo do Programa",
+   "x": "Lúcia disse à Dandara que o prazo da obra vem do papel e não consulta o bairro.",
+   "rev": true
+  },
+  {
+   "id": "q_zefa_raimundo",
+   "t": "Zefa e Raimundo discordam",
+   "x": "Dona Zefa diz a Seu Raimundo que o Programa vai trazer freguês para todo mundo. Ele responde que freguês é quem mora.",
+   "rev": true
+  },
+  {
+   "id": "q_pratos",
+   "t": "Os pratos das crianças",
+   "x": "Os pratos das crianças são todos iguais. Ninguém ganha mais que o outro.",
+   "rev": false
+  }
+ ],
+ "quintalQuem": {
+  "q_quiabo": "zefa / O quiabo",
+  "q_zefa_pai": "zefa / A bandeira",
+  "q_zefa_reforma": "zefa / O Programa",
+  "q_zefa_turista": "zefa / O turista",
+  "q_zefa_dn": "zefa / Os shows nos largos",
+  "q_zefa_casa": "zefa / A casa",
+  "q_aurea_balcao": "aurea / O balcão",
+  "q_aurea_freguesia": "aurea / Quem compra",
+  "q_aurea_papel": "aurea / O papel",
+  "q_raimundo_sobrado": "raimundo / O sobrado",
+  "q_raimundo_vazias": "raimundo / A rua de cima",
+  "q_lista": "dandara / A lista",
+  "q_dandara_dn": "dandara / Os shows nos largos",
+  "q_comodos": "dandara / Quem ficou fora",
+  "q_lucia_convite": "lucia / O convite",
+  "q_lucia_ficha": "lucia / O trabalho",
+  "q_lucia_evento": "lucia / O turista e o comércio",
+  "q_rita_telhado": "rita / O telhado",
+  "q_rita_sombra": "rita / A mangueira",
+  "q_nonato_empreita": "nonato / A obra",
+  "q_ze_turista": "ze / A barbearia",
+  "q_bela_panos": "bela / Os panos",
+  "q_bela_freguesas": "bela / A costura",
+  "q_cicera_junior": "cicera / O Júnior",
+  "q_cicera_varal": "cicera / O varal",
+  "q_junior_mangueira": "junior / A mangueira",
+  "q_junior_casa": "junior / A casa fechada",
+  "q_tonho_cocada": "tonho / A cocada",
+  "q_tonho_show": "tonho / Os shows",
+  "q_tonho_turista": "tonho / O turista",
+  "q_nena_tabuleiro": "nena / O tabuleiro",
+  "q_nena_caruru": "nena / A ordem do caruru",
+  "q_nena_noite": "nena / O movimento de noite",
+  "q_davi_cantiga": "davi / A música",
+  "q_caio_bia": "caio / A padaria",
+  "q_bia_massa": "bia / A massa"
+ },
+ "quintalOBJ": {
+  "banner": [
+   "banner",
+   "q_banner"
+  ],
+  "F13": [
+   "oferenda",
+   "q_oferenda"
+  ],
+  "M01": [
+   "mesa",
+   "q_mesa"
+  ],
+  "portao": [
+   "portao",
+   "q_portao"
+  ],
+  "F14": [
+   "mangueira",
+   "q_mangueira"
+  ],
+  "M09": [
+   "cocada"
+  ],
+  "M27": [
+   "tabuleiro"
+  ]
+ },
+ "quintalOUVE": [
+  "zefa",
+  "aurea",
+  "raimundo",
+  "dandara",
+  "lucia",
+  "cicera",
+  "junior",
+  "nena",
+  "m"
+ ],
+ "k96": [
+  {
+   "id": "kp_96_gravacao",
+   "t": "A rua fechada",
+   "x": "A rua está fechada para a gravação de um clipe. A produção veio de fora, com equipe, câmera e grade, e a polícia fecha as esquinas. O clipe não é do Programa.",
+   "fio": "clipe",
+   "rev": true
+  },
+  {
+   "id": "kp_96_cenario",
+   "t": "Nome de cenário",
+   "x": "Na folha da locação a equipe chama os prédios pela cor e pela varanda. Não há nome de morador.",
+   "fio": "clipe",
+   "rev": false
+  },
+  {
+   "id": "kp_96_policia",
+   "t": "Polícia nas esquinas",
+   "x": "A polícia fecha as esquinas e quem mora passa depois de explicar o endereço. A produção pede silêncio quando a luz vermelha acende.",
+   "fio": "clipe",
+   "rev": true
+  },
+  {
+   "id": "kp_96_monitor",
+   "t": "O que o monitor mostra",
+   "x": "O monitor da produção mostra o palco e a fachada pintada. O prédio de tijolo aparente, mais à direita, fica fora do quadro.",
+   "fio": "clipe",
+   "rev": false
+  },
+  {
+   "id": "kp_96_tijolo",
+   "t": "O prédio sem tinta",
+   "x": "Dona Rita mora no prédio de tijolo aparente. Pintaram os dois vizinhos e o dela não, porque a casa não estava na lista.",
+   "fio": "clipe",
+   "rev": true
+  },
+  {
+   "id": "kp_96_vitrine",
+   "t": "A rua como vitrine",
+   "x": "O clipe não é do Programa, mas mostra a rua que ele quer mostrar: pintada, policiada e desejada. Quem mora aparece pouco, ou aparece atrás da grade.",
+   "fio": "clipe",
+   "rev": true
+  },
+  {
+   "id": "kp_96_fase2",
+   "t": "A segunda fase",
+   "x": "De 1996 a 1999 o Programa entra na segunda fase: a obra pesada diminui e o órgão procura dinheiro de fora. A aposta no turista de 1994 não bastou.",
+   "fio": "fase2",
+   "rev": true
+  },
+  {
+   "id": "kp_96_obra",
+   "t": "A empreita acabou",
+   "x": "Nonato terminou a parede da esquina em 1994 e não veio outro contrato. A obra pesada diminuiu.",
+   "fio": "fase2",
+   "rev": true
+  },
+  {
+   "id": "kp_96_quadro",
+   "t": "A programação do mês",
+   "x": "O quadro da associação agora traz a programação de eventos do mês no Centro Histórico, com o nome do órgão que organiza no rodapé. Em 1994 era só o cartaz do Dia & Noite.",
+   "fio": "fase2",
+   "rev": true
+  },
+  {
+   "id": "kp_96_evento",
+   "t": "Evento para gente de Salvador",
+   "x": "A segunda fase aposta em eventos culturais para atrair a classe média e alta de Salvador. A associação não é contra, mas quer ser chamada antes de o evento ser marcado.",
+   "fio": "fase2",
+   "rev": true
+  },
+  {
+   "id": "kp_96_saiu",
+   "t": "Quem já foi",
+   "x": "Dona Bela tinha metade das freguesas em 1994 e hoje atende cinco casas. Quem saiu levou a freguesia.",
+   "fio": "ficou",
+   "rev": false
+  },
+  {
+   "id": "kp_96_ficou",
+   "t": "Quem ficou",
+   "x": "A associação continua no mesmo sobrado, com lista de reunião menor porque mora menos gente.",
+   "fio": "ficou",
+   "rev": false
+  },
+  {
+   "id": "kp_96_padaria",
+   "t": "A padaria fica",
+   "x": "Dona Áurea fica. O aluguel é de loja para turista, e o pão de todo dia ainda é de quem mora.",
+   "fio": "ficou",
+   "rev": true
+  },
+  {
+   "id": "kp_96_raimundo",
+   "t": "A porta do sobrado",
+   "x": "Seu Raimundo não quis figurar no clipe e olha a rua pela fresta. A vizinha do lado foi embora e o Programa continua insistindo com ele.",
+   "fio": "ficou",
+   "rev": true
+  },
+  {
+   "id": "kp_96_mesa",
+   "t": "A cadeira emprestada",
+   "x": "Seu Raimundo não desceu para o dominó. Dona Cícera joga no lugar dele.",
+   "fio": "ficou",
+   "rev": false
+  },
+  {
+   "id": "kp_96_zefa",
+   "t": "Quem gosta do que vê",
+   "x": "Dona Zefa gosta da rua nova: calçada, luz, polícia e neto na porta sem medo. A casa dela foi restaurada.",
+   "fio": "ficou",
+   "rev": false
+  },
+  {
+   "id": "kp_96_pedido",
+   "t": "A encomenda da produção",
+   "x": "A produção encomendou pão e café para a equipe e pagou adiantado. A padaria vendeu num dia mais do que costuma, e amanhã volta ao movimento normal.",
+   "fio": "renda",
+   "rev": false
+  },
+  {
+   "id": "kp_96_tonho",
+   "t": "Um dia que rende",
+   "x": "Tonho vendeu num dia o que vende de terça a quinta. Amanhã desmontam o palco e o movimento volta ao normal.",
+   "fio": "renda",
+   "rev": false
+  },
+  {
+   "id": "kp_96_publico",
+   "t": "Quem veio ver",
+   "x": "A plateia tem turista de ônibus e gente de Salvador, de carro, que antes não vinha ao Centro. Compram e vão embora antes de escurecer.",
+   "fio": "renda",
+   "rev": false
+  },
+  {
+   "id": "kp_96_seguranca",
+   "t": "Quem vem porque tem polícia",
+   "x": "Seu Zé atende gente de Salvador que antes evitava o Centro e agora vem, com polícia na esquina. Eles vão embora antes de escurecer.",
+   "fio": "renda",
+   "rev": true
+  }
+ ],
+ "lig96": [
+  {
+   "se": [
+    "kp_96_evento"
+   ],
+   "mem": [
+    "kp_94_lucia_evento",
+    "q_lucia_evento"
+   ],
+   "t": "Em 1994 Lúcia falou de um evento maior, ainda conversa de corredor. Em 1996 a conversa tem forma: eventos culturais para gente de Salvador.",
+   "rev": 1
+  },
+  {
+   "se": [
+    "kp_96_fase2"
+   ],
+   "mem": [
+    "kp_94_programa",
+    "kp_programa"
+   ],
+   "t": "O Programa que começou com pintura e conserto em 1991 e virou remoção em 1994 entra, em 1996, numa fase de menos obra e mais evento. Quem decide continua sendo o órgão.",
+   "rev": 1
+  },
+  {
+   "se": [
+    "kp_96_fase2"
+   ],
+   "mem": [
+    "kp_94_lucia_aposta",
+    "q_zefa_turista",
+    "kp_94_tonho_turista"
+   ],
+   "t": "A aposta de 1994 era que o turista sustentasse a rua sozinho. Em 1996 o próprio Programa muda a conta e passa a procurar o morador de Salvador.",
+   "rev": 1
+  },
+  {
+   "se": [
+    "kp_96_tonho"
+   ],
+   "mem": [
+    "kp_94_tonho_turista",
+    "kp_94_tonho_show",
+    "q_tonho_show"
+   ],
+   "t": "Tonho disse em 1994 que o show de graça trazia gente que não gasta. Em 1996 ele vende num dia a semana inteira, mas o dia seguinte continua fora do controle dele."
+  },
+  {
+   "se": [
+    "kp_96_raimundo"
+   ],
+   "mem": [
+    "kp_94_ray_aviso",
+    "q_raimundo_sobrado",
+    "kp_94_ray_marca",
+    "kp_94_obj_aviso"
+   ],
+   "t": "O aviso e a marca de tinta de 1994 continuam no sobrado de Seu Raimundo. Ele ainda não saiu."
+  },
+  {
+   "se": [
+    "kp_96_vitrine"
+   ],
+   "mem": [
+    "kp_rua_olhar",
+    "kp_94_rua_olhar"
+   ],
+   "t": "Dona Bela notou em 1991 e em 1994 gente de fora olhando as casas. Em 1996 quem olha são câmeras, e a rua inteira está enquadrada."
+  },
+  {
+   "se": [
+    "kp_96_saiu"
+   ],
+   "mem": [
+    "kp_94_bela_freguesas",
+    "kp_94_ray_vazias"
+   ],
+   "t": "As casas fechadas da rua de cima em 1994 viraram freguesia a menos para Dona Bela em 1996."
+  },
+  {
+   "se": [
+    "kp_96_ficou"
+   ],
+   "mem": [
+    "kp_associacao",
+    "kp_94_obj_faixa"
+   ],
+   "t": "A associação de 1991 continua sendo o lugar onde quem mora se organiza, agora com uma lista menor."
+  },
+  {
+   "se": [
+    "kp_96_tijolo"
+   ],
+   "mem": [
+    "q_rita_telhado"
+   ],
+   "t": "O telhado de lona de Dona Rita em 1994 e o prédio sem tinta em 1996 podem ser a mesma casa fora da lista.",
+   "rev": 1
+  },
+  {
+   "se": [
+    "kp_96_obra"
+   ],
+   "mem": [
+    "kp_94_nonato_obra"
+   ],
+   "t": "O contrato de Nonato acabava com a fachada, como ele avisou em 1994. A obra pesada acabou antes de outra começar."
+  },
+  {
+   "se": [
+    "kp_96_vitrine",
+    "kp_96_fase2"
+   ],
+   "t": "A imagem da rua pesa na segunda fase: rua limpa e segura atrai quem mora em Salvador e atrai dinheiro de fora.",
+   "rev": 1
+  },
+  {
+   "se": [
+    "kp_96_pedido",
+    "kp_96_tonho"
+   ],
+   "t": "Evento paga por dia. Quem vive de venda precisa de movimento todos os dias."
+  }
+ ],
+ "fios96": [
+  [
+   "clipe",
+   "O clipe e a imagem da rua"
+  ],
+  [
+   "fase2",
+   "A segunda fase do Programa"
+  ],
+  [
+   "ficou",
+   "Quem ficou e quem saiu"
+  ],
+  [
+   "renda",
+   "O que um dia de evento rende"
+  ]
+ ],
+ "miss96": [
+  {
+   "id": "m1",
+   "titulo": "A encomenda da produção",
+   "txt": [
+    "Falar com Dona Áurea, na porta da padaria.",
+    "Levar a cesta para a assistente da produção, perto do monitor.",
+    "Contar para Dona Áurea como foi."
+   ]
+  },
+  {
+   "id": "m2",
+   "titulo": "O que a câmera vê",
+   "txt": [
+    "Falar com Dandara, na frente da associação.",
+    "Olhar o monitor da produção e conversar com Dona Rita, no prédio de tijolo. O jogo mostra quais dos dois já foram feitos.",
+    "Voltar para Dandara."
+   ]
+  },
+  {
+   "id": "m3",
+   "titulo": "A rua e os eventos",
+   "txt": [
+    "Perguntar a Dandara sobre o Programa.",
+    "Ouvir três vizinhos: Tonho, Dona Bela, Seu Zé ou Dona Zefa. O jogo mostra quantos já foram ouvidos, de 3.",
+    "Voltar para Dandara."
+   ]
+  }
+ ],
+ "src91": {
+  "kp_dom_paciencia": [
+   {
+    "p": "raimundo",
+    "t": "jogo",
+    "label": "O jogo",
+    "quando": [
+     "viu_jogo"
+    ],
+    "nivel": null
+   }
+  ],
+  "kp_dom_pai": [
+   {
+    "p": "raimundo",
+    "t": "jogo",
+    "label": "O jogo",
+    "quando": [
+     "viu_jogo"
+    ],
+    "nivel": [
+     2,
+     3
+    ]
+   }
+  ],
+  "kp_ray_sobrado": [
+   {
+    "p": "raimundo",
+    "t": "sobrado",
+    "label": "O sobrado",
+    "quando": [
+     "viu_medicao",
+     "ouviu_programa",
+     "nivel:1"
+    ],
+    "nivel": null
+   }
+  ],
+  "kp_programa": [
+   {
+    "p": "raimundo",
+    "t": "programa",
+    "label": "O Programa",
+    "quando": [
+     "ouviu_programa"
+    ],
+    "nivel": null
+   },
+   {
+    "p": "dandara",
+    "t": "programa",
+    "label": "O Programa",
+    "quando": [
+     "ouviu_programa"
+    ],
+    "nivel": null
+   }
+  ],
+  "kp_dom_dupla": [
+   {
+    "p": "ze",
+    "t": "jogo",
+    "label": "O jogo",
+    "quando": [
+     "viu_jogo"
+    ],
+    "nivel": null
+   }
+  ],
+  "kp_dom_convite": [
+   {
+    "p": "ze",
+    "t": "lia_jogar",
+    "label": "Posso jogar?",
+    "quando": [
+     "apos:ze:jogo"
+    ],
+    "nivel": null
+   }
+  ],
+  "kp_lata": [
+   {
+    "p": "ze",
+    "t": "lata",
+    "label": "A lata",
+    "quando": [
+     "apos:ze:jogo",
+     "nivel:1"
+    ],
+    "nivel": null
+   }
+  ],
+  "kp_dom_contar": [
+   {
+    "p": "bela",
+    "t": "jogo",
+    "label": "O jogo",
+    "quando": [
+     "viu_jogo"
+    ],
+    "nivel": null
+   }
+  ],
+  "kp_associacao": [
+   {
+    "p": "bela",
+    "t": "associacao",
+    "label": "A associação",
+    "quando": [
+     "viu_aviso",
+     "ouviu_reuniao"
+    ],
+    "nivel": null
+   },
+   {
+    "p": "dandara",
+    "t": "associacao",
+    "label": "A associação",
+    "quando": [
+     "viu_aviso",
+     "ouviu_reuniao"
+    ],
+    "nivel": null
+   }
+  ],
+  "kp_rua_olhar": [
+   {
+    "p": "bela",
+    "t": "rua",
+    "label": "A rua",
+    "quando": [
+     "viu_medicao",
+     "ouviu_programa",
+     "apos:bela:costura"
+    ],
+    "nivel": null
+   },
+   {
+    "p": "cicera",
+    "t": "rua",
+    "label": "Quem olha a rua",
+    "quando": [
+     "viu_medicao",
+     "ouviu_programa"
+    ],
+    "nivel": null
+   }
+  ],
+  "kp_varal": [
+   {
+    "p": "cicera",
+    "t": "varal",
+    "label": "O varal",
+    "quando": [
+     "viu_varal",
+     "apos:cicera:jogo"
+    ],
+    "nivel": null
+   }
+  ],
+  "kp_gato": [
+   {
+    "p": "junior",
+    "t": "gato",
+    "label": "O gato",
+    "quando": [
+     "viu_gato"
+    ],
+    "nivel": null
+   }
+  ],
+  "kp_cocada": [
+   {
+    "p": "tonho",
+    "t": "cocada",
+    "label": "A cocada",
+    "quando": [
+     "viu_tonho"
+    ],
+    "nivel": null
+   }
+  ],
+  "kp_pontos_venda": [
+   {
+    "p": "tonho",
+    "t": "rua",
+    "label": "A rua",
+    "quando": [
+     "apos:tonho:cocada"
+    ],
+    "nivel": null
+   }
+  ],
+  "kp_lucia_medir": [
+   {
+    "p": "lucia",
+    "t": "medir",
+    "label": "As medições",
+    "quando": [
+     "viu_medicao",
+     "ouviu_programa"
+    ],
+    "nivel": null
+   }
+  ],
+  "kp_lucia_programa": [
+   {
+    "p": "lucia",
+    "t": "programa",
+    "label": "O Programa",
+    "quando": [
+     "ouviu_programa",
+     "apos:lucia:medir"
+    ],
+    "nivel": null
+   }
+  ]
+ },
+ "nomes": {
+  "raimundo": "Seu Raimundo",
+  "ze": "Seu Zé",
+  "nonato": "Nonato",
+  "bela": "Dona Bela",
+  "cicera": "Dona Cícera",
+  "junior": "Júnior",
+  "tonho": "Tonho",
+  "dandara": "Dandara",
+  "lucia": "Lúcia"
+ },
+ "dica91": {
+  "raimundo": {
+   "programa": "Falam de um Programa, mas ninguém me explicou. Um aviso no quadro ou a moça da trena podem ajudar a puxar o assunto.",
+   "jogo": "Seu Raimundo só olha para a mesa. Talvez valha ver uma partida de perto antes de perguntar.",
+   "sobrado": "Ele mora no sobrado. Se alguém mexeu na casa do lado, foi ele quem viu."
+  },
+  "ze": {
+   "lata": "Alguém falou de uma lata na mesa. Depois de conversar sobre o jogo, dá para perguntar.",
+   "jogo": "Antes de puxar assunto com ele, eu devia ver uma partida de perto.",
+   "lia_jogar": "Só dá para pedir um lugar na mesa depois de conversar com ele sobre o jogo."
+  },
+  "nonato": {
+   "jogo": "Ele comemora cada batida. Vale ver uma partida antes de perguntar.",
+   "obra": "Ele tem mão de pedreiro. Depois de conversar sobre o jogo, dá para perguntar o que faz fora da mesa."
+  },
+  "bela": {
+   "associacao": "Ela sai da porta da associação todo dia. Depois de ler o quadro de avisos eu teria o que perguntar.",
+   "jogo": "Ela confere cada pedra duas vezes. Dá para perguntar depois de ver uma partida.",
+   "rua": "Ela vê tudo da janela. Algo na rua deve ter chamado a atenção dela."
+  },
+  "cicera": {
+   "varal": "Ela estende roupa cedo e de novo à tarde. Dá para puxar assunto quando eu a vir no varal.",
+   "junior": "O menino que corre pela rua parece ser parente dela. Eu podia ficar perto dele.",
+   "jogo": "Ela senta à mesa quando alguém sai. Eu devia ver uma partida primeiro."
+  },
+  "junior": {
+   "gato": "Ele vive atrás de um gato. Ficar perto do bichano pode render assunto.",
+   "jogo": "Eu podia ver uma partida para ter o que perguntar."
+  },
+  "tonho": {
+   "cocada": "Tonho passa a rua inteira com a caixa. Dá para perguntar quando eu ficar um tempo perto dele.",
+   "rua": "Primeiro eu pergunto da cocada, depois de onde ele vende."
+  },
+  "dandara": {
+   "associacao": "Tem um quadro de avisos na rua. Vale ler antes de falar com ela.",
+   "programa": "Falam de um Programa, mas ninguém me explicou. O quadro de avisos ou a moça da trena podem ajudar."
+  },
+  "lucia": {
+   "medir": "Ela mede as fachadas com uma trena. Dá para perguntar quando eu a vir trabalhando, ou depois de ouvir falar disso.",
+   "programa": "Primeiro eu pergunto o que ela mede."
+  }
+ },
+ "src94": {
+  "kp_dom_paciencia": [
+   {
+    "p": "raimundo",
+    "t": "jogo",
+    "label": "O jogo",
+    "quando": [
+     "viu_jogo"
+    ],
+    "nivel": null
+   }
+  ],
+  "kp_dom_pai": [
+   {
+    "p": "raimundo",
+    "t": "jogo",
+    "label": "O jogo",
+    "quando": [
+     "viu_jogo"
+    ],
+    "nivel": [
+     2,
+     3
+    ]
+   }
+  ],
+  "kp_94_ray_aviso": [
+   {
+    "p": "raimundo",
+    "t": "sobrado",
+    "label": "O aviso na porta",
+    "quando": [],
+    "nivel": null
+   }
+  ],
+  "kp_94_ray_vazias": [
+   {
+    "p": "raimundo",
+    "t": "rua",
+    "label": "A rua de cima",
+    "quando": [],
+    "nivel": null
+   }
+  ],
+  "kp_dom_dupla": [
+   {
+    "p": "ze",
+    "t": "jogo",
+    "label": "O jogo",
+    "quando": [
+     "viu_jogo"
+    ],
+    "nivel": null
+   }
+  ],
+  "kp_dom_convite": [
+   {
+    "p": "ze",
+    "t": "lia_jogar",
+    "label": "Posso jogar?",
+    "quando": [
+     "apos:ze:jogo"
+    ],
+    "nivel": null
+   }
+  ],
+  "kp_94_ze_foto": [
+   {
+    "p": "ze",
+    "t": "barbearia",
+    "label": "A barbearia",
+    "quando": [],
+    "nivel": null
+   }
+  ],
+  "kp_94_nonato_obra": [
+   {
+    "p": "nonato",
+    "t": "obra",
+    "label": "A obra",
+    "quando": [],
+    "nivel": null
+   }
+  ],
+  "kp_dom_contar": [
+   {
+    "p": "bela",
+    "t": "jogo",
+    "label": "O jogo",
+    "quando": [
+     "viu_jogo"
+    ],
+    "nivel": null
+   }
+  ],
+  "kp_94_bela_freguesas": [
+   {
+    "p": "bela",
+    "t": "costura",
+    "label": "A costura",
+    "quando": [],
+    "nivel": null
+   }
+  ],
+  "kp_94_rua_olhar": [
+   {
+    "p": "bela",
+    "t": "rua",
+    "label": "Gente de fora",
+    "quando": [
+     "apos:bela:costura"
+    ],
+    "nivel": null
+   }
+  ],
+  "kp_94_cicera_varal": [
+   {
+    "p": "cicera",
+    "t": "varal",
+    "label": "O varal",
+    "quando": [],
+    "nivel": null
+   }
+  ],
+  "kp_gato": [
+   {
+    "p": "junior",
+    "t": "gato",
+    "label": "O gato",
+    "quando": [],
+    "nivel": null
+   }
+  ],
+  "kp_94_junior_casa": [
+   {
+    "p": "junior",
+    "t": "casa",
+    "label": "A casa fechada",
+    "quando": [],
+    "nivel": null
+   }
+  ],
+  "kp_94_junior_foto": [
+   {
+    "p": "junior",
+    "t": "turista",
+    "label": "Os turistas",
+    "quando": [],
+    "nivel": null
+   }
+  ],
+  "kp_cocada": [
+   {
+    "p": "tonho",
+    "t": "cocada",
+    "label": "A cocada",
+    "quando": [],
+    "nivel": null
+   }
+  ],
+  "kp_94_tonho_show": [
+   {
+    "p": "tonho",
+    "t": "show",
+    "label": "Os shows no Terreiro",
+    "quando": [
+     "apos:tonho:rua"
+    ],
+    "nivel": null
+   }
+  ],
+  "kp_94_tonho_turista": [
+   {
+    "p": "tonho",
+    "t": "rua",
+    "label": "O turista",
+    "quando": [],
+    "nivel": null
+   }
+  ],
+  "kp_94_dandara_dn": [
+   {
+    "p": "dandara",
+    "t": "dn",
+    "label": "O Dia & Noite",
+    "quando": [],
+    "nivel": null
+   }
+  ],
+  "kp_associacao": [
+   {
+    "p": "dandara",
+    "t": "associacao",
+    "label": "A associação",
+    "quando": [],
+    "nivel": null
+   }
+  ],
+  "kp_94_programa": [
+   {
+    "p": "dandara",
+    "t": "programa",
+    "label": "O Programa",
+    "quando": [],
+    "nivel": null
+   }
+  ],
+  "kp_94_lucia_ficha": [
+   {
+    "p": "lucia",
+    "t": "medir",
+    "label": "A ficha da casa",
+    "quando": [],
+    "nivel": null
+   }
+  ],
+  "kp_94_lucia_aposta": [
+   {
+    "p": "lucia",
+    "t": "programa",
+    "label": "A aposta do Programa",
+    "quando": [],
+    "nivel": null
+   }
+  ],
+  "kp_94_lucia_evento": [
+   {
+    "p": "lucia",
+    "t": "programa",
+    "label": "A aposta do Programa",
+    "quando": [],
+    "nivel": [
+     2,
+     3
+    ]
+   }
+  ]
+ },
+ "src96": {
+  "kp_96_pedido": [
+   {
+    "p": "aurea",
+    "t": "como_foi",
+    "label": "Como foi a encomenda?"
+   }
+  ],
+  "kp_96_padaria": [
+   {
+    "p": "aurea",
+    "t": "padaria",
+    "label": "A padaria"
+   }
+  ],
+  "kp_96_gravacao": [
+   {
+    "p": "dandara",
+    "t": "clipe",
+    "label": "A gravação"
+   }
+  ],
+  "kp_96_vitrine": [
+   {
+    "p": "dandara",
+    "t": "camera",
+    "label": "O que a câmera vê"
+   }
+  ],
+  "kp_96_fase2": [
+   {
+    "p": "dandara",
+    "t": "fase2",
+    "label": "O Programa agora"
+   }
+  ],
+  "kp_96_evento": [
+   {
+    "p": "dandara",
+    "t": "evento",
+    "label": "O que os vizinhos disseram"
+   }
+  ],
+  "kp_96_ficou": [
+   {
+    "p": "dandara",
+    "t": "associacao",
+    "label": "A associação hoje"
+   }
+  ],
+  "kp_96_tonho": [
+   {
+    "p": "tonho",
+    "t": "venda",
+    "label": "A venda de hoje"
+   }
+  ],
+  "kp_96_publico": [
+   {
+    "p": "tonho",
+    "t": "plateia",
+    "label": "Quem veio hoje"
+   }
+  ],
+  "kp_96_saiu": [
+   {
+    "p": "bela",
+    "t": "freguesas",
+    "label": "As freguesas"
+   }
+  ],
+  "kp_96_seguranca": [
+   {
+    "p": "ze",
+    "t": "barbearia",
+    "label": "A barbearia"
+   }
+  ],
+  "kp_96_policia": [
+   {
+    "p": "cicera",
+    "t": "esquinas",
+    "label": "As esquinas fechadas"
+   },
+   {
+    "p": "assist_b",
+    "t": "silencio",
+    "label": "O silêncio da gravação"
+   }
+  ],
+  "kp_96_obra": [
+   {
+    "p": "nonato",
+    "t": "empreita",
+    "label": "A obra da esquina"
+   }
+  ],
+  "kp_96_zefa": [
+   {
+    "p": "zefa",
+    "t": "rua",
+    "label": "A rua hoje"
+   }
+  ],
+  "kp_96_tijolo": [
+   {
+    "p": "rita",
+    "t": "tinta",
+    "label": "O prédio sem pintura"
+   }
+  ],
+  "kp_96_cenario": [
+   {
+    "p": "assist_a",
+    "t": "locacao",
+    "label": "Como vocês chamam a rua"
+   }
+  ],
+  "kp_96_raimundo": [
+   {
+    "p": "raimundo",
+    "t": "clipe",
+    "label": "A gravação"
+   }
+  ],
+  "kp_96_mesa": [
+   {
+    "p": "raimundo",
+    "t": "mesa",
+    "label": "O dominó"
+   }
+  ]
+ },
+ "objs96": {
+  "base_monitor": {
+   "kp": "kp_96_monitor",
+   "desc": "No monitor de tubo aparece, em preto e branco, o palco e a fachada azul ao fundo. A parede pintada enche o quadro. O prédio de tijolo aparente, mais à direita, não entra."
+  },
+  "quadro_avisos": {
+   "kp": "kp_96_quadro",
+   "desc": "Quadro da associação: reunião de moradores, rifa de uma geladeira e, no meio, uma folha impressa com a programação de eventos do mês no Centro Histórico. No rodapé, o nome do órgão que organiza."
+  },
+  "mesa_domino": {
+   "desc": "A mesa continua verde, com a garrafa térmica no canto. Falta uma pessoa: Seu Raimundo não desceu hoje."
+  }
+ },
+ "srcQ": {
+  "q_quiabo": [
+   {
+    "p": "zefa",
+    "t": "quiabo",
+    "label": "O quiabo",
+    "fases": [
+     "A",
+     "B"
+    ],
+    "quando": []
+   }
+  ],
+  "q_zefa_pai": [
+   {
+    "p": "zefa",
+    "t": "pai",
+    "label": "A bandeira",
+    "fases": null,
+    "quando": [
+     "viu_banner"
+    ]
+   }
+  ],
+  "q_zefa_reforma": [
+   {
+    "p": "zefa",
+    "t": "reforma",
+    "label": "O Programa",
+    "fases": [
+     "B",
+     "C1",
+     "C",
+     "D"
+    ],
+    "quando": []
+   }
+  ],
+  "q_zefa_turista": [
+   {
+    "p": "zefa",
+    "t": "turista",
+    "label": "O turista",
+    "fases": [
+     "C1",
+     "C",
+     "D"
+    ],
+    "quando": [
+     "apos:zefa:reforma"
+    ]
+   }
+  ],
+  "q_zefa_dn": [
+   {
+    "p": "zefa",
+    "t": "dn",
+    "label": "Os shows nos largos",
+    "fases": [
+     "C1",
+     "C",
+     "D"
+    ],
+    "quando": [
+     "apos:zefa:reforma"
+    ]
+   }
+  ],
+  "q_zefa_casa": [
+   {
+    "p": "zefa",
+    "t": "casa",
+    "label": "A casa",
+    "fases": [
+     "C",
+     "D"
+    ],
+    "quando": [
+     "apos:zefa:reforma"
+    ]
+   }
+  ],
+  "q_aurea_balcao": [
+   {
+    "p": "aurea",
+    "t": "balcao",
+    "label": "O balcão",
+    "fases": [
+     "B",
+     "C1",
+     "C",
+     "D"
+    ],
+    "quando": []
+   }
+  ],
+  "q_aurea_freguesia": [
+   {
+    "p": "aurea",
+    "t": "freguesia",
+    "label": "Quem compra",
+    "fases": [
+     "C1",
+     "C",
+     "D"
+    ],
+    "quando": [
+     "apos:aurea:balcao"
+    ]
+   }
+  ],
+  "q_aurea_papel": [
+   {
+    "p": "aurea",
+    "t": "papel",
+    "label": "O papel",
+    "fases": [
+     "C",
+     "D"
+    ],
+    "quando": [
+     "apos:aurea:freguesia"
+    ]
+   }
+  ],
+  "q_raimundo_sobrado": [
+   {
+    "p": "raimundo",
+    "t": "sobrado",
+    "label": "O sobrado",
+    "fases": [
+     "B",
+     "C1",
+     "C",
+     "D"
+    ],
+    "quando": []
+   }
+  ],
+  "q_raimundo_vazias": [
+   {
+    "p": "raimundo",
+    "t": "vazias",
+    "label": "A rua de cima",
+    "fases": [
+     "C1",
+     "C",
+     "D"
+    ],
+    "quando": [
+     "apos:raimundo:sobrado"
+    ]
+   }
+  ],
+  "q_lista": [
+   {
+    "p": "dandara",
+    "t": "lista",
+    "label": "A lista",
+    "fases": [
+     "B",
+     "C1",
+     "C",
+     "D"
+    ],
+    "quando": []
+   }
+  ],
+  "q_dandara_dn": [
+   {
+    "p": "dandara",
+    "t": "dn",
+    "label": "Os shows nos largos",
+    "fases": [
+     "C",
+     "D"
+    ],
+    "quando": [
+     "apos:dandara:lista"
+    ]
+   }
+  ],
+  "q_comodos": [
+   {
+    "p": "dandara",
+    "t": "comodos",
+    "label": "Quem ficou fora",
+    "fases": [
+     "C",
+     "D"
+    ],
+    "quando": [
+     "apos:dandara:lista"
+    ]
+   }
+  ],
+  "q_lucia_convite": [
+   {
+    "p": "lucia",
+    "t": "convite",
+    "label": "O convite",
+    "fases": [
+     "C1",
+     "C",
+     "D"
+    ],
+    "quando": []
+   }
+  ],
+  "q_lucia_ficha": [
+   {
+    "p": "lucia",
+    "t": "ficha",
+    "label": "O trabalho",
+    "fases": [
+     "C",
+     "D"
+    ],
+    "quando": [
+     "apos:lucia:convite"
+    ]
+   }
+  ],
+  "q_lucia_evento": [
+   {
+    "p": "lucia",
+    "t": "evento",
+    "label": "O turista e o comércio",
+    "fases": [
+     "D"
+    ],
+    "quando": [
+     "apos:lucia:ficha"
+    ]
+   }
+  ],
+  "q_rita_telhado": [
+   {
+    "p": "rita",
+    "t": "telhado",
+    "label": "O telhado",
+    "fases": [
+     "B",
+     "C1",
+     "C",
+     "D"
+    ],
+    "quando": [
+     "viu_portao"
+    ]
+   }
+  ],
+  "q_rita_sombra": [
+   {
+    "p": "rita",
+    "t": "sombra",
+    "label": "A mangueira",
+    "fases": [
+     "C",
+     "D"
+    ],
+    "quando": [
+     "apos:rita:telhado",
+     "viu_mangueira"
+    ]
+   }
+  ],
+  "q_nonato_empreita": [
+   {
+    "p": "nonato",
+    "t": "empreita",
+    "label": "A obra",
+    "fases": null,
+    "quando": []
+   }
+  ],
+  "q_ze_turista": [
+   {
+    "p": "ze",
+    "t": "turista",
+    "label": "A barbearia",
+    "fases": null,
+    "quando": []
+   }
+  ],
+  "q_bela_panos": [
+   {
+    "p": "bela",
+    "t": "panos",
+    "label": "Os panos",
+    "fases": [
+     "B",
+     "C1",
+     "C",
+     "D"
+    ],
+    "quando": [
+     "viu_toalha",
+     "viu_mesa"
+    ]
+   }
+  ],
+  "q_bela_freguesas": [
+   {
+    "p": "bela",
+    "t": "freguesas",
+    "label": "A costura",
+    "fases": [
+     "C",
+     "D"
+    ],
+    "quando": [
+     "apos:bela:panos",
+     "viu_toalha"
+    ]
+   }
+  ],
+  "q_cicera_junior": [
+   {
+    "p": "cicera",
+    "t": "junior",
+    "label": "O Júnior",
+    "fases": null,
+    "quando": []
+   }
+  ],
+  "q_cicera_varal": [
+   {
+    "p": "cicera",
+    "t": "varal",
+    "label": "O varal",
+    "fases": [
+     "C",
+     "D"
+    ],
+    "quando": [
+     "apos:cicera:junior"
+    ]
+   }
+  ],
+  "q_junior_mangueira": [
+   {
+    "p": "junior",
+    "t": "mangueira",
+    "label": "A mangueira",
+    "fases": null,
+    "quando": [
+     "viu_mangueira"
+    ]
+   }
+  ],
+  "q_junior_casa": [
+   {
+    "p": "junior",
+    "t": "casa",
+    "label": "A casa fechada",
+    "fases": [
+     "B",
+     "C1",
+     "C",
+     "D"
+    ],
+    "quando": [
+     "apos:junior:mangueira",
+     "ouviu_cicera"
+    ]
+   }
+  ],
+  "q_tonho_cocada": [
+   {
+    "p": "tonho",
+    "t": "cocada",
+    "label": "A cocada",
+    "fases": [
+     "B",
+     "C1",
+     "C",
+     "D"
+    ],
+    "quando": [
+     "viu_cocada"
+    ]
+   }
+  ],
+  "q_tonho_show": [
+   {
+    "p": "tonho",
+    "t": "show",
+    "label": "Os shows",
+    "fases": [
+     "C",
+     "D"
+    ],
+    "quando": [
+     "apos:tonho:turista"
+    ]
+   }
+  ],
+  "q_tonho_turista": [
+   {
+    "p": "tonho",
+    "t": "turista",
+    "label": "O turista",
+    "fases": [
+     "C",
+     "D"
+    ],
+    "quando": [
+     "apos:tonho:cocada"
+    ]
+   }
+  ],
+  "q_nena_tabuleiro": [
+   {
+    "p": "nena",
+    "t": "tabuleiro",
+    "label": "O tabuleiro",
+    "fases": [
+     "A",
+     "B",
+     "C1",
+     "C",
+     "D"
+    ],
+    "quando": []
+   }
+  ],
+  "q_nena_caruru": [
+   {
+    "p": "nena",
+    "t": "caruru",
+    "label": "A ordem do caruru",
+    "fases": [
+     "A",
+     "B",
+     "C1",
+     "C",
+     "D"
+    ],
+    "quando": []
+   }
+  ],
+  "q_nena_noite": [
+   {
+    "p": "nena",
+    "t": "noite",
+    "label": "O movimento de noite",
+    "fases": [
+     "C",
+     "D"
+    ],
+    "quando": [
+     "apos:nena:tabuleiro"
+    ]
+   }
+  ],
+  "q_davi_cantiga": [
+   {
+    "p": "davi",
+    "t": "cantiga",
+    "label": "A música",
+    "fases": [
+     "D"
+    ],
+    "quando": []
+   }
+  ],
+  "q_caio_bia": [
+   {
+    "p": "caio",
+    "t": "padaria",
+    "label": "A padaria",
+    "fases": [
+     "B",
+     "C1",
+     "C",
+     "D"
+    ],
+    "quando": []
+   }
+  ],
+  "q_bia_massa": [
+   {
+    "p": "bia",
+    "t": "massa",
+    "label": "A massa",
+    "fases": [
+     "B",
+     "C1",
+     "C",
+     "D"
+    ],
+    "quando": []
+   }
+  ]
+ },
+ "ouveQ": {
+  "q_zefa_raimundo": [
+   {
+    "p": "zefa",
+    "f": "D"
+   },
+   {
+    "p": "raimundo",
+    "f": "D"
+   }
+  ],
+  "q_prazo": [
+   {
+    "p": "dandara",
+    "f": "D"
+   },
+   {
+    "p": "lucia",
+    "f": "D"
+   }
+  ],
+  "q_pratos": [
+   {
+    "p": "m",
+    "f": "C1"
+   }
+  ]
+ }
+}
