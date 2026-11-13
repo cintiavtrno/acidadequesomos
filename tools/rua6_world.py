@@ -89,8 +89,8 @@ def rput(c, x, w, sy0, h, col):
     for k in range(h): hput(c, x, w, sy0 + k, col)
 
 def ground_features(world, rng):
-    # 1) ladrilho hidráulico na soleira de três portas (desenho geométrico gasto)
-    def ladrilho(xc, w, sy0, h, cA, cB, cC):
+    # 1) ladrilho hidráulico (função mantida, sem uso)
+    def ladrilho(xc, w, sy0, h, cA, cB, cC, draw=True):
         for i in range(w):
             for j in range(h):
                 u, v = i % 6, j % 6
@@ -99,9 +99,11 @@ def ground_features(world, rng):
                 else: col = cB
                 if (i // 6 + j // 6) % 2: col = cA if col == cB else cB if col == cA else col
                 if rng.random() < 0.05: col = mix(col, (150, 140, 120), .5)
-                put(world, xc - w // 2 + i, sy0 + j, col)
-    ladrilho(164, 36, 3, 12, (138, 74, 58), (222, 208, 176), (58, 52, 60))
-    ladrilho(756, 42, 3, 12, (58, 92, 126), (226, 214, 184), (52, 52, 64))
+                if draw: put(world, xc - w // 2 + i, sy0 + j, col)
+    # Os dois ladrilhos de soleira (x=164 e x=756) foram retirados a pedido. As chamadas ficam com draw=False só para
+    # consumir a mesma sequência de números aleatórios e não mudar o desgaste do resto da rua.
+    ladrilho(164, 36, 3, 12, (138, 74, 58), (222, 208, 176), (58, 52, 60), draw=False)
+    ladrilho(756, 42, 3, 12, (58, 92, 126), (226, 214, 184), (52, 52, 64), draw=False)
     for xx in range(444, 497): rput(world, xx, 1, 2, 4, mix(S[3], (60, 50, 60), .18)) if False else None
     # soleira de granito da padaria (laje contínua mais clara)
     for xx in range(440, 500):
