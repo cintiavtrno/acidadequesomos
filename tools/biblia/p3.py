@@ -112,7 +112,7 @@ def gab(titulo, itens, intro=''):
     return '<h2 class="w">%s</h2>%s<div class="gab">%s</div>' % (esc(titulo), ('<p>%s</p>' % intro if intro else ''), itens)
 
 def legenda():
-    return '<div class="leg">%s<div>Conversa</div>%s<div>Escuta ou observação</div>%s<div>Objeto ou lugar</div>%s<div>Ajuda</div></div>' % (SH['q'], SH['t'], SH['c'], SH['l'])
+    return '<div class="leg"><span>%s Conversa</span><span>%s Escuta ou observação</span><span>%s Objeto ou lugar</span><span>%s Ajuda</span></div>' % (SH['q'], SH['t'], SH['c'], SH['l'])
 
 def cap_1991():
     ab = abre('1991', '1991: o Programa foi anunciado', 'O rádio deu a notícia e a rua inteira ouviu. Ninguém sabe direito o que vai mudar. Lia tem 10 anos e passa as manhãs entre o balcão da vó e a calçada.', 'cena91.png', 9)

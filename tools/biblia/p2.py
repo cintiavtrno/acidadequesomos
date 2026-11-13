@@ -6,25 +6,25 @@ def rua_esquema():
     W = 1130.0; k = 150.0 / W  # mm
     pts = [(72, 'prédio 0', 'b'), (164, 'sobrado de Seu Raimundo', 'a'), (240, 'mesa de dominó', 'm'), (470, 'padaria', 'a'), (614, 'porta lateral', 'b'), (718, 'quadro de avisos', 'm'),
            (756, 'associação', 'a'), (846, 'casa verde (Nonato)', 'b'), (990, 'casarão rosa (Cícera)', 'a'), (1078, 'varal e oiti', 'm')]
-    s = '<svg width="150mm" height="30mm" viewBox="0 0 150 30" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:1mm 0 1mm 0">'
-    s += '<line x1="0" y1="14" x2="150" y2="14" stroke="#2a2638" stroke-width=".35"/>'
+    s = '<div class="esq"><svg viewBox="0 0 150 30" xmlns="http://www.w3.org/2000/svg">'
+    s += '<line x1="0" y1="14" x2="150" y2="14" style="stroke:var(--fg)" stroke-width=".35"/>'
     for i, (x, t, kind) in enumerate(pts):
         X = x * k
-        if kind == 'a': s += '<rect x="%.2f" y="12.4" width="3.2" height="3.2" fill="#2a2638"/>' % (X - 1.6)
-        elif kind == 'm': s += '<circle cx="%.2f" cy="14" r="1.8" fill="#b23a2c"/>' % X
-        else: s += '<polygon points="%.2f,12 %.2f,14 %.2f,16 %.2f,14" fill="#2f4c86"/>' % (X, X + 1.8, X, X - 1.8)
+        if kind == 'a': s += '<rect x="%.2f" y="12.4" width="3.2" height="3.2" style="fill:var(--g1)"/>' % (X - 1.6)
+        elif kind == 'm': s += '<circle cx="%.2f" cy="14" r="1.8" style="fill:var(--g3)"/>' % X
+        else: s += '<polygon points="%.2f,12 %.2f,14 %.2f,16 %.2f,14" style="fill:var(--acc)"/>' % (X, X + 1.8, X, X - 1.8)
         up = (i % 2 == 0)
         y = 8 if up else 23
-        s += '<line x1="%.2f" y1="%s" x2="%.2f" y2="%s" stroke="#2a2638" stroke-width=".18"/>' % (X, 9.6 if up else 16.4, X, 12.2 if up else 18.4)
-        s += '<text x="%.2f" y="%s" font-family="Caveat" font-weight="700" font-size="3.2" fill="#2f4c86" text-anchor="middle">%s</text>' % (X, 8.4 if up else 22, t)
-    s += '<text x="0" y="29" font-family="Inter" font-size="2.3" fill="#5d5046">x = 0</text><text x="150" y="29" font-family="Inter" font-size="2.3" fill="#5d5046" text-anchor="end">x = 1130 px (47 m)</text></svg>'
+        s += '<line x1="%.2f" y1="%s" x2="%.2f" y2="%s" style="stroke:var(--fg)" stroke-width=".18"/>' % (X, 9.6 if up else 16.4, X, 12.2 if up else 18.4)
+        s += '<text x="%.2f" y="%s" font-family="Caveat" font-weight="700" font-size="3.2" style="fill:var(--acc)" text-anchor="middle">%s</text>' % (X, 8.4 if up else 22, t)
+    s += '<text x="0" y="29" font-family="Inter" font-size="2.3" style="fill:var(--soft)">x = 0</text><text x="150" y="29" font-family="Inter" font-size="2.3" style="fill:var(--soft)" text-anchor="end">x = 1130 px (47 m)</text></svg></div>'
     return s
 
 def cap_narrativa():
     ex = next(e for e in D['rua91'] if e['id'] == 'kp_ray_sobrado')
     src = D['src91']['kp_ray_sobrado'][0]
     return h1(6, 'Da narrativa ao jogo') + f'''
-<p class="lead">A história de <i>O balcão da vó</i> nasceu como tese sobre uma política urbana e virou um conjunto de pistas, pessoas e lugares. Este capítulo mostra os passos dessa conversão.</p>
+<p class="lead">A história de <i>A cidade que somos</i> nasceu como tese sobre uma política urbana e virou um conjunto de pistas, pessoas e lugares. Este capítulo mostra os passos dessa conversão.</p>
 <h2>A tese e os fios</h2>
 <p>A tese é que a recuperação do Centro Histórico mudou quem vive no lugar. Ela é grande demais para caber numa cena, e por isso o jogo a divide em fios, e cada fio é uma pergunta que a rua responde em partes.</p>
 {tabela(['Fase','Fios','Pergunta que o fio responde'], [

@@ -1,15 +1,28 @@
 import sys, re, subprocess, os
 sys.path.insert(0,'/home/claude/bib')
 from lib import *
+import lib
+for _i,_t in enumerate(['az']*5+['lj']*3+['am']*4+['az']*3+['lj']*2): lib.TEMA[str(_i+1)]=_t
 import p1,p2,p3,p4
 OUT='/home/claude/bib/build'
 caps=[p1.cap_jogo(),p1.cap_ficha(),p1.cap_insp(),p1.cap_mda(),p1.cap_gdd(),
       p2.cap_narrativa(),p2.cap_level(),p2.cap_personagens(),
       p3.cap_1991(),p3.cap_1994(),p3.cap_1996(),p3.cap_resultados(),
       p4.cap_cultura(),p4.cap_arte(),p4.cap_ferr(),p4.cap_escrita(),p4.cap_estado()]
+TEMAS=['az']*5+['lj']*3+['am']*4+['az']*3+['lj']*2
+def wrap(c,t):
+    def _t(m):
+        head=m.group(2).split('</tr>')[0]
+        return '<table class="%s%s">%s</table>'%('c1 ' if head.count('<th>')<=2 else '',m.group(1),m.group(2))
+    c=re.sub(r'<table class="([^"]*)">(.*?)</table>',_t,c,flags=re.S)
+    c=re.sub(r'<h2>([^<]*)</h2>\s*(?=<(?:table class="(?!c1)|div class="pair"|div class="mda"|figure class="fw"|div class="esq"))',r'<h2 class="w">\1</h2>',c)
+    pre=''
+    if c.startswith('<section class="abre'):
+        k=c.index('</section>')+len('</section>'); pre=c[:k]; c=c[k:]
+    return pre+'<section class="cap t-%s" style="page:%s">%s</section>'%(t,t,c)
 def doc(sum_items):
-    body=p1.capa()+p1.sumario_html(sum_items)+p1.nota_leitura()+''.join(caps)
-    return '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>O balcão da vó · Bíblia do jogo</title><style>'+CSS+'</style></head><body>'+body+'</body></html>'
+    body=p1.capa()+p1.sumario_html(sum_items)+'<section class="cap t-am" style="page:am">'+p1.nota_leitura()+'</section>'+''.join(wrap(c,t) for c,t in zip(caps,TEMAS))
+    return '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>A cidade que somos · Bíblia do jogo</title><style>'+CSS+'</style></head><body>'+body+'</body></html>'
 def render(html,pdf):
     open(OUT+'/biblia.html','w',encoding='utf-8').write(html)
     from playwright.sync_api import sync_playwright

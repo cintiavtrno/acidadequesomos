@@ -189,5 +189,5 @@ def cap_estado():
 <li>Começar o desenho de áudio.</li>
 </ol>
 <h2>Créditos</h2>
-<p>O balcão da vó é um jogo da Cíntia Vitorino Independent Games. Texto, direção, design de jogo e roteiro de Cíntia Vitorino. Programação, arte em pixel art e este documento foram feitos com Claude, da Anthropic. O protótipo e o código-fonte estão em github.com/cintiavtrno/acidadequesomos.</p>
+<p>A cidade que somos é um jogo da Cíntia Vitorino Independent Games. Texto, direção, design de jogo e roteiro de Cíntia Vitorino. Programação, arte em pixel art e este documento foram feitos com Claude, da Anthropic. O protótipo e o código-fonte estão em github.com/cintiavtrno/acidadequesomos.</p>
 '''

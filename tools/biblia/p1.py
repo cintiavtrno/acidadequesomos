@@ -6,25 +6,25 @@ def tabela(cab, linhas, cls=''):
     return h + '</table>'
 
 def capa():
-    return f'''<section class="cover">
-<img src="{IMG}cena94.png" style="position:absolute;left:0;top:0;width:210mm;height:103mm;object-fit:cover;object-position:35% 50%">
-<div style="position:absolute;left:24mm;top:126mm"><img src="{IMG}t_cover.png" style="width:150mm;height:auto"></div>
-<div style="position:absolute;left:24mm;top:160mm;width:150mm;font:500 15pt/1.35 'InterD';color:#efe6d4">Bíblia do jogo</div>
-<div style="position:absolute;left:24mm;top:171mm;width:118mm;font:400 10pt/1.6 'Inter';color:#cdbf9f">Personagens, fases, pistas e respostas, level design, arte e escrita de um jogo de investigação social no Pelourinho, Salvador, entre 1991 e 1996.</div>
-<div style="position:absolute;left:24mm;bottom:22mm;font:500 9.4pt/1.5 'Inter';color:#efe6d4">Cíntia Vitorino Independent Games<br><span style="color:#cdbf9f;font-weight:400">Protótipo jogável com 1991, 1994 e 1996 · versão 1.0 · novembro de 2026</span></div>
+    return f'''<section class="cover t-az">
+<img src="{IMG}cena94.png" style="position:absolute;left:0;top:0;width:210mm;height:128mm;object-fit:cover;object-position:35% 50%">
+<div style="position:absolute;left:16mm;top:146mm"><img src="{IMG}c_titulo2.png" style="width:150mm;height:auto"></div>
+<div style="position:absolute;left:16mm;top:206mm;font:800 22pt/1.1 'InterD';color:#f7f0de;letter-spacing:-.01em">Bíblia do jogo</div>
+<div style="position:absolute;left:16mm;top:220mm;width:120mm;font:500 10.6pt/1.5 'InterD';color:#dbe6fa">Personagens, fases, pistas e respostas, level design, arte e escrita de um jogo de investigação social no Pelourinho, Salvador, entre 1991 e 1996.</div>
+<div style="position:absolute;left:16mm;bottom:16mm;font:700 9pt/1.5 'Inter';color:#f7f0de">Cíntia Vitorino Independent Games<br><span style="color:#cfdcf4;font-weight:400">Protótipo jogável com 1991, 1994 e 1996 · versão 1.1 · novembro de 2026</span></div>
 </section>'''
 
 def sumario_html(itens):
     # itens: lista de (nivel, num, titulo, pagina)
-    h = '<h1 class="first" style="break-before:auto">Sumário</h1><div class="sum"><ul>'
+    h = '<section class="front t-am" style="page:am"><h1 class="first" style="break-before:auto"><span>Sumário</span></h1><div class="sum"><ul>'
     for nv, n, t, p in itens:
-        h += '<li class="l%d"><span class="n">%s</span><span class="t">%s</span><span class="d"></span><span class="p">%s</span></li>' % (nv, n, esc(t), p)
-    return h + '</ul></div>'
+        h += '<li class="l%d"><span class="n">%s</span><span class="t">%s</span><span class="p">%s</span></li>' % (nv, n, esc(t), p)
+    return h + '</ul></div></section>'
 
 def nota_leitura():
     return h1('', 'Como ler este documento') .replace('<span class="n"></span>', '') + f'''
-<p class="lead">Este documento reúne tudo o que define <i>O balcão da vó</i>: o que o jogo propõe, quem vive nele, o que cada fase ensina, onde está cada pista, como o cenário foi feito e como o texto deve soar.</p>
-{ap('Escrevi como se fosse o caderninho da Lia: o que está à margem, em azul, é anotação de quem fez.')}
+<p class="lead">Este documento reúne tudo o que define <i>A cidade que somos</i>: o que o jogo propõe, quem vive nele, o que cada fase ensina, onde está cada pista, como o cenário foi feito e como o texto deve soar.</p>
+{ap('Escrevi como se fosse o caderninho da Lia: o que está em letra manuscrita é anotação de quem fez.')}
 <p>O jogo existe como protótipo jogável. Tudo o que está descrito aqui foi conferido no código e nos testes do repositório. Quando uma informação ainda não existe no jogo, o texto diz isso de forma direta e marca como pendência.</p>
 <p>Há três marcações recorrentes.</p>
 <ul>
@@ -32,17 +32,18 @@ def nota_leitura():
 <li>Os quatro símbolos do gabarito, mostrados abaixo, dizem como cada pista chega à Lia. Cada forma tem um significado fixo em todas as fases.</li>
 <li>Nomes de arquivo e de módulo aparecem entre aspas simples quando o leitor técnico precisar achá-los no repositório.</li>
 </ul>
-<div class="leg">{SH['q']}<div><b>Conversa.</b> A pista vem de uma pergunta feita a alguém.</div>
-{SH['t']}<div><b>Escuta.</b> A pista vem de ouvir ou observar pessoas sem perguntar.</div>
-{SH['c']}<div><b>Objeto ou lugar.</b> A pista vem de examinar algo na cena.</div>
-{SH['l']}<div><b>Ajuda.</b> A pista vem de fazer algo por alguém.</div></div>
+<div class="leg v">
+<span>{SH['q']}<span><b>Conversa.</b> A pista vem de uma pergunta feita a alguém.</span></span>
+<span>{SH['t']}<span><b>Escuta.</b> A pista vem de ouvir ou observar pessoas sem perguntar.</span></span>
+<span>{SH['c']}<span><b>Objeto ou lugar.</b> A pista vem de examinar algo na cena.</span></span>
+<span>{SH['l']}<span><b>Ajuda.</b> A pista vem de fazer algo por alguém.</span></span></div>
 <h2>Como o documento está organizado</h2>
 <p>Os capítulos 1 a 3 explicam o jogo: o tema, a ficha que responde às perguntas de design e as inspirações. Os capítulos 4 e 5 trazem o MDA e o GDD. O capítulo 6 mostra como a narrativa vira sistema e o capítulo 7 descreve o level design. O capítulo 8 apresenta os personagens. Os capítulos 9 a 11 percorrem as três fases com o gabarito completo das pistas. O capítulo 12 trata dos resultados possíveis. Os capítulos 13 a 16 cobrem a cultura que alimenta a história, a arte, as ferramentas equivalentes e o guia de escrita. O capítulo 17 lista o que falta.</p>
 '''
 
 def cap_jogo():
     return h1(1, 'O jogo') + f'''
-<p class="lead">O balcão da vó é um jogo de investigação social em pixel art. O jogador é Lia, neta de Dona Áurea, e passa os dias na padaria da família, na calçada e nas casas vizinhas do Pelourinho, em Salvador.</p>
+<p class="lead">A cidade que somos é um jogo de investigação social em pixel art. O jogador é Lia, neta de Dona Áurea, e passa os dias na padaria da família, na calçada e nas casas vizinhas do Pelourinho, em Salvador.</p>
 <h2>Premissa</h2>
 <p>Em 1991 o rádio anuncia o Programa, um plano de recuperação do Centro Histórico. Gente de fora mede as fachadas, cola avisos no quadro da associação e marca portas a giz. Ninguém na rua sabe direito o que vai mudar.</p>
 {ap('Lia tem 10 anos em 1991, 13 em 1994 e 15 em 1996.')}
@@ -102,14 +103,14 @@ def cap_insp():
 <h2>inKONBINI: One Store. Many Stories</h2>
 <p>É um jogo de aventura e simulação da Nagai Industries, que se passa numa loja de conveniência de cidade pequena, inspirada no Japão do começo dos anos 1990. A protagonista é Makoto, estudante que cuida da loja durante o verão. <span class="rev">Fonte: páginas de loja e de imprensa sobre o jogo.</span></p>
 {ap('O que peguei: uma loja pequena como centro, o ano fixado no começo dos 1990 e o balcão como lugar de ouvir gente.')}
-<p>O jogo mostra que um espaço pequeno e conhecido sustenta muitas histórias, e que organizar a loja e conversar com os fregueses podem ser a mesma atividade. <i>O balcão da vó</i> adota essa ideia na padaria: a Lia atende, escuta a fila e cada freguês deixa uma pista. A diferença é que a investigação sai do balcão e segue para a rua, e a escala é um bairro.</p>
+<p>O jogo mostra que um espaço pequeno e conhecido sustenta muitas histórias, e que organizar a loja e conversar com os fregueses podem ser a mesma atividade. <i>A cidade que somos</i> adota essa ideia na padaria: a Lia atende, escuta a fila e cada freguês deixa uma pista. A diferença é que a investigação sai do balcão e segue para a rua, e a escala é um bairro.</p>
 <p>Outra herança é o ritmo. O inKONBINI não cobra eficiência do jogador. Aqui o relógio é diegético, pausa em conversa e no caderninho, e a noite só chega quando a Lia escolhe dormir.</p>
 <h2>Dave the Diver</h2>
 <p>Lançado em 2023 pela Mintrocket, selo da Nexon, o jogo divide o dia em duas partes: de dia o jogador mergulha no Blue Hole atrás de ingredientes e à noite ajuda a servir num restaurante de sushi. O jogo é em pixel art e combina aventura, gestão e narrativa.</p>
-<p>A lição aproveitada é a estrutura de ciclo. Cada dia tem um tempo de explorar e um tempo de voltar para casa, e o que foi coletado fora alimenta o que acontece dentro. Em <i>O balcão da vó</i>, o dia na rua alimenta a noite no quarto acima da padaria, e o caderninho carrega as descobertas para o dia seguinte. Cada dia de 1991 abre com saudações próprias e novos acontecimentos: o papel no quadro no terceiro dia, a chuva no segundo e no quarto, a reunião da associação no quarto dia.</p>
+<p>A lição aproveitada é a estrutura de ciclo. Cada dia tem um tempo de explorar e um tempo de voltar para casa, e o que foi coletado fora alimenta o que acontece dentro. Em <i>A cidade que somos</i>, o dia na rua alimenta a noite no quarto acima da padaria, e o caderninho carrega as descobertas para o dia seguinte. Cada dia de 1991 abre com saudações próprias e novos acontecimentos: o papel no quadro no terceiro dia, a chuva no segundo e no quarto, a reunião da associação no quarto dia.</p>
 <h2>Habbo Hotel</h2>
 <p>Lançado em 2000 pela finlandesa Sulake, o Habbo é um mundo virtual em pixel art isométrico, com avatares, salas públicas e conversa em tempo real. Ele funciona como um lugar onde os outros jogadores estão sempre presentes.</p>
-<p>A herança aqui é visual e social. Pessoas pequenas num espaço compartilhado, com cadeiras, mesas e portas que contam quem usa o quê, produzem a sensação de vida mesmo sem texto. A mesa de dominó, a fila da padaria e as sacadas de 1996 vêm dessa ideia. O jogador vê a rua habitada antes de falar com alguém. <i>O balcão da vó</i> é para uma pessoa só, e os outros habitantes são simulados.</p>
+<p>A herança aqui é visual e social. Pessoas pequenas num espaço compartilhado, com cadeiras, mesas e portas que contam quem usa o quê, produzem a sensação de vida mesmo sem texto. A mesa de dominó, a fila da padaria e as sacadas de 1996 vêm dessa ideia. O jogador vê a rua habitada antes de falar com alguém. <i>A cidade que somos</i> é para uma pessoa só, e os outros habitantes são simulados.</p>
 <h2>O que o jogo faz por conta própria</h2>
 <p>O chão do jogo é uma pesquisa de campo local. A rua, as casas, as comidas, os santos e as conversas partem do Pelourinho. O caruru, o dominó na calçada, a lata do bairro e a mesa posta para um são cenas que o jogo constrói com material do lugar, e nenhuma das três inspirações acima tem equivalente.</p>
 '''
@@ -164,7 +165,7 @@ def cap_gdd():
 <p class="lead">Esta é a descrição técnica e funcional do protótipo, no estado em que o repositório está hoje.</p>
 <h2>Visão geral</h2>
 {tabela(['Item','Valor'], [
-['Título','O balcão da vó'],
+['Título','A cidade que somos'],
 ['Estúdio','Cíntia Vitorino Independent Games'],
 ['Plataforma','Navegador, em arquivos HTML únicos. Teclado e mouse.'],
 ['Resolução','480 por 270 pixels lógicos, em proporção 16:9, ampliados em múltiplos inteiros por vizinho mais próximo, com redução suave só quando a escala não é inteira.'],
