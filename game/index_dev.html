@@ -2251,7 +2251,7 @@ Sim.Rua.D.gates = {
   },
   nonato: {
     jogo: { label: 'O jogo', quando: ['viu_jogo'], ask: 'Nonato, você comemorou tão alto... dá pra explicar essa batida?' },
-    obra: { label: 'A obra', quando: ['viu_obra', 'nivel:1'], ask: 'Vi uma obra aqui na calçada. É sua?', ask2: 'Nonato, você é pedreiro, não é? O que faz quando não está na mesa?' },
+    obra: { label: 'A obra', quando: ['viu_obra', 'nivel:1', 'apos:nonato:jogo'], ask: 'Vi uma obra aqui na calçada. É sua?', ask2: 'Nonato, você é pedreiro, não é? O que faz quando não está na mesa?', ask3: 'Nonato, e fora da mesa, você mexe com obra?' },
   },
   bela: {
     jogo: { label: 'O jogo', quando: ['viu_jogo'], ask: 'Dona Bela, a senhora conta as pedras de cabeça?' },
