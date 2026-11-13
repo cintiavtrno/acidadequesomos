@@ -88,3 +88,4 @@ Sim.Sacola = {
     w.rel.change('raimundo', 'lia', { aff: .08, trust: .1 }, 'sacola'); w.knowledge.award('kp_c_sacola_pao', { via: 'entregou' }); if (w.bus) w.bus.emit('sacola_entregue', {}); return true;
   },
 };
+;Sim.saudarHora = (txt, min) => typeof txt !== 'string' ? txt : (min >= 1080 ? txt.replace(/\bBom dia\b/g, 'Boa noite') : min >= 720 ? txt.replace(/\bBom dia\b/g, 'Boa tarde') : txt);   // a saudação acompanha a hora do relógio

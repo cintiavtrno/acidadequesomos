@@ -90,10 +90,13 @@ function montar() {
   window.MUNDO = { mundo, frames: FR, ir: id => mundo.ir(id), estado: () => mundo.persist.instantaneo(), onde: () => mundo.viagens.onde, viagens: () => mundo.viagens.viagens, duplicados: () => mundo.viagens.duplicados(), cena: () => mundo.cenas.atual, minuto: () => mundo.minuto(), W };
 }
 // relógio vivo: pausa quando a Lia conversa, lê o caderninho, joga na mesa ou há tela aberta; fica a 30% do ritmo se o jogador não faz nada por 12 s.
-function ocupado() { try { const w = FR[mundo.cenas.atual].contentWindow; return !!(w.BALCAO && w.BALCAO.ocupado && w.BALCAO.ocupado()); } catch (e) { return false; } }
+function ocupado() { try { const w = FR[mundo.cenas.atual].contentWindow; return (w.BALCAO && w.BALCAO.ocupado && w.BALCAO.ocupado()) | 0; } catch (e) { return 0; } }   // 0 livre · 1 conversa (tempo devagar) · 2 caderno (tempo parado)
+let ESPERA = false;   // 'esperar o anoitecer': o relógio corre mais rápido até o entardecer; qualquer conversa ou tela cancela
 function tempo() {
-  const parado = performance.now() - ULTIMA_ENTRADA > 12000, tela_ = document.getElementById('hist').style.display === 'flex', p = tela_ || ocupado();
-  for (const id in FR) { try { const c = mundo.cenas.get(id); if (c && c.sim && c.sim.clock) { c.sim.clock.paused = p; c.sim.clock.mult = parado ? .3 : 1; } } catch (e) { } }
+  const parado = performance.now() - ULTIMA_ENTRADA > 12000, tela_ = document.getElementById('hist').style.display === 'flex', oc = ocupado(), p = tela_ || oc === 2;
+  if (ESPERA && (oc || tela_ || mundo.minuto() >= PODE_DORMIR || ANO !== 1991)) ESPERA = false;
+  const mult = oc === 1 ? .35 : ESPERA ? 6 : parado ? .3 : 1;   // uma conversa também gasta tempo; só o caderno e as telas param o relógio
+  for (const id in FR) { try { const c = mundo.cenas.get(id); if (c && c.sim && c.sim.clock) { c.sim.clock.paused = p; c.sim.clock.mult = mult; } } catch (e) { } }
 }
 // anoitecer: a luz acompanha o relógio mestre (multiplica a imagem: dia = sem efeito; 17:00 dourado; 18:00 roxo; 19:00+ noite azul). Não encerra o jogo.
 const NOITE = [[900, [255, 255, 255]], [1020, [255, 205, 150]], [1080, [170, 120, 140]], [1140, [70, 82, 135]]];
@@ -111,7 +114,7 @@ function historia() {
   let retorno = false; try { retorno = localStorage.getItem('balcao_retorno') === '1'; localStorage.removeItem('balcao_retorno'); } catch (e) { }
   const chip = document.getElementById('chip');
   let visitou = false, fim = false;
-  // dormir: escolha do jogador (porta da escada da padaria ou o botão do alto, a partir das 15h). Nada se perde ao trocar de dia.
+  // dormir: escolha do jogador (porta da escada da padaria ou o botão do alto, a partir do entardecer, 18h). Nada se perde ao trocar de dia.
   window.MUNDO_DORMIR = () => {
     if (fim || mundo.minuto() < PODE_DORMIR || ANO !== 1991) return; fim = true; chip.style.display = 'none'; salvarTudo();
     if (DIA >= DIAS_91) tela(ANOITECEU_91(notas()), 'Seguir para 1994', para94);
@@ -123,15 +126,17 @@ function historia() {
     const pronto94 = n >= meta && visitou;
     chip.style.display = 'block';
     const noite_ = mundo.minuto() >= PODE_DORMIR;
-    chip.innerHTML = ANO === 1991 ? '<b>1991</b> · dia ' + DIA + ' de ' + DIAS_91 + ' · ' + (mundo.minuto() >= 1080 ? 'a noite chegou' : 'a rua ainda tem o que contar') + (noite_ ? '<button id="cb">' + (DIA >= DIAS_91 ? 'Terminar 1991' : 'Subir para dormir') + '</button>' : '')
+    const m_ = mundo.minuto(), esp = ANO === 1991 && !noite_ && m_ >= ESPERA_DE;
+    chip.innerHTML = ANO === 1991 ? '<b>1991</b> · dia ' + DIA + ' de ' + DIAS_91 + ' · ' + (m_ >= 1140 ? 'a noite chegou' : noite_ ? 'entardeceu' : 'a rua ainda tem o que contar') + (noite_ ? '<button id="cb">' + (DIA >= DIAS_91 ? 'Terminar 1991' : 'Subir para dormir') + '</button>' : esp ? '<button id="ce">' + (ESPERA ? 'Parar de esperar' : 'Esperar o anoitecer') + '</button>' : '')
       : '<b>1994</b> · ' + (visitou ? 'no caruru <span class="ok">✓</span> · ' : 'o caruru começa ao meio-dia · ') + (pronto94 ? 'o quintal já te contou o essencial <button id="cb">Encerrar a fase</button>' : 'o caruru ainda tem o que contar');
+    const e_ = document.getElementById('ce'); if (e_) e_.onclick = () => { ESPERA = !ESPERA; e_.textContent = ESPERA ? 'Parar de esperar' : 'Esperar o anoitecer'; };
     const b = document.getElementById('cb'); if (b) b.onclick = () => { if (ANO === 1991) window.MUNDO_DORMIR(); else { fim = true; chip.style.display = 'none'; zerarJogo(); tela(FIM94, 'Recomeçar do início', recomecar); } };
   }, 500);
   if (retorno) return;   // novo dia da mesma fase: sem abertura
   if (ANO === 1991) tela(INTRO, 'Continuar', () => tela(C91, 'Entrar em 1991'));
   else tela(C94, 'Começar 1994');
 }
-const PODE_DORMIR = 900, DIAS_91 = 4;   // 15:00: a escada da padaria já deixa subir; 1991 tem quatro dias
+const PODE_DORMIR = 1080, ESPERA_DE = 900, DIAS_91 = 4;   // dormir só ao entardecer (18:00); desde as 15:00 dá para esperar o anoitecer; 1991 tem quatro dias
 function salvarTudo() {
   for (const id of ['padaria', 'casa']) { try { const s = FR[id].contentWindow.BALCAO.SIM; if (s && !s.fim) s.endDay(); } catch (e) { } }
   try { FR.rua.contentWindow.BALCAO.SIM.salvar(); } catch (e) { }
@@ -144,7 +149,7 @@ function para94() {
   setTimeout(() => { location.search = '?ano=1994'; }, 1900);
 }
 const INTRO = '<div class="ano">Pelourinho, Salvador</div><h1>O balcão da vó</h1><p>Você é Lia, neta de Dona Áurea. Seus dias passam entre a padaria da família, a calçada, o sobrado de Seu Raimundo e o quintal de Dona Zefa.</p><p>O Programa chegou ao bairro com gente de fora medindo a rua. Você conversa com os moradores, ajuda quem pede ajuda e anota o que descobre no caderninho.</p><p>Não há lado certo para escolher. Cada morador tem as suas razões. Elas aparecem aos poucos para quem fica por perto.</p>';
-const C91 = '<div class="ano">1991</div><h1>O Programa foi anunciado</h1><p>O rádio deu a notícia e a rua inteira ouviu. Ninguém sabe direito o que vai mudar. Lia tem 10 anos e passa as manhãs entre o balcão da vó e a calçada.</p><h3>Objetivo</h3><p>Reunir informações sobre o Programa e sobre quem vive aqui. Converse com os moradores, observe a rua, ajude no que pedirem e anote.</p><h3>Quatro dias, sem pressa</h3><p>1991 tem quatro dias. O relógio anda enquanto você explora e para quando você conversa ou abre o caderninho. A noite espera. Quando quiser, a partir das 15h, suba a escada da padaria para dormir. As conversas, as confianças e o caderninho seguem para o dia seguinte. Depois do quarto dia o jogo vai para 1994, quando Dona Zefa faz um caruru e convida a rua.</p><p>A missão do pão do Seu Raimundo, se aparecer, continua de um dia para o outro até você entregar.</p>' + COMO;
+const C91 = '<div class="ano">1991</div><h1>O Programa foi anunciado</h1><p>O rádio deu a notícia e a rua inteira ouviu. Ninguém sabe direito o que vai mudar. Lia tem 10 anos e passa as manhãs entre o balcão da vó e a calçada.</p><h3>Objetivo</h3><p>Reunir informações sobre o Programa e sobre quem vive aqui. Converse com os moradores, observe a rua, ajude no que pedirem e anote.</p><h3>Quatro dias, sem pressa</h3><p>1991 tem quatro dias. O relógio anda enquanto você explora, corre devagar nas conversas e para quando você abre o caderninho. Quando o dia chega ao fim da tarde, a noite espera por você. Se quiser apressar o anoitecer, use o botão do alto. Quando entardecer, suba a escada da padaria para dormir. As conversas, as confianças e o caderninho seguem para o dia seguinte. Depois do quarto dia o jogo vai para 1994, quando Dona Zefa faz um caruru e convida a rua.</p><p>A missão do pão do Seu Raimundo, se aparecer, continua de um dia para o outro até você entregar.</p>' + COMO;
 const C94 = '<div class="ano">1994</div><h1>O caruru de Dona Zefa</h1><p>Três anos depois, Lia tem 13 anos. De 1992 a 1995 o Programa acelerou: obra pesada, casa interditada, moradores saindo. Em 1991 a rua só recebeu a notícia. Agora ela vê o efeito nas fachadas, nas portas fechadas e no que as pessoas contam.</p><p>A aposta desta etapa é que turistas do Brasil e de fora vão sustentar sozinhos o comércio da rua. Para manter a rua cheia, o governo criou o Pelourinho Dia & Noite: show de graça todo dia nos largos reformados. Dona Zefa, que gosta do Programa, convidou todo mundo para um caruru no quintal dela, a partir do meio-dia.</p><h3>Objetivo</h3><p>Ver o que o Programa fez com a rua e com quem ficou. Antes do caruru, a padaria, a rua e o sobrado estão abertos para você olhar. No quintal, ouça o que cada um diz e pergunte.</p><h3>Sem prazo</h3><p>O jogo abre às 11h30 e o caruru começa ao meio-dia. Vá ao quintal de Dona Zefa, olhe os cantos, ouça as conversas e pergunte. O relógio anda enquanto você explora e a noite espera. Quando o quintal já tiver contado o essencial, o botão para encerrar a fase aparece no alto da tela.</p>' + COMO;
 const ANOITECEU = dia => '<div class="ano">Dia ' + dia + ' de ' + DIAS_91 + '</div><h1>Hora de dormir</h1><p>A rua ainda tem o que contar. Amanhã ela abre de manhã com o que você fez e ouviu hoje, e o caderninho guarda o que já foi anotado.</p>';
 const ANOITECEU_91 = n => '<div class="ano">Fim do quarto dia</div><h1>1991 terminou</h1><p>Você fez ' + n + ' anotações. Três anos depois, Dona Zefa faz um caruru e convida a rua.</p>';

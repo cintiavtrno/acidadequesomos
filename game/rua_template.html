@@ -21,15 +21,15 @@
   #mesa .regras { color: #b8aa98; font-size: .8em; margin-top: .4em; } #mesa .regras summary { cursor: pointer; }
   #mesa .chain { margin: .3em 0; padding: .3em .45em; min-height: 2.4em; } #mesa .seatrow { margin: .2em 0; }
   #notes.modal { inset: 5% 8%; background: var(--paper); color: var(--ink); border: 0; border-radius: 10px; font-family: var(--hand); font-size: 1.35em; line-height: 1.25em; }
-  #notes h2 { font: 700 1.4em var(--hand); color: var(--ink); } #notes h4 { font: 700 1em var(--hand); color: var(--pen); } #notes .kp { background: rgba(60,40,20,.07); border-radius: 6px; padding: .3em .6em; margin: .3em 0; } #notes .kp b { color: var(--ink); } #notes .sub { color: var(--ink-soft); } #notes .x { background: none; border: 0; color: var(--pen); font: 700 .8em var(--hand); }
+  #notes h2 { font: 700 1.4em var(--hand); color: var(--ink); } #notes h4 { font: 700 1em var(--hand); color: var(--pen); } #notes .kp { background: none; border: 0; border-radius: 0; padding: 0; margin: .45em 0; } #notes .kp b { color: var(--ink); } #notes .sub { color: var(--ink-soft); } #notes .x { background: none; border: 0; color: var(--pen); font: 700 .8em var(--hand); }
   #notes .rev { color: var(--pencil); font-size: .8em; }
-  #notes .por { display: block; color: var(--ink-soft); font-size: .8em; margin-top: .15em; } #notes .hip { background: none; border-left: 2px solid var(--pen); border-radius: 0; font-style: italic; color: var(--ink-soft); }
+  #notes .por { display: block; color: var(--ink-soft); font-size: .8em; margin-top: .15em; } #notes .hip { background: none; border: 0; padding: 0; font-style: italic; color: var(--ink-soft); }
 
   /* tela cheia: o cenário ocupa a janela inteira; a barra de ajuda vira uma pílula discreta no canto */
   #app { padding: 0 !important; gap: 0 !important; height: 100% !important; min-height: 0 !important; }
   #frame { box-shadow: none !important; }
   #hud { position: fixed; left: 50%; top: 54px; transform: translateX(-50%); z-index: 20; text-align: center; width: auto !important; max-width: min(46vw, 640px) !important; background: rgba(20,14,16,.66); border-radius: 6px; padding: 3px 8px; font-size: 11px; opacity: .5; transition: opacity .2s; gap: 2px 12px !important; }
-  #hud:hover, #hud:focus-within { opacity: 1; }
+  #hud:hover, #hud:focus-within { opacity: 1; } body.modalAberto #hud { display: none; }
   #hud #zoombar, #hud details { display: none !important; }
   #hud:hover #zoombar, #hud:focus-within #zoombar { display: flex !important; } #hud:hover details, #hud:focus-within details { display: block !important; }
 </style>
@@ -444,7 +444,7 @@ function renderNotes() {
   if (!got.length) h += '<div class="vazio sub" style="margin-top:1em">Ainda não há anotações. Converse com as pessoas e examine os objetos da rua.</div>';
   el.innerHTML = h;
 }
-function toggleNotes(on) { S.notesOpen = on == null ? !S.notesOpen : on; $('notes').style.display = S.notesOpen ? 'block' : 'none'; if (S.notesOpen) renderNotes(); }
+function toggleNotes(on) { S.notesOpen = on == null ? !S.notesOpen : on; document.body.classList.toggle('modalAberto', S.notesOpen); $('notes').style.display = S.notesOpen ? 'block' : 'none'; if (S.notesOpen) renderNotes(); }
 function showDay(r) {
   const el = $('daycard'); let h = '<h2><span>A manhã na rua</span><span class="x" onclick="document.getElementById(\'daycard\').style.display=\'none\'">continuar (Esc)</span></h2>';
   h += '<div>Na mesa foram <b>' + r.jogos.maos + '</b> mãos, <b>' + r.jogos.batidas + '</b> batidas e <b>' + r.jogos.trancadas + '</b> trancadas. Placar da partida: ' + r.placar[0] + ' × ' + r.placar[1] + '.</div>';
@@ -621,7 +621,8 @@ function updateReport() {
 // Lia chega de um interior pela porta: aparece diante da porta, virada para a rua
 function liaChega(k) { const sp = SIM.spot(k), L = SIM.lia; L.x = sp.x; L.y = sp.y + 7; L.face = 'down'; L.sentada = false; L.seat = null; LS.mode = 'free'; LS.path = []; LS.goal = null; LS.anim = 'idle'; SIM.liaFora = false; closeDialog && D.open && closeDialog(); S.free = false; S.vx = L.x; S.vy = L.y - 18; S.hint = null; if (CTX.active) exitContext(true); computeView(); }
 function liaSaiu() { SIM.liaFora = true; LS.path = []; LS.goal = null; }
-window.BALCAO = { ocupado: () => !!(D.open || S.notesOpen || S.mesaOpen), liaChega, liaSaiu, PORTAS, S, LS, D, CTX, enterContext, exitContext, mesaEscolha, get SIM() { return SIM; }, setZoom, resetCamera, focusOn, abrirConversa, abrirMesa, closeMesa, toggleNotes, pressAction, sentarEm, goTo, ffwd, examinar, render, computeView };
+window.BALCAO = { ocupado: () => S.notesOpen ? 2 : (D.open || S.mesaOpen) ? 1 : 0,   // 2 = caderno (relógio parado) · 1 = conversa ou mesa (relógio devagar)
+  liaChega, liaSaiu, PORTAS, S, LS, D, CTX, enterContext, exitContext, mesaEscolha, get SIM() { return SIM; }, setZoom, resetCamera, focusOn, abrirConversa, abrirMesa, closeMesa, toggleNotes, pressAction, sentarEm, goTo, ffwd, examinar, render, computeView };
 </script>
 </body>
 </html>

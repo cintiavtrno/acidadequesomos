@@ -465,6 +465,7 @@ Sim.Sacola = {
     w.rel.change('raimundo', 'lia', { aff: .08, trust: .1 }, 'sacola'); w.knowledge.award('kp_c_sacola_pao', { via: 'entregou' }); if (w.bus) w.bus.emit('sacola_entregue', {}); return true;
   },
 };
+;Sim.saudarHora = (txt, min) => typeof txt !== 'string' ? txt : (min >= 1080 ? txt.replace(/\bBom dia\b/g, 'Boa noite') : min >= 720 ? txt.replace(/\bBom dia\b/g, 'Boa tarde') : txt);   // a saudação acompanha a hora do relógio
 
 // ===== s2_nav.js — navegação (grade + A*), independente do desenho =====
 // Nav.init({ blocked(x,y), X0,X1,YB,YF }) — o jogo fornece a colisão (ObjectSys.solids + paredes).
@@ -747,7 +748,7 @@ Sim.Data.conhecimentos = [
   K('kp_vitrine', 'A vitrine', 'Pães e bolos do dia. A vitrine é o primeiro lugar onde todo cliente para e pensa.', 'lugar'),
   K('kp_banco', 'O banco do nicho', 'Um banco comprido encostado na parede, de frente pro nicho. Parece feito pra esperar rezando.', 'lugar'),
   K('kp_bancada', 'A bancada da massa', 'Aqui a vó abre a massa. Tem marcas de dedos na madeira, de muitos anos.', 'lugar'),
-  K('kp_escada', 'A porta da escada', 'A porta que sobe pra nossa casa. Depois das três da tarde dá para subir e dormir quando a Lia quiser.', 'lugar'),
+  K('kp_escada', 'A porta da escada', 'A porta que sobe pra nossa casa. Quando entardecer, dá para subir e dormir quando a Lia quiser.', 'lugar'),
 ];
 // níveis do Caderninho por pessoa (quantos pontos de conhecimento viram qual rótulo)
 Sim.Data.nivelPessoa = [[0, 'Ainda estou conhecendo'], [2, 'Já me conhece'], [4, 'Confia em mim'], [7, 'Sei o que pesa nela']];
@@ -775,7 +776,7 @@ Sim.Data.objetos = {
   forno_lenha: { kp: 'kp_forno', texto: w => w.obj('forno_aceso') ? 'O forno de lenha, aceso desde cedo. O calor chega até o balcão.' : 'O forno de lenha, ainda frio; a vó vai acendê-lo.' },
   bancada: { kp: 'kp_bancada', texto: () => 'Bancada de trabalho. Marcas de dedos na madeira, de muitos anos de massa.' },
   banco_altar: { kp: 'kp_banco', texto: () => 'Um banco comprido encostado na parede, de frente pro nicho.' },
-  porta_escada_1: { kp: 'kp_escada', texto: w => w.obj('porta_escada_1') ? (w.semFimDeDia && w.clock.min >= 900 ? 'A porta da escada está aberta. Lá em cima é a nossa casa: dá para subir e dormir quando você quiser.' : 'A porta da escada está aberta. Ainda não é hora de subir.') : 'A porta da escada, fechada. Lá em cima fica a nossa casa.' },
+  porta_escada_1: { kp: 'kp_escada', texto: w => w.obj('porta_escada_1') ? (w.semFimDeDia && w.clock.min >= 1080 ? 'A porta da escada está aberta. Lá em cima é a nossa casa: dá para subir e dormir quando você quiser.' : 'A porta da escada está aberta. Ainda não é hora de subir.') : 'A porta da escada, fechada. Lá em cima fica a nossa casa.' },
 };
 
 // ---- 1994 na padaria: quem passa pelo balcão já conta o efeito do Programa (aviso, saída de moradores, turista). Proposta; revisar. ----
@@ -886,7 +887,7 @@ Sim.Dialogue = class {
     const f = top[0]; this.used[f.id] = this.w.bus.t; return f;
   }
   line(id, kind, c, topic) { const bank = Sim.Data.falas[id]; if (!bank) return null; const L = topic ? (bank[kind] || {})[topic] : bank[kind]; return this.pick(L, c || this.ctx(id)); }
-  speak(npc, text, ttl) { npc.say = { text, ttl: ttl || 1.8 + text.length * .05 }; this.w.bus.emit('fala', { quem: npc.id, texto: text }); }
+  speak(npc, text, ttl) { text = Sim.saudarHora(text, this.w.clock.min); npc.say = { text, ttl: ttl || 1.8 + text.length * .05 }; this.w.bus.emit('fala', { quem: npc.id, texto: text }); }
   usedRecently(id, secs) { return this.used[id] != null && this.w.bus.t - this.used[id] < secs; }
 };
 
@@ -2117,7 +2118,7 @@ RD.falas = {
     perguntar: {
       jogo: [{ t: 'Dupla joga de frente: eu e Raimundo contra Nonato e Bela. Entre parceiros, quem fala é a pedra.', kp: 'kp_dom_dupla' }, { t: 'Bate de carroça vale dois. De lá e lô, três. Cruzada, quatro, e aí a mesa treme.', conf: [1, 3] }],
       barbearia: [{ t: 'A barbearia é a minha casa de dia. De noite, é a de Dona Marta, minha sombra.', kp: null }],
-      lia_jogar: [{ t: 'Quer jogar? Quando um de nós levantar, a gente vê. Primeiro prova que sabe contar até seis.', kp: 'kp_dom_convite' }],
+      lia_jogar: [{ t: 'Hoje não, menina. No primeiro dia a mesa é só para olhar. Fica aí, repara em como a gente conta, e amanhã eu vejo se sobra lugar.', ate: 1 }, { t: 'Quer jogar? Quando um de nós levantar, a gente vê. Primeiro prova que sabe contar até seis.', kp: 'kp_dom_convite' }],
       lata: [{ t: 'Menina, a lata é assim. Cada um deixa o que pode, e quem está apertado leva o que precisa, sem ter que explicar. Fica na mesa; ninguém conta o que tem dentro.', kp: 'kp_lata', revisar: true }],
     },
   },
@@ -2657,7 +2658,7 @@ Sim.Rua.D.virar94 = () => {
     }
     get sy() { return this.y - yw(this.x); }
     setAnim(a) { if (this.anim !== a) { this.anim = a; this.at = 0; } }
-    falar(txt, ttl) { this.say = { text: txt, ttl: ttl || 3.2 }; this.w.bus.emit('fala', { id: this.id, texto: txt }); }
+    falar(txt, ttl) { txt = Sim.saudarHora(txt, this.w.clock.min); this.say = { text: txt, ttl: ttl || 3.2 }; this.w.bus.emit('fala', { id: this.id, texto: txt }); }
   }
 
   Sim.Rua.World = class {
@@ -2946,7 +2947,7 @@ Sim.Rua.D.virar94 = () => {
       if (!RD._v94 && this.dia > 1 && this.dia < 99 && !this.saudouHoje[id]) {   // primeira conversa do dia: a pessoa abre com o dia (e com o que a Lia fez por ela)
         const lst = ((RD.saudarDia || {})[id] || {})[Math.min(this.dia, 4)] || []; const com = lst.find(x => Array.isArray(x) && (x[1] === 'sacola' ? (Sim.Sacola && Sim.Sacola.S && Sim.Sacola.S.estado === 'entregue') : this.tem(x[1])));
         const livres = lst.filter(x => !Array.isArray(x)); const pick = com ? com[0] : livres.length ? livres[Math.floor(this.rng() * livres.length)] : null; if (pick) { sa = pick; this.saudouHoje[id] = 1; } }
-      sa = sa || this.social.saudacaoLia(id) || F.saudar[Math.floor(this.rng() * F.saudar.length)];
+      sa = Sim.saudarHora(sa || this.social.saudacaoLia(id) || F.saudar[Math.floor(this.rng() * F.saudar.length)], this.clock.min);
       if (!RD._v94) for (const [re, f] of (RD.saudarViv || {})[id] || []) if (re.test(sa)) this.marcar(f);   // o que a pessoa diz ao ver Lia também conta como ter ouvido ou visto
       return { id, saudacao: sa, topicos: this.topicos(id).map(t => t.id), semAssunto: !this.topicos(id).length ? (this.pendencia(id) || RD.dicaSemAssunto) : null, dica: this.pendencia(id), nivel: this.nivel(id) };
     }
@@ -2988,11 +2989,11 @@ Sim.Rua.D.virar94 = () => {
       const out = (pergunta ? [{ quem: 'lia', texto: pergunta }] : []).concat([{ quem: id, texto: r.t, revisar: !!r.revisar }]);
       if (r.kp) { const nv = this.ganhar(r.kp, { tipo: 'fala', quem: id, conf: !!r.conf }); if (nv) out.push({ quem: 'nota', texto: 'Anotado: ' + RD.kp[r.kp][0] }); }
       this.trust[id] = clamp((this.trust[id] || 0) + .06 + (ctx ? .03 : 0) + (r.viv ? .06 : 0), 0, 1); if (r.viv) this.marcar(r.viv); this.bus.emit('conversa', { id, top }); this.social.liaConversou(id);
-      if (id === 'ze' && top === 'lia_jogar') this.liaConvidada = true;
+      if (id === 'ze' && top === 'lia_jogar' && this.dia >= 2) this.liaConvidada = true;
       return out;
     }
     kpAberta(id) { return (RD.kpDia && RD.kpDia[id] || 1) <= this.dia; }   // pista não expira: depois do dia de abertura fica disponível até o fim
-    dispo(r) { return (!r.dia || r.dia <= this.dia) && (!r.kp || this.kpAberta(r.kp)); }
+    dispo(r) { return (!r.dia || r.dia <= this.dia) && (!r.ate || this.dia <= r.ate) && (!r.kp || this.kpAberta(r.kp)); }
     ganhar(id, por) { if (this.kp[id] || !this.kpAberta(id)) return false; this.kp[id] = { t: this.clock.min }; if (por) this.kp[id].por = por; this.bus.emit('conhecimento', { id, kp: { titulo: RD.kp[id][0], texto: RD.kp[id][1] } }); this.salvar(); return true; }
     examinar(inst) {   // inst = instância da cena
       const kpMap = { mesa_domino: 'kp_obj_mesa', quadro_avisos: 'kp_obj_quadro', orelhao_1: 'kp_obj_orelhao', cavalete_pao: 'kp_obj_cavalete' };
@@ -6126,7 +6127,7 @@ function focusOn(id) {                              // leva a câmera a um objet
   S.zl = Math.max(0, Math.min(ZL.length - 1, o.zoom != null ? o.zoom : 2)); S.free = true;    // zoom = índice em ZL (0..2); valores fora da faixa davam tela preta
   S.vx = o.rect[0] + o.rect[2] / 2; S.vy = o.rect[1] + o.rect[3] / 2; syncUI(); return true;
 }
-window.BALCAO = { ocupado: () => !!(D.open || (typeof diaryOpen === 'function' && diaryOpen())), S, INSPECT, get SIM() { return SIM; }, get INTERACT() { return INTERACT; }, openDialog: id => openDialog(id), closeDialog: () => closeDialog(), toggleDiary: () => toggleDiary(), focusOn, setZoom, resetCamera, onInspect: null, onState: null, onUse: null, objects: ObjectSys };
+window.BALCAO = { ocupado: () => (typeof diaryOpen === 'function' && diaryOpen()) ? 2 : D.open ? 1 : 0, S, INSPECT, get SIM() { return SIM; }, get INTERACT() { return INTERACT; }, openDialog: id => openDialog(id), closeDialog: () => closeDialog(), toggleDiary: () => toggleDiary(), focusOn, setZoom, resetCamera, onInspect: null, onState: null, onUse: null, objects: ObjectSys };
 
 const keys = {};
 addEventListener('keydown', e => {
@@ -6333,7 +6334,7 @@ function applyFx(o) {
   const tipo = o.tipo || 'usar'; let m = o.title;
   if (tipo === 'alternar') {
     const n = ObjectSys.toggle(o.id); const r = SIM.interaction.objeto(o, { estado: n });
-    if (o.id === 'porta_escada_1' && n === 1 && window.MUNDO_ATIVO && SIM.clock.min >= 900) setTimeout(() => { try { window.parent.MUNDO_DORMIR && window.parent.MUNDO_DORMIR(); } catch (e) { } }, 1200);
+    if (o.id === 'porta_escada_1' && n === 1 && window.MUNDO_ATIVO && SIM.clock.min >= 1080) setTimeout(() => { try { window.parent.MUNDO_DORMIR && window.parent.MUNDO_DORMIR(); } catch (e) { } }, 1200);
     m = (o.states ? o.title + ': ' + o.states[n] + '. ' : '') + (n === 1 || o.id !== 'gaveta_1' ? r.texto : '');
   } else {
     const r = SIM.interaction.objeto(o, {}); m = r.texto || o.desc || o.title;

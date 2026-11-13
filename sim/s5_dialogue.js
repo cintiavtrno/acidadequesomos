@@ -32,7 +32,7 @@ Sim.Dialogue = class {
     const f = top[0]; this.used[f.id] = this.w.bus.t; return f;
   }
   line(id, kind, c, topic) { const bank = Sim.Data.falas[id]; if (!bank) return null; const L = topic ? (bank[kind] || {})[topic] : bank[kind]; return this.pick(L, c || this.ctx(id)); }
-  speak(npc, text, ttl) { npc.say = { text, ttl: ttl || 1.8 + text.length * .05 }; this.w.bus.emit('fala', { quem: npc.id, texto: text }); }
+  speak(npc, text, ttl) { text = Sim.saudarHora(text, this.w.clock.min); npc.say = { text, ttl: ttl || 1.8 + text.length * .05 }; this.w.bus.emit('fala', { quem: npc.id, texto: text }); }
   usedRecently(id, secs) { return this.used[id] != null && this.w.bus.t - this.used[id] < secs; }
 };
 

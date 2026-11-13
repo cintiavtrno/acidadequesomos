@@ -154,7 +154,7 @@ RD.falas = {
     perguntar: {
       jogo: [{ t: 'Dupla joga de frente: eu e Raimundo contra Nonato e Bela. Entre parceiros, quem fala é a pedra.', kp: 'kp_dom_dupla' }, { t: 'Bate de carroça vale dois. De lá e lô, três. Cruzada, quatro, e aí a mesa treme.', conf: [1, 3] }],
       barbearia: [{ t: 'A barbearia é a minha casa de dia. De noite, é a de Dona Marta, minha sombra.', kp: null }],
-      lia_jogar: [{ t: 'Quer jogar? Quando um de nós levantar, a gente vê. Primeiro prova que sabe contar até seis.', kp: 'kp_dom_convite' }],
+      lia_jogar: [{ t: 'Hoje não, menina. No primeiro dia a mesa é só para olhar. Fica aí, repara em como a gente conta, e amanhã eu vejo se sobra lugar.', ate: 1 }, { t: 'Quer jogar? Quando um de nós levantar, a gente vê. Primeiro prova que sabe contar até seis.', kp: 'kp_dom_convite' }],
       lata: [{ t: 'Menina, a lata é assim. Cada um deixa o que pode, e quem está apertado leva o que precisa, sem ter que explicar. Fica na mesa; ninguém conta o que tem dentro.', kp: 'kp_lata', revisar: true }],
     },
   },

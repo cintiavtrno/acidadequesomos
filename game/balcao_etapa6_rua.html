@@ -126,15 +126,15 @@
   #mesa .regras { color: #b8aa98; font-size: .8em; margin-top: .4em; } #mesa .regras summary { cursor: pointer; }
   #mesa .chain { margin: .3em 0; padding: .3em .45em; min-height: 2.4em; } #mesa .seatrow { margin: .2em 0; }
   #notes.modal { inset: 5% 8%; background: var(--paper); color: var(--ink); border: 0; border-radius: 10px; font-family: var(--hand); font-size: 1.35em; line-height: 1.25em; }
-  #notes h2 { font: 700 1.4em var(--hand); color: var(--ink); } #notes h4 { font: 700 1em var(--hand); color: var(--pen); } #notes .kp { background: rgba(60,40,20,.07); border-radius: 6px; padding: .3em .6em; margin: .3em 0; } #notes .kp b { color: var(--ink); } #notes .sub { color: var(--ink-soft); } #notes .x { background: none; border: 0; color: var(--pen); font: 700 .8em var(--hand); }
+  #notes h2 { font: 700 1.4em var(--hand); color: var(--ink); } #notes h4 { font: 700 1em var(--hand); color: var(--pen); } #notes .kp { background: none; border: 0; border-radius: 0; padding: 0; margin: .45em 0; } #notes .kp b { color: var(--ink); } #notes .sub { color: var(--ink-soft); } #notes .x { background: none; border: 0; color: var(--pen); font: 700 .8em var(--hand); }
   #notes .rev { color: var(--pencil); font-size: .8em; }
-  #notes .por { display: block; color: var(--ink-soft); font-size: .8em; margin-top: .15em; } #notes .hip { background: none; border-left: 2px solid var(--pen); border-radius: 0; font-style: italic; color: var(--ink-soft); }
+  #notes .por { display: block; color: var(--ink-soft); font-size: .8em; margin-top: .15em; } #notes .hip { background: none; border: 0; padding: 0; font-style: italic; color: var(--ink-soft); }
 
   /* tela cheia: o cenário ocupa a janela inteira; a barra de ajuda vira uma pílula discreta no canto */
   #app { padding: 0 !important; gap: 0 !important; height: 100% !important; min-height: 0 !important; }
   #frame { box-shadow: none !important; }
   #hud { position: fixed; left: 50%; top: 54px; transform: translateX(-50%); z-index: 20; text-align: center; width: auto !important; max-width: min(46vw, 640px) !important; background: rgba(20,14,16,.66); border-radius: 6px; padding: 3px 8px; font-size: 11px; opacity: .5; transition: opacity .2s; gap: 2px 12px !important; }
-  #hud:hover, #hud:focus-within { opacity: 1; }
+  #hud:hover, #hud:focus-within { opacity: 1; } body.modalAberto #hud { display: none; }
   #hud #zoombar, #hud details { display: none !important; }
   #hud:hover #zoombar, #hud:focus-within #zoombar { display: flex !important; } #hud:hover details, #hud:focus-within details { display: block !important; }
 </style>
@@ -459,6 +459,7 @@ Sim.Sacola = {
     w.rel.change('raimundo', 'lia', { aff: .08, trust: .1 }, 'sacola'); w.knowledge.award('kp_c_sacola_pao', { via: 'entregou' }); if (w.bus) w.bus.emit('sacola_entregue', {}); return true;
   },
 };
+;Sim.saudarHora = (txt, min) => typeof txt !== 'string' ? txt : (min >= 1080 ? txt.replace(/\bBom dia\b/g, 'Boa noite') : min >= 720 ? txt.replace(/\bBom dia\b/g, 'Boa tarde') : txt);   // a saudação acompanha a hora do relógio
 
 // ===== s2_nav.js — navegação (grade + A*), independente do desenho =====
 // Nav.init({ blocked(x,y), X0,X1,YB,YF }) — o jogo fornece a colisão (ObjectSys.solids + paredes).
@@ -691,7 +692,7 @@ RD.falas = {
     perguntar: {
       jogo: [{ t: 'Dupla joga de frente: eu e Raimundo contra Nonato e Bela. Entre parceiros, quem fala é a pedra.', kp: 'kp_dom_dupla' }, { t: 'Bate de carroça vale dois. De lá e lô, três. Cruzada, quatro, e aí a mesa treme.', conf: [1, 3] }],
       barbearia: [{ t: 'A barbearia é a minha casa de dia. De noite, é a de Dona Marta, minha sombra.', kp: null }],
-      lia_jogar: [{ t: 'Quer jogar? Quando um de nós levantar, a gente vê. Primeiro prova que sabe contar até seis.', kp: 'kp_dom_convite' }],
+      lia_jogar: [{ t: 'Hoje não, menina. No primeiro dia a mesa é só para olhar. Fica aí, repara em como a gente conta, e amanhã eu vejo se sobra lugar.', ate: 1 }, { t: 'Quer jogar? Quando um de nós levantar, a gente vê. Primeiro prova que sabe contar até seis.', kp: 'kp_dom_convite' }],
       lata: [{ t: 'Menina, a lata é assim. Cada um deixa o que pode, e quem está apertado leva o que precisa, sem ter que explicar. Fica na mesa; ninguém conta o que tem dentro.', kp: 'kp_lata', revisar: true }],
     },
   },
@@ -1683,7 +1684,7 @@ function setTimeoutish(w, s, fn) { const sm = w.social; sm.timers = sm.timers ||
     }
     get sy() { return this.y - yw(this.x); }
     setAnim(a) { if (this.anim !== a) { this.anim = a; this.at = 0; } }
-    falar(txt, ttl) { this.say = { text: txt, ttl: ttl || 3.2 }; this.w.bus.emit('fala', { id: this.id, texto: txt }); }
+    falar(txt, ttl) { txt = Sim.saudarHora(txt, this.w.clock.min); this.say = { text: txt, ttl: ttl || 3.2 }; this.w.bus.emit('fala', { id: this.id, texto: txt }); }
   }
 
   Sim.Rua.World = class {
@@ -1972,7 +1973,7 @@ function setTimeoutish(w, s, fn) { const sm = w.social; sm.timers = sm.timers ||
       if (!RD._v94 && this.dia > 1 && this.dia < 99 && !this.saudouHoje[id]) {   // primeira conversa do dia: a pessoa abre com o dia (e com o que a Lia fez por ela)
         const lst = ((RD.saudarDia || {})[id] || {})[Math.min(this.dia, 4)] || []; const com = lst.find(x => Array.isArray(x) && (x[1] === 'sacola' ? (Sim.Sacola && Sim.Sacola.S && Sim.Sacola.S.estado === 'entregue') : this.tem(x[1])));
         const livres = lst.filter(x => !Array.isArray(x)); const pick = com ? com[0] : livres.length ? livres[Math.floor(this.rng() * livres.length)] : null; if (pick) { sa = pick; this.saudouHoje[id] = 1; } }
-      sa = sa || this.social.saudacaoLia(id) || F.saudar[Math.floor(this.rng() * F.saudar.length)];
+      sa = Sim.saudarHora(sa || this.social.saudacaoLia(id) || F.saudar[Math.floor(this.rng() * F.saudar.length)], this.clock.min);
       if (!RD._v94) for (const [re, f] of (RD.saudarViv || {})[id] || []) if (re.test(sa)) this.marcar(f);   // o que a pessoa diz ao ver Lia também conta como ter ouvido ou visto
       return { id, saudacao: sa, topicos: this.topicos(id).map(t => t.id), semAssunto: !this.topicos(id).length ? (this.pendencia(id) || RD.dicaSemAssunto) : null, dica: this.pendencia(id), nivel: this.nivel(id) };
     }
@@ -2014,11 +2015,11 @@ function setTimeoutish(w, s, fn) { const sm = w.social; sm.timers = sm.timers ||
       const out = (pergunta ? [{ quem: 'lia', texto: pergunta }] : []).concat([{ quem: id, texto: r.t, revisar: !!r.revisar }]);
       if (r.kp) { const nv = this.ganhar(r.kp, { tipo: 'fala', quem: id, conf: !!r.conf }); if (nv) out.push({ quem: 'nota', texto: 'Anotado: ' + RD.kp[r.kp][0] }); }
       this.trust[id] = clamp((this.trust[id] || 0) + .06 + (ctx ? .03 : 0) + (r.viv ? .06 : 0), 0, 1); if (r.viv) this.marcar(r.viv); this.bus.emit('conversa', { id, top }); this.social.liaConversou(id);
-      if (id === 'ze' && top === 'lia_jogar') this.liaConvidada = true;
+      if (id === 'ze' && top === 'lia_jogar' && this.dia >= 2) this.liaConvidada = true;
       return out;
     }
     kpAberta(id) { return (RD.kpDia && RD.kpDia[id] || 1) <= this.dia; }   // pista não expira: depois do dia de abertura fica disponível até o fim
-    dispo(r) { return (!r.dia || r.dia <= this.dia) && (!r.kp || this.kpAberta(r.kp)); }
+    dispo(r) { return (!r.dia || r.dia <= this.dia) && (!r.ate || this.dia <= r.ate) && (!r.kp || this.kpAberta(r.kp)); }
     ganhar(id, por) { if (this.kp[id] || !this.kpAberta(id)) return false; this.kp[id] = { t: this.clock.min }; if (por) this.kp[id].por = por; this.bus.emit('conhecimento', { id, kp: { titulo: RD.kp[id][0], texto: RD.kp[id][1] } }); this.salvar(); return true; }
     examinar(inst) {   // inst = instância da cena
       const kpMap = { mesa_domino: 'kp_obj_mesa', quadro_avisos: 'kp_obj_quadro', orelhao_1: 'kp_obj_orelhao', cavalete_pao: 'kp_obj_cavalete' };
@@ -2523,7 +2524,7 @@ function renderNotes() {
   if (!got.length) h += '<div class="vazio sub" style="margin-top:1em">Ainda não há anotações. Converse com as pessoas e examine os objetos da rua.</div>';
   el.innerHTML = h;
 }
-function toggleNotes(on) { S.notesOpen = on == null ? !S.notesOpen : on; $('notes').style.display = S.notesOpen ? 'block' : 'none'; if (S.notesOpen) renderNotes(); }
+function toggleNotes(on) { S.notesOpen = on == null ? !S.notesOpen : on; document.body.classList.toggle('modalAberto', S.notesOpen); $('notes').style.display = S.notesOpen ? 'block' : 'none'; if (S.notesOpen) renderNotes(); }
 function showDay(r) {
   const el = $('daycard'); let h = '<h2><span>A manhã na rua</span><span class="x" onclick="document.getElementById(\'daycard\').style.display=\'none\'">continuar (Esc)</span></h2>';
   h += '<div>Na mesa foram <b>' + r.jogos.maos + '</b> mãos, <b>' + r.jogos.batidas + '</b> batidas e <b>' + r.jogos.trancadas + '</b> trancadas. Placar da partida: ' + r.placar[0] + ' × ' + r.placar[1] + '.</div>';
@@ -2700,7 +2701,8 @@ function updateReport() {
 // Lia chega de um interior pela porta: aparece diante da porta, virada para a rua
 function liaChega(k) { const sp = SIM.spot(k), L = SIM.lia; L.x = sp.x; L.y = sp.y + 7; L.face = 'down'; L.sentada = false; L.seat = null; LS.mode = 'free'; LS.path = []; LS.goal = null; LS.anim = 'idle'; SIM.liaFora = false; closeDialog && D.open && closeDialog(); S.free = false; S.vx = L.x; S.vy = L.y - 18; S.hint = null; if (CTX.active) exitContext(true); computeView(); }
 function liaSaiu() { SIM.liaFora = true; LS.path = []; LS.goal = null; }
-window.BALCAO = { ocupado: () => !!(D.open || S.notesOpen || S.mesaOpen), liaChega, liaSaiu, PORTAS, S, LS, D, CTX, enterContext, exitContext, mesaEscolha, get SIM() { return SIM; }, setZoom, resetCamera, focusOn, abrirConversa, abrirMesa, closeMesa, toggleNotes, pressAction, sentarEm, goTo, ffwd, examinar, render, computeView };
+window.BALCAO = { ocupado: () => S.notesOpen ? 2 : (D.open || S.mesaOpen) ? 1 : 0,   // 2 = caderno (relógio parado) · 1 = conversa ou mesa (relógio devagar)
+  liaChega, liaSaiu, PORTAS, S, LS, D, CTX, enterContext, exitContext, mesaEscolha, get SIM() { return SIM; }, setZoom, resetCamera, focusOn, abrirConversa, abrirMesa, closeMesa, toggleNotes, pressAction, sentarEm, goTo, ffwd, examinar, render, computeView };
 </script>
 </body>
 </html>

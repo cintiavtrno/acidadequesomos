@@ -13,7 +13,7 @@
     }
     get sy() { return this.y - yw(this.x); }
     setAnim(a) { if (this.anim !== a) { this.anim = a; this.at = 0; } }
-    falar(txt, ttl) { this.say = { text: txt, ttl: ttl || 3.2 }; this.w.bus.emit('fala', { id: this.id, texto: txt }); }
+    falar(txt, ttl) { txt = Sim.saudarHora(txt, this.w.clock.min); this.say = { text: txt, ttl: ttl || 3.2 }; this.w.bus.emit('fala', { id: this.id, texto: txt }); }
   }
 
   Sim.Rua.World = class {
@@ -302,7 +302,7 @@
       if (!RD._v94 && this.dia > 1 && this.dia < 99 && !this.saudouHoje[id]) {   // primeira conversa do dia: a pessoa abre com o dia (e com o que a Lia fez por ela)
         const lst = ((RD.saudarDia || {})[id] || {})[Math.min(this.dia, 4)] || []; const com = lst.find(x => Array.isArray(x) && (x[1] === 'sacola' ? (Sim.Sacola && Sim.Sacola.S && Sim.Sacola.S.estado === 'entregue') : this.tem(x[1])));
         const livres = lst.filter(x => !Array.isArray(x)); const pick = com ? com[0] : livres.length ? livres[Math.floor(this.rng() * livres.length)] : null; if (pick) { sa = pick; this.saudouHoje[id] = 1; } }
-      sa = sa || this.social.saudacaoLia(id) || F.saudar[Math.floor(this.rng() * F.saudar.length)];
+      sa = Sim.saudarHora(sa || this.social.saudacaoLia(id) || F.saudar[Math.floor(this.rng() * F.saudar.length)], this.clock.min);
       if (!RD._v94) for (const [re, f] of (RD.saudarViv || {})[id] || []) if (re.test(sa)) this.marcar(f);   // o que a pessoa diz ao ver Lia também conta como ter ouvido ou visto
       return { id, saudacao: sa, topicos: this.topicos(id).map(t => t.id), semAssunto: !this.topicos(id).length ? (this.pendencia(id) || RD.dicaSemAssunto) : null, dica: this.pendencia(id), nivel: this.nivel(id) };
     }
@@ -344,11 +344,11 @@
       const out = (pergunta ? [{ quem: 'lia', texto: pergunta }] : []).concat([{ quem: id, texto: r.t, revisar: !!r.revisar }]);
       if (r.kp) { const nv = this.ganhar(r.kp, { tipo: 'fala', quem: id, conf: !!r.conf }); if (nv) out.push({ quem: 'nota', texto: 'Anotado: ' + RD.kp[r.kp][0] }); }
       this.trust[id] = clamp((this.trust[id] || 0) + .06 + (ctx ? .03 : 0) + (r.viv ? .06 : 0), 0, 1); if (r.viv) this.marcar(r.viv); this.bus.emit('conversa', { id, top }); this.social.liaConversou(id);
-      if (id === 'ze' && top === 'lia_jogar') this.liaConvidada = true;
+      if (id === 'ze' && top === 'lia_jogar' && this.dia >= 2) this.liaConvidada = true;
       return out;
     }
     kpAberta(id) { return (RD.kpDia && RD.kpDia[id] || 1) <= this.dia; }   // pista não expira: depois do dia de abertura fica disponível até o fim
-    dispo(r) { return (!r.dia || r.dia <= this.dia) && (!r.kp || this.kpAberta(r.kp)); }
+    dispo(r) { return (!r.dia || r.dia <= this.dia) && (!r.ate || this.dia <= r.ate) && (!r.kp || this.kpAberta(r.kp)); }
     ganhar(id, por) { if (this.kp[id] || !this.kpAberta(id)) return false; this.kp[id] = { t: this.clock.min }; if (por) this.kp[id].por = por; this.bus.emit('conhecimento', { id, kp: { titulo: RD.kp[id][0], texto: RD.kp[id][1] } }); this.salvar(); return true; }
     examinar(inst) {   // inst = instância da cena
       const kpMap = { mesa_domino: 'kp_obj_mesa', quadro_avisos: 'kp_obj_quadro', orelhao_1: 'kp_obj_orelhao', cavalete_pao: 'kp_obj_cavalete' };

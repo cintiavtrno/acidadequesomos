@@ -71,7 +71,7 @@ canvas{display:block;background:#120d10}
   let G = null; const imgs = {}; let n = 0; const keys = Object.keys(IMG);
   const S = { get fase() { return G && G.sim.fasen; } };
   window.BALCAO = {
-    ocupado: () => !!(G && G.sim && G.sim.conversa),
+    ocupado: () => (G && G.sim && G.sim.conversa) ? 1 : 0,
     S, get SIM() { return G && G.sim; }, get G() { return G; },
     liaSaiu() { if (G) G.parar(); }, liaChega() { if (G) { G.sim.chegar(); G.seguir(); } },
   };
