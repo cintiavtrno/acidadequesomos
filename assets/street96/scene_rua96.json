@@ -1,0 +1,86 @@
+{
+ "W": 1500,
+ "VH": 270,
+ "slope": {
+  "base": 212,
+  "div": 110
+ },
+ "SW": 22,
+ "walk": {
+  "top": 8,
+  "bot": 267
+ },
+ "inst": [],
+ "solids": [],
+ "ano": 1996,
+ "buildings": {
+  "casa_salvia": {
+   "x0": 0,
+   "w": 170,
+   "base": 212,
+   "door_x": null,
+   "flat": [
+    118
+   ]
+  },
+  "sobrado": {
+   "x0": 170,
+   "w": 160,
+   "base": 214,
+   "door_x": null,
+   "flat": [
+    46
+   ]
+  },
+  "padaria": {
+   "x0": 330,
+   "w": 360,
+   "base": 216,
+   "door_x": 180,
+   "flat": [
+    324
+   ]
+  },
+  "azul": {
+   "x0": 690,
+   "w": 160,
+   "base": 219,
+   "door_x": 106,
+   "flat": null
+  },
+  "creme": {
+   "x0": 850,
+   "w": 150,
+   "base": 220,
+   "door_x": 94,
+   "flat": null
+  },
+  "agua": {
+   "x0": 1000,
+   "w": 150,
+   "base": 221,
+   "door_x": null,
+   "flat": [
+    36
+   ]
+  },
+  "rosa": {
+   "x0": 1150,
+   "w": 180,
+   "base": 223,
+   "door_x": null,
+   "flat": [
+    120
+   ]
+  },
+  "lilas": {
+   "x0": 1330,
+   "w": 170,
+   "base": 224,
+   "door_x": null,
+   "flat": [
+    40
+   ]
+  }
+ }
+}
