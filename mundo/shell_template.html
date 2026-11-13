@@ -25,12 +25,16 @@
   #chip { position: absolute; left: 50%; top: 10px; transform: translateX(-50%); z-index: 3; font: 600 13px/1 system-ui, sans-serif; color: #f3e3c8; background: rgba(29,21,25,.82); border-radius: 999px; padding: .55em 1em; display: none; white-space: nowrap; }
   #chip button { margin: 0 0 0 .8em; padding: .35em .9em; font-size: 12px; }
   #chip .ok { color: #9fd3a8; }
+  #pular { position: absolute; left: 10px; bottom: 10px; z-index: 3; font: 600 13px/1 system-ui, sans-serif; color: #f3e3c8; background: rgba(29,21,25,.82); border: 0; border-radius: 999px; padding: .55em 1em; cursor: pointer; }
+  #pular:hover { background: rgba(60,44,50,.92); }
+  #hist .op { display: block; width: 100%; text-align: left; margin: .5em 0 0; } #hist .op.alt { background: #33262c; color: #f3e3c8; } #hist .op small { display: block; font: 400 12px/1.3 system-ui, sans-serif; margin-top: .2em; color: #5a4a48; } #hist .op.alt small { color: #b8a58c; }
 </style>
 </head>
 <body>
 <iframe id="f_rua" title="Rua"></iframe><iframe id="f_padaria" title="Padaria"></iframe><iframe id="f_casa" title="Casa de Seu Raimundo"></iframe><iframe id="f_quintal" title="Quintal de Dona Zefa"></iframe>
 <div id="noite"></div>
 <div id="chip"></div>
+<button id="pular" title="Pular o dia ou a fase">Pular ▸</button>
 <div id="hist"><div class="card" id="histC"></div></div>
 <div id="fade"><span id="fadeT"></span><small id="fadeS"></small></div>
 <div id="dbg"></div>
@@ -43,6 +47,9 @@ const dec = b => new TextDecoder().decode(Uint8Array.from(atob(b), c => c.charCo
 // jogo novo = pistas zeradas: apaga tudo o que o jogo guardou (shell, padaria/casa, rua, quintal, sacola). Dia seguinte e passagem para 1994 seguem sem zerar.
 function zerarJogo() { try { const ks = []; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (/^balcao/.test(k)) ks.push(k); } ks.forEach(k => localStorage.removeItem(k)); } catch (e) { } }
 if (Q.get('new') === '1') zerarJogo();
+// 1996 é uma página própria (rua96.html); quem já chegou lá volta direto para ela
+window.__IR96 = Q.get('new') !== '1' && (Q.get('ano') === '1996' || (!Q.get('ano') && (function () { try { return localStorage.getItem('balcao_ano'); } catch (e) { return null; } })() === '1996'));
+if (window.__IR96) location.replace('rua96.html');
 const ANO = (Q.get('ano') || (function () { try { return localStorage.getItem('balcao_ano'); } catch (e) { return null; } })()) == '1994' && Q.get('new') !== '1' ? 1994 : 1991;
 window.MUNDO_ANO = ANO;   // as simulações leem o ano (agenda da tarde, caruru)
 // tempo diegético: o relógio existe dentro do mundo e não é cronômetro de desempenho. Ele avança com a exploração (0,8 min de jogo por segundo em 1991, 0,5 em 1994), pausa em conversa, caderninho, mesa de dominó e telas, desacelera quando o jogador fica parado e para na noite (20h). O dia não termina sozinho: quem decide subir para dormir é o jogador. 1994 começa às 11h30, sem prazo.
@@ -68,6 +75,7 @@ function pronto() {
   return true;
 }
 function montar() {
+  if (window.__IR96) return;
   const W = id => FR[id].contentWindow, B = id => W(id).BALCAO;
   const ui = {
     rua: { liaSaiu: () => B('rua').liaSaiu(), liaChega: p => B('rua').liaChega(p) },
@@ -106,7 +114,7 @@ function noite(m) { let c = NOITE[0][1]; if (m >= NOITE[NOITE.length - 1][0]) c 
 const META = { 1991: 10, 1994: 6 };
 function pausar(p) { for (const id in FR) { try { const c = mundo.cenas.get(id); if (c && c.sim && c.sim.clock) c.sim.clock.paused = p; } catch (e) { } } }
 function notas() { let n = 0; for (const id of ['rua', 'quintal']) { try { const s = FR[id].contentWindow.BALCAO.SIM; if (s && s.kp) n += Object.keys(s.kp).length; } catch (e) { } } return n; }
-function tela(html, btn, fn) { const h = document.getElementById('hist'); document.getElementById('histC').innerHTML = html + '<button id="hbtn">' + btn + '</button>'; h.style.display = 'flex'; h.scrollTop = 0; pausar(true); try { window.focus(); document.activeElement && document.activeElement.blur(); } catch (e) { } document.getElementById('hbtn').onclick = () => { h.style.display = 'none'; pausar(false); mostrar(mundo.cenas.atual); fn && fn(); }; }
+function tela(html, btn, fn, btn2, fn2) { const h = document.getElementById('hist'); document.getElementById('histC').innerHTML = html + '<button id="hbtn">' + btn + '</button>' + (btn2 ? ' <button id="hbtn2" class="alt">' + btn2 + '</button>' : ''); h.style.display = 'flex'; h.scrollTop = 0; pausar(true); try { window.focus(); document.activeElement && document.activeElement.blur(); } catch (e) { } document.getElementById('hbtn').onclick = () => { h.style.display = 'none'; pausar(false); mostrar(mundo.cenas.atual); fn && fn(); }; const b2 = document.getElementById('hbtn2'); if (b2) b2.onclick = () => { h.style.display = 'none'; pausar(false); mostrar(mundo.cenas.atual); fn2 && fn2(); }; }
 const COMO = '<h3>Como jogar</h3><ul><li><kbd>←</kbd><kbd>→</kbd><kbd>↑</kbd><kbd>↓</kbd> ou <kbd>W A S D</kbd> andam. Também dá para clicar no chão.</li><li><kbd>E</kbd> conversa, examina, pega e entra nas portas. No balcão da padaria, <kbd>E</kbd> atende a freguesia.</li><li><kbd>B</kbd> abre o caderninho com tudo o que você anotou.</li><li>Fique perto de quem conversa. Ouvir rende anotações tanto quanto perguntar.</li></ul>';
 function historia() {
   if (Q.get('skip') === '1') return;   // testes automáticos
@@ -130,7 +138,7 @@ function historia() {
     chip.innerHTML = ANO === 1991 ? '<b>1991</b> · dia ' + DIA + ' de ' + DIAS_91 + ' · ' + (m_ >= 1140 ? 'a noite chegou' : noite_ ? 'entardeceu' : 'a rua ainda tem o que contar') + (noite_ ? '<button id="cb">' + (DIA >= DIAS_91 ? 'Terminar 1991' : 'Subir para dormir') + '</button>' : esp ? '<button id="ce">' + (ESPERA ? 'Parar de esperar' : 'Esperar o anoitecer') + '</button>' : '')
       : '<b>1994</b> · ' + (visitou ? 'no caruru <span class="ok">✓</span> · ' : 'o caruru começa ao meio-dia · ') + (pronto94 ? 'o quintal já te contou o essencial <button id="cb">Encerrar a fase</button>' : 'o caruru ainda tem o que contar');
     const e_ = document.getElementById('ce'); if (e_) e_.onclick = () => { ESPERA = !ESPERA; e_.textContent = ESPERA ? 'Parar de esperar' : 'Esperar o anoitecer'; };
-    const b = document.getElementById('cb'); if (b) b.onclick = () => { if (ANO === 1991) window.MUNDO_DORMIR(); else { fim = true; chip.style.display = 'none'; zerarJogo(); tela(FIM94, 'Recomeçar do início', recomecar); } };
+    const b = document.getElementById('cb'); if (b) b.onclick = () => { if (ANO === 1991) window.MUNDO_DORMIR(); else { fim = true; chip.style.display = 'none'; salvarTudo(); tela(FIM94, 'Seguir para 1996', para96, 'Recomeçar do início', recomecar); } };
   }, 500);
   if (retorno) return;   // novo dia da mesma fase: sem abertura
   if (ANO === 1991) tela(INTRO, 'Continuar', () => tela(C91, 'Entrar em 1991'));
@@ -143,6 +151,27 @@ function salvarTudo() {
 }
 function recomecar() { zerarJogo(); location.search = '?new=1'; }
 function amanha() { try { localStorage.setItem('balcao_retorno', '1'); localStorage.setItem('balcao_dia', String(DIA + 1)); } catch (e) { } const u = new URLSearchParams(location.search); u.delete('new'); const s = u.toString(); if (s === location.search.replace(/^\?/, '')) location.reload(); else location.search = s; }
+function para96() {
+  try { localStorage.setItem('balcao_ano', '1996'); localStorage.removeItem('balcao_dia'); } catch (e) { }
+  const f = document.getElementById('fade'); document.getElementById('fadeT').textContent = '1996'; document.getElementById('fadeS').textContent = 'dois anos depois'; f.style.transition = 'opacity 1.2s'; f.style.opacity = 1; pausar(true);
+  setTimeout(() => { location.href = 'rua96.html'; }, 1900);
+}
+// Pular: a qualquer momento, em qualquer dia ou fase. Nada se perde: o caderninho guarda as anotações e o que a rua já viu continua valendo no ano seguinte.
+function menuPular() {
+  const h = document.getElementById('hist'); if (h.style.display === 'flex' || window.__IR96 || !mundo) return;
+  const ops = [];
+  if (ANO === 1991) {
+    if (DIA < DIAS_91) ops.push(['Ir para o dia ' + (DIA + 1) + ' de ' + DIAS_91, 'A Lia dorme agora e a rua abre de manhã.', () => { salvarTudo(); amanha(); }]);
+    ops.push(['Ir para 1994', DIA < DIAS_91 ? 'Pula os dias que faltam de 1991.' : 'Encerra 1991.', () => { salvarTudo(); para94(); }]);
+  } else ops.push(['Ir para 1996', 'Encerra o caruru e abre a rua no dia da gravação.', () => { salvarTudo(); para96(); }]);
+  document.getElementById('histC').innerHTML = '<div class="ano">Pular</div><h1>' + (ANO === 1991 ? 'Dia ' + DIA + ' de ' + DIAS_91 + ', 1991' : 'Caruru de 1994') + '</h1><p>Dá para seguir sem descobrir tudo. As anotações que você já fez ficam no caderninho e passam para a próxima etapa.</p>' + ops.map((o, i) => '<button class="op" data-i="' + i + '">' + o[0] + '<small>' + o[1] + '</small></button>').join('') + '<button class="op alt" id="pcont">Continuar jogando</button>';
+  h.style.display = 'flex'; h.scrollTop = 0; pausar(true); try { window.focus(); document.activeElement && document.activeElement.blur(); } catch (e) { }
+  const fechar = () => { h.style.display = 'none'; pausar(false); mostrar(mundo.cenas.atual); };
+  document.getElementById('pcont').onclick = fechar;
+  h.querySelectorAll('button[data-i]').forEach(b => b.onclick = () => { h.style.display = 'none'; ops[+b.dataset.i][2](); });
+}
+document.getElementById('pular').onclick = menuPular;
+addEventListener('keydown', e => { const h = document.getElementById('hist'); if (e.key === 'Escape' && h.style.display === 'flex' && document.getElementById('pcont')) document.getElementById('pcont').click(); });
 function para94() {
   try { localStorage.setItem('balcao_ano', '1994'); localStorage.setItem('balcao_base', String(notas())); localStorage.removeItem('balcao_dia'); } catch (e) { }
   const f = document.getElementById('fade'); document.getElementById('fadeT').textContent = '1994'; document.getElementById('fadeS').textContent = 'três anos depois'; f.style.transition = 'opacity 1.2s'; f.style.opacity = 1; pausar(true);
@@ -153,7 +182,7 @@ const C91 = '<div class="ano">1991</div><h1>O Programa foi anunciado</h1><p>O r�
 const C94 = '<div class="ano">1994</div><h1>O caruru de Dona Zefa</h1><p>Três anos depois, Lia tem 13 anos. De 1992 a 1995 o Programa acelerou: obra pesada, casa interditada, moradores saindo. Em 1991 a rua só recebeu a notícia. Agora ela vê o efeito nas fachadas, nas portas fechadas e no que as pessoas contam.</p><p>A aposta desta etapa é que turistas do Brasil e de fora vão sustentar sozinhos o comércio da rua. Para manter a rua cheia, o governo criou o Pelourinho Dia & Noite: show de graça todo dia nos largos reformados. Dona Zefa, que gosta do Programa, convidou todo mundo para um caruru no quintal dela, a partir do meio-dia.</p><h3>Objetivo</h3><p>Ver o que o Programa fez com a rua e com quem ficou. Antes do caruru, a padaria, a rua e o sobrado estão abertos para você olhar. No quintal, ouça o que cada um diz e pergunte.</p><h3>Sem prazo</h3><p>O jogo abre às 11h30 e o caruru começa ao meio-dia. Vá ao quintal de Dona Zefa, olhe os cantos, ouça as conversas e pergunte. O relógio anda enquanto você explora e a noite espera. Quando o quintal já tiver contado o essencial, o botão para encerrar a fase aparece no alto da tela.</p>' + COMO;
 const ANOITECEU = dia => '<div class="ano">Dia ' + dia + ' de ' + DIAS_91 + '</div><h1>Hora de dormir</h1><p>A rua ainda tem o que contar. Amanhã ela abre de manhã com o que você fez e ouviu hoje, e o caderninho guarda o que já foi anotado.</p>';
 const ANOITECEU_91 = n => '<div class="ano">Fim do quarto dia</div><h1>1991 terminou</h1><p>Você fez ' + n + ' anotações. Três anos depois, Dona Zefa faz um caruru e convida a rua.</p>';
-const FIM94 = '<div class="ano">Fim da fase de 1994</div><h1>Fim de 1994</h1><p>O caruru terminou e a conversa continua na calçada. Você viu as casas fechadas, as famílias que saíram e o comércio que contava com o turista. O turista não bastou. A fase de 1996 vai tentar outro caminho: eventos culturais para atrair moradores de Salvador. Essa fase ainda não existe.</p>';
+const FIM94 = '<div class="ano">Fim da fase de 1994</div><h1>Fim de 1994</h1><p>O caruru terminou e a conversa continua na calçada. Você viu as casas fechadas, as famílias que saíram e o comércio que contava com o turista. O turista não bastou. A fase de 1996 vai tentar outro caminho: eventos culturais para atrair moradores de Salvador.</p>';
 function dbg() { const d = document.getElementById('dbg'); d.style.display = 'block'; const m = mundo.minuto(); d.textContent = 'cena ' + mundo.cenas.atual + ' · ' + String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(Math.floor(m % 60)).padStart(2, '0') + '\nonde ' + JSON.stringify(mundo.viagens.onde); }
 const iv = setInterval(() => { if (pronto()) { clearInterval(iv); montar(); } }, 120);
 </script>

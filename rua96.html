@@ -122,6 +122,7 @@
   #notes .rev, #fimcard .rev { color: var(--pencil); font-size: .8em; } #notes .hip, #fimcard .hip { background: none; border: 0; padding: 0; font-style: italic; color: var(--ink-soft); }
   #fimcard.modal { inset: 6% 9%; background: var(--paper); color: var(--ink); border: 0; border-radius: 10px; font-family: var(--hand); font-size: 1.3em; line-height: 1.25em; }
   #fimcard .btns { display: flex; gap: .6em; flex-wrap: wrap; margin-top: 1em; } #fimcard .btns button { font: 700 .85em var(--hand); color: var(--ink); background: var(--paper-d); border: 1px solid #8c7a55; border-radius: 6px; padding: .2em .9em; cursor: pointer; }
+  #pbtn { pointer-events: auto; cursor: pointer; left: .8em; bottom: .7em; } #pbtn:hover { background: rgba(60,44,50,.92); }
   #mis { right: .8em; top: .7em; max-width: 34%; font-size: .9em; line-height: 1.3; pointer-events: none; }
   body.modalAberto #mis, body.modalAberto #hint, body.modalAberto #note { display: none !important; }
   #mis b { color: #f0c98c; } #mis .m { margin-top: .25em; } #mis .m.ok { color: #9fd3a8; } #mis .m small { display: block; color: #cdbfae; }
@@ -175,6 +176,7 @@
       <div id="hint" class="pill" style="display:none"></div>
       <div id="mis" class="pill"></div>
       <div id="dbtn" class="pill"><span class="k">B</span> Caderninho</div>
+      <div id="pbtn" class="pill">Pular ▸</div>
       <div id="dlg"></div>
       <div id="notes" class="modal"></div>
       <div id="fimcard" class="modal"></div>
@@ -877,6 +879,7 @@ Sim96.Trama = (function () {
         const lig = T.LIGACOES.filter(l => l.se.every(k => S.kp[k]) && (!l.mem || E.mem(l.mem))).map(l => ({ texto: l.t, rev: !!l.rev, antiga: !!l.mem }));
         return { notas, total: Object.keys(T.KP).length, ligacoes: lig };
       },
+      pular() { S.flags.fim = 1; S.flags.pulou = 1; gravar(); },
       zerar() { S = { kp: {}, feitos: {}, flags: {}, visitas: {}, n: 0 }; gravar(); },
     };
   };
@@ -1008,6 +1011,12 @@ function abrirConversa(q, a) {
   if (a) { SIM.congelado = a.id; D.prev = a.anim; a.face = a.x < L.x ? 'right' : 'left'; a.setAnim('talk'); L.face = a.x < L.x ? 'left' : 'right'; }
   renderDialog();
 }
+function menuPular() {
+  if (D.open || S.notesOpen || S.fim) return;
+  D.open = true; D.id = '__pular'; D.ator = null; D.mode = 'root'; D.tops = [];
+  D.lines = [{ quem: 'nota', texto: 'Dá para fechar o dia agora, sem descobrir tudo. As anotações que você já fez ficam no caderninho e o resumo do dia aparece do mesmo jeito.', nota: true }]; renderDialog();
+}
+function pularDia() { closeDialog(); TR.pular(); updateMis(); showFim(); }
 function closeDialog() {
   const a = D.ator; if (a) { a.setAnim(D.prev || 'idle'); }
   SIM.congelado = null; D.open = false; D.ator = null; D.id = null; $('dlg').style.display = 'none'; if (LS.anim === 'talk') LS.anim = 'idle'; updateMis();
@@ -1015,6 +1024,7 @@ function closeDialog() {
 function dlgAct(a, arg) {
   if (!D.open) return;
   if (D.id === '__intro') { closeDialog(); return; }
+  if (D.id === '__pular') { if (a === 'pular') pularDia(); else closeDialog(); return; }
   const q = D.id;
   if (a === 'sair') { closeDialog(); return; }
   if (a === 'topicos') D.mode = 'topics';
@@ -1033,6 +1043,10 @@ function renderDialog() {
     h += '<h3><span style="color:#f0c98c">1996</span><small>dia da gravação</small></h3>' + D.lines.map(l => '<div class="line nota">' + esc(l.texto) + '</div>').join('');
     h += '<div class="opts"><button onclick="dlgAct(\'sair\')">1 · Começar</button></div>'; el.innerHTML = h; el.style.display = 'block'; return;
   }
+  if (q === '__pular') {
+    h += '<h3><span style="color:#f0c98c">Pular</span><small>1996</small></h3>' + D.lines.map(l => '<div class="line nota">' + esc(l.texto) + '</div>').join('');
+    h += '<div class="opts"><button onclick="dlgAct(\'pular\')">1 · Fechar o dia</button><button onclick="dlgAct(\'sair\')">0 · Continuar jogando</button></div>'; el.innerHTML = h; el.style.display = 'block'; return;
+  }
   h += '<h3><span style="color:' + (TR_.COR[q] || '#fff') + '">' + esc(TR.nome(q)) + '</span></h3>';
   h += D.lines.map(l => l.nota ? '<div class="line nota">' + esc(l.texto) + '</div>' : '<div class="line"><span class="q" style="color:' + (TR_.COR[l.quem] || '#fff') + '">' + esc(TR.nome(l.quem)) + ':</span> ' + esc(l.texto) + '</div>').join('');
   h += '<div class="opts">';
@@ -1046,6 +1060,7 @@ function renderDialog() {
 }
 function dlgKey(n) {
   if (D.id === '__intro') { if (n === 1 || n === 0) dlgAct('sair'); return; }
+  if (D.id === '__pular') { if (n === 1) dlgAct('pular'); else if (n === 0) dlgAct('sair'); return; }
   if (D.mode === 'root') { if (n === 1) dlgAct('saudar'); else if (n === 2) dlgAct('topicos'); else if (n === 0) dlgAct('sair'); }
   else if (n === 0) dlgAct('voltar'); else if (D.tops[n - 1]) dlgAct('perguntar', D.tops[n - 1]);
 }
@@ -1067,14 +1082,15 @@ function renderNotes() {
 }
 function toggleNotes(on) { if (D.open || S.fim) return; S.notesOpen = on == null ? !S.notesOpen : on; document.body.classList.toggle('modalAberto', S.notesOpen); $('notes').style.display = S.notesOpen ? 'block' : 'none'; if (S.notesOpen) renderNotes(); }
 function showFim() {
-  const d = TR.diario(); S.fim = true; document.body.classList.add('modalAberto');
-  let h = '<h2><span>1996 · o dia do clipe</span></h2><div class="sub">O que a Lia escreveu no caderno antes de fechar a padaria</div>';
+  const d = TR.diario(); S.fim = true; const pulou = !!TR.s.flags.pulou && !(TR.flag('m1') && TR.flag('m2') && TR.flag('m3')); document.body.classList.add('modalAberto');
+  let h = '<h2><span>1996 · o dia do clipe</span></h2><div class="sub">' + (pulou ? 'Você pulou parte do dia. O resumo cobre o que a rua ia contar.' : 'O que a Lia escreveu no caderno antes de fechar a padaria') + '</div>';
   h += '<p>Hoje a rua apareceu numa gravação que o mundo inteiro vai ver. O clipe não é do Programa, mas mostra a rua que ele quer mostrar: pintada, policiada e desejada. Quem mora aqui apareceu pouco, ou atrás da grade.</p>';
   h += '<p>O Programa entrou na segunda fase, de 1996 a 1999. Tem menos obra pesada e mais procura por dinheiro de fora, e a aposta agora é o evento para gente de Salvador. A aposta de 1994, só no turista, não bastou. <span class="rev">revisar</span></p>';
   h += '<p>Um dia de evento enche o caixa de quem vende e não muda o mês. Muitos vizinhos já saíram. Ficaram a associação, a padaria, a mesa de dominó e o sobrado de Seu Raimundo.</p>';
   const ant = d.ligacoes.filter(l => l.antiga);
   h += '<div class="sub">Anotações de hoje: ' + d.notas.length + ' de ' + d.total + (ant.length ? ' · ligações com 1991 e 1994: ' + ant.length : (TR.E.antigas() ? '' : ' · jogue 1991 e 1994 antes para abrir as ligações')) + '</div>';
   if (ant.length) h += '<h4>Ligações com 1991 e 1994</h4>' + ant.map(l => '<div class="kp hip">' + esc(l.texto) + '</div>').join('');
+  h += '<div class="sub" style="margin-top:.8em">A fase seguinte ainda não existe neste protótipo.</div>';
   h += '<div class="btns"><button onclick="fecharFim()">Continuar na rua</button><button onclick="TR.zerar();location.search=\'?novo=1\'">Recomeçar 1996</button></div>';
   $('fimcard').innerHTML = h; $('fimcard').style.display = 'block';
 }
@@ -1124,7 +1140,7 @@ addEventListener('keydown', e => {
 });
 addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
 addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
-$('dbtn').onclick = () => toggleNotes(); $('bR').onclick = () => { S.ruler = !S.ruler; syncUI(); }; $('bC').onclick = () => { S.coll = !S.coll; syncUI(); };
+$('dbtn').onclick = () => toggleNotes(); $('pbtn').onclick = () => menuPular(); $('bR').onclick = () => { S.ruler = !S.ruler; syncUI(); }; $('bC').onclick = () => { S.coll = !S.coll; syncUI(); };
 $('bZm').onclick = () => setZoom(S.zl - 1); $('bZp').onclick = () => setZoom(S.zl + 1); $('bZr').onclick = resetCamera;
 
 // ---------------------------------------------------------------- desenho (mesma ordem de profundidade da rua de 1991)

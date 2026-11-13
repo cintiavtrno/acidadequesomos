@@ -110,7 +110,7 @@ const scene = JSON.parse(fs.readFileSync(__dirname + '/../assets/street6/scene_r
 }
 {
   const sh = fs.readFileSync(__dirname + '/../mundo/shell_template.html', 'utf8');
-  ok('jogo novo: o shell zera tudo o que começa com "balcao" ao abrir ?new=1, ao recomeçar e ao fim de 1994', /function zerarJogo/.test(sh) && /\^balcao/.test(sh) && /if \(Q\.get\('new'\) === '1'\) zerarJogo\(\)/.test(sh) && /function recomecar\(\) \{ zerarJogo\(\)/.test(sh) && (sh.match(/zerarJogo\(\)/g) || []).length >= 4);
+  ok('jogo novo: o shell zera tudo o que começa com "balcao" ao abrir ?new=1, ao recomeçar (o fim de 1994 segue para 1996 sem zerar, para a rua de 1996 ler as anotações)', /function zerarJogo/.test(sh) && /\^balcao/.test(sh) && /if \(Q\.get\('new'\) === '1'\) zerarJogo\(\)/.test(sh) && /function recomecar\(\) \{ zerarJogo\(\)/.test(sh) && (sh.match(/zerarJogo\(\)/g) || []).length >= 3 && /function para96/.test(sh) && !/zerarJogo\(\); tela\(FIM94/.test(sh));
   const rd = fs.readFileSync(__dirname + '/../quintal/render.js', 'utf8');
   ok('quintal: a etiqueta pixelada com o nome de quem está perto não é mais desenhada (o aviso "E Falar com ..." já traz o nome)', !/this\.nome\(g, o, h\)/.test(rd));
   const Q = require('../quintal/quintal.js'); const T = Q.Dialogo.T;

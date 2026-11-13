@@ -321,6 +321,7 @@ Sim96.Trama = (function () {
         const lig = T.LIGACOES.filter(l => l.se.every(k => S.kp[k]) && (!l.mem || E.mem(l.mem))).map(l => ({ texto: l.t, rev: !!l.rev, antiga: !!l.mem }));
         return { notas, total: Object.keys(T.KP).length, ligacoes: lig };
       },
+      pular() { S.flags.fim = 1; S.flags.pulou = 1; gravar(); },
       zerar() { S = { kp: {}, feitos: {}, flags: {}, visitas: {}, n: 0 }; gravar(); },
     };
   };

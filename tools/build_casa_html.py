@@ -72,7 +72,7 @@ def path(n):
     return A + n + '.png'
 def uri(n): return 'data:image/png;base64,' + base64.b64encode(open(path(n), 'rb').read()).decode()
 AT = {n: json.load(open(A + 'chars/' + n + '.json')) for n in ['lia_tq', 'raimundo_tq']}
-SIM = '\n'.join(open(f).read() for f in sorted(glob.glob('../sim/s[0-9]*_*.js'), key=lambda f: int(re.search(r's(\d+)_', f).group(1))))
+SIM = '\n'.join(open(f).read() for f in sorted((g for g in glob.glob('../sim/s[0-9]*_*.js') if '/s96_' not in g), key=lambda f: int(re.search(r's(\d+)_', f).group(1))))
 L = json.load(open(A + 'layout.json'))
 T = (T.replace('/*LAYOUT*/{}', json.dumps(L)).replace('/*CHARS_JS*/', open('../game/chars.js').read() + '\n' + open('../game/cenario94.js').read()).replace('/*CHARATLAS*/{}', json.dumps(AT)).replace('/*OBJECTS_JS*/', open('../game/objects.js').read())
      .replace('/*SIM_JS*/', SIM).replace('/*OBJCAT*/{}', open(A + 'objects/catalog_casa.json').read()).replace('/*OBJSCENE*/{}', open(A + 'objects/scene_casa.json').read()))
