@@ -57,6 +57,18 @@ def sd_cone(P, a, b, ra, rb):
     return np.where(np.sign(z) * a2 * z2 > k, d1, np.where(np.sign(y) * a2 * y2 < k, d2, d3))
 
 
+def sd_box(q, h, rr=0.0):
+    """Caixa arredondada: meia-medida h (3), arredondamento rr."""
+    d = np.abs(q) - (h - rr)
+    return np.linalg.norm(np.maximum(d, 0), axis=1) + np.minimum(np.max(d, axis=1), 0) - rr
+
+
+def sd_cyl(q, r, hh, rr=0.0):
+    """Cilindro de eixo y (raio r, meia-altura hh), bordas arredondadas rr."""
+    dx = np.hypot(q[:, 0], q[:, 2]) - r + rr; dy = np.abs(q[:, 1]) - hh + rr
+    return np.minimum(np.maximum(dx, dy), 0) + np.hypot(np.maximum(dx, 0), np.maximum(dy, 0)) - rr
+
+
 class Prim:
     """kind 'ell' (c, r) ou 'cone' (a, b, ra, rb); coords no referencial local (origin, R, scale).
     grp = grupo p/ linhas internas; mat = id fixo ou função(local_do_personagem)->ids; cut = (n, d): mantém n·q <= d."""
@@ -70,6 +82,8 @@ class Prim:
     def sd(self, P):
         q = ((P - self.o) @ self.R) / self.s
         if self.kind == 'ell': d = sd_ell(q - self.kw['c'], self.kw['r'])
+        elif self.kind == 'box': d = sd_box(q - self.kw['c'], self.kw['h'], self.kw['rr'])
+        elif self.kind == 'cyl': d = sd_cyl(q - self.kw['c'], self.kw['r'], self.kw['hh'], self.kw['rr'])
         else: d = sd_cone(q, self.kw['a'], self.kw['b'], self.kw['ra'], self.kw['rb'])
         d = d * float(self.s.min())
         if self.cut is not None:
@@ -79,6 +93,14 @@ class Prim:
 
 def ell(origin, R, c, r, **kw):
     return Prim('ell', origin, R, c=np.asarray(c, float), r=np.asarray(r, float), **kw)
+
+
+def box(origin, R, c, h, rr=0.01, **kw):
+    return Prim('box', origin, R, c=np.asarray(c, float), h=np.asarray(h, float), rr=rr, **kw)
+
+
+def cyl(origin, R, c, r, hh, rr=0.006, **kw):
+    return Prim('cyl', origin, R, c=np.asarray(c, float), r=r, hh=hh, rr=rr, **kw)
 
 
 def cone(origin, R, a, b, ra, rb, **kw):
