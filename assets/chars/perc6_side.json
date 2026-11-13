@@ -1,0 +1,172 @@
+{
+ "cell": [
+  40,
+  52
+ ],
+ "anchor": [
+  20,
+  46
+ ],
+ "pad": 2,
+ "cols": 8,
+ "persp": "side",
+ "rows": {
+  "idle/down": {
+   "row": 0,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "idle/right": {
+   "row": 1,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "idle/up": {
+   "row": 2,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "idle/left": {
+   "row": 3,
+   "n": 4,
+   "fps": 2.0,
+   "loop": true
+  },
+  "walk/down": {
+   "row": 4,
+   "n": 8,
+   "fps": 7.4074074074074066,
+   "loop": true
+  },
+  "walk/right": {
+   "row": 5,
+   "n": 8,
+   "fps": 7.4074074074074066,
+   "loop": true
+  },
+  "walk/up": {
+   "row": 6,
+   "n": 8,
+   "fps": 7.4074074074074066,
+   "loop": true
+  },
+  "walk/left": {
+   "row": 7,
+   "n": 8,
+   "fps": 7.4074074074074066,
+   "loop": true
+  },
+  "talk/down": {
+   "row": 8,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "talk/right": {
+   "row": 9,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "talk/up": {
+   "row": 10,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "talk/left": {
+   "row": 11,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "wave/down": {
+   "row": 12,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "wave/right": {
+   "row": 13,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "wave/up": {
+   "row": 14,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "wave/left": {
+   "row": 15,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "drum/down": {
+   "row": 16,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "drum/right": {
+   "row": 17,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "drum/up": {
+   "row": 18,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "drum/left": {
+   "row": 19,
+   "n": 4,
+   "fps": 6.0,
+   "loop": true
+  },
+  "drumwalk/down": {
+   "row": 20,
+   "n": 8,
+   "fps": 7.4074074074074066,
+   "loop": true
+  },
+  "drumwalk/right": {
+   "row": 21,
+   "n": 8,
+   "fps": 7.4074074074074066,
+   "loop": true
+  },
+  "drumwalk/up": {
+   "row": 22,
+   "n": 8,
+   "fps": 7.4074074074074066,
+   "loop": true
+  },
+  "drumwalk/left": {
+   "row": 23,
+   "n": 8,
+   "fps": 7.4074074074074066,
+   "loop": true
+  }
+ },
+ "speed_mps": 0.617037037037037,
+ "scale": 0.98,
+ "gait": {
+  "T": 1.08,
+  "step": 0.34,
+  "lift": 0.05,
+  "bob": 0.012,
+  "arm": 0.2,
+  "lean": -0.03,
+  "sway": 0.01,
+  "head": 0.02,
+  "hand_out": 0.1
+ }
+}

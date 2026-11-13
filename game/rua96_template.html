@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O balcão da vó — 1996 · a rua no dia da gravação</title>
+<style>
+/*CSS*/
+  #app { padding: 0 !important; gap: 0 !important; height: 100% !important; min-height: 0 !important; }
+  #frame { box-shadow: none !important; }
+  #hud { position: fixed; left: 50%; top: 54px; transform: translateX(-50%); z-index: 20; text-align: center; width: auto !important; max-width: min(46vw, 640px) !important; background: rgba(20,14,16,.66); border-radius: 14px; padding: .35em .8em; opacity: .0; transition: opacity .25s; }
+  #hud:hover, #hud:focus-within { opacity: 1; }
+  #hud #zoombar, #hud details { display: none !important; }
+  #hud:hover #zoombar, #hud:focus-within #zoombar { display: flex !important; } #hud:hover details, #hud:focus-within details { display: block !important; }
+</style>
+<script>/*FITJS*/</script>
+</head>
+<body>
+<div id="app">
+  <div id="frame">
+    <canvas id="c" width="480" height="270" aria-label="Rua do Pelourinho em 1996, vista lateral"></canvas>
+    <div id="ui">
+      <div id="clock" class="pill"><b>1996</b><span>Pelourinho · dia da gravação</span></div>
+      <div id="bubbles"></div>
+      <div id="toasts"></div>
+      <div id="note" class="pill" style="display:none"></div>
+      <div id="hint" class="pill" style="display:none"></div>
+    </div>
+  </div>
+  <div id="hud">
+    <div><b>Rua · 1996</b> · câmera lateral ortográfica · <span id="msg" aria-live="polite" style="color:#f0c98c"></span></div>
+    <div><span class="k">←→↑↓</span> / <span class="k">WASD</span> andar &nbsp; <span class="k">E</span> observar &nbsp; clique para ir até o ponto &nbsp; <span class="k">+</span>/<span class="k">−</span> zoom &nbsp; <span class="k">0</span> enquadramento</div>
+    <div id="zoombar" style="width:100%;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <b>Zoom</b>
+      <button id="bZm" title="Afastar ( − )" aria-label="Afastar">−</button>
+      <button id="bZp" title="Aproximar ( + )" aria-label="Aproximar">+</button>
+      <button id="bZr" title="Voltar ao enquadramento original ( 0 )">Enquadramento original</button>
+      <span id="zlabel" style="color:#f0c98c"></span>
+    </div>
+    <details style="width:100%"><summary>Ferramentas de verificação</summary>
+      <button id="bR" aria-pressed="false" title="R">Régua (m)</button>
+      <button id="bC" aria-pressed="false" title="C">Colisões e marcações</button>
+      <div style="color:#8f8173;margin-top:4px">1 m = 24 px · elenco e descrições provisórios, à espera da trama de 1996 · sem diálogos nem missões</div>
+    </details>
+  </div>
+</div>
+<script>
+/*CHARS_JS*/
+/*SIM_JS*/
+const ASSETS = /*ASSETS*/{};
+const CHARATLAS = /*CHARATLAS*/{};
+const SCENE = /*SCENE*/{}, PROPS = /*PROPS*/{};
+let VW = 480; const VH = 270, WORLD_W = SCENE.W, yw = Sim96.yw;
+const cvs = document.getElementById('c'), vctx = cvs.getContext('2d');
+const off = document.createElement('canvas'); off.width = VW; off.height = VH;
+const ctx = off.getContext('2d'); ctx.imageSmoothingEnabled = false; vctx.imageSmoothingEnabled = false;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const Q = new URLSearchParams(location.search);
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+function load(src) { return new Promise(r => { const i = new Image(); i.onload = () => r(i); i.src = src; }); }
+let IMG = {}, SIM = null, started = false;
+Promise.all(Object.entries(ASSETS).map(([k, v]) => load(v).then(i => IMG[k] = i))).then(() => {
+  const ci = {}; for (const k in CHARATLAS) ci[k] = IMG[k]; CharLib.init(CHARATLAS, ci);
+  start();
+});
+
+const S = { zl: Math.max(0, Math.min(2, +(Q.get('z') || 0))), free: false, vx: 240, vy: 130, cam: 0, ruler: Q.get('r') === '1', coll: Q.get('c') === '1', note: null, hint: null };
+const ZL = [1, 2, 3], ZN = ['Visão geral', 'Visão intermediária', 'Visão aproximada'];
+const LS = { anim: 'idle', at: 0, path: [], goal: null, vel: 40, tAnim: 0, replan: 0 };
+let V = null, keys = {}, last = 0, drag = null;
+const OBJ = Sim96.Elenco.objetos;
+
+function start() {
+  SIM = new Sim96.World({ scene: SCENE, atlas: CHARATLAS, elenco: Sim96.Elenco, seed: +(Q.get('seed') || 1996) });
+  const sx = Q.has('x') ? +Q.get('x') : 110; SIM.lia.x = sx; SIM.lia.y = Q.has('sy') ? yw(sx) + +Q.get('sy') : yw(sx) + 22;
+  if (Q.has('ff')) for (let i = 0, n = +Q.get('ff') * 20; i < n; i++) SIM.update(1 / 20);
+  S.vx = SIM.lia.x; S.vy = SIM.lia.y - 18;
+  if (Q.has('vx')) { S.vx = +Q.get('vx'); S.free = true; } if (Q.has('vy')) { S.vy = +Q.get('vy'); S.free = true; }
+  syncUI(); fit(); started = true; last = performance.now(); requestAnimationFrame(loop);
+  setTimeout(() => toast('<b>Rua</b> · 1996, dia da gravação. Ande, aperte <b>E</b> perto de pessoas e objetos.', 'ev', 5500), 400);
+}
+
+// ---------------------------------------------------------------- câmera com zoom (3 níveis inteiros)
+function computeView() {
+  const z = S.zAnim != null ? S.zAnim : ZL[S.zl], w = VW / z, h = VH / z;
+  const cl = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  const cx = cl(S.vx, w / 2, WORLD_W - w / 2), cy = VH <= h ? VH / 2 : cl(S.vy, h / 2, VH - h / 2);
+  const left = Math.round(cx - w / 2), top = Math.round(cy - h / 2);
+  const cam = cl(Math.round(cx) - VW / 2, 0, WORLD_W - VW);
+  if (S.free) { S.vx = cx; S.vy = cy; }
+  S.cam = cam; V = { z, w, h, left, top, sx: left - cam, sy: top, cam }; return V;
+}
+function updateCamera(dt) { if (S.free) return; const k = Math.min(1, dt * 6), L = SIM.lia; S.vx += (L.x - S.vx) * k; S.vy += (L.y - 18 - S.vy) * k; }
+function snapCamera() { S.free = false; S.vx = SIM.lia.x; S.vy = SIM.lia.y - 18; }
+function setZoom(n, ax, ay) {
+  n = Math.max(0, Math.min(2, n)); if (n === S.zl) return; computeView();
+  const cursor = ax != null, a_x = cursor ? ax : VW / 2, a_y = cursor ? ay : VH / 2;
+  const px = V.left + a_x / V.z, py = V.top + a_y / V.z; S.zl = n; const z = ZL[n];
+  S.vx = px - a_x / z + VW / z / 2; S.vy = py - a_y / z + VH / z / 2;
+  if (n === 0) snapCamera(); else if (cursor) S.free = true; syncUI();
+}
+function resetCamera() { S.zl = 0; snapCamera(); syncUI(); }
+
+// ---------------------------------------------------------------- interface
+function toast(html, cls, ms) { const el = document.createElement('div'); el.className = 'toast ' + (cls || ''); el.innerHTML = html; const box = $('toasts'); box.appendChild(el); while (box.children.length > 4) box.removeChild(box.firstChild); setTimeout(() => el.remove(), ms || 4000); }
+function say(txt, s) { S.note = { text: txt, ttl: s || 6 }; }
+function syncUI() { $('zlabel').textContent = ZN[S.zl] + ' (' + ZL[S.zl] + '×)' + (S.free ? ' · câmera solta' : ''); $('bR').setAttribute('aria-pressed', S.ruler); $('bC').setAttribute('aria-pressed', S.coll); }
+function updateHud() {
+  const nt = S.note, nel = $('note'); if (nt) { nel.style.display = 'block'; nel.textContent = nt.text; } else nel.style.display = 'none';
+  const h = S.hint, hel = $('hint'); if (h) { hel.style.display = 'block'; hel.innerHTML = '<span class="k" style="border:1px solid #7a5c3c;border-radius:3px;padding:0 4px">E</span> ' + esc(h.label); } else hel.style.display = 'none';
+}
+function fit() {
+  const nv = Math.max(480, Math.min(640, Math.round(VH * innerWidth / Math.max(1, innerHeight))));
+  if (nv !== VW) { VW = nv; cvs.width = VW; off.width = VW; ctx.imageSmoothingEnabled = false; vctx.imageSmoothingEnabled = false; }
+  const s = fitDisplay(cvs, VW, VH); $('ui').style.fontSize = Math.max(9, Math.min(17, 3.2 * s + 4.5)) + 'px';
+}
+addEventListener('resize', fit);
+
+// ---------------------------------------------------------------- Lia
+function liaStep(dt) {
+  const L = SIM.lia;
+  const kx = (keys.arrowright || keys.d ? 1 : 0) - (keys.arrowleft || keys.a ? 1 : 0), ky = (keys.arrowdown || keys.s ? 1 : 0) - (keys.arrowup || keys.w ? 1 : 0);
+  let dx = kx, dy = ky;
+  if (dx || dy) { LS.goal = null; LS.path = []; }
+  else if (LS.path.length) { const k = LS.path[0], ddx = k[0] - L.x, ddy = k[1] - L.y, d = Math.hypot(ddx, ddy); if (d < 1.5) LS.path.shift(); else { dx = ddx / d; dy = ddy / d; } }
+  if (dx || dy) {
+    const m = Math.hypot(dx, dy) || 1, st = LS.vel * dt, nx = L.x + dx / m * st, ny = L.y + dy / m * st; let moved = false;
+    if (Sim.Nav.free(nx, L.y)) { L.x = nx; moved = true; } if (Sim.Nav.free(L.x, ny)) { L.y = ny; moved = true; }
+    if (!moved && LS.path.length) LS.path.shift();
+    LS.anim = 'walk'; L.face = Math.abs(dx) >= Math.abs(dy) * .55 ? (dx < 0 ? 'left' : 'right') : (dy < 0 ? 'up' : 'down');
+  } else if (LS.anim === 'walk') LS.anim = 'idle';
+  if (LS.tAnim > 0) { LS.tAnim -= dt; if (LS.tAnim <= 0 && LS.anim !== 'walk') LS.anim = 'idle'; }
+}
+function goTo(x, y, goal) { const L = SIM.lia; LS.goal = goal || null; const p = Sim.Nav.path(L.x, L.y, x, y); LS.path = p ? p.slice() : []; }
+
+// ---------------------------------------------------------------- interação (descrições provisórias; sem diálogo)
+function candidatos() {
+  const L = SIM.lia, out = [];
+  for (const a of SIM.lista) { const d = Math.hypot(a.x - L.x, (a.y - L.y) * 1.4); const lim = a.camada === 'wall' ? 0 : 38; if (a.camada === 'wall') { const dd = Math.abs(a.x - L.x) < 36 && L.y > a.y + 20; if (dd) out.push({ k: 'ator', id: a.id, d: Math.abs(a.x - L.x) + 30, label: 'Observar: ' + a.nome, run: () => observar(a) }); continue; } if (d < lim) out.push({ k: 'ator', id: a.id, d, label: 'Observar: ' + a.nome, run: () => observar(a) }); }
+  for (const it of SCENE.inst) { if (!it.stand || !it.desc || it.tipo === 'nenhum') continue; const sx = it.x + it.stand[0], sy = yw(it.x) + it.sy + it.stand[1] - 14, dd = Math.hypot(sx - L.x, (sy - L.y) * 1.2); if (dd < 26) out.push({ k: 'obj', id: it.id, d: dd + 8, label: 'Examinar: ' + it.nome, run: () => say(it.desc, 8) }); }
+  for (const o of OBJ) { const sx = o.x, sy = yw(o.x) + o.sy, dd = Math.hypot(sx - L.x, (sy - L.y) * 1.2); if (dd < 30) out.push({ k: 'obj', id: o.id, d: dd + 6, label: 'Examinar: ' + o.nome, run: () => say(o.desc, 8) }); }
+  return out.sort((a, b) => a.d - b.d);
+}
+function observar(a) { say(a.obs || a.papel, 7); LS.anim = 'interact'; LS.tAnim = 1.0; SIM.lia.face = a.x < SIM.lia.x ? 'left' : 'right'; }
+function pressAction() { const c = candidatos(); if (c.length) c[0].run(); else say('Nada por perto.', 2.2); }
+
+// ---------------------------------------------------------------- entrada
+function canvasXY(e) { const r = cvs.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * VW, (e.clientY - r.top) / r.height * VH]; }
+function sceneXY(cx, cy) { computeView(); return [V.left + cx / V.z, V.top + cy / V.z]; }
+function hitAt(sx, sy) {
+  let best = null;   // entre atores sobrepostos vale o da frente (maior y)
+  for (const a of SIM.lista) { const top = a.camada === 'wall' ? a.y - 40 : a.y - 46, bot = a.camada === 'wall' ? a.y - a.clip : a.y + 3; if (Math.abs(sx - a.x) < 11 && sy > top && sy < bot && (!best || a.y > best.y)) best = a; }
+  if (best) return { k: 'ator', a: best };
+  for (const o of OBJ) if (sx >= o.rect[0] && sx < o.rect[0] + o.rect[2] && sy >= o.rect[1] && sy < o.rect[1] + o.rect[3]) return { k: 'obj', o };
+  for (const it of SCENE.inst) { const sp = PROPS[it.sprite]; if (!sp || !it.desc || it.tipo === 'nenhum') continue; const bx = it.x - sp.ax, by = yw(it.x) + it.sy - sp.ay; if (sx >= bx && sx < bx + sp.w && sy >= by && sy < by + sp.h) return { k: 'prop', it }; }
+  return null;
+}
+function commandMove(cx, cy) {
+  const [sx, sy] = sceneXY(cx, cy); const L = SIM.lia; const h = hitAt(sx, sy);
+  if (h && h.k === 'ator') { const a = h.a; if (a.camada === 'wall') { goTo(a.x, yw(a.x) + 18, { k: 'ator', a }); return; } goTo(a.x + (L.x < a.x ? -22 : 22), a.y + 2, { k: 'ator', a }); return; }
+  if (h && h.k === 'obj') { goTo(h.o.x, yw(h.o.x) + h.o.sy, { k: 'obj', o: h.o }); return; }
+  if (h && h.k === 'prop') { const it = h.it, st = it.stand || [0, 14]; goTo(it.x + st[0], yw(it.x) + it.sy + st[1] - 14, { k: 'prop', it }); return; }
+  const ty = Math.max(yw(sx) + 9, Math.min(VH - 4, sy));
+  goTo(Math.max(10, Math.min(WORLD_W - 10, sx)), ty, null);
+}
+function chegou(g) {
+  if (!g) return; const L = SIM.lia;
+  if (g.k === 'ator') { observar(g.a); } else if (g.k === 'obj') { L.face = 'up'; say(g.o.desc, 8); LS.anim = 'interact'; LS.tAnim = 1; } else if (g.k === 'prop') { L.face = 'up'; say(g.it.desc, 8); LS.anim = 'interact'; LS.tAnim = 1; }
+}
+cvs.addEventListener('pointerdown', e => { window.focus(); cvs.setPointerCapture(e.pointerId); const [cx, cy] = canvasXY(e); computeView(); drag = { cx, cy, vx: V.left + V.w / 2, vy: V.top + V.h / 2, moved: false }; });
+cvs.addEventListener('pointermove', e => { if (!drag) return; const [cx, cy] = canvasXY(e), dx = cx - drag.cx, dy = cy - drag.cy; if (!drag.moved && Math.hypot(dx, dy) > 5) { drag.moved = true; cvs.style.cursor = 'grabbing'; } if (drag.moved) { S.free = true; S.vx = drag.vx - dx / V.z; S.vy = drag.vy - dy / V.z; } });
+cvs.addEventListener('pointerup', () => { if (!drag) return; const d = drag; drag = null; cvs.style.cursor = ''; if (d.moved) return; commandMove(d.cx, d.cy); });
+cvs.addEventListener('pointercancel', () => { drag = null; cvs.style.cursor = ''; });
+cvs.addEventListener('dblclick', e => { const [cx, cy] = canvasXY(e); LS.path = []; if (S.zl === 0) setZoom(1, cx, cy); else setZoom(0); });
+let wheelAt = 0; cvs.addEventListener('wheel', e => { e.preventDefault(); const now = performance.now(); if (now - wheelAt < 130 || !e.deltaY) return; wheelAt = now; const [cx, cy] = canvasXY(e); setZoom(S.zl + (e.deltaY < 0 ? 1 : -1), cx, cy); }, { passive: false });
+addEventListener('keydown', e => {
+  const k = e.key.toLowerCase(); if (!started) return;
+  if (['arrowleft', 'arrowright', 'arrowup', 'arrowdown', ' ', 'a', 'd', 'w', 's', 'e', 'enter', 'r', 'c', '+', '=', '-', '_', '0', 'escape'].includes(k)) e.preventDefault();
+  keys[k] = true;
+  if (k === 'r') { S.ruler = !S.ruler; syncUI(); } if (k === 'c') { S.coll = !S.coll; syncUI(); }
+  if (k === '+' || k === '=') setZoom(S.zl + 1); if (k === '-' || k === '_') setZoom(S.zl - 1); if (k === '0') resetCamera();
+  if (k === 'e' || k === 'enter' || k === ' ') pressAction();
+});
+addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
+$('bR').onclick = () => { S.ruler = !S.ruler; syncUI(); }; $('bC').onclick = () => { S.coll = !S.coll; syncUI(); };
+$('bZm').onclick = () => setZoom(S.zl - 1); $('bZp').onclick = () => setZoom(S.zl + 1); $('bZr').onclick = resetCamera;
+
+// ---------------------------------------------------------------- desenho (mesma ordem de profundidade da rua de 1991)
+function drawProp(spr, x, y, f) { const sp = PROPS[spr]; if (!sp) return; const fr = sp.frames[Math.min(f || 0, sp.frames.length - 1)]; ctx.drawImage(IMG.props, fr[0], fr[1], sp.w, sp.h, Math.round(x - sp.ax), Math.round(y - sp.ay), sp.w, sp.h); }
+function drawAtor(a) {
+  const sit = a.anim === 'sit' || a.anim === 'play' || a.anim === 'think';
+  CharLib.draw(ctx, { who: a.who, persp: 'side', x: a.x - S.cam, y: a.y, anim: a.anim, dir: a.face, t: a.at }, { shadow: !sit && a.camada !== 'wall', clipBelowY: a.camada === 'wall' ? a.y - a.clip : null });
+}
+function render() {
+  computeView(); const cam = S.cam;
+  ctx.drawImage(IMG.far, Math.floor(cam * 0.35), 0, VW, VH, 0, 0, VW, VH);
+  ctx.drawImage(IMG.world, cam, 0, VW, VH, 0, 0, VW, VH);
+  const ents = [];
+  for (const it of SCENE.inst) {
+    if (it.layer === 'over') continue;
+    const y = yw(it.x) + it.sy;
+    if (it.layer === 'wall') { drawProp(it.sprite, it.x - cam, y, 0); continue; }
+    ents.push({ y, draw: () => drawProp(it.sprite, it.x - cam, y, 0) });
+  }
+  for (const a of SIM.lista) if (a.camada === 'wall') drawAtor(a); else ents.push({ y: a.y + (a.vies || 0), draw: () => drawAtor(a) });
+  const L = SIM.lia; ents.push({ y: L.y, draw: () => CharLib.draw(ctx, { who: 'lia', persp: 'side6', x: L.x - cam, y: L.y, anim: LS.anim, dir: L.face, t: LS.at }, {}) });
+  ents.sort((a, b) => a.y - b.y).forEach(e => e.draw());
+  for (const it of SCENE.inst) if (it.layer === 'over') drawProp(it.sprite, it.x - cam, yw(it.x) + it.sy + .5, 0);
+  ctx.drawImage(IMG.front, cam, 0, VW, VH, 0, 0, VW, VH);
+  if (S.ruler) drawRuler(cam);
+  if (S.coll) drawColl(cam);
+  vctx.drawImage(off, V.sx, V.sy, V.w, V.h, 0, 0, VW, VH);
+}
+function drawRuler(cam) {
+  ctx.save(); ctx.font = '8px monospace'; ctx.textBaseline = 'middle'; const L = SIM.lia, px = Math.round(L.x - cam), py = Math.round(L.y);
+  for (let wx = Math.ceil(cam / 24) * 24; wx < cam + VW; wx += 24) { const gy = yw(wx) + 24, x = wx - cam; ctx.fillStyle = wx % 120 === 0 ? 'rgba(255,255,255,.9)' : 'rgba(255,255,255,.45)'; ctx.fillRect(x, gy, 1, wx % 120 === 0 ? 7 : 4); }
+  for (let m = 0; m <= 4; m++) { const y = py - m * 24; ctx.fillStyle = 'rgba(255,230,120,.95)'; ctx.fillRect(px + 14, y, 10, 1); if (m) { ctx.fillStyle = 'rgba(0,0,0,.65)'; ctx.fillRect(px + 25, y - 5, 17, 9); ctx.fillStyle = '#ffe678'; ctx.fillText(m + ' m', px + 27, y); } }
+  ctx.restore();
+}
+function drawColl(cam) {
+  ctx.fillStyle = 'rgba(255,60,60,.28)'; for (let x = cam; x < cam + VW; x += 2) for (let y = 200; y < VH; y += 2) if (SIM.blocked(x, y)) ctx.fillRect(Math.round(x - cam), y, 2, 2);
+  const P = SCENE.palco; if (P) { ctx.strokeStyle = 'rgba(120,200,255,.8)'; ctx.strokeRect(P.x0 - cam + .5, yw((P.x0 + P.x1) / 2) + P.sy0 + .5, P.x1 - P.x0, P.sy1 - P.sy0); }
+  ctx.fillStyle = '#7cf'; for (const a of SIM.lista) ctx.fillRect(Math.round(a.x - cam) - 1, Math.round(a.y) - 1, 3, 3);
+}
+
+// ---------------------------------------------------------------- laço
+function loop(now) { const dt = Math.min(.1, (now - last) / 1000); last = now; update(dt); render(); requestAnimationFrame(loop); }
+function update(dt) {
+  LS.at += dt; SIM.update(dt); liaStep(dt); updateCamera(dt);
+  if (S.note) { S.note.ttl -= dt; if (S.note.ttl <= 0) S.note = null; }
+  if (LS.goal && !LS.path.length) { const g = LS.goal; LS.goal = null; chegou(g); }
+  else if (LS.goal && LS.goal.k === 'ator' && LS.path.length) { LS.replan -= dt; if (LS.replan <= 0) { const a = LS.goal.a, L = SIM.lia; LS.replan = 1.2; if (a.camada !== 'wall') { const p = Sim.Nav.path(L.x, L.y, a.x + (L.x < a.x ? -22 : 22), a.y + 2); LS.path = p ? p.slice() : LS.path; } } }
+  const c = candidatos(); S.hint = c.length ? { label: c[0].label } : null; updateHud();
+}
+</script>
+</body>
+</html>

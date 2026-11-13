@@ -113,6 +113,16 @@ CFG96['cam2'] = dict(leg='long', sleeve=0.52, belly=0.01, hair='curto_cacheado',
 CFG96['assist'] = dict(leg='long', sleeve=0.50, belly=0.0, hair='cachos', hat='headset', bw=0.90, kind='assist', pk='assist')
 CFG96['carga'] = dict(leg='long', sleeve=0.44, belly=0.02, hair='raspado', hat=None, bw=1.10, kind='carga', pk='carga')
 CFG96['diretor'] = dict(leg='long', sleeve=0.60, belly=0.025, hair='short', hat='bucket', bw=1.0, kind='diretor', glasses=True, shirt=vest, pk='diretor')
+# operador de câmera SEM tripé nem câmera no corpo: o equipamento fica no cenário (props tripe_cam_d/e) e o operador se posiciona atrás dele
+rig.MATS['cam2o'] = rig.MATS['cam2']; rig.SPEC['cam2o'] = rig.SPEC['cam2']
+CFG96['cam2o'] = dict(CFG96['cam2'], kind='cam2o', pk='cam2o')
+# segundo operador de câmera e segundo assistente: outros rostos e roupas, mesma animação
+rig.MATS['cam3o'] = mats(SKIN['a'], HAIRC, GRY, JEAN, hat=GRY, acc=CAM, aux=CASE, shoe=BLK)
+rig.SPEC['cam3o'] = _spec(1.04, 1.06)
+CFG96['cam3o'] = dict(CFG96['cam2'], kind='cam2o', hair='short', bw=1.06, pk='cam3o')
+rig.MATS['assist2'] = mats(SKIN['c'], HAIRC, NAVY, KHA, hat=GRY, acc=CASE, aux=SOLE, shoe=SHOE)
+rig.SPEC['assist2'] = _spec(0.93, 0.95)
+CFG96['assist2'] = dict(CFG96['assist'], hair='afro', bw=0.95, pk='assist2')
 WHO = tuple(CFG96)
 PERCS = tuple(PERC)
 
@@ -327,7 +337,7 @@ def x_diretor(ctx):
 def x_cantor(ctx): pass
 
 
-EXTRA = {'perc': x_perc, 'cam1': x_cam1, 'cam2': x_cam2, 'assist': x_assist, 'carga': x_carga, 'diretor': x_diretor, 'cantor': x_cantor}
+EXTRA = {'cam2o': lambda ctx: None, 'perc': x_perc, 'cam1': x_cam1, 'cam2': x_cam2, 'assist': x_assist, 'carga': x_carga, 'diretor': x_diretor, 'cantor': x_cantor}
 
 
 # ---------------------------------------------------------------- animação
@@ -337,7 +347,7 @@ A.GAIT.update({
  'perc1': G(T=1.00, step=0.38, lean=-0.03, bob=0.014), 'perc2': G(T=0.92, step=0.42, lean=-0.02, bob=0.016), 'perc3': G(T=0.86, step=0.42, lean=-0.02, bob=0.018),
  'perc4': G(T=1.04, step=0.36, lean=-0.04, bob=0.014), 'perc5': G(T=0.96, step=0.40, lean=-0.02, bob=0.015), 'perc6': G(T=1.08, step=0.34, lean=-0.03, bob=0.012),
  'cantor': G(T=0.90, step=0.30, lift=0.040, bob=0.008, arm=0.12, lean=0.02, sway=0.016, head=0.03),
- 'cam1': G(T=1.00, step=0.38, lean=0.04), 'cam2': G(T=1.00, step=0.38, lean=0.05), 'assist': G(T=0.80, step=0.44, arm=0.30, lean=0.04),
+ 'cam1': G(T=1.00, step=0.38, lean=0.04), 'cam2': G(T=1.00, step=0.38, lean=0.05), 'cam2o': G(T=1.00, step=0.38, lean=0.04), 'cam3o': G(T=1.00, step=0.38, lean=0.04), 'assist2': G(T=0.82, step=0.44, arm=0.30, lean=0.04), 'assist': G(T=0.80, step=0.44, arm=0.30, lean=0.04),
  'carga': G(T=1.00, step=0.38, lean=0.02), 'diretor': G(T=1.06, step=0.40, lean=0.04, arm=0.20),
 })
 A.ANIMS.update({'drum': (4, 6.0, True), 'drumwalk': (8, None, True), 'sway': (4, 4.0, True), 'pose': (4, 2.0, True), 'film': (4, 2.0, True), 'note': (4, 5.0, True),
@@ -397,7 +407,7 @@ def pose96(who, anim, k, yaw):
             elif i == 2: p['arm_l'] = dict(tgt=(0.10, 1.12, 0.22)); p['arm_r'] = dict(tgt=(-0.10, 1.12, 0.22)); p['hpitch'] = 0.05
             else: p['arm_r'] = dict(tgt=(-0.30, 1.30, 0.28)); p['arm_l'] = dict(tgt=(0.17, 0.80, 0.10)); p['hroll'] = -0.06; p['mouth'] = 1
             p['yaw'] = yaw
-    elif kind in ('cam1', 'cam2'):
+    elif kind in ('cam1', 'cam2', 'cam2o'):
         shp_y = rig.SPEC[who]['pelvis_h']
         if kind == 'cam1':
             cy = rig.SPEC[who]['pelvis_h'] + 0.385 + 0.075 - 0.02                      # altura da câmera no ombro
@@ -415,7 +425,8 @@ def pose96(who, anim, k, yaw):
                 p['arm_l'] = dict(tgt=(0.12, 1.28 + 0.004 * (0, 1, 0, -1)[k], 0.40)); p['arm_r'] = dict(tgt=(-0.14, 1.22 + 0.02 * (0, 0, 1, 0)[k], 0.34))
                 p['lean'] = 0.07; p['hpitch'] = 0.06; p['hroll'] = 0.06; p['yaw'] = yaw
             elif anim in ('walk', 'camwalk'):
-                p = A.walk_pose(who, k); p['arm_r'] = dict(tgt=(-0.16, 1.28, 0.02)); p['yaw'] = yaw
+                p = A.walk_pose(who, k); p['yaw'] = yaw
+                if kind == 'cam2': p['arm_r'] = dict(tgt=(-0.16, 1.28, 0.02))
     elif kind == 'assist':
         if anim in ('idle', 'talk', 'turn', 'wave'): p = {'idle': A.idle_pose, 'talk': A.talk_pose, 'turn': A.turn_pose, 'wave': A.wave_pose}[anim](who, k)
         if anim in ('idle', 'talk', 'turn', 'wave', 'note', 'radio', 'walk'):
