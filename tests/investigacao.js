@@ -1,4 +1,4 @@
-// Revisão de gameplay das 29 pistas de 1991: três perfis de jogador simulados em Node.
+// Revisão de gameplay das pistas de 1991: três perfis de jogador simulados em Node.
 //   node tests/investigacao.js [sementes=4] [--relatorio]
 // Os perfis não conhecem o gabarito: escolhem alvos ao acaso, com o tempo gasto em cada ação.
 // Limite do modelo: a Lia é posta ao lado do alvo (sem andar), então o tempo de caminhada não entra; o navegador valida o resto.
@@ -12,7 +12,7 @@ const sec = x => x * RATE;   // segundos reais de jogador -> minutos de jogo
 const S0 = load(), RD0 = S0.Rua.D, KS = Object.keys(RD0.kp), META = RD0.kpMeta;
 const CENTRAIS = KS.filter(k => META[k].cat === 'central');
 const FIOS = { medicao: ['kp_lucia_medir', 'kp_ray_sobrado', 'kp_obj_quadro'], programa: ['kp_programa', 'kp_lucia_programa', 'kp_obj_quadro'], associacao: ['kp_associacao', 'kp_obj_quadro'], olhares: ['kp_rua_olhar'] };
-const OBJS = ['mesa_domino', 'quadro_avisos', 'orelhao_1', 'poste_1', 'cavalete_pao', 'bike_1', 'lixeira_1', 'obra_1', 'caixote_1', 'gaiola_1'];
+const OBJS = ['mesa_domino', 'quadro_avisos', 'orelhao_1', 'poste_1', 'cavalete_pao', 'bike_1', 'lixeira_1', 'caixote_1'];
 const IDS = Object.keys(RD0.pessoas);
 
 function rngFn(seed) { let a = seed >>> 0 || 1; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
@@ -90,7 +90,7 @@ for (const p of perfis) {
   const freq = {}; for (const k of KS) freq[k] = rs.filter(r => r.kp.includes(k)).length / n;
   const soma = f => rs.reduce((a, r) => a + r.log[f], 0) / n;
   resumo[p] = { mediaKp, mediaC, minC: Math.min(...cent), fios, freq, repetidas: soma('repetidas'), semAssunto: soma('semAssunto'), semAssuntoSemDica: soma('semAssuntoSemDica'), reservas: soma('reservas'), conversas: soma('conversas') };
-  console.log(`\n[${p}] sementes ${n} · pistas ${mediaKp.toFixed(1)}/29 · centrais ${mediaC.toFixed(1)}/${CENTRAIS.length} (mín ${Math.min(...cent)}) · fios da história (de 4): ${fios.join(',')} · conversas ${soma('conversas').toFixed(0)} · sem assunto ${soma('semAssunto').toFixed(1)} (sem dica ${soma('semAssuntoSemDica').toFixed(1)}) · repetições ${soma('repetidas').toFixed(1)} · reservas ${soma('reservas').toFixed(1)}`);
+  console.log(`\n[${p}] sementes ${n} · pistas ${mediaKp.toFixed(1)}/${KS.length} · centrais ${mediaC.toFixed(1)}/${CENTRAIS.length} (mín ${Math.min(...cent)}) · fios da história (de 4): ${fios.join(',')} · conversas ${soma('conversas').toFixed(0)} · sem assunto ${soma('semAssunto').toFixed(1)} (sem dica ${soma('semAssuntoSemDica').toFixed(1)}) · repetições ${soma('repetidas').toFixed(1)} · reservas ${soma('reservas').toFixed(1)}`);
   const perdidas = KS.filter(k => freq[k] < .5).map(k => k.replace('kp_', '') + ' ' + Math.round(freq[k] * 100) + '%');
   console.log('   achadas em menos da metade das partidas: ' + (perdidas.join(', ') || 'nenhuma'));
 }

@@ -156,7 +156,7 @@ const OBJ94 = [
   { id: 'tapume_verde', nome: 'casa tapada', x: 846, sy: 10, rect: [832, 157, 32, 52], desc: 'A porta e a janela de baixo da casa verde estão fechadas com tábua. A família saiu e o andaime já sobe pela fachada.' },
   { id: 'placa_obra', nome: 'placa da obra', x: 936, sy: 10, rect: [923, 122, 25, 26], desc: 'Uma placa pequena presa ao andaime: OBRA, 1994. Programa de Recuperação.' },
 ];
-const OBJ91 = [{ id: 'gaiola_1', nome: 'gaiola do canário', x: 227, sy: 10, rect: [221, 94, 12, 20], desc: 'Uma gaiola pendurada na sacada do sobrado. O canário canta antes de Seu Raimundo acordar.' }];
+const OBJ91 = [];
 function start() {
   OBJ91.forEach(o => { if (!SCENE.inst.some(i => i.id === o.id)) SCENE.inst.push(Object.assign({ sprite: '_c94', tipo: 'examinar', classe: 'DECORATIVO', zoom: 1, stand: [0, 14], layer: 'sorted' }, o)); });
   const t0 = Q.has('t') ? 420 + +Q.get('t') : RD.dia.inicio;
@@ -236,7 +236,7 @@ function updateHud() {
   const n = Object.keys(SIM.kp).length, tot = Object.keys(RD.kp).length;
   $('clock').innerHTML = '<b>' + hhmm() + '</b><span>Dia ' + ((window.MUNDO_ATIVO && window.MUNDO_DIA) || (persist && persist.dia) || 1) + ' · rua</span>';
   { const SC = Sim.Sacola; if (SC.visivel() && !SC.S.avisoRua) { SC.S.avisoRua = true; toast('<b>Missão</b> · Dona Áurea chama: Seu Raimundo esqueceu o pão. A sacola está em cima do balcão da padaria, entre a vitrine e a caixa. Leve ao sobrado amarelo, ao lado.', 'ev', 9000); } }
-  $('objs').innerHTML = Sim.Sacola.painel() + '<div class="t">Anotações da rua</div><div class="d">' + n + ' de ' + tot + ' descobertas</div>';
+  $('objs').innerHTML = Sim.Sacola.painel() + '<div class="t">Anotações da rua</div><div class="d">' + (n >= tot ? 'A rua já contou o que sabia.' : 'A rua ainda tem o que contar.') + '</div>';
   const nt = S.note; const nel = $('note'); if (nt) { nel.style.display = 'block'; nel.textContent = nt.text; } else nel.style.display = 'none';
   const h = S.hint, hel = $('hint'); if (h && !D.open && !S.mesaOpen && !S.notesOpen) { hel.style.display = 'block'; hel.innerHTML = '<span class="k" style="border:1px solid #7a5c3c;border-radius:3px;padding:0 4px">E</span> ' + esc(h.label); } else hel.style.display = 'none';
 }
@@ -434,7 +434,7 @@ function quemDisse(k, n) {
 }
 function renderNotes() {
   const el = $('notes'), d = SIM.diario(), got = d.notas;
-  let h = '<h2><span>Anotações da rua</span><span class="x" onclick="toggleNotes(false)">fechar (Esc)</span></h2><div class="sub">' + got.length + ' de ' + d.total + ' · tudo aqui é proposta e precisa de revisão cultural antes de valer como texto final</div>';
+  let h = '<h2><span>Anotações da rua</span><span class="x" onclick="toggleNotes(false)">fechar (Esc)</span></h2><div class="sub">' + (got.length >= d.total ? 'A rua já contou o que sabia' : 'A rua ainda tem o que contar') + ' · tudo aqui é proposta e precisa de revisão cultural antes de valer como texto final</div>';
   const usados = new Set();
   for (const [t, re] of GRUPOS) { const ids = got.filter(n => re.test(n.id)); ids.forEach(n => usados.add(n.id)); if (!ids.length) continue; h += '<h4>' + t + '</h4>' + ids.map(n => '<div class="kp"><b>' + esc(n.titulo) + '</b> — ' + esc(n.texto) + (/programa|olhar/.test(n.id) || n.rev ? ' <span class="rev">revisar</span>' : '') + quemDisse(n.id, n) + '</div>').join(''); }
   const resto = got.filter(n => !usados.has(n.id)); if (resto.length) h += '<h4>Outras</h4>' + resto.map(n => '<div class="kp"><b>' + esc(n.titulo) + '</b> — ' + esc(n.texto) + quemDisse(n.id, n) + '</div>').join('');

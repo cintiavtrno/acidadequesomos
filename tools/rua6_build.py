@@ -17,7 +17,6 @@ INST = [
  dict(id='banco_1', sprite='banco', x=562, sy=14),
  dict(id='bike_1', sprite='bicicleta', x=702, sy=11),
  dict(id='caixote_1', sprite='caixote_laranja', x=318, sy=15),
- dict(id='obra_1', sprite='pilha_obra', x=28, sy=13),
  dict(id='gato_1', sprite='gato', x=186, sy=10, anim='gato'),
  # (Etapa 6 rev.: sem árvores nem canteiros na calçada; só a vegetação das janelas e fachadas, que faz parte do mundo)
  # dominó (ancorado à fachada do sobrado)

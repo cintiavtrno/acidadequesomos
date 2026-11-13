@@ -9,7 +9,7 @@ const scene = JSON.parse(fs.readFileSync(__dirname + '/../assets/street6/scene_r
 {
   const S = load(), RD = S.Rua.D; const antes = Object.keys(RD.kp).length; RD.virar94();
   ok('1991 continua intacto até a virada (kp_ray_sobrado existia)', antes > 0);
-  ok('virada remove as anotações que só valiam em 1991', !RD.kp.kp_ray_sobrado && !RD.kp.kp_programa && !RD.kp.kp_rua_olhar && !RD.kp.kp_lucia_programa && !RD.kp.kp_obra_tijolo);
+  ok('virada remove as anotações que só valiam em 1991', !RD.kp.kp_ray_sobrado && !RD.kp.kp_programa && !RD.kp.kp_rua_olhar && !RD.kp.kp_lucia_programa);
   ok('virar94 é idempotente', (RD.virar94(), Object.keys(RD.kp).length === Object.keys(RD.kp).length) && RD._v94 === true);
   // cada assunto de cada pessoa tem comporta com rótulo e pergunta; cada anotação citada existe
   let semGate = [], semKp = [], vazio = [];
@@ -120,7 +120,7 @@ const scene = JSON.parse(fs.readFileSync(__dirname + '/../assets/street6/scene_r
 // ---------------------------------------------------------------- sacola, gaiola, lata, Nena (correções da 4ª rodada)
 {
   const S = load(), RD = S.Rua.D, w = new S.Rua.World({ scene, seed: 3, rate: 1.5 }); w.initNav && w.initNav();
-  ok('rua: a gaiola do sobrado pode ser examinada e rende anotação (antes não existia objeto)', w.examinar({ id: 'gaiola_1', nome: 'g', desc: 'x' }).novo && !!w.kp.kp_obj_gaiola);
+  ok('rua: a gaiola e a pilha de obra saíram (sem objeto examinável e sem anotação)', !RD.kp.kp_obj_gaiola && !RD.kp.kp_obj_obra && !RD.kp.kp_obra_tijolo && !w.examinar({ id: 'gaiola_1', nome: 'g', desc: 'x' }).novo);
   w.update(.1); ok('rua: a Lia senta numa cadeira livre da mesa antes das quatro pessoas', w.mesa.liaSenta('T')); w.lia.sentada = true; let erro = null;
   try { for (let i = 0; i < 40000 && !w.mesa.lataFeita && w.clock.min < 700; i++) { w.update(.1); } } catch (e) { erro = e; }
   ok('rua: a lata do bairro fecha sem erro e rende anotação a quem está sentado (antes dava TypeError)', !erro && !!w.kp.kp_lata, erro && erro.message);

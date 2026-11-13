@@ -25,7 +25,7 @@
       this.W = RD.W; this.VH = RD.VH; this.persist = o.persist || {}; this.hooks = o.hooks || {};
       this.solids = (this.scene.solids || []).filter(s => !/^(cad_|banquinho_)/.test(s.id)).map(s => ({ id: s.id, x0: s.x0, x1: s.x1, sy0: s.sy0, sy1: s.sy1 }));
       this.trust = Object.assign({ raimundo: .45, dandara: .22, lucia: .06, ze: .2, nonato: .15, bela: .18, cicera: .2, junior: .3, tonho: .2 }, this.persist.trust || {});
-      this.kp = Object.assign({}, this.persist.kp || {}); this.viv = Object.assign({}, this.persist.viv || {}); this.vivT = {}; this.feitos = Object.assign({}, this.persist.feitos || {}); this.dados = Object.assign({}, this.persist.dados || {}); this.ouviu = {}; this.lia = { x: 430, y: yw(430) + 12, face: 'right', seat: null, sentada: false };
+      this.kp = Object.assign({}, this.persist.kp || {}); for (const k of Object.keys(this.kp)) if (!RD.kp[k] && !/^kp_94_/.test(k)) delete this.kp[k]; this.viv = Object.assign({}, this.persist.viv || {}); this.vivT = {}; this.feitos = Object.assign({}, this.persist.feitos || {}); this.dados = Object.assign({}, this.persist.dados || {}); this.ouviu = {}; this.lia = { x: 430, y: yw(430) + 12, face: 'right', seat: null, sentada: false };
       this.t = 0; this.ev = [];
       this.grade();
       this.initNav();
@@ -274,7 +274,7 @@
       const ci = N.cicera; acum('viu_varal', perto(ci, 150) && ci.state === 'Acting', 1.5);
       acum('viu_tonho', perto(N.tonho, 150), 1.5); acum('viu_junior', perto(N.junior, 190), 1.2);
       acum('viu_gato', Math.hypot(this.gato.x - L.x, (this.gato.y - L.y) * 1.3) < 80, 1.2);
-      if (this.kp.kp_obj_obra) this.marcar('viu_obra'); if (this.kp.kp_gato) this.marcar('viu_gato');
+      if (this.kp.kp_gato) this.marcar('viu_gato');
       if (this.kp.kp_obj_quadro) { this.marcar('viu_aviso'); this.marcar('ouviu_reuniao'); this.marcar('ouviu_programa'); }
       if (this.viv.viu_medicao) this.marcar('ouviu_programa');
     }
@@ -340,7 +340,7 @@
     }
     ganhar(id, por) { if (this.kp[id]) return false; this.kp[id] = { t: this.clock.min }; if (por) this.kp[id].por = por; this.bus.emit('conhecimento', { id, kp: { titulo: RD.kp[id][0], texto: RD.kp[id][1] } }); this.salvar(); return true; }
     examinar(inst) {   // inst = instância da cena
-      const kpMap = { mesa_domino: 'kp_obj_mesa', quadro_avisos: 'kp_obj_quadro', orelhao_1: 'kp_obj_orelhao', poste_1: 'kp_obj_poste', poste_2: 'kp_obj_poste', poste_3: 'kp_obj_poste', cavalete_pao: 'kp_obj_cavalete', bike_1: 'kp_obj_bike', lixeira_1: 'kp_obj_lixeira', lixeira_2: 'kp_obj_lixeira', obra_1: 'kp_obj_obra', caixote_1: 'kp_obj_caixote', gaiola_1: 'kp_obj_gaiola' };
+      const kpMap = { mesa_domino: 'kp_obj_mesa', quadro_avisos: 'kp_obj_quadro', orelhao_1: 'kp_obj_orelhao', poste_1: 'kp_obj_poste', poste_2: 'kp_obj_poste', poste_3: 'kp_obj_poste', cavalete_pao: 'kp_obj_cavalete', bike_1: 'kp_obj_bike', lixeira_1: 'kp_obj_lixeira', lixeira_2: 'kp_obj_lixeira', caixote_1: 'kp_obj_caixote' };
       if (RD.kpObj94) Object.assign(kpMap, RD.kpObj94);
       const k = kpMap[inst.id]; let novo = false; if (k && RD.kp[k]) novo = this.ganhar(k, { tipo: 'obj', nome: inst.nome });
       return { texto: (RD.desc94 && RD.desc94[inst.id]) || inst.desc || inst.nome, nome: inst.nome, novo, kp: k && RD.kp[k] ? RD.kp[k][0] : null };

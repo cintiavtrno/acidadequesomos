@@ -231,28 +231,6 @@
    "layer": "sorted"
   },
   {
-   "id": "obra_1",
-   "sprite": "pilha_obra",
-   "x": 28,
-   "sy": 13,
-   "nome": "tijolos e sacos de cimento",
-   "tipo": "examinar",
-   "classe": "DECORATIVO",
-   "collide": [
-    -17,
-    -3,
-    17,
-    2
-   ],
-   "stand": [
-    0,
-    13
-   ],
-   "zoom": 2,
-   "desc": "Pilha de tijolos e dois sacos de cimento. Alguém está consertando o reboco da casa, devagar, no tempo do dinheiro.",
-   "layer": "sorted"
-  },
-  {
    "id": "gato_1",
    "sprite": "gato",
    "x": 186,
@@ -502,13 +480,6 @@
    "x1": 327,
    "sy0": 13,
    "sy1": 17
-  },
-  {
-   "id": "obra_1",
-   "x0": 11,
-   "x1": 45,
-   "sy0": 10,
-   "sy1": 15
   },
   {
    "id": "mesa_domino",
