@@ -41,6 +41,7 @@ casa = sub(casa, '<head>', '<head>\n' + HEAD)
 
 b64 = lambda t: base64.b64encode(t.encode('utf-8')).decode()
 SH = open('../mundo/shell_template.html', encoding='utf-8').read()
+SH = SH.replace('/*CONTROLE_JS*/', open('../mundo/controle.js', encoding='utf-8').read())   # joystick sem programa externo
 SH = SH.replace('/*MUNDO_JS*/', open('../mundo/mundo.js', encoding='utf-8').read().replace('</script', '<\\/script'))
 SH = SH.replace('/*SRC*/{}', json.dumps({'rua': b64(rua), 'padaria': b64(pad), 'casa': b64(casa), 'quintal': b64(qui)}))
 # --- abertura (estúdio, capa e menu): mundo/abertura.html com as imagens e fontes de mundo/abertura/ embutidas

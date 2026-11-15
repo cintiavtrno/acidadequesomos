@@ -112,20 +112,25 @@ img{image-rendering:pixelated;display:block}
   <div class="head"><div class="loc">PELOURINHO · SALVADOR</div><h2>A cidade que somos</h2></div>
   <nav class="lista" id="menu" aria-label="Menu principal"></nav>
   <div id="tst"></div>
-  <div class="hint">↑ ↓ ESCOLHEM · ENTER CONFIRMA</div>
+  <div class="hint">↑ ↓ ESCOLHEM · BOLA OU ENTER CONFIRMA</div>
   <div class="foot"><img src="{{estrela1.png}}" alt="">CÍNTIA VITORINO · INDEPENDENT GAMES · 2026</div></section>
 
  <section class="scr noite" id="s4"><img class="rua" src="{{rua.png}}" alt=""><div class="tint"></div><div class="veil"></div>
   <div class="head"><div class="loc">AJUSTES</div><h2>Opções</h2></div>
   <nav class="lista" id="opt"></nav>
-  <div class="hint">↑ ↓ ESCOLHEM · ENTER MUDA · ESC VOLTA</div></section>
+  <div class="hint">↑ ↓ ESCOLHEM · BOLA MUDA · X VOLTA</div></section>
 
  <section class="scr noite" id="s5"><img class="rua" src="{{rua.png}}" alt=""><div class="tint"></div><div class="veil"></div>
   <div class="head"><div class="loc">NOVO JOGO</div><h2>Começar do zero?</h2></div>
   <p class="msg">O caderninho e o ano em que você parou serão apagados. A Lia volta para o primeiro dia de 1991.</p>
   <nav class="lista" id="conf"></nav></section>
 
- <section class="scr noite" id="s6"><img class="rua" src="{{rua.png}}" alt=""><div class="tint"></div><div class="veil"></div><div class="back">ESC · VOLTAR</div>
+ <section class="scr noite" id="s7"><img class="rua" src="{{rua.png}}" alt=""><div class="tint"></div><div class="veil"></div>
+  <div class="head"><div class="loc">CONFIGURAR CONTROLE</div><h2 id="cpasso">Aperte um botão</h2></div>
+  <p class="msg" id="cmsg"></p>
+  <div class="hint">ESC NO TECLADO CANCELA</div></section>
+
+ <section class="scr noite" id="s6"><img class="rua" src="{{rua.png}}" alt=""><div class="tint"></div><div class="veil"></div><div class="back">X · VOLTAR</div>
   <div id="roll"><img class="lg" src="{{logo.png}}" alt="Cíntia Vitorino Independent Games"><h4>A CIDADE QUE SOMOS</h4>
    <div class="role"><span>CRIAÇÃO E DIREÇÃO</span><b>Cíntia Vitorino</b></div>
    <div class="role"><span>ROTEIRO E NARRATIVA</span><b>Cíntia Vitorino</b></div>
@@ -184,7 +189,14 @@ const O=navegar($('#opt'),()=>[
  {t:'Texto maior: <span class="v">'+(cfg.big?'sim':'não')+'</span>',fn:()=>{cfg.big=!cfg.big;salva()}},
  {t:'Alto contraste: <span class="v">'+(cfg.hc?'sim':'não')+'</span>',fn:()=>{cfg.hc=!cfg.hc;salva()}},
  {t:'Menos movimento: <span class="v">'+(RM()?'sim':'não')+'</span>',fn:()=>{cfg.rm=!RM();salva()}},
+ {t:'Configurar controle',s:CTRL()?(CTRL().configurado()?'CONFIGURADO':CTRL().conectado()==='padrão'?'RECONHECIDO, NÃO PRECISA':CTRL().conectado()?'CONECTADO':'APERTE UM BOTÃO DO CONTROLE'):'',fn:configurar},
+ ...(CTRL()&&CTRL().configurado()?[{t:'Voltar ao controle padrão',fn:()=>{CTRL().padrao();toast('Controle padrão');O.desenha()}}]:[]),
  {t:'Voltar',fn:menu}]);
+const CTRL=()=>{try{return parent.__CONTROLE||null}catch(e){return null}};
+const configurar=()=>{const c=CTRL();if(!c){toast('Controle indisponível aqui');return}show('s7');
+ c.aprender((txt,i)=>{$('#cpasso').textContent='Aperte '+txt.split(' (')[0].toLowerCase().replace(/^./,m=>m.toUpperCase());$('#cmsg').textContent=(i+1)+' de '+c.total+(txt.includes('(')?' · '+txt.split('(')[1].replace(')',''):'')},
+  ()=>{opcoes();toast('Controle configurado')})};
+setInterval(()=>{if(cur==='s4')O.desenha()},1500);
 const salva=()=>{store.set('cfg',cfg);aplicar();O.desenha()};
 const opcoes=()=>{show('s4');O.i=0;O.desenha()};
 
@@ -198,6 +210,7 @@ addEventListener('keydown',e=>{const k=e.key;if(e.repeat&&!CIMA.concat(BAIXO).in
  if(cur==='s1'){capa();return}
  if(cur==='s2'){menu();return}
  if(cur==='s6'){if(OK.concat(VOLTA).includes(k))menu();return}
+ if(cur==='s7'){if(k==='Escape'){try{CTRL().cancelar()}catch(x){}opcoes()}return}
  const L=cur==='s3'?M:cur==='s4'?O:cur==='s5'?C:null;if(!L)return;
  if(CIMA.includes(k)){L.mover(-1);e.preventDefault()}else if(BAIXO.includes(k)){L.mover(1);e.preventDefault()}
  else if(OK.includes(k)){L.ok();e.preventDefault()}else if(VOLTA.includes(k)&&cur!=='s3'){menu()}});

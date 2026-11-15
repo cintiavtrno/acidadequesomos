@@ -234,5 +234,6 @@ const FIM94 = '<div class="ano">Fim da fase de 1994</div><h1>Fim de 1994</h1><p>
 function dbg() { const d = document.getElementById('dbg'); d.style.display = 'block'; const m = mundo.minuto(); d.textContent = 'cena ' + mundo.cenas.atual + ' · ' + String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(Math.floor(m % 60)).padStart(2, '0') + '\nonde ' + JSON.stringify(mundo.viagens.onde); }
 const iv = setInterval(() => { if (pronto()) { clearInterval(iv); montar(); } }, 120);
 </script>
+<script>/*CONTROLE_JS*/</script>
 </body>
 </html>
