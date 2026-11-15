@@ -657,7 +657,7 @@ const iv = setInterval(() => { if (pronto()) { clearInterval(iv); montar(); } },
   // Liga quando alguém aperta um botão do controle (fica lembrado em localStorage 'acq_glifos').
   // O texto é trocado NA HORA em que o jogo escreve (innerHTML/textContent), então nada pisca entre a letra e o botão.
   let glifos = (() => { try { return localStorage.getItem('acq_glifos') === '1'; } catch (e) { return false; } })();
-  const COR = { '◯': '#e8505b', '✕': '#6f9ff0', '△': '#44c08a', '□': '#e07fc4' };
+  const COR = { '◯': '#e8505b', '✕': '#6f9ff0', '△': '#44c08a', '□': '#e07fc4', '①': '#44c08a', '②': '#e8505b', '③': '#6f9ff0', '④': '#e07fc4' };   // números nas cores do controle genérico (1 verde, 2 vermelho, 3 azul, 4 rosa)
   function tabela() {
     const ok = glifo('ok'), volta = glifo('volta'), cad = glifo('cad');
     return {
