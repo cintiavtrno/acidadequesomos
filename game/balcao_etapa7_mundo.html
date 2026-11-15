@@ -624,7 +624,11 @@ const iv = setInterval(() => { if (pronto()) { clearInterval(iv); montar(); } },
     const gps = navigator.getGamepads ? [...navigator.getGamepads()].filter(Boolean) : [];
     const gp = gps[0];
     if (gp) {
-      nomeCtrl = gp.id; if (padrao !== (gp.mapping === 'standard')) { padrao = gp.mapping === 'standard'; atualizaDicas(); }
+      nomeCtrl = gp.id;
+      // só controle de marca (PlayStation, Xbox, 8BitDo) segue a ordem "padrão" do navegador; os genéricos numerados 1 2 3 4
+      // chegam com o botão 1 no índice 0, mesmo quando o navegador diz que são padrão
+      const deMarca = /sony|playstation|dualshock|dualsense|wireless controller|054c|xbox|xinput|045e|microsoft|8bitdo|2dc8|nintendo|057e/i.test(gp.id);
+      const pd = gp.mapping === 'standard' && deMarca; if (padrao !== pd) { padrao = pd; atualizaDicas(); }
       if (aprendendo) aprender(gp);
       else {
         const s = estado(gp);
