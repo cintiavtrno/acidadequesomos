@@ -64,7 +64,12 @@ echo "[4/5] Abrir sozinho quando ligar"
 mkdir -p "$HOME/.config/autostart"
 printf '%s\n' "$ATALHO" > "$HOME/.config/autostart/a-cidade-que-somos.desktop"
 
-echo "[5/5] Entrar sem senha"
+echo "[5/5] Teclado brasileiro e entrar sem senha"
+# teclado ABNT2 (ç, acentos, dois-pontos no lugar certo) também depois de reiniciar
+if [ -f /etc/default/keyboard ]; then
+  sudo sed -i 's/^XKBMODEL=.*/XKBMODEL="abnt2"/; s/^XKBLAYOUT=.*/XKBLAYOUT="br"/; s/^XKBVARIANT=.*/XKBVARIANT=""/' /etc/default/keyboard
+fi
+command -v localectl >/dev/null 2>&1 && sudo localectl set-x11-keymap br abnt2 2>/dev/null || true
 if [ -d /etc/lightdm ]; then
   sudo mkdir -p /etc/lightdm/lightdm.conf.d
   printf '[Seat:*]\nautologin-user=%s\nautologin-user-timeout=0\n' "$EU" | sudo tee /etc/lightdm/lightdm.conf.d/22-armbian-autologin.conf >/dev/null
