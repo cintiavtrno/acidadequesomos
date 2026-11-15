@@ -21,8 +21,10 @@ echo
 
 echo "[1/5] Navegador"
 if ! command -v chromium >/dev/null 2>&1 && ! command -v chromium-browser >/dev/null 2>&1; then
-  sudo apt-get update
-  sudo apt-get install -y chromium || sudo apt-get install -y chromium-browser
+  # sem perguntas no meio (uma pergunta do apt "comia" o resto deste script quando ele vem pelo curl)
+  APT="sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold"
+  $APT update </dev/null
+  $APT install chromium </dev/null || $APT install chromium-browser </dev/null
 fi
 NAV="$(command -v chromium || command -v chromium-browser)"
 if [ -z "$NAV" ]; then echo "Não consegui instalar o Chromium. Tire uma foto desta tela."; exit 1; fi
