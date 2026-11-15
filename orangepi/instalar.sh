@@ -43,6 +43,9 @@ cat > "$JOGO/abrir.sh" <<EOF
 xset s off 2>/dev/null; xset -dpms 2>/dev/null; xset s noblank 2>/dev/null
 xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/dpms-enabled -s false 2>/dev/null
 xfconf-query -c xfce4-screensaver -p /saver/enabled -s false 2>/dev/null
+# TV em 1280x720: a placa monta menos pixels por quadro e a TV amplia sozinha (o jogo é pixel art, não perde nitidez)
+SAIDA=\$(xrandr 2>/dev/null | awk '/ connected/{print \$1; exit}')
+[ -n "\$SAIDA" ] && xrandr 2>/dev/null | grep -q ' 1280x720' && xrandr --output "\$SAIDA" --mode 1280x720 2>/dev/null
 sleep 3
 exec "$NAV" --kiosk --noerrdialogs --disable-session-crashed-bubble --disable-infobars \\
   --check-for-update-interval=31536000 --autoplay-policy=no-user-gesture-required \\

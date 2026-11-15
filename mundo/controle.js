@@ -113,7 +113,7 @@
       else {
         const s = estado(gp);
         for (const n in s) {
-          if (s[n] && !antes[n]) { const r = aperta(n); segura[n] = { desde: now, prox: now + ESPERA, r }; }
+          if (s[n] && !antes[n]) { ligaGlifos(); const r = aperta(n); segura[n] = { desde: now, prox: now + ESPERA, r }; }
           else if (s[n] && segura[n] && SETA[n] && now >= segura[n].prox) {          // segurar a seta repete (menus e listas); andar usa a tecla presa
             segura[n].prox = now + RITMO; const r = segura[n].r;
             if (r) tecla(r.w, r.key, 'keydown', true); else { const a = alvo(), j = a.tipo === 'jogo' ? janela(a.w) : null; if (j) moveJanela(j, n === 'cima' || n === 'esq' ? -1 : 1); }
@@ -127,6 +127,41 @@
   }
   requestAnimationFrame(laco);
 
+  // ---------------------------------------------------------------- dicas na tela: "E", "B", "Esc" viram os botões do controle
+  // Liga quando alguém aperta um botão do controle (e fica lembrado em localStorage 'acq_glifos').
+  const COR = { '◯': '#e8505b', '✕': '#6f9ff0', '△': '#44c08a', '□': '#e07fc4' };
+  const TECLA = { 'E': '◯', 'e': '◯', 'Enter': '◯', 'B': '△', 'b': '△', 'Esc': '✕', 'WASD': 'analógico', 'W A S D': 'analógico' };
+  const TROCAS = [[/\(E\)/g, '(◯)'], [/\(Esc\)/g, '(✕)'], [/\(B\)/g, '(△)'], [/\bEsc para\b/g, '✕ para'], [/\b([Aa]perte) E\b/g, '$1 ◯'], [/\btecla E\b/g, 'botão ◯'], [/^E · /, '◯ · '], [/^E (Falar|falar|Examinar|examinar|Entrar|entrar|Pegar|pegar|Sentar|sentar)/, '◯ $1']];
+  let glifos = (() => { try { return localStorage.getItem('acq_glifos') === '1'; } catch (e) { return false; } })();
+  function trocaTexto(no) {
+    let t = no.nodeValue, n = t; for (const [re, by] of TROCAS) n = n.replace(re, by);
+    const pai = no.parentNode;
+    if (pai && pai.tagName === 'BUTTON' && pai.closest && pai.closest('#dlg') && no === pai.firstChild) n = n.replace(/^\d+ · /, '');   // conversa: sem 1, 2, 0 na frente
+    if (n !== t) no.nodeValue = n;
+  }
+  function trocaEm(raiz) {
+    if (!raiz || !raiz.ownerDocument && raiz.nodeType !== 9) return;
+    const d = raiz.nodeType === 9 ? raiz : raiz.ownerDocument;
+    if (raiz.nodeType === 3) { trocaTexto(raiz); return; }
+    if (raiz.nodeType !== 1 && raiz.nodeType !== 9) return;
+    const els = raiz.querySelectorAll ? [...raiz.querySelectorAll('.k,kbd')] : []; if (raiz.matches && raiz.matches('.k,kbd')) els.push(raiz);
+    for (const el of els) { const v = TECLA[el.textContent.trim()]; if (v && el.textContent !== v) { el.textContent = v; if (COR[v]) { el.style.color = COR[v]; el.style.fontWeight = '700'; } } }
+    const w = d.createTreeWalker(raiz, 4, { acceptNode: x => /^(SCRIPT|STYLE|TEXTAREA)$/.test(x.parentNode && x.parentNode.nodeName) ? 2 : 1 });
+    let x; while ((x = w.nextNode())) trocaTexto(x);
+  }
+  function vigia(doc) {
+    if (!doc || !doc.body || doc.__glifos) return; doc.__glifos = true; trocaEm(doc.body);
+    let pend = new Set(), ag = 0;
+    new doc.defaultView.MutationObserver(rs => { for (const r of rs) { if (r.type === 'characterData') pend.add(r.target); else r.addedNodes.forEach(n => pend.add(n)); }
+      if (!ag) ag = setTimeout(() => { ag = 0; const p = pend; pend = new Set(); p.forEach(trocaEm); }, 0); }).observe(doc.body, { childList: true, subtree: true, characterData: true });
+  }
+  function vigiaTudo() {
+    if (!glifos) return; vigia(document);
+    if (NOME_SHELL) for (const id of ['rua', 'padaria', 'casa', 'quintal']) { try { vigia(document.getElementById('f_' + id).contentDocument); } catch (e) { } }
+  }
+  setInterval(vigiaTudo, 1000);
+  function ligaGlifos() { if (glifos) return; glifos = true; try { localStorage.setItem('acq_glifos', '1'); } catch (e) { } vigiaTudo(); }
+
   window.__CONTROLE = {
     conectado: () => { const g = navigator.getGamepads ? [...navigator.getGamepads()].filter(Boolean) : []; return g.length ? (g[0].mapping === 'standard' ? 'padrão' : 'outro') : ''; },
     configurado: () => !!mapa,
@@ -135,5 +170,6 @@
     cancelar() { aprendendo = null; },
     padrao() { mapa = null; try { localStorage.removeItem('acq_controle'); } catch (e) { } },
     total: APRENDE.length,
+    glifos: v => { glifos = !!v; try { localStorage.setItem('acq_glifos', v ? '1' : '0'); } catch (e) { } if (v) vigiaTudo(); },
   };
 })();

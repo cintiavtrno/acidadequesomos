@@ -78,6 +78,7 @@ img{image-rendering:pixelated;display:block}
 .foot img{width:11px;height:11px}
 .msg{position:absolute;left:34px;top:92px;width:250px;font:400 10px/1.5 ATK;color:var(--cream)}
 #s5 .lista{top:140px}
+#s4 .lista{top:76px;gap:0}#s4 .it{font-size:10.5px;padding:2px 0}#s4 .it small{font-size:6px}#s4 .hint{bottom:12px}
 #tst{position:absolute;left:34px;bottom:44px;font:600 7.5px DMS;letter-spacing:.06em;color:var(--must);opacity:0;transition:opacity .25s}
 #tst.on{opacity:1}
 
@@ -143,7 +144,7 @@ img{image-rendering:pixelated;display:block}
 <script>
 (()=>{
 const st=document.getElementById('stage');
-const fit=()=>{let k=Math.min(innerWidth/480,innerHeight/270);if(k>=1.5)k=Math.floor(k);st.style.transform=`scale(${k}) translate(-50%,-50%)`};fit();addEventListener('resize',fit);
+const fit=()=>{let k=Math.min(innerWidth/480,innerHeight/270);st.style.transform=`scale(${k}) translate(-50%,-50%)`};fit();addEventListener('resize',fit);
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const ESTRELA=['{{estrela0.png}}','{{estrela1.png}}','{{estrela2.png}}','{{estrela3.png}}','{{estrela4.png}}'];
 const P=(()=>{try{return parent.__ABERTURA_JOGO}catch(e){return null}})()||{continuar:()=>toast('continuar'),novo:()=>toast('novo jogo'),progresso:()=>null,cfg:()=>{}};
@@ -189,6 +190,7 @@ const O=navegar($('#opt'),()=>[
  {t:'Texto maior: <span class="v">'+(cfg.big?'sim':'não')+'</span>',fn:()=>{cfg.big=!cfg.big;salva()}},
  {t:'Alto contraste: <span class="v">'+(cfg.hc?'sim':'não')+'</span>',fn:()=>{cfg.hc=!cfg.hc;salva()}},
  {t:'Menos movimento: <span class="v">'+(RM()?'sim':'não')+'</span>',fn:()=>{cfg.rm=!RM();salva()}},
+ {t:'Modo leve: <span class="v">'+leveTxt()+'</span>',s:'PARA PLACAS COMO O ORANGE PI · VALE AO REABRIR',fn:()=>{const v=leveV();try{if(v===null)localStorage.setItem('acq_leve','1');else if(v==='1')localStorage.setItem('acq_leve','0');else localStorage.removeItem('acq_leve')}catch(e){}toast('Vale na próxima vez que o jogo abrir');O.desenha()}},
  {t:'Configurar controle',s:CTRL()?(CTRL().configurado()?'CONFIGURADO':CTRL().conectado()==='padrão'?'RECONHECIDO, NÃO PRECISA':CTRL().conectado()?'CONECTADO':'APERTE UM BOTÃO DO CONTROLE'):'',fn:configurar},
  ...(CTRL()&&CTRL().configurado()?[{t:'Voltar ao controle padrão',fn:()=>{CTRL().padrao();toast('Controle padrão');O.desenha()}}]:[]),
  {t:'Voltar',fn:menu}]);
@@ -197,6 +199,8 @@ const configurar=()=>{const c=CTRL();if(!c){toast('Controle indisponível aqui')
  c.aprender((txt,i)=>{$('#cpasso').textContent='Aperte '+txt.split(' (')[0].toLowerCase().replace(/^./,m=>m.toUpperCase());$('#cmsg').textContent=(i+1)+' de '+c.total+(txt.includes('(')?' · '+txt.split('(')[1].replace(')',''):'')},
   ()=>{opcoes();toast('Controle configurado')})};
 setInterval(()=>{if(cur==='s4')O.desenha()},1500);
+const leveV=()=>{try{return localStorage.getItem('acq_leve')}catch(e){return null}};
+const leveTxt=()=>{const v=leveV();return v==='1'?'sim':v==='0'?'não':'automático'};
 const salva=()=>{store.set('cfg',cfg);aplicar();O.desenha()};
 const opcoes=()=>{show('s4');O.i=0;O.desenha()};
 

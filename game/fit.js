@@ -8,6 +8,10 @@
 // Paralaxe: o fundo (céu, nuvens, morro, casario) não entra no canvas do jogo. Plx desenha cada camada aqui, também já ampliada,
 // com a sua própria velocidade e a sua própria fração de pixel.
 (function () {
+  // modo leve (placas como o Orange Pi): a imagem é montada em no máximo 2× (960×540) e a própria tela amplia com pixel nítido.
+  // Liga sozinho em processador ARM ou máquina pequena; localStorage 'acq_leve' = '1' força, '0' desliga (Opções > Modo leve).
+  const LEVE = (() => { try { const v = localStorage.getItem('acq_leve'); if (v === '1') return true; if (v === '0') return false; } catch (e) { } return /arm|aarch/i.test(navigator.platform || '') || ((navigator.hardwareConcurrency || 8) <= 4 && (navigator.deviceMemory || 8) <= 2); })();
+  window.FIT_LEVE = LEVE;
   let disp, dctx, inter, ictx, src, W = 0, H = 0, n = 1, iw = 0, ih = 0, VWr = 480, VHr = 270;
   // fundo ambiente: onde a janela é mais larga/alta que 16:9, as faixas laterais mostram uma versão borrada e escurecida da própria cena (sem esticar o jogo)
   let amb, actx, ambN = 0;
@@ -19,7 +23,7 @@
   window.fitBackdrop = null;           // função (g, k, tw, th): desenha o fundo atrás do jogo; k = pixels de tela por pixel lógico
   function blit() {
     requestAnimationFrame(blit); if (!disp || !src || document.hidden) return;
-    if ((ambN++ % 8) === 0 && (innerWidth * VHr > innerHeight * VWr * 1.02 || innerHeight * VWr > innerWidth * VHr * 1.02)) ambiente();
+    if (!LEVE && (ambN++ % 8) === 0 && (innerWidth * VHr > innerHeight * VWr * 1.02 || innerHeight * VWr > innerWidth * VHr * 1.02)) ambiente();
     let g, tw, th, k;
     if (inter) { g = ictx; tw = iw; th = ih; k = n; } else { g = dctx; tw = W; th = H; k = W / VWr; }
     g.imageSmoothingEnabled = false; g.clearRect(0, 0, tw, th);
@@ -39,7 +43,7 @@
       disp.style.cssText = 'position:absolute;left:0;top:0;pointer-events:none;image-rendering:pixelated'; cv.style.position = 'relative'; cv.style.opacity = '0';
       cv.parentNode.insertBefore(disp, cv); requestAnimationFrame(blit);
     }
-    VWr = VW; VHr = VH; W = Math.max(1, Math.round(cw * dpr)); H = Math.max(1, Math.round(ch * dpr)); disp.width = W; disp.height = H; disp.style.width = cw + 'px'; disp.style.height = ch + 'px';
+    VWr = VW; VHr = VH; W = Math.max(1, Math.round(cw * dpr)); H = Math.max(1, Math.round(ch * dpr)); if (LEVE && W > VW * 2) { W = VW * 2; H = VH * 2; } disp.width = W; disp.height = H; disp.style.width = cw + 'px'; disp.style.height = ch + 'px';
     n = Math.min(8, Math.max(1, Math.ceil(W / VW)));
     if (W === VW * n && H === VH * n || n === 1 && W <= VW) inter = null;
     else { inter = inter || document.createElement('canvas'); iw = VW * n; ih = VH * n; inter.width = iw; inter.height = ih; ictx = inter.getContext('2d'); }
