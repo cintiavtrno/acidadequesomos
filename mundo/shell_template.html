@@ -39,7 +39,8 @@
 (function () {
   const HTML = /*ABERTURA*/"";
   try { const c = JSON.parse(localStorage.getItem('acq_cfg')); if (c && c.hc) document.documentElement.classList.add('acq-hc'); } catch (e) { }
-  if (/#jogo/.test(location.hash) || /[?&](skip|new)=1/.test(location.search) || !HTML) return;
+  if (/#jogo/.test(location.hash)) { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { } return; }   // pula só desta vez: o próximo F5 volta ao menu
+  if (/[?&](skip|new)=1/.test(location.search) || !HTML) return;
   window.__ABERTURA = true;
   // o progresso é lido antes de o jogo carregar (o jogo grava coisas ao montar o bairro)
   const ler = () => { try { let tem = false; for (let i = 0; i < localStorage.length; i++) if (/^balcao/.test(localStorage.key(i))) tem = true; if (!tem) return null; return { ano: localStorage.getItem('balcao_ano') || '1991', dia: +localStorage.getItem('balcao_dia') || 1 }; } catch (e) { return null; } };
@@ -85,7 +86,7 @@ const Q = new URLSearchParams(location.search);
 const dec = b => new TextDecoder().decode(Uint8Array.from(atob(b), c => c.charCodeAt(0)));
 // jogo novo = pistas zeradas: apaga tudo o que o jogo guardou (shell, padaria/casa, rua, quintal, sacola). Dia seguinte e passagem para 1994 seguem sem zerar.
 function zerarJogo() { try { const ks = []; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (/^balcao/.test(k)) ks.push(k); } ks.forEach(k => localStorage.removeItem(k)); } catch (e) { } }
-if (Q.get('new') === '1') zerarJogo();
+if (Q.get('new') === '1') { zerarJogo(); try { history.replaceState(null, '', location.pathname); } catch (e) { } }   // tira o ?new=1 do endereço: recarregar a página (F5) não apaga o jogo de novo
 // 1996 é uma página própria (rua96.html); quem já chegou lá volta direto para ela
 window.__IR96 = Q.get('new') !== '1' && (Q.get('ano') === '1996' || (!Q.get('ano') && (function () { try { return localStorage.getItem('balcao_ano'); } catch (e) { return null; } })() === '1996'));
 if (window.__IR96 && !window.__ABERTURA) location.replace('rua96.html');   // com a abertura na tela, quem escolhe ir para 1996 é o menu (Continuar)
