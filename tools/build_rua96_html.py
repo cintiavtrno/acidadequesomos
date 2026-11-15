@@ -28,7 +28,7 @@ def put(k, v):
     T = T.replace(k, v, 1)
 put('/*CSS*/', css); put('/*FITJS*/', fit); put('/*CHARS_JS*/', open(B + 'game/chars.js').read()); put('/*SIM_JS*/', sim)
 put('/*ASSETS*/{}', json.dumps(assets)); put('/*CHARATLAS*/{}', json.dumps(atlas)); put('/*SCENE*/{}', json.dumps(scene, ensure_ascii=False)); put('/*PROPS*/{}', json.dumps(props, ensure_ascii=False))
-T = T.replace('</body>', '<script>' + open(B + 'mundo/controle.js', encoding='utf-8').read() + '</script>\n</body>', 1)   # joystick (mesmo módulo do index.html)
+T = T.replace('</body>', '<script>' + open(B + 'mundo/controle.js', encoding='utf-8').read() + '\n' + open(B + 'mundo/musica.js', encoding='utf-8').read() + '</script>\n</body>', 1)   # joystick (mesmo módulo do index.html)
 for out in (B + 'game/balcao_rua96.html', B + 'rua96.html'):
     open(out, 'w').write(T); print(out, round(len(T) / 1024), 'KB')
 print('sprites:', len(whos), whos)
