@@ -43,6 +43,14 @@ b64 = lambda t: base64.b64encode(t.encode('utf-8')).decode()
 SH = open('../mundo/shell_template.html', encoding='utf-8').read()
 SH = SH.replace('/*MUNDO_JS*/', open('../mundo/mundo.js', encoding='utf-8').read().replace('</script', '<\\/script'))
 SH = SH.replace('/*SRC*/{}', json.dumps({'rua': b64(rua), 'padaria': b64(pad), 'casa': b64(casa), 'quintal': b64(qui)}))
+# --- abertura (estúdio, capa e menu): mundo/abertura.html com as imagens e fontes de mundo/abertura/ embutidas
+AB = open('../mundo/abertura.html', encoding='utf-8').read()
+def embute(m):
+    n = m.group(1); tipo = 'font/woff2' if n.endswith('.woff2') else 'image/png'
+    return 'data:' + tipo + ';base64,' + base64.b64encode(open('../mundo/abertura/' + n, 'rb').read()).decode()
+AB = re.sub(r'\{\{([\w.]+)\}\}', embute, AB)
+assert '{{' not in AB
+SH = sub(SH, '/*ABERTURA*/""', json.dumps(AB).replace('</', '<\\/'))
 open(G + 'balcao_etapa7_mundo.html', 'w', encoding='utf-8').write(SH)
 open('../index.html', 'w', encoding='utf-8').write(SH)   # index.html é o jogável: sempre igual ao mundo recém-montado
 print('ok', round(len(SH) / 1e6, 1), 'MB')

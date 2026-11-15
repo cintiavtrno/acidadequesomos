@@ -12,6 +12,8 @@
   #fade { position: absolute; inset: 0; background: #0d080b; opacity: 0; pointer-events: none; z-index: 5; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: .35em; color: #f0dcc0; font: 600 15px/1.3 Georgia, serif; letter-spacing: .02em; }
   #fade small { font: 400 11px/1.2 system-ui, sans-serif; color: #b8a58c; letter-spacing: .08em; text-transform: uppercase; }
   #dbg { position: absolute; left: 6px; bottom: 6px; z-index: 6; font: 11px/1.35 ui-monospace, monospace; color: #cfe; background: rgba(0,0,0,.65); padding: 4px 7px; border-radius: 4px; display: none; white-space: pre; max-width: 60vw; }
+  html.acq-hc iframe:not(#abertura) { filter: contrast(1.15) saturate(1.1); }
+  #hist button:focus-visible, #hist button:focus { outline: 2px solid #f0c98c; outline-offset: 3px; }
   #boot { position: absolute; inset: 0; z-index: 7; background: #120d10; color: #d9c7ad; display: flex; align-items: center; justify-content: center; font: 16px Georgia, serif; }
   #hist { position: absolute; inset: 0; z-index: 8; display: none; padding: 24px; box-sizing: border-box; background: rgba(13,8,11,.94); color: #eadcc6; font: 17px/1.55 Georgia, 'Times New Roman', serif; overflow-y: auto; overscroll-behavior: contain; }
   #hist .card { max-width: 640px; margin: auto; padding: 30px 34px; background: #1d1519; border-radius: 14px; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
@@ -31,6 +33,43 @@
 </style>
 </head>
 <body>
+<script>
+// ---- abertura: estúdio, capa e menu (mundo/abertura.html). Fica num iframe por cima enquanto o bairro monta atrás.
+// #jogo no endereço (ou ?skip=1 dos testes) pula direto para o jogo.
+(function () {
+  const HTML = /*ABERTURA*/"";
+  try { const c = JSON.parse(localStorage.getItem('acq_cfg')); if (c && c.hc) document.documentElement.classList.add('acq-hc'); } catch (e) { }
+  if (/#jogo/.test(location.hash) || /[?&](skip|new)=1/.test(location.search) || !HTML) return;
+  window.__ABERTURA = true;
+  // o progresso é lido antes de o jogo carregar (o jogo grava coisas ao montar o bairro)
+  const ler = () => { try { let tem = false; for (let i = 0; i < localStorage.length; i++) if (/^balcao/.test(localStorage.key(i))) tem = true; if (!tem) return null; return { ano: localStorage.getItem('balcao_ano') || '1991', dia: +localStorage.getItem('balcao_dia') || 1 }; } catch (e) { return null; } };
+  const P0 = ler();
+  const fr = document.createElement('iframe'); fr.id = 'abertura'; fr.title = 'A cidade que somos'; fr.setAttribute('allow', 'fullscreen');
+  fr.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;border:0;z-index:50;display:block;background:#1E2150;opacity:1';
+  let aberta = true;
+  const pronto = () => { const b = document.getElementById('boot'); return !!b && b.style.display === 'none'; };
+  const fechar = () => {
+    if (!aberta || fr._fechando) return; fr._fechando = true;
+    const t = setInterval(() => {
+      if (!pronto()) return; clearInterval(t); aberta = false; window.__ABERTURA = false;
+      fr.style.transition = 'opacity .8s ease'; fr.style.opacity = '0';
+      setTimeout(() => { fr.remove(); try { if (document.getElementById('hist').style.display === 'flex') window.focus(); else mostrar(mundo.cenas.atual); } catch (e) { } }, 820);
+    }, 100);
+  };
+  const apagar = () => { try { const ks = []; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (/^balcao/.test(k)) ks.push(k); } ks.forEach(k => localStorage.removeItem(k)); } catch (e) { } };
+  window.__ABERTURA_JOGO = {
+    progresso: () => P0,
+    continuar() { if (P0 && P0.ano === '1996') { location.href = 'rua96.html'; return; } fechar(); },
+    novo() { if (P0) { apagar(); location.replace(location.pathname + '?new=1'); } else fechar(); },
+    cfg(c) { document.documentElement.classList.toggle('acq-hc', !!c.hc); },
+  };
+  fr.srcdoc = HTML; document.body.appendChild(fr);
+  // o controle chega como teclado: enquanto a abertura está aberta, o foco fica nela (o jogo tenta puxar o foco quando termina de montar)
+  const foco = () => { try { if (aberta && document.activeElement !== fr) fr.contentWindow.focus(); } catch (e) { } };
+  fr.addEventListener('load', foco); const fi = setInterval(() => { if (!aberta) { clearInterval(fi); return; } foco(); }, 250);
+  addEventListener('keydown', e => { if (!aberta) return; e.stopImmediatePropagation(); e.preventDefault(); try { fr.contentWindow.focus(); fr.contentWindow.dispatchEvent(new KeyboardEvent('keydown', { key: e.key, repeat: e.repeat })); } catch (x) { } }, true);
+})();
+</script>
 <iframe id="f_rua" title="Rua"></iframe><iframe id="f_padaria" title="Padaria"></iframe><iframe id="f_casa" title="Casa de Seu Raimundo"></iframe><iframe id="f_quintal" title="Quintal de Dona Zefa"></iframe>
 <div id="noite"></div>
 <div id="chip"></div>
@@ -49,7 +88,7 @@ function zerarJogo() { try { const ks = []; for (let i = 0; i < localStorage.len
 if (Q.get('new') === '1') zerarJogo();
 // 1996 é uma página própria (rua96.html); quem já chegou lá volta direto para ela
 window.__IR96 = Q.get('new') !== '1' && (Q.get('ano') === '1996' || (!Q.get('ano') && (function () { try { return localStorage.getItem('balcao_ano'); } catch (e) { return null; } })() === '1996'));
-if (window.__IR96) location.replace('rua96.html');
+if (window.__IR96 && !window.__ABERTURA) location.replace('rua96.html');   // com a abertura na tela, quem escolhe ir para 1996 é o menu (Continuar)
 const ANO = (Q.get('ano') || (function () { try { return localStorage.getItem('balcao_ano'); } catch (e) { return null; } })()) == '1994' && Q.get('new') !== '1' ? 1994 : 1991;
 window.MUNDO_ANO = ANO;   // as simulações leem o ano (agenda da tarde, caruru)
 // tempo diegético: o relógio existe dentro do mundo e não é cronômetro de desempenho. Ele avança com a exploração (0,8 min de jogo por segundo em 1991, 0,5 em 1994), pausa em conversa, caderninho, mesa de dominó e telas, desacelera quando o jogador fica parado e para na noite (20h). O dia não termina sozinho: quem decide subir para dormir é o jogador. 1994 começa às 11h30, sem prazo.
@@ -171,6 +210,14 @@ function menuPular() {
   h.querySelectorAll('button[data-i]').forEach(b => b.onclick = () => { h.style.display = 'none'; ops[+b.dataset.i][2](); });
 }
 document.getElementById('pular').onclick = menuPular;
+// telas do shell (abertura do ano, anoitecer, Pular) também respondem ao teclado e ao controle: setas escolhem, Enter/Espaço/E confirmam
+addEventListener('keydown', e => {
+  const h = document.getElementById('hist'); if (h.style.display !== 'flex' || e.key === 'Escape') return;
+  const bs = [...h.querySelectorAll('button')]; if (!bs.length) return; const i = bs.indexOf(document.activeElement);
+  if (['ArrowDown', 'ArrowRight', 's', 'S', 'd', 'D'].includes(e.key)) { e.preventDefault(); bs[(i + 1) % bs.length].focus(); }
+  else if (['ArrowUp', 'ArrowLeft', 'w', 'W', 'a', 'A'].includes(e.key)) { e.preventDefault(); bs[(i - 1 + bs.length) % bs.length].focus(); }
+  else if (['Enter', ' ', 'e', 'E'].includes(e.key) && !e.repeat) { e.preventDefault(); (i >= 0 ? bs[i] : bs[0]).click(); }
+});
 addEventListener('keydown', e => { const h = document.getElementById('hist'); if (e.key === 'Escape' && h.style.display === 'flex' && document.getElementById('pcont')) document.getElementById('pcont').click(); });
 function para94() {
   try { localStorage.setItem('balcao_ano', '1994'); localStorage.setItem('balcao_base', String(notas())); localStorage.removeItem('balcao_dia'); } catch (e) { }
