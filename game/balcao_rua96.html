@@ -1441,7 +1441,7 @@ function update(dt) {
     return {
       tecla: { 'E': ok, 'e': ok, 'Enter': ok, 'B': cad, 'b': cad, 'Esc': volta, 'WASD': 'analógico', 'W A S D': 'analógico' },
       textos: [[/\(E\)/g, '(' + ok + ')'], [/\(Esc\)/g, '(' + volta + ')'], [/\(B\)/g, '(' + cad + ')'], [/\bEsc para\b/g, volta + ' para'], [/\b([Aa]perte) E\b/g, '$1 ' + ok], [/\btecla E\b/g, 'botão ' + ok],
-        [/^E · /, ok + ' · '], [/^E (Falar|falar|Examinar|examinar|Entrar|entrar|Pegar|pegar|Sentar|sentar|Atender|atender|Conversar|conversar)/, ok + ' $1']],
+        [/^E · /, ok + ' · '], [/qualquer tecla de movimento/g, 'o direcional'], [/\bclique: ir até \/ falar( \/ examinar)?/g, ''], [/^E (Falar|falar|Examinar|examinar|Entrar|entrar|Pegar|pegar|Sentar|sentar|Atender|atender|Conversar|conversar)/, ok + ' $1']],
     };
   }
   let T = tabela();
@@ -1497,7 +1497,22 @@ function update(dt) {
       if (!esconde && st) st.remove();
       if (!w.__gpMouse) { w.__gpMouse = true; w.addEventListener('mousemove', e => { if (e.isTrusted && (Math.abs(e.movementX) + Math.abs(e.movementY)) > 2) cursor(false); }, true); } } catch (e) { } }
   }
-  setInterval(() => { if (semCursor) { semCursor = false; cursor(true); } }, 2000);    // janelas novas (abertura, ambientes que acabaram de carregar)
+  setInterval(() => { if (semCursor) { semCursor = false; cursor(true); } }, 2000);
+
+  // ---------------------------------------------------------------- modo TV: letras maiores e sem a faixa de ajuda do topo
+  // Automático em placas (ARM, como o Orange Pi); no computador fica como sempre foi. localStorage 'acq_tv' = '1' liga, '0' desliga.
+  const tvAuto = () => /arm|aarch/i.test(navigator.platform || '') || ((navigator.hardwareConcurrency || 8) <= 4 && (navigator.deviceMemory || 8) <= 2);
+  const tvAtivo = () => { try { const v = localStorage.getItem('acq_tv'); if (v === '1') return true; if (v === '0') return false; } catch (e) { } return tvAuto(); };
+  const TV_CENA = 'html,#ui{font-size:clamp(15px,2.75vh,32px)!important}#hud,#zoombar{display:none!important}' +
+    '#objs,#mis{font-size:.8em!important;max-width:32%!important;opacity:.93}#clock{font-size:.95em!important}';
+  const TV_SHELL = '#chip{zoom:1.4}#pular{zoom:1.4}#hist .card{zoom:1.25}';
+  function aplicaTV() {
+    const on = tvAtivo();
+    for (const w of janelas()) { try { const d = w.document; let st = d.getElementById('gp-tv');
+      if (on && !st) { st = d.createElement('style'); st.id = 'gp-tv'; st.textContent = (w === window && NOME_SHELL) ? TV_SHELL : TV_CENA; (d.head || d.documentElement).appendChild(st); }
+      if (!on && st) st.remove(); } catch (e) { } }
+  }
+  setInterval(aplicaTV, 1500); setTimeout(aplicaTV, 200);    // janelas novas (abertura, ambientes que acabaram de carregar)
   function ligaGlifos() { cursor(true); if (glifos) return; glifos = true; try { localStorage.setItem('acq_glifos', '1'); } catch (e) { } atualizaDicas(); }
   if (glifos) setTimeout(atualizaDicas, 0);
 
@@ -1512,6 +1527,9 @@ function update(dt) {
     total: APRENDE.length,
     formas: v => { try { localStorage.setItem('acq_formas', v ? '1' : '0'); } catch (e) { } atualizaDicas(); },
     usaFormas: formas,
+    tv: () => { try { return localStorage.getItem('acq_tv'); } catch (e) { return null; } },
+    tvAtivo,
+    defineTV: v => { try { if (v === null) localStorage.removeItem('acq_tv'); else localStorage.setItem('acq_tv', v); } catch (e) { } aplicaTV(); },
     glifos: v => { glifos = !!v; try { localStorage.setItem('acq_glifos', v ? '1' : '0'); } catch (e) { } if (v) atualizaDicas(); },
   };
 })();
