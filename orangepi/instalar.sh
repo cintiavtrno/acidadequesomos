@@ -82,5 +82,4 @@ echo "Pronto. A partir de agora é só ligar o Orange Pi na TV: o jogo abre sozi
 echo "Para sair do jogo: Alt+F4 no teclado. Para abrir de novo: ícone 'A cidade que somos' na área de trabalho."
 echo "Para atualizar o jogo: rode este mesmo comando outra vez."
 echo
-read -r -p "Reiniciar agora para testar? (s/n) " R </dev/tty || R=n
-if [ "$R" = "s" ] || [ "$R" = "S" ]; then sudo reboot; fi
+echo "Para testar agora, digite:  sudo reboot"
