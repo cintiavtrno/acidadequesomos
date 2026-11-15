@@ -192,6 +192,7 @@ const O=navegar($('#opt'),()=>[
  {t:'Alto contraste: <span class="v">'+(cfg.hc?'sim':'não')+'</span>',fn:()=>{cfg.hc=!cfg.hc;salva()}},
  {t:'Menos movimento: <span class="v">'+(RM()?'sim':'não')+'</span>',fn:()=>{cfg.rm=!RM();salva()}},
  {t:'Modo leve: <span class="v">'+leveTxt()+'</span>',s:'PARA PLACAS COMO O ORANGE PI · VALE AO REABRIR',fn:()=>{const v=leveV();try{if(v===null)localStorage.setItem('acq_leve','1');else if(v==='1')localStorage.setItem('acq_leve','0');else localStorage.removeItem('acq_leve')}catch(e){}toast('Vale na próxima vez que o jogo abrir');O.desenha()}},
+ {t:'Botões na tela: <span class="v">'+(CTRL()&&CTRL().usaFormas()?'△ ◯ ✕ □':'① ② ③ ④')+'</span>',fn:()=>{const c=CTRL();if(c){c.formas(!c.usaFormas());O.desenha()}}},
  {t:'Configurar controle',s:CTRL()?(!CTRL().conectado()?'APERTE UM BOTÃO DO CONTROLE':(CTRL().configurado()?'CONFIGURADO · ':CTRL().conectado()==='padrão'?'RECONHECIDO · ':'')+'FALAR '+CTRL().glifo('ok')+' · VOLTAR '+CTRL().glifo('volta')+' · CADERNO '+CTRL().glifo('cad')+' · PULAR '+CTRL().glifo('pula')):'',fn:configurar},
  ...(CTRL()&&CTRL().configurado()?[{t:'Voltar ao controle padrão',fn:()=>{CTRL().padrao();toast('Controle padrão');O.desenha()}}]:[]),
  {t:'Voltar',fn:menu}]);

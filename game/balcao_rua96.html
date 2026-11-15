@@ -1276,8 +1276,9 @@ function update(dt) {
 //   caderninho aberto ................ L1/R1 trocam a aba e ◀ ▶ (ou L2/R2) viram a página (padaria e casa); ▲ ▼ rolam (rua, quintal, 1996)
 // Nas conversas as setas passam pelas respostas (a escolhida fica com contorno) e "ok" escolhe.
 //
-// Botões: controle reconhecido pelo navegador (PlayStation, Xbox): ok = bola, volta = X, cad = triângulo, pula = quadrado.
-// Controle genérico com botões numerados (1 2 3 4): ok = 2, volta = 3, cad = 1, pula = 4. As dicas da tela mostram ① ② ③ ④.
+// Botões, pela posição (igual em controle de PlayStation e em controle genérico numerado):
+//   de cima (triângulo, 1) = caderninho · da direita (bola, 2) = falar/confirmar · de baixo (X, 3) = voltar · da esquerda (quadrado, 4) = pular
+// As dicas da tela mostram ① ② ③ ④ (Opções > Botões na tela troca para △ ◯ ✕ □; localStorage 'acq_formas').
 // Outro arranjo: Opções > Configurar controle (o mapa aprendido fica em localStorage 'acq_controle').
 (function () {
   'use strict';
@@ -1293,8 +1294,10 @@ function update(dt) {
   let mapa = lerMapa(), padrao = true, nomeCtrl = '';
   const NOME_SHELL = !!document.getElementById('f_rua');    // index.html (shell) ou rua96.html
   const perfil = () => mapa || (padrao ? STD : GEN);
+  const NUMERO = { cad: '①', ok: '②', volta: '③', pula: '④' };
+  const formas = () => { try { return localStorage.getItem('acq_formas') === '1'; } catch (e) { return false; } };
   function glifo(n) {
-    if (!mapa && padrao) return FORMA[n] || NOME[n] || n;
+    if (!mapa) return (formas() ? FORMA[n] : NUMERO[n]) || NOME[n] || n;
     const e = perfil()[n];
     if (!mapa && NOME[n]) return NOME[n];
     return e && e.b >= 0 ? (NUM[e.b] || 'B' + (e.b + 1)) : (NOME[n] || '•');
@@ -1484,7 +1487,18 @@ function update(dt) {
   }
   function atualizaDicas() { T = tabela(); if (glifos) for (const w of janelas()) { embrulha(w); passa(w.document); } }
   setInterval(() => { if (glifos) for (const w of janelas()) { embrulha(w); passa(w.document); } }, 1500);
-  function ligaGlifos() { if (glifos) return; glifos = true; try { localStorage.setItem('acq_glifos', '1'); } catch (e) { } atualizaDicas(); }
+  // ponteiro do mouse: some enquanto se joga com o controle (ele ficava piscando em cima do jogo); volta se o mouse mexer
+  let semCursor = false;
+  function cursor(esconde) {
+    if (semCursor === esconde) return; semCursor = esconde;
+    const ws = janelas(); const ab = document.getElementById('abertura'); if (ab && ab.contentWindow) ws.push(ab.contentWindow);
+    for (const w of ws) { try { const d = w.document; let st = d.getElementById('gp-sem-cursor');
+      if (esconde && !st) { st = d.createElement('style'); st.id = 'gp-sem-cursor'; st.textContent = '*,*::before,*::after{cursor:none!important}'; (d.head || d.documentElement).appendChild(st); }
+      if (!esconde && st) st.remove();
+      if (!w.__gpMouse) { w.__gpMouse = true; w.addEventListener('mousemove', e => { if (e.isTrusted && (Math.abs(e.movementX) + Math.abs(e.movementY)) > 2) cursor(false); }, true); } } catch (e) { } }
+  }
+  setInterval(() => { if (semCursor) { semCursor = false; cursor(true); } }, 2000);    // janelas novas (abertura, ambientes que acabaram de carregar)
+  function ligaGlifos() { cursor(true); if (glifos) return; glifos = true; try { localStorage.setItem('acq_glifos', '1'); } catch (e) { } atualizaDicas(); }
   if (glifos) setTimeout(atualizaDicas, 0);
 
   window.__CONTROLE = {
@@ -1496,6 +1510,8 @@ function update(dt) {
     cancelar() { aprendendo = null; },
     padrao() { mapa = null; try { localStorage.removeItem('acq_controle'); } catch (e) { } atualizaDicas(); },
     total: APRENDE.length,
+    formas: v => { try { localStorage.setItem('acq_formas', v ? '1' : '0'); } catch (e) { } atualizaDicas(); },
+    usaFormas: formas,
     glifos: v => { glifos = !!v; try { localStorage.setItem('acq_glifos', v ? '1' : '0'); } catch (e) { } if (v) atualizaDicas(); },
   };
 })();

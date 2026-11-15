@@ -27,6 +27,10 @@ if ! command -v chromium >/dev/null 2>&1 && ! command -v chromium-browser >/dev/
   $APT install chromium </dev/null || $APT install chromium-browser </dev/null
 fi
 NAV="$(command -v chromium || command -v chromium-browser)"
+# esconde o ponteiro do mouse parado em cima do jogo
+if ! command -v unclutter >/dev/null 2>&1; then
+  sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold install unclutter </dev/null || true
+fi
 if [ -z "$NAV" ]; then echo "Não consegui instalar o Chromium. Tire uma foto desta tela."; exit 1; fi
 
 echo "[2/5] Jogo"
@@ -46,6 +50,7 @@ xfconf-query -c xfce4-screensaver -p /saver/enabled -s false 2>/dev/null
 # TV em 1280x720: a placa monta menos pixels por quadro e a TV amplia sozinha (o jogo é pixel art, não perde nitidez)
 SAIDA=\$(xrandr 2>/dev/null | awk '/ connected/{print \$1; exit}')
 [ -n "\$SAIDA" ] && xrandr 2>/dev/null | grep -q ' 1280x720' && xrandr --output "\$SAIDA" --mode 1280x720 2>/dev/null
+command -v unclutter >/dev/null 2>&1 && (pkill unclutter 2>/dev/null; unclutter -idle 1 -root >/dev/null 2>&1 &)
 sleep 3
 exec "$NAV" --kiosk --noerrdialogs --disable-session-crashed-bubble --disable-infobars \\
   --check-for-update-interval=31536000 --autoplay-policy=no-user-gesture-required \\
