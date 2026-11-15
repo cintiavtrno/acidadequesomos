@@ -8,7 +8,8 @@
 //   triângulo .................... caderninho (B)
 //   quadrado ..................... Pular
 //   R1 ........................... botão do alto (esperar o anoitecer, subir para dormir)
-//   L1 / L2 / R2 .................. folhear o caderninho da padaria (L1 volta, R1/R2 avança quando ele está aberto)
+//   caderninho aberto ............ L1/R1 trocam a aba e ◀ ▶ (ou L2/R2) viram a página (padaria e casa); ▲ ▼ rolam (rua, quintal, 1996);
+//                                  bola, X ou triângulo fecham
 //   start (options) .............. volta para o menu principal
 // Nas conversas, as setas passam pelas respostas (a escolhida fica com contorno) e a bola escolhe; não precisa mais de 1, 2, 3.
 // Controle que não segue o padrão do navegador: Opções > Configurar controle (o mapa aprendido fica em localStorage 'acq_controle').
@@ -43,6 +44,17 @@
     } catch (e) { }
     return null;
   }
+  // caderninho: na padaria e na casa ele tem abas (Entender, Pessoas, Lugares) e páginas; na rua, em 1996 e no quintal é uma lista que rola
+  function caderno(w) {
+    try {
+      const d = w.document;
+      const di = d.querySelector('#diary'); if (di && w.getComputedStyle(di).display !== 'none') return { tipo: 'abas' };
+      for (const s of ['#notes', '#cad']) { const el = d.querySelector(s); if (el && w.getComputedStyle(el).display !== 'none') return { tipo: 'lista', el }; }
+    } catch (e) { }
+    return null;
+  }
+  function trocaAba(w, d) { try { w.eval("(()=>{const i=TABS.findIndex(t=>t[0]===DIARY.tab);diaryTab(TABS[(i+" + d + "+TABS.length)%TABS.length][0])})()"); } catch (e) { } }
+  function rola(c, d) { c.el.scrollBy({ top: d * 70, behavior: 'smooth' }); }
   const marcados = new WeakMap();
   function marca(j) {
     let i = j.el.__gpSel | 0; if (i >= j.bs.length) i = j.bs.length - 1; j.el.__gpSel = i;
@@ -69,7 +81,13 @@
   }
   const SETA = { cima: 'ArrowUp', baixo: 'ArrowDown', esq: 'ArrowLeft', dir: 'ArrowRight' };
   function aperta(n) {
-    const a = alvo(), w = a.w, j = a.tipo === 'jogo' ? janela(w) : null;
+    const a = alvo(), w = a.w, j = a.tipo === 'jogo' ? janela(w) : null, c = a.tipo === 'jogo' && !j ? caderno(w) : null;
+    if (c) {                                                       // caderninho aberto
+      if (c.tipo === 'lista' && (n === 'cima' || n === 'baixo')) { rola(c, n === 'cima' ? -1 : 1); return null; }
+      if (c.tipo === 'abas' && (n === 'l1' || n === 'r1')) { trocaAba(w, n === 'l1' ? -1 : 1); return null; }
+      if (c.tipo === 'abas' && (n === 'l2' || n === 'r2')) { tecla(w, n === 'l2' ? 'ArrowLeft' : 'ArrowRight', 'keydown'); return { w, key: n === 'l2' ? 'ArrowLeft' : 'ArrowRight' }; }
+      if (n === 'bola' || n === 'x') { tecla(w, 'b', 'keydown'); return { w, key: 'b' }; }   // bola ou X fecham o caderninho
+    }
     if (SETA[n]) {
       if (j) { moveJanela(j, n === 'cima' || n === 'esq' ? -1 : 1); return null; }
       tecla(w, SETA[n], 'keydown'); return { w, key: SETA[n] };
@@ -116,7 +134,7 @@
           if (s[n] && !antes[n]) { ligaGlifos(); const r = aperta(n); segura[n] = { desde: now, prox: now + ESPERA, r }; }
           else if (s[n] && segura[n] && SETA[n] && now >= segura[n].prox) {          // segurar a seta repete (menus e listas); andar usa a tecla presa
             segura[n].prox = now + RITMO; const r = segura[n].r;
-            if (r) tecla(r.w, r.key, 'keydown', true); else { const a = alvo(), j = a.tipo === 'jogo' ? janela(a.w) : null; if (j) moveJanela(j, n === 'cima' || n === 'esq' ? -1 : 1); }
+            if (r) tecla(r.w, r.key, 'keydown', true); else { const a = alvo(), j = a.tipo === 'jogo' ? janela(a.w) : null; if (j) moveJanela(j, n === 'cima' || n === 'esq' ? -1 : 1); else { const c = a.tipo === 'jogo' ? caderno(a.w) : null; if (c && c.tipo === 'lista' && (n === 'cima' || n === 'baixo')) rola(c, n === 'cima' ? -1 : 1); } }
           } else if (!s[n] && antes[n]) { const g = segura[n]; if (g && g.r) tecla(g.r.w, g.r.key, 'keyup'); delete segura[n]; }
         }
         antes = s;
@@ -146,6 +164,11 @@
     if (raiz.nodeType !== 1 && raiz.nodeType !== 9) return;
     const els = raiz.querySelectorAll ? [...raiz.querySelectorAll('.k,kbd')] : []; if (raiz.matches && raiz.matches('.k,kbd')) els.push(raiz);
     for (const el of els) { const v = TECLA[el.textContent.trim()]; if (v && el.textContent !== v) { el.textContent = v; if (COR[v]) { el.style.color = COR[v]; el.style.fontWeight = '700'; } } }
+    try {
+      const tb = d.querySelector('#diary .tabs');
+      if (tb && !tb.querySelector('.gpdica')) { const sp = d.createElement('span'); sp.className = 'gpdica'; sp.textContent = 'L1 R1 trocam a aba · ◀ ▶ viram a página · △ fecha'; sp.style.cssText = 'display:block;width:100%;text-align:center;font:600 11px system-ui,sans-serif;color:#5a4030;opacity:.8;margin-top:4px;pointer-events:none'; tb.appendChild(sp); }
+      for (const q of ['#notes h2', '#cad h3']) { const h = d.querySelector(q); if (h && !h.querySelector('.gpdica')) { const sp = d.createElement('small'); sp.className = 'gpdica'; sp.textContent = '▲ ▼ rolam · △ fecha'; sp.style.cssText = 'margin-left:.8em;font:600 .7em system-ui,sans-serif;opacity:.7'; h.appendChild(sp); } }
+    } catch (e) { }
     const w = d.createTreeWalker(raiz, 4, { acceptNode: x => /^(SCRIPT|STYLE|TEXTAREA)$/.test(x.parentNode && x.parentNode.nodeName) ? 2 : 1 });
     let x; while ((x = w.nextNode())) trocaTexto(x);
   }
