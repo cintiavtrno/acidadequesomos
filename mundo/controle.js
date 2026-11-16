@@ -229,9 +229,12 @@
     const tw = doc.createTreeWalker(doc.body, 4, { acceptNode: x => /^(SCRIPT|STYLE|TEXTAREA|KBD)$/.test(x.parentNode && x.parentNode.nodeName) || ehTecla(x.parentNode) ? 2 : 1 });
     let x; while ((x = tw.nextNode())) { const n = trocaTexto(x.nodeValue, x.parentNode); if (n !== x.nodeValue) x.nodeValue = n; }
     try {
-      const tb = doc.querySelector('#diary .tabs');
-      if (tb && !tb.querySelector('.gpdica')) { const sp = doc.createElement('span'); sp.className = 'gpdica'; sp.style.cssText = 'display:block;width:100%;text-align:center;font:600 11px system-ui,sans-serif;color:#5a4030;opacity:.8;margin-top:4px;pointer-events:none'; tb.appendChild(sp); }
-      if (tb) tb.querySelector('.gpdica').textContent = glifo('l1') + ' ' + glifo('r1') + ' trocam a aba · ◀ ▶ viram a página · ' + glifo('cad') + ' fecha';
+      // dica do caderno da padaria e da casa: solta no pé do caderno (dentro das abas ela as esticava por cima da página)
+      const di = doc.querySelector('#diary');
+      if (di) { const velha = di.querySelector('.tabs .gpdica'); if (velha) velha.remove();
+        let sp = di.querySelector(':scope > .gpdica');
+        if (!sp) { sp = doc.createElement('div'); sp.className = 'gpdica'; sp.style.cssText = 'position:absolute;left:0;right:0;bottom:.5em;text-align:center;font:600 .62em system-ui,sans-serif;color:#f1e2be;opacity:.75;pointer-events:none;z-index:5'; di.appendChild(sp); }
+        const t = glifo('l1') + ' ' + glifo('r1') + ' trocam a aba  ·  ◀ ▶ viram a página  ·  ' + glifo('cad') + ' fecha'; if (sp.textContent !== t) sp.textContent = t; }
       for (const q of ['#notes h2', '#cad h3']) { const h = doc.querySelector(q); if (h && !h.querySelector('.gpdica')) { const sp = doc.createElement('small'); sp.className = 'gpdica'; sp.style.cssText = 'margin-left:.8em;font:600 .7em system-ui,sans-serif;opacity:.7'; sp.textContent = '▲ ▼ rolam · ' + glifo('cad') + ' fecha'; h.appendChild(sp); } }
       const pu = doc.getElementById('pular') || doc.getElementById('pbtn'); if (pu) { const t = 'Pular ' + glifo('pula'); if (pu.textContent !== t) pu.textContent = t; }
     } catch (e) { }
